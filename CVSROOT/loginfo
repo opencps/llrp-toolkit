@@ -26,5 +26,5 @@
 # or
 #DEFAULT (echo ""; id; echo %{sVv}; date; cat) >> $CVSROOT/CVSROOT/commitlog
 
-DEFAULT (echo ""; id; echo %{sVv}; cat) | mail llrpadmin@users.sourceforge.net
+DEFAULT (echo ""; whoami ; echo %{sVv}; cat) | mail -s "CVS Checkin to llrp-toolkit" llrpadmin@users.sourceforge.net
 
