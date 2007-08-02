@@ -1,0 +1,131 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>LLRP-XML/Perl Schema</title>
+<link rev="made" href="mailto:root@localhost" />
+</head>
+
+<body style="background-color: white">
+
+<p><a name="__index__"></a></p>
+<!-- INDEX BEGIN -->
+
+<ul>
+
+	<li><a href="#rfid__llrp__schema">RFID::LLRP::Schema</a></li>
+	<li><a href="#synopsis">SYNOPSIS</a></li>
+	<li><a href="#description">DESCRIPTION</a></li>
+	<li><a href="#practical_example">PRACTICAL EXAMPLE</a></li>
+	<li><a href="#details">DETAILS</a></li>
+	<li><a href="#api">API</a></li>
+	<li><a href="#author">AUTHOR</a></li>
+	<li><a href="#bugs">BUGS</a></li>
+	<li><a href="#see_also">SEE ALSO</a></li>
+	<li><a href="#copyright">COPYRIGHT</a></li>
+</ul>
+<!-- INDEX END -->
+
+<hr />
+<p>
+</p>
+<hr />
+<h1><a name="rfid__llrp__schema">RFID::LLRP::Schema</a></h1>
+<p>
+</p>
+<hr />
+<h1><a name="synopsis">SYNOPSIS</a></h1>
+<p>Contains various facilities for dealing with LLRP schemas</p>
+<p>
+</p>
+<hr />
+<h1><a name="description">DESCRIPTION</a></h1>
+<p>Produces LLRP schema objects. It is safe to create as many of these as you
+need... only one object is created (and cached) per filename string.</p>
+<p>
+</p>
+<hr />
+<h1><a name="practical_example">PRACTICAL EXAMPLE</a></h1>
+<pre>
+        use RFID::LLRP::Schema;
+        my ($llrp, $lookup_msg, $lookup_param, $lookup_enum) =
+                 read_schema ('./llrp.desc');</pre>
+<p>
+</p>
+<hr />
+<h1><a name="details">DETAILS</a></h1>
+<p>
+</p>
+<hr />
+<h1><a name="api">API</a></h1>
+<dl>
+<dt><a name="item_read_schema"><code>read_schema($path)</code></a></dt>
+<dd>
+Returns a reference to the llrp binary format descriptor hash,
+and references to message, parameter and enumeration lookup
+tables.
+</dd>
+<dd>
+<p>The best way to understand these data structures is to print them using
+Data::Dumper. Builder.pm just peers directly into these tables as a ``layer'' and
+it seems hard, inefficient and more importantly, pointless (tight coupling with
+a layered API or tight coupling with a data structure, any way you go you will
+still have tight coupling) to obfuscate it with an API. If the layout doesn't
+suit your needs, build additional indexing data structures.</p>
+</dd>
+<dd>
+<p><a href="#item_read_schema"><code>read_schema</code></a> returns</p>
+</dd>
+<dl>
+<dt><a name="item__5c_25llrp_a_reference_to_the_llrp_schema"><code>\%llrp</code>
+a reference to the LLRP schema</a></dt>
+<dt><a name="item__5c_25lookup_msg_a_reference_to_a_hash_for_looking"><code>\%lookup_msg</code>
+a reference to a hash for looking up LLRP Message descriptors by name</a></dt>
+<dt><a name="item__5c_25lookup_param_a_reference_to_a_hash_for_looki"><code>\%lookup_param</code>
+a reference to a hash for looking up LLRP Parameter descriptors by name</a></dt>
+<dt><a name="item__5c_25lookup_mid_a_reference_to_a_hash_for_looking"><code>\%lookup_mid</code>
+a reference to a hash for looking up LLRP Message descriptors by Type ID</a></dt>
+<dt><a name="item__5c_25lookup_pid_a_reference_to_a_hash_for_looking"><code>\%lookup_pid</code>
+a reference to a hash for looking up LLRP Parameter descriptors by Type ID</a></dt>
+</dl>
+<p>Hint: the best way to understand the schema is to print it out with
+<code>Data::Dumper</code>.</p>
+</dl>
+<p>
+</p>
+<hr />
+<h1><a name="author">AUTHOR</a></h1>
+<p>John R. Hogerhuis</p>
+<p>Chris Delaney</p>
+<p>
+</p>
+<hr />
+<h1><a name="bugs">BUGS</a></h1>
+<p>None</p>
+<p>
+</p>
+<hr />
+<h1><a name="see_also">SEE ALSO</a></h1>
+<p>EPCGlobal LLRP Specification</p>
+<p>
+</p>
+<hr />
+<h1><a name="copyright">COPYRIGHT</a></h1>
+<p>Copyright 2007 Impinj, Inc.</p>
+<p>Licensed under the Apache License, Version 2.0 (the ``License'');
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at</p>
+<pre>
+    <a href="http://www.apache.org/licenses/LICENSE-2.0">http://www.apache.org/licenses/LICENSE-2.0</a></pre>
+<p>Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an ``AS IS'' BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+</p>
+<pre>
+
+=cut</pre>
+
+</body>
+
+</html>

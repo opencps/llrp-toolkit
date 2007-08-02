@@ -1,0 +1,15 @@
+Contributed to the LLRP Toolkit project by Impinj, Inc.
+
+Primary Maintainer
+------------------
+John R. Hogerhuis jhoger@pobox.com
+
+Author
+------
+John R. Hogerhuis jhoger@pobox.com
+
+Additional Contributors
+-----------------------
+Chris Delaney
+Kunal Singh
+Joel Peshkin

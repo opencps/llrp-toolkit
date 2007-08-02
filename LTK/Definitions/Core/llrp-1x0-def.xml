@@ -1,0 +1,2264 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ -  Copyright 2007 Impinj, Inc.
+ -
+ -  Licensed under the Apache License, Version 2.0 (the "License");
+ -  you may not use this file except in compliance with the License.
+ -  You may obtain a copy of the License at
+ -
+ -      http://www.apache.org/licenses/LICENSE-2.0
+ -
+ -  Unless required by applicable law or agreed to in writing, software
+ -  distributed under the License is distributed on an "AS IS" BASIS,
+ -  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ -  See the License for the specific language governing permissions and
+ -  limitations under the License.
+ -
+ -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ -->
+
+<llrpdef
+	xmlns="http://www.llrp.org/ltk/schema/core/encoding/binary/0.7"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+		http://www.llrp.org/ltk/schema/core/encoding/binary/0.7
+		http://www.llrp.org/ltk/schema/core/encoding/binary/0.7/llrpdef.xsd"
+>
+
+  <parameterDefinition name="UTCTimestamp" typeNum="128">
+    <annotation>
+      <documentation>
+        reference 7.1.3.1.1.1 and 16.2.2.1
+      </documentation>
+    </annotation>
+    <field     type="u64"   name="Microseconds" format="Datetime"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="Uptime" typeNum="129">
+    <annotation>
+      <documentation>
+        reference 7.1.3.1.1.2 and 16.2.2.2
+      </documentation>
+    </annotation>
+    <field     type="u64"   name="Microseconds"/>
+  </parameterDefinition>
+
+  <enumerationDefinition name="AirProtocols">
+    <annotation>
+      <documentation>
+        reference 7.1.4
+      </documentation>
+    </annotation>
+    <entry     value="0"    name="Unspecified"/>
+    <entry     value="1"    name="EPCGlobalClass1Gen2"/>
+  </enumerationDefinition>
+
+  <messageDefinition name="CUSTOM_MESSAGE" typeNum="1023">
+    <annotation>
+      <documentation>
+        reference 8.1 and 16.1.42
+      </documentation>
+    </annotation>
+    <field     type="u32"   name="VendorIdentifier"/>
+    <field     type="u8"    name="MessageSubtype"/>
+    <field     type="bytesToEnd" name="Data" format="Hex"/>
+  </messageDefinition>
+
+  <parameterDefinition name="Custom" typeNum="1023">
+    <annotation>
+      <documentation>
+        reference 8.2 and 16.2.9
+      </documentation>
+    </annotation>
+    <field     type="u32"   name="VendorIdentifier"/>
+    <field     type="u32"   name="ParameterSubtype"/>
+    <field     type="bytesToEnd" name="Data" format="Hex"/>
+  </parameterDefinition>
+
+  <messageDefinition name="GET_READER_CAPABILITIES" typeNum="1">
+    <annotation>
+      <documentation>
+        reference 9.1.1 and 16.1.1
+      </documentation>
+    </annotation>
+    <field     type="u8"    name="RequestedData"
+                            enumeration="GetReaderCapabilitiesRequestedData"/>
+    <parameter repeat="0-N" type="Custom"/>
+  </messageDefinition>
+
+  <enumerationDefinition name="GetReaderCapabilitiesRequestedData">
+    <annotation>
+      <documentation>
+        reference 9.1.1
+      </documentation>
+    </annotation>
+    <entry     value="0"    name="All"/>
+    <entry     value="1"    name="General_Device_Capabilities"/>
+    <entry     value="2"    name="LLRP_Capabilities"/>
+    <entry     value="3"    name="Regulatory_Capabilities"/>
+    <entry     value="4"    name="LLRP_Air_Protocol_Capabilities"/>
+  </enumerationDefinition>
+
+  <messageDefinition name="GET_READER_CAPABILITIES_RESPONSE" typeNum="11">
+    <annotation>
+      <documentation>
+        reference 9.1.2 and 16.1.2
+      </documentation>
+    </annotation>
+    <parameter repeat="1"   type="LLRPStatus"/>
+    <parameter repeat="0-1" type="GeneralDeviceCapabilities"/>
+    <parameter repeat="0-1" type="LLRPCapabilities"/>
+    <parameter repeat="0-1" type="RegulatoryCapabilities"/>
+    <choice    repeat="0-1" type="AirProtocolLLRPCapabilities"/>
+    <parameter repeat="0-N" type="Custom"/>
+  </messageDefinition>
+
+  <parameterDefinition name="GeneralDeviceCapabilities" typeNum="137">
+    <annotation>
+      <documentation>
+        reference 9.2.1 and 16.2.3.1
+      </documentation>
+    </annotation>
+    <field     type="u16"   name="MaxNumberOfAntennaSupported"/>
+    <field     type="u1"    name="CanSetAntennaProperties"/>
+    <field     type="u1"    name="HasUTCClockCapability"/>
+    <reserved  bitCount="14"/>
+    <field     type="u32"   name="DeviceManufacturerName"/>
+    <field     type="u32"   name="ModelName"/>
+    <field     type="utf8v" name="ReaderFirmwareVersion" format="UTF8"/>
+    <parameter repeat="1-N" type="ReceiveSensitivityTableEntry"/>
+    <parameter repeat="0-N" type="PerAntennaReceiveSensitivityRange"/>
+    <parameter repeat="1"   type="GPIOCapabilities"/>
+    <parameter repeat="1-N" type="PerAntennaAirProtocol"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="ReceiveSensitivityTableEntry" typeNum="139">
+    <annotation>
+      <documentation>
+        reference 9.2.1.1 and 16.2.3.1.1
+      </documentation>
+    </annotation>
+    <field     type="u16"   name="Index"/>
+    <field     type="s16"   name="ReceiveSensitivityValue"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="PerAntennaReceiveSensitivityRange" typeNum="149">
+    <annotation>
+      <documentation>
+        reference 9.2.1.2 and 16.2.3.1.2
+      </documentation>
+    </annotation>
+    <field     type="u16"   name="AntennaID"/>
+    <field     type="u16"   name="ReceiveSensitivityIndexMin"/>
+    <field     type="u16"   name="ReceiveSensitivityIndexMax"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="PerAntennaAirProtocol" typeNum="140">
+    <annotation>
+      <documentation>
+        reference 9.2.1.3 and 16.2.3.1.3
+      </documentation>
+    </annotation>
+    <field     type="u16"   name="AntennaID"/>
+    <field     type="u8v"   name="ProtocolID"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="GPIOCapabilities" typeNum="141">
+    <annotation>
+      <documentation>
+        reference 9.2.1.4 and 16.2.3.1.4
+      </documentation>
+    </annotation>
+    <field     type="u16"   name="NumGPIs"/>
+    <field     type="u16"   name="NumGPOs"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="LLRPCapabilities" typeNum="142">
+    <annotation>
+      <documentation>
+        reference 9.2.2 and 16.2.3.2
+      </documentation>
+    </annotation>
+    <field     type="u1"    name="CanDoRFSurvey"/>
+    <field     type="u1"    name="CanReportBufferFillWarning"/>
+    <field     type="u1"    name="SupportsClientRequestOpSpec"/>
+    <field     type="u1"    name="CanDoTagInventoryStateAwareSingulation"/>
+    <field     type="u1"    name="SupportsEventAndReportHolding"/>
+    <reserved  bitCount="3"/>
+    <field     type="u8"    name="MaxNumPriorityLevelsSupported"/>
+    <field     type="u16"   name="ClientRequestOpSpecTimeout"/>
+    <field     type="u32"   name="MaxNumROSpecs"/>
+    <field     type="u32"   name="MaxNumSpecsPerROSpec"/>
+    <field     type="u32"   name="MaxNumInventoryParameterSpecsPerAISpec"/>
+    <field     type="u32"   name="MaxNumAccessSpecs"/>
+    <field     type="u32"   name="MaxNumOpSpecsPerAccessSpec"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="RegulatoryCapabilities" typeNum="143">
+    <annotation>
+      <documentation>
+        reference 9.2.4 and 16.2.3.4
+      </documentation>
+    </annotation>
+    <field     type="u16"   name="CountryCode"/>
+    <field     type="u16"   name="CommunicationsStandard"
+                            enumeration="CommunicationsStandard"/>
+    <parameter repeat="0-1" type="UHFBandCapabilities"/>
+    <parameter repeat="0-N" type="Custom"/>
+  </parameterDefinition>
+
+  <enumerationDefinition name="CommunicationsStandard">
+    <annotation>
+      <documentation>
+        reference 9.2.4
+      </documentation>
+    </annotation>
+    <entry     value="0"    name="Unspecified"/>
+    <entry     value="1"    name="US_FCC_Part_15"/>
+    <entry     value="2"    name="ETSI_302_208"/>
+    <entry     value="3"    name="ETSI_300_220"/>
+    <entry     value="4"    name="Australia_LIPD_1W"/>
+    <entry     value="5"    name="Australia_LIPD_4W"/>
+    <entry     value="6"    name="Japan_ARIB_STD_T89"/>
+    <entry     value="7"    name="Hong_Kong_OFTA_1049"/>
+    <entry     value="8"    name="Taiwan_DGT_LP0002"/>
+    <entry     value="9"    name="Korea_MIC_Article_5_2"/>
+  </enumerationDefinition>
+
+  <parameterDefinition name="UHFBandCapabilities" typeNum="144">
+    <annotation>
+      <documentation>
+        reference 9.2.4.1 and 16.2.3.4.1
+      </documentation>
+    </annotation>
+    <parameter repeat="1-N" type="TransmitPowerLevelTableEntry"/>
+    <parameter repeat="1"   type="FrequencyInformation"/>
+    <choice    repeat="1-N" type="AirProtocolUHFRFModeTable"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="TransmitPowerLevelTableEntry" typeNum="145">
+    <annotation>
+      <documentation>
+        reference 9.2.4.1.1 and 16.2.3.4.1.1
+      </documentation>
+    </annotation>
+    <field     type="u16"   name="Index"/>
+    <field     type="s16"   name="TransmitPowerValue"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="FrequencyInformation" typeNum="146">
+    <annotation>
+      <documentation>
+        reference 9.2.4.1.2 and 16.2.3.4.1.2
+      </documentation>
+    </annotation>
+    <field     type="u1"    name="Hopping"/>
+    <reserved  bitCount="7"/>
+    <parameter repeat="0-N" type="FrequencyHopTable"/>
+    <parameter repeat="0-1" type="FixedFrequencyTable"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="FrequencyHopTable" typeNum="147">
+    <annotation>
+      <documentation>
+        reference 9.2.4.1.2.1 and 16.2.3.4.1.2.1
+      </documentation>
+    </annotation>
+    <field     type="u8"    name="HopTableID"/>
+    <reserved  bitCount="8"/>
+    <field     type="u32v"  name="Frequency"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="FixedFrequencyTable" typeNum="148">
+    <annotation>
+      <documentation>
+        reference 9.2.4.1.2.2 and 16.2.3.4.1.2.2
+      </documentation>
+    </annotation>
+    <field     type="u32v"  name="Frequency"/>
+  </parameterDefinition>
+
+  <messageDefinition name="ADD_ROSPEC" typeNum="20">
+    <annotation>
+      <documentation>
+        reference 10.1.1 and 16.1.3
+      </documentation>
+    </annotation>
+    <parameter repeat="1"   type="ROSpec"/>
+  </messageDefinition>
+
+  <messageDefinition name="ADD_ROSPEC_RESPONSE" typeNum="30">
+    <annotation>
+      <documentation>
+        reference 10.1.2 and 16.1.4
+      </documentation>
+    </annotation>
+    <parameter repeat="1"   type="LLRPStatus"/>
+  </messageDefinition>
+
+  <messageDefinition name="DELETE_ROSPEC" typeNum="21">
+    <annotation>
+      <documentation>
+        reference 10.1.3 and 16.1.5
+      </documentation>
+    </annotation>
+    <field     type="u32"   name="ROSpecID"/>
+  </messageDefinition>
+
+  <messageDefinition name="DELETE_ROSPEC_RESPONSE" typeNum="31">
+    <annotation>
+      <documentation>
+        reference 10.1.4 and 16.1.6
+      </documentation>
+    </annotation>
+    <parameter repeat="1"   type="LLRPStatus"/>
+  </messageDefinition>
+
+  <messageDefinition name="START_ROSPEC" typeNum="22">
+    <annotation>
+      <documentation>
+        reference 10.1.5 and 16.1.7
+      </documentation>
+    </annotation>
+    <field     type="u32"   name="ROSpecID"/>
+  </messageDefinition>
+
+  <messageDefinition name="START_ROSPEC_RESPONSE" typeNum="32">
+    <annotation>
+      <documentation>
+        reference 10.1.6 and 16.1.8
+      </documentation>
+    </annotation>
+    <parameter repeat="1"   type="LLRPStatus"/>
+  </messageDefinition>
+
+  <messageDefinition name="STOP_ROSPEC" typeNum="23">
+    <annotation>
+      <documentation>
+        reference 10.1.7 and 16.1.9
+      </documentation>
+    </annotation>
+    <field     type="u32"   name="ROSpecID"/>
+  </messageDefinition>
+
+  <messageDefinition name="STOP_ROSPEC_RESPONSE" typeNum="33">
+    <annotation>
+      <documentation>
+        reference 10.1.8 and 16.1.10
+      </documentation>
+    </annotation>
+    <parameter repeat="1"   type="LLRPStatus"/>
+  </messageDefinition>
+
+  <messageDefinition name="ENABLE_ROSPEC" typeNum="24">
+    <annotation>
+      <documentation>
+        reference 10.1.9 and 16.1.11
+      </documentation>
+    </annotation>
+    <field     type="u32"   name="ROSpecID"/>
+  </messageDefinition>
+
+  <messageDefinition name="ENABLE_ROSPEC_RESPONSE" typeNum="34">
+    <annotation>
+      <documentation>
+        reference 10.1.10 and 16.1.12
+      </documentation>
+    </annotation>
+    <parameter repeat="1"   type="LLRPStatus"/>
+  </messageDefinition>
+
+  <messageDefinition name="DISABLE_ROSPEC" typeNum="25">
+    <annotation>
+      <documentation>
+        reference 10.1.11 and 16.1.13
+      </documentation>
+    </annotation>
+    <field     type="u32"   name="ROSpecID"/>
+  </messageDefinition>
+
+  <messageDefinition name="DISABLE_ROSPEC_RESPONSE" typeNum="35">
+    <annotation>
+      <documentation>
+        reference 10.1.12 and 16.1.14
+      </documentation>
+    </annotation>
+    <parameter repeat="1"   type="LLRPStatus"/>
+  </messageDefinition>
+
+  <messageDefinition name="GET_ROSPECS" typeNum="26">
+    <annotation>
+      <documentation>
+        reference 10.1.13 and 16.1.15
+      </documentation>
+    </annotation>
+  </messageDefinition>
+
+  <messageDefinition name="GET_ROSPECS_RESPONSE" typeNum="36">
+    <annotation>
+      <documentation>
+        reference 10.1.14 and 16.1.16
+      </documentation>
+    </annotation>
+    <parameter repeat="1"   type="LLRPStatus"/>
+    <parameter repeat="0-N" type="ROSpec"/>
+  </messageDefinition>
+
+  <parameterDefinition name="ROSpec" typeNum="177">
+    <annotation>
+      <documentation>
+        reference 10.2.1 and 16.2.4.1
+      </documentation>
+    </annotation>
+    <field     type="u32"   name="ROSpecID"/>
+    <field     type="u8"    name="Priority"/>
+    <field     type="u8"    name="CurrentState"
+                            enumeration="ROSpecState"/>
+    <parameter repeat="1"   type="ROBoundarySpec"/>
+    <choice    repeat="1-N" type="SpecParameter"/>
+    <parameter repeat="0-1" type="ROReportSpec"/>
+  </parameterDefinition>
+
+  <enumerationDefinition name="ROSpecState">
+    <annotation>
+      <documentation>
+        reference 10.2.1
+      </documentation>
+    </annotation>
+    <entry     value="0"    name="Disabled"/>
+    <entry     value="1"    name="Inactive"/>
+    <entry     value="2"    name="Active"/>
+  </enumerationDefinition>
+
+  <choiceDefinition name="SpecParameter">
+    <parameter type="AISpec"/>
+    <parameter type="RFSurveySpec"/>
+    <parameter type="Custom"/>
+  </choiceDefinition>
+
+  <parameterDefinition name="ROBoundarySpec" typeNum="178">
+    <annotation>
+      <documentation>
+        reference 10.2.1.1 and 16.2.4.1.1
+      </documentation>
+    </annotation>
+    <parameter repeat="1"   type="ROSpecStartTrigger"/>
+    <parameter repeat="1"   type="ROSpecStopTrigger"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="ROSpecStartTrigger" typeNum="179">
+    <annotation>
+      <documentation>
+        reference 10.2.1.1.1 and 16.2.4.1.1.1
+      </documentation>
+    </annotation>
+    <field     type="u8"    name="ROSpecStartTriggerType"
+                            enumeration="ROSpecStartTriggerType"/>
+    <parameter repeat="0-1" type="PeriodicTriggerValue"/>
+    <parameter repeat="0-1" type="GPITriggerValue"/>
+  </parameterDefinition>
+
+  <enumerationDefinition name="ROSpecStartTriggerType">
+    <annotation>
+      <documentation>
+        reference 10.2.1.1.1
+      </documentation>
+    </annotation>
+    <entry     value="0"    name="Null"/>
+    <entry     value="1"    name="Immediate"/>
+    <entry     value="2"    name="Periodic"/>
+    <entry     value="3"    name="GPI"/>
+  </enumerationDefinition>
+
+  <parameterDefinition name="PeriodicTriggerValue" typeNum="180">
+    <annotation>
+      <documentation>
+        reference 10.2.1.1.1.1 and 16.2.4.1.1.1.1
+      </documentation>
+    </annotation>
+    <field     type="u32"   name="Offset"/>
+    <field     type="u32"   name="Period"/>
+    <parameter repeat="0-1" type="UTCTimestamp"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="GPITriggerValue" typeNum="181">
+    <annotation>
+      <documentation>
+        reference 10.2.1.1.1.2 and 16.2.4.1.1.1.2
+      </documentation>
+    </annotation>
+    <field     type="u16"   name="GPIPortNum"/>
+    <field     type="u1"    name="GPIEvent"/>
+    <reserved  bitCount="7"/>
+    <field     type="u32"   name="Timeout"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="ROSpecStopTrigger" typeNum="182">
+    <annotation>
+      <documentation>
+        reference 10.2.1.1.2 and 16.2.4.1.1.2
+      </documentation>
+    </annotation>
+    <field     type="u8"    name="ROSpecStopTriggerType"
+                            enumeration="ROSpecStopTriggerType"/>
+    <field     type="u32"   name="DurationTriggerValue"/>
+    <parameter repeat="0-1" type="GPITriggerValue"/>
+  </parameterDefinition>
+
+  <enumerationDefinition name="ROSpecStopTriggerType">
+    <annotation>
+      <documentation>
+        reference 10.2.1.1.2
+      </documentation>
+    </annotation>
+    <entry     value="0"    name="Null"/>
+    <entry     value="1"    name="Duration"/>
+    <entry     value="2"    name="GPI_With_Timeout"/>
+  </enumerationDefinition>
+
+  <parameterDefinition name="AISpec" typeNum="183">
+    <annotation>
+      <documentation>
+        reference 10.2.2 and 16.2.4.2
+      </documentation>
+    </annotation>
+    <field     type="u16v"  name="AntennaIDs"/>
+    <parameter repeat="1"   type="AISpecStopTrigger"/>
+    <parameter repeat="1-N" type="InventoryParameterSpec"/>
+    <parameter repeat="0-N" type="Custom"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="AISpecStopTrigger" typeNum="184">
+    <annotation>
+      <documentation>
+        reference 10.2.2.1 and 16.2.4.2.1
+      </documentation>
+    </annotation>
+    <field     type="u8"    name="AISpecStopTriggerType"
+                            enumeration="AISpecStopTriggerType"/>
+    <field     type="u32"   name="DurationTrigger"/>
+    <parameter repeat="0-1" type="GPITriggerValue"/>
+    <parameter repeat="0-1" type="TagObservationTrigger"/>
+  </parameterDefinition>
+
+  <enumerationDefinition name="AISpecStopTriggerType">
+    <annotation>
+      <documentation>
+        reference 10.2.2.1
+      </documentation>
+    </annotation>
+    <entry     value="0"    name="Null"/>
+    <entry     value="1"    name="Duration"/>
+    <entry     value="2"    name="GPI_With_Timeout"/>
+    <entry     value="3"    name="Tag_Observation"/>
+  </enumerationDefinition>
+
+  <parameterDefinition name="TagObservationTrigger" typeNum="185">
+    <annotation>
+      <documentation>
+        reference 10.2.2.1.1 and 16.2.4.2.1.1
+      </documentation>
+    </annotation>
+    <field     type="u8"    name="TriggerType"
+                            enumeration="TagObservationTriggerType"/>
+    <reserved  bitCount="8"/>
+    <field     type="u16"   name="NumberOfTags"/>
+    <field     type="u16"   name="NumberOfAttempts"/>
+    <field     type="u16"   name="T"/>
+    <field     type="u32"   name="Timeout"/>
+  </parameterDefinition>
+
+  <enumerationDefinition name="TagObservationTriggerType">
+    <annotation>
+      <documentation>
+        reference 10.2.2.1.1
+      </documentation>
+    </annotation>
+    <entry     value="0"    name="Upon_Seeing_N_Tags_Or_Timeout"/>
+    <entry     value="1"    name="Upon_Seeing_No_More_New_Tags_For_Tms_Or_Timeout"/>
+    <entry     value="2"    name="N_Attempts_To_See_All_Tags_In_FOV_Or_Timeout"/>
+  </enumerationDefinition>
+
+  <parameterDefinition name="InventoryParameterSpec" typeNum="186">
+    <annotation>
+      <documentation>
+        reference 10.2.2.2 and 16.2.4.2.2
+      </documentation>
+    </annotation>
+    <field     type="u16"   name="InventoryParameterSpecID"/>
+    <field     type="u8"    name="ProtocolID"
+                            enumeration="AirProtocols"/>
+    <parameter repeat="0-N" type="AntennaConfiguration"/>
+    <parameter repeat="0-N" type="Custom"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="RFSurveySpec" typeNum="187">
+    <annotation>
+      <documentation>
+        reference 10.2.3 and 16.2.4.3
+      </documentation>
+    </annotation>
+    <field     type="u16"   name="AntennaID"/>
+    <field     type="u32"   name="StartFrequency"/>
+    <field     type="u32"   name="EndFrequency"/>
+    <parameter repeat="1"   type="RFSurveySpecStopTrigger"/>
+    <parameter repeat="0-N" type="Custom"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="RFSurveySpecStopTrigger" typeNum="188">
+    <annotation>
+      <documentation>
+        reference 10.2.3.1 and 16.2.4.3.1
+      </documentation>
+    </annotation>
+    <field     type="u8"    name="StopTriggerType"
+                            enumeration="RFSurveySpecStopTriggerType"/>
+    <field     type="u32"   name="DurationPeriod"/>
+    <field     type="u32"   name="N"/>
+  </parameterDefinition>
+
+  <enumerationDefinition name="RFSurveySpecStopTriggerType">
+    <annotation>
+      <documentation>
+        reference 10.2.3.1
+      </documentation>
+    </annotation>
+    <entry     value="0"    name="Null"/>
+    <entry     value="1"    name="Duration"/>
+    <entry     value="2"    name="N_Iterations_Through_Frequency_Range"/>
+  </enumerationDefinition>
+
+  <messageDefinition name="ADD_ACCESSSPEC" typeNum="40">
+    <annotation>
+      <documentation>
+        reference 11.1.1 and 16.1.17
+      </documentation>
+    </annotation>
+    <parameter repeat="1"   type="AccessSpec"/>
+  </messageDefinition>
+
+  <messageDefinition name="ADD_ACCESSSPEC_RESPONSE" typeNum="50">
+    <annotation>
+      <documentation>
+        reference 11.1.2 and 16.1.18
+      </documentation>
+    </annotation>
+    <parameter repeat="1"   type="LLRPStatus"/>
+  </messageDefinition>
+
+  <messageDefinition name="DELETE_ACCESSSPEC" typeNum="41">
+    <annotation>
+      <documentation>
+        reference 11.1.3 and 16.1.19
+      </documentation>
+    </annotation>
+    <field     type="u32"   name="AccessSpecID"/>
+  </messageDefinition>
+
+  <messageDefinition name="DELETE_ACCESSSPEC_RESPONSE" typeNum="51">
+    <annotation>
+      <documentation>
+        reference 11.1.4 and 16.1.20
+      </documentation>
+    </annotation>
+    <parameter repeat="1"   type="LLRPStatus"/>
+  </messageDefinition>
+
+  <messageDefinition name="ENABLE_ACCESSSPEC" typeNum="42">
+    <annotation>
+      <documentation>
+        reference 11.1.5 and 16.1.21
+      </documentation>
+    </annotation>
+    <field     type="u32"   name="AccessSpecID"/>
+  </messageDefinition>
+
+  <messageDefinition name="ENABLE_ACCESSSPEC_RESPONSE" typeNum="52">
+    <annotation>
+      <documentation>
+        reference 11.1.6 and 16.1.22
+      </documentation>
+    </annotation>
+    <parameter repeat="1"   type="LLRPStatus"/>
+  </messageDefinition>
+
+  <messageDefinition name="DISABLE_ACCESSSPEC" typeNum="43">
+    <annotation>
+      <documentation>
+        reference 11.1.7 and 16.1.23
+      </documentation>
+    </annotation>
+    <field     type="u32"   name="AccessSpecID"/>
+  </messageDefinition>
+
+  <messageDefinition name="DISABLE_ACCESSSPEC_RESPONSE" typeNum="53">
+    <annotation>
+      <documentation>
+        reference 11.1.8 and 16.1.24
+      </documentation>
+    </annotation>
+    <parameter repeat="1"   type="LLRPStatus"/>
+  </messageDefinition>
+
+  <messageDefinition name="GET_ACCESSSPECS" typeNum="44">
+    <annotation>
+      <documentation>
+        reference 11.1.9 and 16.1.25
+      </documentation>
+    </annotation>
+  </messageDefinition>
+
+  <messageDefinition name="GET_ACCESSSPECS_RESPONSE" typeNum="54">
+    <annotation>
+      <documentation>
+        reference 11.1.10 and 16.1.26
+      </documentation>
+    </annotation>
+    <parameter repeat="1"   type="LLRPStatus"/>
+    <parameter repeat="0-N" type="AccessSpec"/>
+  </messageDefinition>
+
+  <parameterDefinition name="AccessSpec" typeNum="207">
+    <annotation>
+      <documentation>
+        reference 11.2.1 and 16.2.5.1
+      </documentation>
+    </annotation>
+    <field     type="u32"   name="AccessSpecID"/>
+    <field     type="u16"   name="AntennaID"/>
+    <field     type="u8"    name="ProtocolID"
+                            enumeration="AirProtocols"/>
+    <field     type="u1"    name="CurrentState"
+                            enumeration="AccessSpecState"/>
+    <reserved  bitCount="7"/>
+    <field     type="u32"   name="ROSpecID"/>
+    <parameter repeat="1"   type="AccessSpecStopTrigger"/>
+    <parameter repeat="1"   type="AccessCommand"/>
+    <parameter repeat="0-1" type="AccessReportSpec"/>
+    <parameter repeat="0-N" type="Custom"/>
+  </parameterDefinition>
+
+  <enumerationDefinition name="AccessSpecState">
+    <annotation>
+      <documentation>
+        reference 11.2.1
+      </documentation>
+    </annotation>
+    <entry     value="0"    name="Disabled"/>
+    <entry     value="1"    name="Active"/>
+  </enumerationDefinition>
+
+  <parameterDefinition name="AccessSpecStopTrigger" typeNum="208">
+    <annotation>
+      <documentation>
+        reference 11.2.1.1 and 16.2.5.1.1
+      </documentation>
+    </annotation>
+    <field     type="u8"    name="AccessSpecStopTrigger"
+                            enumeration="AccessSpecStopTriggerType"/>
+    <field     type="u16"   name="OperationCountValue"/>
+  </parameterDefinition>
+
+  <enumerationDefinition name="AccessSpecStopTriggerType">
+    <annotation>
+      <documentation>
+        reference 11.2.1.1
+      </documentation>
+    </annotation>
+    <entry     value="0"    name="Null"/>
+    <entry     value="1"    name="Operation_Count"/>
+  </enumerationDefinition>
+
+  <parameterDefinition name="AccessCommand" typeNum="209">
+    <annotation>
+      <documentation>
+        reference 11.2.1.2 and 16.2.5.1.2
+      </documentation>
+    </annotation>
+    <choice    repeat="1"   type="AirProtocolTagSpec"/>
+    <choice    repeat="1-N" type="AccessCommandOpSpec"/>
+    <parameter repeat="0-N" type="Custom"/>
+  </parameterDefinition>
+
+  <choiceDefinition name="AccessCommandOpSpec">
+    <parameter type="C1G2Read"/>
+    <parameter type="C1G2Write"/>
+    <parameter type="C1G2Kill"/>
+    <parameter type="C1G2Lock"/>
+    <parameter type="C1G2BlockErase"/>
+    <parameter type="C1G2BlockWrite"/>
+  </choiceDefinition>
+
+  <messageDefinition name="GET_READER_CONFIG" typeNum="2">
+    <annotation>
+      <documentation>
+        reference 12.1.1 and 16.1.36
+      </documentation>
+    </annotation>
+    <field     type="u16"   name="AntennaID"/>
+    <field     type="u8"    name="RequestedData"
+                            enumeration="GetReaderConfigRequestedData"/>
+    <field     type="u16"   name="GPIPortNum"/>
+    <field     type="u16"   name="GPOPortNum"/>
+    <parameter repeat="0-N" type="Custom"/>
+  </messageDefinition>
+
+  <enumerationDefinition name="GetReaderConfigRequestedData">
+    <annotation>
+      <documentation>
+        reference 12.1.1
+      </documentation>
+    </annotation>
+    <entry     value="0"    name="All"/>
+    <entry     value="1"    name="Identification"/>
+    <entry     value="2"    name="AntennaProperties"/>
+    <entry     value="3"    name="AntennaConfiguration"/>
+    <entry     value="4"    name="ROReportSpec"/>
+    <entry     value="5"    name="ReaderEventNotificationSpec"/>
+    <entry     value="6"    name="AccessReportSpec"/>
+    <entry     value="7"    name="LLRPConfigurationStateValue"/>
+    <entry     value="8"    name="KeepaliveSpec"/>
+    <entry     value="9"    name="GPIPortCurrentState"/>
+    <entry     value="10"   name="GPOWriteData"/>
+    <entry     value="11"   name="EventsAndReports"/>
+  </enumerationDefinition>
+
+  <messageDefinition name="GET_READER_CONFIG_RESPONSE" typeNum="12">
+    <annotation>
+      <documentation>
+        reference 12.1.2 and 16.1.37
+      </documentation>
+    </annotation>
+    <parameter repeat="1"   type="LLRPStatus"/>
+    <parameter repeat="0-1" type="Identification"/>
+    <parameter repeat="0-N" type="AntennaProperties"/>
+    <parameter repeat="0-N" type="AntennaConfiguration"/>
+    <parameter repeat="0-1" type="ReaderEventNotificationSpec"/>
+    <parameter repeat="0-1" type="ROReportSpec"/>
+    <parameter repeat="0-1" type="AccessReportSpec"/>
+    <parameter repeat="0-1" type="LLRPConfigurationStateValue"/>
+    <parameter repeat="0-1" type="KeepaliveSpec"/>
+    <parameter repeat="0-N" type="GPIPortCurrentState"/>
+    <parameter repeat="0-N" type="GPOWriteData"/>
+    <parameter repeat="0-1" type="EventsAndReports"/>
+    <parameter repeat="0-N" type="Custom"/>
+  </messageDefinition>
+
+  <messageDefinition name="SET_READER_CONFIG" typeNum="3">
+    <annotation>
+      <documentation>
+        reference 12.1.3 and 16.1.38
+      </documentation>
+    </annotation>
+    <field     type="u1"    name="ResetToFactoryDefault"/>
+    <reserved  bitCount="7"/>
+    <parameter repeat="0-1" type="ReaderEventNotificationSpec"/>
+    <parameter repeat="0-N" type="AntennaProperties"/>
+    <parameter repeat="0-N" type="AntennaConfiguration"/>
+    <parameter repeat="0-1" type="ROReportSpec"/>
+    <parameter repeat="0-1" type="AccessReportSpec"/>
+    <parameter repeat="0-1" type="KeepaliveSpec"/>
+    <parameter repeat="0-N" type="GPOWriteData"/>
+    <parameter repeat="0-N" type="GPIPortCurrentState"/>
+    <parameter repeat="0-1" type="EventsAndReports"/>
+    <parameter repeat="0-N" type="Custom"/>
+  </messageDefinition>
+
+  <messageDefinition name="SET_READER_CONFIG_RESPONSE" typeNum="13">
+    <annotation>
+      <documentation>
+        reference 12.1.4 and 16.1.39
+      </documentation>
+    </annotation>
+    <parameter repeat="1"   type="LLRPStatus"/>
+  </messageDefinition>
+
+  <messageDefinition name="CLOSE_CONNECTION" typeNum="14">
+    <annotation>
+      <documentation>
+        reference 12.1.5 and 16.1.40
+      </documentation>
+    </annotation>
+  </messageDefinition>
+
+  <messageDefinition name="CLOSE_CONNECTION_RESPONSE" typeNum="4">
+    <annotation>
+      <documentation>
+        reference 12.1.6 and 16.1.41
+      </documentation>
+    </annotation>
+    <parameter repeat="1"   type="LLRPStatus"/>
+  </messageDefinition>
+
+  <parameterDefinition name="LLRPConfigurationStateValue" typeNum="217">
+    <annotation>
+      <documentation>
+        reference 12.2.1 and 16.2.6.1
+      </documentation>
+    </annotation>
+    <field     type="u32"   name="LLRPConfigurationStateValue"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="Identification" typeNum="218">
+    <annotation>
+      <documentation>
+        reference 12.2.2 and 16.2.6.2
+      </documentation>
+    </annotation>
+    <field     type="u8"    name="IDType"
+                            enumeration="IdentificationType"/>
+    <field     type="u8v"   name="ReaderID" format="Hex"/>
+  </parameterDefinition>
+
+  <enumerationDefinition name="IdentificationType">
+    <annotation>
+      <documentation>
+        reference 12.2.2
+      </documentation>
+    </annotation>
+    <entry     value="0"    name="MAC_Address"/>
+    <entry     value="1"    name="EPC"/>
+  </enumerationDefinition>
+
+  <parameterDefinition name="GPOWriteData" typeNum="219">
+    <annotation>
+      <documentation>
+        reference 12.2.3 and 16.2.6.3
+      </documentation>
+    </annotation>
+    <field     type="u16"   name="GPOPortNumber"/>
+    <field     type="u1"    name="GPOData"/>
+    <reserved  bitCount="7"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="KeepaliveSpec" typeNum="220">
+    <annotation>
+      <documentation>
+        reference 12.2.4 and 16.2.6.4
+      </documentation>
+    </annotation>
+    <field     type="u8"    name="KeepaliveTriggerType"
+                            enumeration="KeepaliveTriggerType"/>
+    <field     type="u32"   name="PeriodicTriggerValue"/>
+  </parameterDefinition>
+
+  <enumerationDefinition name="KeepaliveTriggerType">
+    <annotation>
+      <documentation>
+        reference 12.2.4
+      </documentation>
+    </annotation>
+    <entry     value="0"    name="Null"/>
+    <entry     value="1"    name="Periodic"/>
+  </enumerationDefinition>
+
+  <parameterDefinition name="AntennaProperties" typeNum="221">
+    <annotation>
+      <documentation>
+        reference 12.2.5 and 16.2.6.5
+      </documentation>
+    </annotation>
+    <field     type="u1"    name="AntennaConnected"/>
+    <reserved  bitCount="7"/>
+    <field     type="u16"   name="AntennaID"/>
+    <field     type="s16"   name="AntennaGain"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="AntennaConfiguration" typeNum="222">
+    <annotation>
+      <documentation>
+        reference 12.2.6 and 16.2.6.6
+      </documentation>
+    </annotation>
+    <field     type="u16"   name="AntennaID"/>
+    <parameter repeat="0-1" type="RFReceiver"/>
+    <parameter repeat="0-1" type="RFTransmitter"/>
+    <choice    repeat="0-N" type="AirProtocolInventoryCommandSettings"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="RFReceiver" typeNum="223">
+    <annotation>
+      <documentation>
+        reference 12.2.6.1 and 16.2.6.7
+      </documentation>
+    </annotation>
+    <field     type="u16"   name="ReceiverSensitivity"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="RFTransmitter" typeNum="224">
+    <annotation>
+      <documentation>
+        reference 12.2.6.2 and 16.2.6.8
+      </documentation>
+    </annotation>
+    <field     type="u16"   name="HopTableID"/>
+    <field     type="u16"   name="ChannelIndex"/>
+    <field     type="u16"   name="TransmitPower"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="GPIPortCurrentState" typeNum="225">
+    <annotation>
+      <documentation>
+        reference 12.2.6.3 and 16.2.6.9
+      </documentation>
+    </annotation>
+    <field     type="u16"   name="GPIPortNum"/>
+    <field     type="u1"    name="Config"/>
+    <reserved  bitCount="7"/>
+    <field     type="u8"    name="State"
+                            enumeration="GPIPortState"/>
+  </parameterDefinition>
+
+  <enumerationDefinition name="GPIPortState">
+    <annotation>
+      <documentation>
+        reference 12.2.6.3
+      </documentation>
+    </annotation>
+    <entry     value="0"    name="Low"/>
+    <entry     value="1"    name="High"/>
+    <entry     value="2"    name="Unknown"/>
+  </enumerationDefinition>
+
+  <parameterDefinition name="EventsAndReports" typeNum="226">
+    <annotation>
+      <documentation>
+        reference 12.2.6.4 and 16.2.6.10
+      </documentation>
+    </annotation>
+    <field     type="u1"    name="HoldEventsAndReportsUponReconnect"/>
+    <reserved  bitCount="7"/>
+  </parameterDefinition>
+
+  <messageDefinition name="GET_REPORT" typeNum="60">
+    <annotation>
+      <documentation>
+        reference 13.1.1 and 16.1.29
+      </documentation>
+    </annotation>
+  </messageDefinition>
+
+  <messageDefinition name="RO_ACCESS_REPORT" typeNum="61">
+    <annotation>
+      <documentation>
+        reference 13.1.2 and 16.1.30
+      </documentation>
+    </annotation>
+    <parameter repeat="0-N" type="TagReportData"/>
+    <parameter repeat="0-N" type="RFSurveyReportData"/>
+    <parameter repeat="0-N" type="Custom"/>
+  </messageDefinition>
+
+  <messageDefinition name="KEEPALIVE" typeNum="62">
+    <annotation>
+      <documentation>
+        reference 13.1.3 and 16.1.31
+      </documentation>
+    </annotation>
+  </messageDefinition>
+
+  <messageDefinition name="KEEPALIVE_ACK" typeNum="72">
+    <annotation>
+      <documentation>
+        reference 13.1.4 and 16.1.32
+      </documentation>
+    </annotation>
+  </messageDefinition>
+
+  <messageDefinition name="READER_EVENT_NOTIFICATION" typeNum="63">
+    <annotation>
+      <documentation>
+        reference 13.1.5 and 16.1.33
+      </documentation>
+    </annotation>
+    <parameter repeat="1"   type="ReaderEventNotificationData"/>
+  </messageDefinition>
+
+  <messageDefinition name="ENABLE_EVENTS_AND_REPORTS" typeNum="64">
+    <annotation>
+      <documentation>
+        reference 13.1.6 and 16.1.34
+      </documentation>
+    </annotation>
+  </messageDefinition>
+
+  <parameterDefinition name="ROReportSpec" typeNum="237">
+    <annotation>
+      <documentation>
+        reference 13.2.1 and 16.2.7.1
+      </documentation>
+    </annotation>
+    <field     type="u8"    name="ROReportTrigger"
+                            enumeration="ROReportTriggerType"/>
+    <field     type="u16"   name="N"/>
+    <parameter repeat="1"   type="TagReportContentSelector"/>
+    <parameter repeat="0-N" type="Custom"/>
+  </parameterDefinition>
+
+  <enumerationDefinition name="ROReportTriggerType">
+    <annotation>
+      <documentation>
+        reference 13.2.1
+      </documentation>
+    </annotation>
+    <entry     value="0"    name="None"/>
+    <entry     value="1"    name="Upon_N_Tags_Or_End_Of_AISpec"/>
+    <entry     value="2"    name="Upon_N_Tags_Or_End_Of_ROSpec"/>
+  </enumerationDefinition>
+
+  <parameterDefinition name="TagReportContentSelector" typeNum="238">
+    <annotation>
+      <documentation>
+        reference 13.2.1.1 and 16.2.7.1.1
+      </documentation>
+    </annotation>
+    <field     type="u1"    name="EnableROSpecID"/>
+    <field     type="u1"    name="EnableSpecIndex"/>
+    <field     type="u1"    name="EnableInventoryParameterSpecID"/>
+    <field     type="u1"    name="EnableAntennaID"/>
+    <field     type="u1"    name="EnableChannelIndex"/>
+    <field     type="u1"    name="EnablePeakRSSI"/>
+    <field     type="u1"    name="EnableFirstSeenTimestamp"/>
+    <field     type="u1"    name="EnableLastSeenTimestamp"/>
+    <field     type="u1"    name="EnableTagSeenCount"/>
+    <field     type="u1"    name="EnableAccessSpecID"/>
+    <reserved  bitCount="6"/>
+    <choice    repeat="0-N" type="AirProtocolEPCMemorySelector"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="AccessReportSpec" typeNum="239">
+    <annotation>
+      <documentation>
+        reference 13.2.2 and 16.2.7.2
+      </documentation>
+    </annotation>
+    <field     type="u8"    name="AccessReportTrigger"
+                            enumeration="AccessReportTriggerType"/>
+  </parameterDefinition>
+
+  <enumerationDefinition name="AccessReportTriggerType">
+    <annotation>
+      <documentation>
+        reference 13.2.2
+      </documentation>
+    </annotation>
+    <entry     value="0"    name="Whenever_ROReport_Is_Generated"/>
+    <entry     value="1"    name="End_Of_AccessSpec"/>
+  </enumerationDefinition>
+
+  <parameterDefinition name="TagReportData" typeNum="240">
+    <annotation>
+      <documentation>
+        reference 13.2.3 and 16.2.7.3
+      </documentation>
+    </annotation>
+    <choice    repeat="1"   type="EPCParameter"/>
+    <parameter repeat="0-1" type="ROSpecID"/>
+    <parameter repeat="0-1" type="SpecIndex"/>
+    <parameter repeat="0-1" type="InventoryParameterSpecID"/>
+    <parameter repeat="0-1" type="AntennaID"/>
+    <parameter repeat="0-1" type="PeakRSSI"/>
+    <parameter repeat="0-1" type="ChannelIndex"/>
+    <parameter repeat="0-1" type="FirstSeenTimestampUTC"/>
+    <parameter repeat="0-1" type="FirstSeenTimestampUptime"/>
+    <parameter repeat="0-1" type="LastSeenTimestampUTC"/>
+    <parameter repeat="0-1" type="LastSeenTimestampUptime"/>
+    <parameter repeat="0-1" type="TagSeenCount"/>
+    <choice    repeat="0-N" type="AirProtocolTagData"/>
+    <parameter repeat="0-1" type="AccessSpecID"/>
+    <choice    repeat="0-N" type="AccessCommandOpSpecResult"/>
+    <parameter repeat="0-N" type="Custom"/>
+  </parameterDefinition>
+
+  <choiceDefinition name="AccessCommandOpSpecResult">
+    <parameter type="C1G2ReadOpSpecResult"/>
+    <parameter type="C1G2WriteOpSpecResult"/>
+    <parameter type="C1G2KillOpSpecResult"/>
+    <parameter type="C1G2LockOpSpecResult"/>
+    <parameter type="C1G2BlockEraseOpSpecResult"/>
+    <parameter type="C1G2BlockWriteOpSpecResult"/>
+  </choiceDefinition>
+
+  <choiceDefinition name="EPCParameter">
+    <parameter type="EPCData"/>
+    <parameter type="EPC_96"/>
+  </choiceDefinition>
+
+  <parameterDefinition name="EPCData" typeNum="241">
+    <annotation>
+      <documentation>
+        reference 13.2.3.2 and 16.2.7.3.1
+      </documentation>
+    </annotation>
+    <field     type="u1v"   name="EPC" format="Hex"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="EPC_96" typeNum="13">
+    <annotation>
+      <documentation>
+        reference 13.2.3.2 and 16.2.7.3.2
+      </documentation>
+    </annotation>
+    <field     type="u96"   name="EPC" format="Hex"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="ROSpecID" typeNum="9">
+    <annotation>
+      <documentation>
+        reference 13.2.3.3 and 16.2.7.3.3
+      </documentation>
+    </annotation>
+    <field     type="u32"   name="ROSpecID"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="SpecIndex" typeNum="14">
+    <annotation>
+      <documentation>
+        reference 13.2.3.4 and 16.2.7.3.4
+      </documentation>
+    </annotation>
+    <field     type="u16"   name="SpecIndex"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="InventoryParameterSpecID" typeNum="10">
+    <annotation>
+      <documentation>
+        reference 13.2.3.5 and 16.2.7.3.5
+      </documentation>
+    </annotation>
+    <field     type="u16"   name="InventoryParameterSpecID"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="AntennaID" typeNum="1">
+    <annotation>
+      <documentation>
+        reference 13.2.3.6 and 16.2.7.3.6
+      </documentation>
+    </annotation>
+    <field     type="u16"   name="AntennaID"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="PeakRSSI" typeNum="6">
+    <annotation>
+      <documentation>
+        reference 13.2.3.7 and 16.2.7.3.7
+      </documentation>
+    </annotation>
+    <field     type="s8"    name="PeakRSSI"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="ChannelIndex" typeNum="7">
+    <annotation>
+      <documentation>
+        reference 13.2.3.8 and 16.2.7.3.8
+      </documentation>
+    </annotation>
+    <field     type="u16"   name="ChannelIndex"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="FirstSeenTimestampUTC" typeNum="2">
+    <annotation>
+      <documentation>
+        reference 13.2.3.9 and 16.2.7.3.9
+      </documentation>
+    </annotation>
+    <field     type="u64"   name="Microseconds" format="Datetime"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="FirstSeenTimestampUptime" typeNum="3">
+    <annotation>
+      <documentation>
+        reference 13.2.3.10 and 16.2.7.3.10
+      </documentation>
+    </annotation>
+    <field     type="u64"   name="Microseconds" format="Datetime"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="LastSeenTimestampUTC" typeNum="4">
+    <annotation>
+      <documentation>
+        reference 13.2.3.11 and 16.2.7.3.11
+      </documentation>
+    </annotation>
+    <field     type="u64"   name="Microseconds"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="LastSeenTimestampUptime" typeNum="5">
+    <annotation>
+      <documentation>
+        reference 13.2.3.12 and 16.2.7.3.12
+      </documentation>
+    </annotation>
+    <field     type="u64"   name="Microseconds"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="TagSeenCount" typeNum="8">
+    <annotation>
+      <documentation>
+        reference 13.2.3.13 and 16.2.7.3.13
+      </documentation>
+    </annotation>
+    <field     type="u16"   name="TagCount"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="AccessSpecID" typeNum="16">
+    <annotation>
+      <documentation>
+        reference 13.2.3.15 and 16.2.7.3.15
+      </documentation>
+    </annotation>
+    <field     type="u32"   name="AccessSpecID"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="RFSurveyReportData" typeNum="242">
+    <annotation>
+      <documentation>
+        reference 13.2.4 and 16.2.7.4
+      </documentation>
+    </annotation>
+    <parameter repeat="0-1" type="ROSpecID"/>
+    <parameter repeat="0-1" type="SpecIndex"/>
+    <parameter repeat="1-N" type="FrequencyRSSILevelEntry"/>
+    <parameter repeat="0-N" type="Custom"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="FrequencyRSSILevelEntry" typeNum="243">
+    <annotation>
+      <documentation>
+        reference 13.2.4.1 and 16.2.7.4.1
+      </documentation>
+    </annotation>
+    <field     type="u32"   name="Frequency"/>
+    <field     type="u32"   name="Bandwidth"/>
+    <field     type="s8"    name="AverageRSSI"/>
+    <field     type="s8"    name="PeakRSSI"/>
+    <choice    repeat="1"   type="Timestamp"/>
+  </parameterDefinition>
+
+  <choiceDefinition name="Timestamp">
+    <parameter type="UTCTimestamp"/>
+    <parameter type="Uptime"/>
+  </choiceDefinition>
+
+  <parameterDefinition name="ReaderEventNotificationSpec" typeNum="244">
+    <annotation>
+      <documentation>
+        reference 13.2.5 and 16.2.7.5
+      </documentation>
+    </annotation>
+    <parameter repeat="1-N" type="EventNotificationState"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="EventNotificationState" typeNum="245">
+    <annotation>
+      <documentation>
+        reference 13.2.5.1 and 16.2.7.5.1
+      </documentation>
+    </annotation>
+    <field     type="u16"   name="EventType"
+                            enumeration="NotificationEventType"/>
+    <field     type="u1"    name="NotificationState"/>
+    <reserved  bitCount="7"/>
+  </parameterDefinition>
+
+  <enumerationDefinition name="NotificationEventType">
+    <annotation>
+      <documentation>
+        reference 13.2.5.1
+      </documentation>
+    </annotation>
+    <entry     value="0"    name="Upon_Hopping_To_Next_Channel"/>
+    <entry     value="1"    name="GPI_Event"/>
+    <entry     value="2"    name="ROSpec_Event"/>
+    <entry     value="3"    name="Report_Buffer_Fill_Warning"/>
+    <entry     value="4"    name="Reader_Exception_Event"/>
+    <entry     value="5"    name="RFSurvey_Event"/>
+    <entry     value="6"    name="AISpec_Event"/>
+    <entry     value="7"    name="AISpec_Event_With_Details"/>
+    <entry     value="8"    name="Antenna_Event"/>
+  </enumerationDefinition>
+
+  <parameterDefinition name="ReaderEventNotificationData" typeNum="246">
+    <annotation>
+      <documentation>
+        reference 13.2.6 and 16.2.7.6
+      </documentation>
+    </annotation>
+    <choice    repeat="1"   type="Timestamp"/>
+    <parameter repeat="0-1" type="HoppingEvent"/>
+    <parameter repeat="0-1" type="GPIEvent"/>
+    <parameter repeat="0-1" type="ROSpecEvent"/>
+    <parameter repeat="0-1" type="ReportBufferLevelWarningEvent"/>
+    <parameter repeat="0-1" type="ReportBufferOverflowErrorEvent"/>
+    <parameter repeat="0-1" type="ReaderExceptionEvent"/>
+    <parameter repeat="0-1" type="RFSurveyEvent"/>
+    <parameter repeat="0-1" type="AISpecEvent"/>
+    <parameter repeat="0-1" type="AntennaEvent"/>
+    <parameter repeat="0-1" type="ConnectionAttemptEvent"/>
+    <parameter repeat="0-1" type="ConnectionCloseEvent"/>
+    <parameter repeat="0-N" type="Custom"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="HoppingEvent" typeNum="247">
+    <annotation>
+      <documentation>
+        reference 13.2.6.2 and 16.2.7.6.1
+      </documentation>
+    </annotation>
+    <field     type="u16"   name="HopTableID"/>
+    <field     type="u16"   name="NextChannelIndex"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="GPIEvent" typeNum="248">
+    <annotation>
+      <documentation>
+        reference 13.2.6.3 and 16.2.7.6.2
+      </documentation>
+    </annotation>
+    <field     type="u16"   name="GPIPortNumber"/>
+    <field     type="u1"    name="GPIEvent"/>
+    <reserved  bitCount="7"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="ROSpecEvent" typeNum="249">
+    <annotation>
+      <documentation>
+        reference 13.2.6.4 and 16.2.7.6.3
+      </documentation>
+    </annotation>
+    <field     type="u8"    name="EventType"
+                            enumeration="ROSpecEventType"/>
+    <field     type="u32"   name="ROSpecID"/>
+    <field     type="u32"   name="PreemptingROSpecID"/>
+  </parameterDefinition>
+
+  <enumerationDefinition name="ROSpecEventType">
+    <annotation>
+      <documentation>
+        reference 13.2.6.4
+      </documentation>
+    </annotation>
+    <entry     value="0"    name="Start_Of_ROSpec"/>
+    <entry     value="1"    name="End_Of_ROSpec"/>
+    <entry     value="2"    name="Preemption_Of_ROSpec"/>
+  </enumerationDefinition>
+
+  <parameterDefinition name="ReportBufferLevelWarningEvent" typeNum="250">
+    <annotation>
+      <documentation>
+        reference 13.2.6.5 and 16.2.7.6.4
+      </documentation>
+    </annotation>
+    <field     type="u8"    name="ReportBufferPercentageFull"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="ReportBufferOverflowErrorEvent" typeNum="251">
+    <annotation>
+      <documentation>
+        reference 13.2.6.6 and 16.2.7.6.5
+      </documentation>
+    </annotation>
+  </parameterDefinition>
+
+  <parameterDefinition name="ReaderExceptionEvent" typeNum="252">
+    <annotation>
+      <documentation>
+        reference 13.2.6.7 and 16.2.7.6.6
+      </documentation>
+    </annotation>
+    <field     type="utf8v" name="Message" format="UTF8"/>
+    <parameter repeat="0-1" type="ROSpecID"/>
+    <parameter repeat="0-1" type="SpecIndex"/>
+    <parameter repeat="0-1" type="InventoryParameterSpecID"/>
+    <parameter repeat="0-1" type="AntennaID"/>
+    <parameter repeat="0-1" type="AccessSpecID"/>
+    <parameter repeat="0-1" type="OpSpecID"/>
+    <parameter repeat="0-N" type="Custom"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="OpSpecID" typeNum="17">
+    <annotation>
+      <documentation>
+        reference 13.2.6.7.1 and 16.2.7.6.6.1
+      </documentation>
+    </annotation>
+    <field     type="u16"   name="OpSpecID"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="RFSurveyEvent" typeNum="253">
+    <annotation>
+      <documentation>
+        reference 13.2.6.8 and 16.2.7.6.7
+      </documentation>
+    </annotation>
+    <field     type="u8"    name="EventType"
+                            enumeration="RFSurveyEventType"/>
+    <field     type="u32"   name="ROSpecID"/>
+    <field     type="u16"   name="SpecIndex"/>
+  </parameterDefinition>
+
+  <enumerationDefinition name="RFSurveyEventType">
+    <annotation>
+      <documentation>
+        reference 13.2.6.8
+      </documentation>
+    </annotation>
+    <entry     value="0"    name="Start_Of_RFSurvey"/>
+    <entry     value="1"    name="End_Of_RFSurvey"/>
+  </enumerationDefinition>
+
+  <parameterDefinition name="AISpecEvent" typeNum="254">
+    <annotation>
+      <documentation>
+        reference 13.2.6.9 and 16.2.7.6.8
+      </documentation>
+    </annotation>
+    <field     type="u8"    name="EventType"
+                            enumeration="AISpecEventType"/>
+    <field     type="u32"   name="ROSpecID"/>
+    <field     type="u16"   name="SpecIndex"/>
+    <choice    repeat="0-1" type="AirProtocolSingulationDetails"/>
+  </parameterDefinition>
+
+  <enumerationDefinition name="AISpecEventType">
+    <annotation>
+      <documentation>
+        reference 13.2.6.9
+      </documentation>
+    </annotation>
+    <entry     value="0"    name="End_Of_AISpec"/>
+  </enumerationDefinition>
+
+  <parameterDefinition name="AntennaEvent" typeNum="255">
+    <annotation>
+      <documentation>
+        reference 13.2.6.10 and 16.2.7.6.9
+      </documentation>
+    </annotation>
+    <field     type="u8"    name="EventType"
+                            enumeration="AntennaEventType"/>
+    <field     type="u16"   name="AntennaID"/>
+  </parameterDefinition>
+
+  <enumerationDefinition name="AntennaEventType">
+    <annotation>
+      <documentation>
+        reference 13.2.6.10
+      </documentation>
+    </annotation>
+    <entry     value="0"    name="Antenna_Disconnected"/>
+    <entry     value="1"    name="Antenna_Connected"/>
+  </enumerationDefinition>
+
+  <parameterDefinition name="ConnectionAttemptEvent" typeNum="256">
+    <annotation>
+      <documentation>
+        reference 13.2.6.11 and 16.2.7.6.10
+      </documentation>
+    </annotation>
+    <field     type="u16"   name="Status"
+                            enumeration="ConnectionAttemptStatusType"/>
+  </parameterDefinition>
+
+  <enumerationDefinition name="ConnectionAttemptStatusType">
+    <annotation>
+      <documentation>
+        reference 13.2.6.11
+      </documentation>
+    </annotation>
+    <entry     value="0"    name="Success"/>
+    <entry     value="1"    name="Failed_A_Reader_Initiated_Connection_Already_Exists"/>
+    <entry     value="2"    name="Failed_A_Client_Initiated_Connection_Already_Exists"/>
+    <entry     value="3"    name="Failed_Reason_Other_Than_A_Connection_Already_Exists"/>
+    <entry     value="4"    name="Another_Connection_Attempted"/>
+  </enumerationDefinition>
+
+  <parameterDefinition name="ConnectionCloseEvent" typeNum="257">
+    <annotation>
+      <documentation>
+        reference 13.2.6.12 and 16.2.7.6.11
+      </documentation>
+    </annotation>
+  </parameterDefinition>
+
+  <messageDefinition name="ERROR_MESSAGE" typeNum="100">
+    <annotation>
+      <documentation>
+        reference 14.1.1 and 16.1.35
+      </documentation>
+    </annotation>
+    <parameter repeat="1"   type="LLRPStatus"/>
+  </messageDefinition>
+
+  <enumerationDefinition name="StatusCode">
+    <annotation>
+      <documentation>
+        reference 14.2.1
+      </documentation>
+    </annotation>
+    <entry     value="0"    name="M_Success"/>
+    <entry     value="100"  name="M_ParameterError"/>
+    <entry     value="101"  name="M_FieldError"/>
+    <entry     value="102"  name="M_UnexpectedParameter"/>
+    <entry     value="103"  name="M_MissingParameter"/>
+    <entry     value="104"  name="M_DuplicateParameter"/>
+    <entry     value="105"  name="M_OverflowParameter"/>
+    <entry     value="106"  name="M_OverflowField"/>
+    <entry     value="107"  name="M_UnknownParameter"/>
+    <entry     value="108"  name="M_UnknownField"/>
+    <entry     value="109"  name="M_UnsupportedMessage"/>
+    <entry     value="110"  name="M_UnsupportedVersion"/>
+    <entry     value="111"  name="M_UnsupportedParameter"/>
+    <entry     value="200"  name="P_ParameterError"/>
+    <entry     value="201"  name="P_FieldError"/>
+    <entry     value="202"  name="P_UnexpectedParameter"/>
+    <entry     value="203"  name="P_MissingParameter"/>
+    <entry     value="204"  name="P_DuplicateParameter"/>
+    <entry     value="205"  name="P_OverflowParameter"/>
+    <entry     value="206"  name="P_OverflowField"/>
+    <entry     value="207"  name="P_UnknownParameter"/>
+    <entry     value="208"  name="P_UnknownField"/>
+    <entry     value="209"  name="P_UnsupportedParameter"/>
+    <entry     value="300"  name="A_Invalid"/>
+    <entry     value="301"  name="A_OutOfRange"/>
+    <entry     value="401"  name="R_DeviceError"/>
+  </enumerationDefinition>
+
+  <parameterDefinition name="LLRPStatus" typeNum="287">
+    <annotation>
+      <documentation>
+        reference 14.2.2 and 16.2.8.1
+      </documentation>
+    </annotation>
+    <field     type="u16"   name="StatusCode"
+                            enumeration="StatusCode"/>
+    <field     type="utf8v" name="ErrorDescription" format="UTF8"/>
+    <parameter repeat="0-1" type="FieldError"/>
+    <parameter repeat="0-1" type="ParameterError"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="FieldError" typeNum="288">
+    <annotation>
+      <documentation>
+        reference 14.2.2.1 and 16.2.8.1.1
+      </documentation>
+    </annotation>
+    <field     type="u16"   name="FieldNum"/>
+    <field     type="u16"   name="ErrorCode"
+                            enumeration="StatusCode"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="ParameterError" typeNum="289">
+    <annotation>
+      <documentation>
+        reference 14.2.2.2 and 16.2.8.1.2
+      </documentation>
+    </annotation>
+    <field     type="u16"   name="ParameterType"/>
+    <field     type="u16"   name="ErrorCode"
+                            enumeration="StatusCode"/>
+    <parameter repeat="0-1" type="FieldError"/>
+    <parameter repeat="0-1" type="ParameterError"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="C1G2LLRPCapabilities" typeNum="327">
+    <annotation>
+      <documentation>
+        reference 15.2.1.1.1 and 16.3.1.1.1
+      </documentation>
+    </annotation>
+    <field     type="u1"    name="CanSupportBlockErase"/>
+    <field     type="u1"    name="CanSupportBlockWrite"/>
+    <reserved  bitCount="6"/>
+    <field     type="u16"   name="MaxNumSelectFiltersPerQuery"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="C1G2UHFRFModeTable" typeNum="328">
+    <annotation>
+      <documentation>
+        reference 15.2.1.1.2 and 16.3.1.1.2
+      </documentation>
+    </annotation>
+    <parameter repeat="1-N" type="C1G2UHFRFModeTableEntry"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="C1G2UHFRFModeTableEntry" typeNum="329">
+    <annotation>
+      <documentation>
+        reference 15.2.1.1.2.1 and 16.3.1.1.2.1
+      </documentation>
+    </annotation>
+    <field     type="u32"   name="ModeIdentifier"/>
+    <field     type="u1"    name="DRValue"
+                            enumeration="C1G2DRValue"/>
+    <field     type="u1"    name="EPCHAGTCConformance"/>
+    <reserved  bitCount="6"/>
+    <field     type="u8"    name="MValue"
+                            enumeration="C1G2MValue"/>
+    <field     type="u8"    name="ForwardLinkModulation"
+                            enumeration="C1G2ForwardLinkModulation"/>
+    <field     type="u8"    name="SpectralMaskIndicator"
+                            enumeration="C1G2SpectralMaskIndicator"/>
+    <field     type="u32"   name="BDRValue"/>
+    <field     type="u32"   name="PIEValue"/>
+    <field     type="u32"   name="MinTariValue"/>
+    <field     type="u32"   name="MaxTariValue"/>
+    <field     type="u32"   name="StepTariValue"/>
+  </parameterDefinition>
+
+  <enumerationDefinition name="C1G2DRValue">
+    <annotation>
+      <documentation>
+        reference 15.2.1.1.2.1
+      </documentation>
+    </annotation>
+    <entry     value="0"    name="DRV_8"/>
+    <entry     value="1"    name="DRV_64_3"/>
+  </enumerationDefinition>
+
+  <enumerationDefinition name="C1G2MValue">
+    <annotation>
+      <documentation>
+        reference 15.2.1.1.2.1
+      </documentation>
+    </annotation>
+    <entry     value="0"    name="MV_FM0"/>
+    <entry     value="1"    name="MV_2"/>
+    <entry     value="2"    name="MV_4"/>
+    <entry     value="3"    name="MV_8"/>
+  </enumerationDefinition>
+
+  <enumerationDefinition name="C1G2ForwardLinkModulation">
+    <annotation>
+      <documentation>
+        reference 15.2.1.1.2.1
+      </documentation>
+    </annotation>
+    <entry     value="0"    name="PR_ASK"/>
+    <entry     value="1"    name="SSB_ASK"/>
+    <entry     value="2"    name="DSB_ASK"/>
+  </enumerationDefinition>
+
+  <enumerationDefinition name="C1G2SpectralMaskIndicator">
+    <annotation>
+      <documentation>
+        reference 15.2.1.1.2.1
+      </documentation>
+    </annotation>
+    <entry     value="0"    name="Unknown"/>
+    <entry     value="1"    name="SI"/>
+    <entry     value="2"    name="MI"/>
+    <entry     value="3"    name="DI"/>
+  </enumerationDefinition>
+
+  <parameterDefinition name="C1G2InventoryCommand" typeNum="330">
+    <annotation>
+      <documentation>
+        reference 15.2.1.2.1 and 16.3.1.2.1
+      </documentation>
+    </annotation>
+    <field     type="u1"    name="TagInventoryStateAware"/>
+    <reserved  bitCount="7"/>
+    <parameter repeat="0-N" type="C1G2Filter"/>
+    <parameter repeat="0-1" type="C1G2RFControl"/>
+    <parameter repeat="0-1" type="C1G2SingulationControl"/>
+    <parameter repeat="0-N" type="Custom"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="C1G2Filter" typeNum="331">
+    <annotation>
+      <documentation>
+        reference 15.2.1.2.1.1 and 16.3.1.2.1.1
+      </documentation>
+    </annotation>
+    <field     type="u2"    name="T"
+                            enumeration="C1G2TruncateAction"/>
+    <reserved  bitCount="6"/>
+    <parameter repeat="1"   type="C1G2TagInventoryMask"/>
+    <parameter repeat="0-1" type="C1G2TagInventoryStateAwareFilterAction"/>
+    <parameter repeat="0-1" type="C1G2TagInventoryStateUnawareFilterAction"/>
+  </parameterDefinition>
+
+  <enumerationDefinition name="C1G2TruncateAction">
+    <annotation>
+      <documentation>
+        reference 15.2.1.2.1.1
+      </documentation>
+    </annotation>
+    <entry     value="0"    name="Unspecified"/>
+    <entry     value="1"    name="Do_Not_Truncate"/>
+    <entry     value="2"    name="Truncate"/>
+  </enumerationDefinition>
+
+  <parameterDefinition name="C1G2TagInventoryMask" typeNum="332">
+    <annotation>
+      <documentation>
+        reference 15.2.1.2.1.1.1 and 16.3.1.2.1.1.1
+      </documentation>
+    </annotation>
+    <field     type="u2"    name="MB"/>
+    <reserved  bitCount="6"/>
+    <field     type="u16"   name="Pointer"/>
+    <field     type="u1v"   name="TagMask" format="Hex"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="C1G2TagInventoryStateAwareFilterAction" typeNum="333">
+    <annotation>
+      <documentation>
+        reference 15.2.1.2.1.1.2 and 16.3.1.2.1.1.2
+      </documentation>
+    </annotation>
+    <field     type="u8"    name="Target"
+                            enumeration="C1G2StateAwareTarget"/>
+    <field     type="u8"    name="Action"
+                            enumeration="C1G2StateAwareAction"/>
+  </parameterDefinition>
+
+  <enumerationDefinition name="C1G2StateAwareTarget">
+    <annotation>
+      <documentation>
+        reference 15.2.1.2.1.1.2
+      </documentation>
+    </annotation>
+    <entry     value="0"    name="SL"/>
+    <entry     value="1"    name="Inventoried_State_For_Session_S0"/>
+    <entry     value="2"    name="Inventoried_State_For_Session_S1"/>
+    <entry     value="3"    name="Inventoried_State_For_Session_S2"/>
+    <entry     value="4"    name="Inventoried_State_For_Session_S3"/>
+  </enumerationDefinition>
+
+  <enumerationDefinition name="C1G2StateAwareAction">
+    <annotation>
+      <documentation>
+        reference 15.2.1.2.1.1.2
+      </documentation>
+    </annotation>
+    <entry     value="0"    name="AssertSLOrA_DeassertSLOrB"/>
+    <entry     value="1"    name="AssertSLOrA_Noop"/>
+    <entry     value="2"    name="Noop_DeassertSLOrB"/>
+    <entry     value="3"    name="NegateSLOrABBA_Noop"/>
+    <entry     value="4"    name="DeassertSLOrB_AssertSLOrA"/>
+    <entry     value="5"    name="DeassertSLOrB_Noop"/>
+    <entry     value="6"    name="Noop_AssertSLOrA"/>
+    <entry     value="7"    name="Noop_NegateSLOrABBA"/>
+  </enumerationDefinition>
+
+  <parameterDefinition name="C1G2TagInventoryStateUnawareFilterAction" typeNum="334">
+    <annotation>
+      <documentation>
+        reference 15.2.1.2.1.1.3 and 16.3.1.2.1.1.3
+      </documentation>
+    </annotation>
+    <field     type="u8"    name="Action"
+                            enumeration="C1G2StateUnawareAction"/>
+  </parameterDefinition>
+
+  <enumerationDefinition name="C1G2StateUnawareAction">
+    <annotation>
+      <documentation>
+        reference 15.2.1.2.1.1.3
+      </documentation>
+    </annotation>
+    <entry     value="0"    name="Select_Unselect"/>
+    <entry     value="1"    name="Select_DoNothing"/>
+    <entry     value="2"    name="DoNothing_Unselect"/>
+    <entry     value="3"    name="Unselect_DoNothing"/>
+    <entry     value="4"    name="Unselect_Select"/>
+    <entry     value="5"    name="DoNothing_Select"/>
+  </enumerationDefinition>
+
+  <parameterDefinition name="C1G2RFControl" typeNum="335">
+    <annotation>
+      <documentation>
+        reference 15.2.1.2.1.2 and 16.3.1.2.1.2
+      </documentation>
+    </annotation>
+    <field     type="u16"   name="ModeIndex"/>
+    <field     type="u16"   name="Tari"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="C1G2SingulationControl" typeNum="336">
+    <annotation>
+      <documentation>
+        reference 15.2.1.2.1.3 and 16.3.1.2.1.3
+      </documentation>
+    </annotation>
+    <field     type="u2"    name="Session"/>
+    <reserved  bitCount="6"/>
+    <field     type="u16"   name="TagPopulation"/>
+    <field     type="u32"   name="TagTransitTime"/>
+    <parameter repeat="0-1" type="C1G2TagInventoryStateAwareSingulationAction"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="C1G2TagInventoryStateAwareSingulationAction" typeNum="337">
+    <annotation>
+      <documentation>
+        reference 15.2.1.2.1.3.1 and 16.3.1.2.1.3.1
+      </documentation>
+    </annotation>
+    <field     type="u1"    name="I"/>
+    <field     type="u1"    name="S"/>
+    <reserved  bitCount="6"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="C1G2TagSpec" typeNum="338">
+    <annotation>
+      <documentation>
+        reference 15.2.1.3.1 and 16.3.1.3.1
+      </documentation>
+    </annotation>
+    <parameter repeat="1"   type="C1G2TargetTag" name="TagPattern1"/>
+    <parameter repeat="0-1" type="C1G2TargetTag" name="TagPattern2"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="C1G2TargetTag" typeNum="339">
+    <annotation>
+      <documentation>
+        reference 15.2.1.3.1.1 and 16.3.1.3.1.1
+      </documentation>
+    </annotation>
+    <field     type="u2"    name="MB"/>
+    <field     type="u1"    name="Match"/>
+    <reserved  bitCount="5"/>
+    <field     type="u16"   name="Pointer"/>
+    <field     type="u1v"   name="TagMask" format="Hex"/>
+    <field     type="u1v"   name="TagData" format="Hex"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="C1G2Read" typeNum="341">
+    <annotation>
+      <documentation>
+        reference 15.2.1.3.2.1 and 16.3.1.3.2.1
+      </documentation>
+    </annotation>
+    <field     type="u16"   name="OpSpecID"/>
+    <field     type="u32"   name="AccessPassword"/>
+    <field     type="u2"    name="MB"/>
+    <reserved  bitCount="6"/>
+    <field     type="u16"   name="WordPointer"/>
+    <field     type="u16"   name="WordCount"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="C1G2Write" typeNum="342">
+    <annotation>
+      <documentation>
+        reference 15.2.1.3.2.2 and 16.3.1.3.2.2
+      </documentation>
+    </annotation>
+    <field     type="u16"   name="OpSpecID"/>
+    <field     type="u32"   name="AccessPassword"/>
+    <field     type="u2"    name="MB"/>
+    <reserved  bitCount="6"/>
+    <field     type="u16"   name="WordPointer"/>
+    <field     type="u16v"  name="WriteData" format="Hex"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="C1G2Kill" typeNum="343">
+    <annotation>
+      <documentation>
+        reference 15.2.1.3.2.3 and 16.3.1.3.2.3
+      </documentation>
+    </annotation>
+    <field     type="u16"   name="OpSpecID"/>
+    <field     type="u32"   name="KillPassword"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="C1G2Lock" typeNum="344">
+    <annotation>
+      <documentation>
+        reference 15.2.1.3.2.4 and 16.3.1.3.2.4
+      </documentation>
+    </annotation>
+    <field     type="u16"   name="OpSpecID"/>
+    <field     type="u32"   name="AccessPassword"/>
+    <parameter repeat="1-N" type="C1G2LockPayload"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="C1G2LockPayload" typeNum="345">
+    <annotation>
+      <documentation>
+        reference 15.2.1.3.2.4.1 and 16.3.1.3.2.4.1
+      </documentation>
+    </annotation>
+    <field     type="u8"    name="Privilege"
+                            enumeration="C1G2LockPrivilege"/>
+    <field     type="u8"    name="DataField"
+                            enumeration="C1G2LockDataField"/>
+  </parameterDefinition>
+
+  <enumerationDefinition name="C1G2LockPrivilege">
+    <annotation>
+      <documentation>
+        reference 15.2.1.3.2.4.1
+      </documentation>
+    </annotation>
+    <entry     value="0"    name="Read_Write"/>
+    <entry     value="1"    name="Perma_Lock"/>
+    <entry     value="2"    name="Perma_Unlock"/>
+    <entry     value="3"    name="Unlock"/>
+  </enumerationDefinition>
+
+  <enumerationDefinition name="C1G2LockDataField">
+    <annotation>
+      <documentation>
+        reference 15.2.1.3.2.4.1
+      </documentation>
+    </annotation>
+    <entry     value="0"    name="Kill_Password"/>
+    <entry     value="1"    name="Access_Password"/>
+    <entry     value="2"    name="EPC_Memory"/>
+    <entry     value="3"    name="TID_Memory"/>
+    <entry     value="4"    name="User_Memory"/>
+  </enumerationDefinition>
+
+  <parameterDefinition name="C1G2BlockErase" typeNum="346">
+    <annotation>
+      <documentation>
+        reference 15.2.1.3.2.5 and 16.3.1.3.2.5
+      </documentation>
+    </annotation>
+    <field     type="u16"   name="OpSpecID"/>
+    <field     type="u32"   name="AccessPassword"/>
+    <field     type="u2"    name="MB"/>
+    <reserved  bitCount="6"/>
+    <field     type="u16"   name="WordPointer"/>
+    <field     type="u16"   name="WordCount"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="C1G2BlockWrite" typeNum="347">
+    <annotation>
+      <documentation>
+        reference 15.2.1.3.2.6 and 16.3.1.3.2.6
+      </documentation>
+    </annotation>
+    <field     type="u16"   name="OpSpecID"/>
+    <field     type="u32"   name="AccessPassword"/>
+    <field     type="u2"    name="MB"/>
+    <reserved  bitCount="6"/>
+    <field     type="u16"   name="WordPointer"/>
+    <field     type="u16v"  name="WriteData" format="Hex"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="C1G2EPCMemorySelector" typeNum="348">
+    <annotation>
+      <documentation>
+        reference 15.2.1.5.1 and 16.3.1.5.1
+      </documentation>
+    </annotation>
+    <field     type="u1"    name="EnableCRC"/>
+    <field     type="u1"    name="EnablePCBits"/>
+    <reserved  bitCount="6"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="C1G2_PC" typeNum="12">
+    <annotation>
+      <documentation>
+        reference 15.2.1.5.2 and 16.3.1.5.2
+      </documentation>
+    </annotation>
+    <field     type="u16"   name="PC_Bits"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="C1G2_CRC" typeNum="11">
+    <annotation>
+      <documentation>
+        reference 15.2.1.5.3 and 16.3.1.5.3
+      </documentation>
+    </annotation>
+    <field     type="u16"   name="CRC"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="C1G2SingulationDetails" typeNum="18">
+    <annotation>
+      <documentation>
+        reference 15.2.1.5.4 and 16.3.1.5.4
+      </documentation>
+    </annotation>
+    <field     type="u16"   name="NumCollisionSlots"/>
+    <field     type="u16"   name="NumEmptySlots"/>
+  </parameterDefinition>
+
+  <parameterDefinition name="C1G2ReadOpSpecResult" typeNum="349">
+    <annotation>
+      <documentation>
+        reference 15.2.1.5.5.1 and 16.3.1.5.5.1
+      </documentation>
+    </annotation>
+    <field     type="u8"    name="Result"
+                            enumeration="C1G2ReadResultType"/>
+    <field     type="u16"   name="OpSpecID"/>
+    <field     type="u16v"  name="ReadData" format="Hex"/>
+  </parameterDefinition>
+
+  <enumerationDefinition name="C1G2ReadResultType">
+    <annotation>
+      <documentation>
+        reference 15.2.1.5.5.1
+      </documentation>
+    </annotation>
+    <entry     value="0"    name="Success"/>
+    <entry     value="1"    name="Nonspecific_Tag_Error"/>
+    <entry     value="2"    name="No_Response_From_Tag"/>
+    <entry     value="3"    name="Nonspecific_Reader_Error"/>
+  </enumerationDefinition>
+
+  <parameterDefinition name="C1G2WriteOpSpecResult" typeNum="350">
+    <annotation>
+      <documentation>
+        reference 15.2.1.5.5.2 and 16.3.1.5.5.2
+      </documentation>
+    </annotation>
+    <field     type="u8"    name="Result"
+                            enumeration="C1G2WriteResultType"/>
+    <field     type="u16"   name="OpSpecID"/>
+    <field     type="u16"   name="NumWordsWritten"/>
+  </parameterDefinition>
+
+  <enumerationDefinition name="C1G2WriteResultType">
+    <annotation>
+      <documentation>
+        reference 15.2.1.5.5.2
+      </documentation>
+    </annotation>
+    <entry     value="0"    name="Success"/>
+    <entry     value="1"    name="Tag_Memory_Overrun_Error"/>
+    <entry     value="2"    name="Tag_Memory_Locked_Error"/>
+    <entry     value="3"    name="Insufficient_Power"/>
+    <entry     value="4"    name="Nonspecific_Tag_Error"/>
+    <entry     value="5"    name="No_Response_From_Tag"/>
+    <entry     value="6"    name="Nonspecific_Reader_Error"/>
+  </enumerationDefinition>
+
+  <parameterDefinition name="C1G2KillOpSpecResult" typeNum="351">
+    <annotation>
+      <documentation>
+        reference 15.2.1.5.5.3 and 16.3.1.5.5.3
+      </documentation>
+    </annotation>
+    <field     type="u8"    name="Result"
+                            enumeration="C1G2KillResultType"/>
+    <field     type="u16"   name="OpSpecID"/>
+  </parameterDefinition>
+
+  <enumerationDefinition name="C1G2KillResultType">
+    <annotation>
+      <documentation>
+        reference 15.2.1.5.5.3
+      </documentation>
+    </annotation>
+    <entry     value="0"    name="Success"/>
+    <entry     value="1"    name="Zero_Kill_Password_Error"/>
+    <entry     value="2"    name="Insufficient_Power"/>
+    <entry     value="3"    name="Nonspecific_Tag_Error"/>
+    <entry     value="4"    name="No_Response_From_Tag"/>
+    <entry     value="5"    name="Nonspecific_Reader_Error"/>
+  </enumerationDefinition>
+
+  <parameterDefinition name="C1G2LockOpSpecResult" typeNum="352">
+    <annotation>
+      <documentation>
+        reference 15.2.1.5.5.4 and 16.3.1.5.5.4
+      </documentation>
+    </annotation>
+    <field     type="u8"    name="Result"
+                            enumeration="C1G2LockResultType"/>
+    <field     type="u16"   name="OpSpecID"/>
+  </parameterDefinition>
+
+  <enumerationDefinition name="C1G2LockResultType">
+    <annotation>
+      <documentation>
+        reference 15.2.1.5.5.4
+      </documentation>
+    </annotation>
+    <entry     value="0"    name="Success"/>
+    <entry     value="1"    name="Insufficient_Power"/>
+    <entry     value="2"    name="Nonspecific_Tag_Error"/>
+    <entry     value="3"    name="No_Response_From_Tag"/>
+    <entry     value="4"    name="Nonspecific_Reader_Error"/>
+  </enumerationDefinition>
+
+  <parameterDefinition name="C1G2BlockEraseOpSpecResult" typeNum="353">
+    <annotation>
+      <documentation>
+        reference 15.2.1.5.5.5 and 16.3.1.5.5.5
+      </documentation>
+    </annotation>
+    <field     type="u8"    name="Result"
+                            enumeration="C1G2BlockEraseResultType"/>
+    <field     type="u16"   name="OpSpecID"/>
+  </parameterDefinition>
+
+  <enumerationDefinition name="C1G2BlockEraseResultType">
+    <annotation>
+      <documentation>
+        reference 15.2.1.5.5.5
+      </documentation>
+    </annotation>
+    <entry     value="0"    name="Success"/>
+    <entry     value="1"    name="Tag_Memory_Overrun_Error"/>
+    <entry     value="2"    name="Tag_Memory_Locked_Error"/>
+    <entry     value="3"    name="Insufficient_Power"/>
+    <entry     value="4"    name="Nonspecific_Tag_Error"/>
+    <entry     value="5"    name="No_Response_From_Tag"/>
+    <entry     value="6"    name="Nonspecific_Reader_Error"/>
+  </enumerationDefinition>
+
+  <parameterDefinition name="C1G2BlockWriteOpSpecResult" typeNum="354">
+    <annotation>
+      <documentation>
+        reference 15.2.1.5.5.6 and 16.3.1.5.5.6
+      </documentation>
+    </annotation>
+    <field     type="u8"    name="Result"
+                            enumeration="C1G2BlockWriteResultType"/>
+    <field     type="u16"   name="OpSpecID"/>
+    <field     type="u16"   name="NumWordsWritten"/>
+  </parameterDefinition>
+
+  <enumerationDefinition name="C1G2BlockWriteResultType">
+    <annotation>
+      <documentation>
+        reference 15.2.1.5.5.6
+      </documentation>
+    </annotation>
+    <entry     value="0"    name="Success"/>
+    <entry     value="1"    name="Tag_Memory_Overrun_Error"/>
+    <entry     value="2"    name="Tag_Memory_Locked_Error"/>
+    <entry     value="3"    name="Insufficient_Power"/>
+    <entry     value="4"    name="Nonspecific_Tag_Error"/>
+    <entry     value="5"    name="No_Response_From_Tag"/>
+    <entry     value="6"    name="Nonspecific_Reader_Error"/>
+  </enumerationDefinition>
+
+  <choiceDefinition name="AirProtocolLLRPCapabilities">
+    <parameter type="C1G2LLRPCapabilities"/>
+  </choiceDefinition>
+
+  <choiceDefinition name="AirProtocolUHFRFModeTable">
+    <parameter type="C1G2UHFRFModeTable"/>
+  </choiceDefinition>
+
+  <choiceDefinition name="AirProtocolInventoryCommandSettings">
+    <parameter type="C1G2InventoryCommand"/>
+  </choiceDefinition>
+
+  <choiceDefinition name="AirProtocolTagSpec">
+    <parameter type="C1G2TagSpec"/>
+  </choiceDefinition>
+
+  <choiceDefinition name="AirProtocolEPCMemorySelector">
+    <parameter type="C1G2EPCMemorySelector"/>
+  </choiceDefinition>
+
+  <choiceDefinition name="AirProtocolTagData">
+    <parameter type="C1G2_PC"/>
+    <parameter type="C1G2_CRC"/>
+  </choiceDefinition>
+
+  <choiceDefinition name="AirProtocolSingulationDetails">
+    <parameter type="C1G2SingulationDetails"/>
+  </choiceDefinition>
+
+</llrpdef>

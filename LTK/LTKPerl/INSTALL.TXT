@@ -1,0 +1,134 @@
+Install the LLRP binary schema
+------------------------------
+
+To use LLRP-XML/Perl, checkout the Perl project from llrp-toolkit.
+
+From Linux or Cygwin (under Windows) the following command works:
+
+   cvs -d:pserver:anonymous@llrp-toolkit.cvs.sourceforge.net:/cvsroot/llrp-toolkit login
+
+[simply hit ENTER when prompted for the password]
+ 
+   cvs -z3 -d:pserver:anonymous@llrp-toolkit.cvs.sourceforge.net:/cvsroot/llrp-toolkit co -P LTK
+
+Copy Definitions/Core/llrp-1x0-def.xml to LTKPerl/RFID/LLRP.
+RFID::LLRP::Schema needs to be able to find the binary schema
+somewhere, and RFID/LLRP seemed like the best place.
+
+
+Install LibXML and CPAN modules on Linux
+----------------------------------------
+
+The LLRP-XML/Perl document-oriented API is heavily dependent
+upon the Gnome project's LibXML.
+
+For Linux, use your favorite package manager and/or CPAN to
+install it and any necessary Perl modules. I will show here
+instructions for the Linux variant I use, but you will need
+to massage these for the distribution you use (additional
+instructions are welcome contributions).
+
+The necessary Perl modules are (and command to install on
+Ubuntu Feisty Desktop):
+	TimeDate
+		sudo apt-get install libtimedate-perl
+	Data::HexDump
+		cpan -i Data::HexDump
+	XML::LibXML
+		sudo apt-get install libxml-libxml-perl
+	XML::LibXSLT
+		sudo apt-get install libxml-libxslt-perl
+	Clone
+		sudo apt-get install libclone-perl
+
+	(For the examples only)
+	Text::Template
+		sudo apt-get install libtext-template-perl
+
+After installing all of the necessary modules, cd to the
+Perl/examples directory and run
+
+	./inventory_example.pl -n=reader-xx-yy-zz
+
+where 'reader-xx-yy-zz' is replaced with the DNS name or
+IP address of your reader
+
+Also available is
+
+	./simple_encode_decode.pl
+
+For Windows, the following worked for me; your mileage may vary.
+
+Windows Install Notes for LLRP-XML/Perl
+---------------------------------------
+
+I tried the Windows setup and was able to install LibXML.
+
+I expanded the contents of bin directory from .zip files for
+the different LibXML libraries to c:\tools\libxml
+
+these are:
+
+http://www.zlatkovic.com/pub/libxml/iconv-1.9.2.win32.zip
+http://www.zlatkovic.com/pub/libxml/zlib-1.2.3.win32.zip
+http://www.zlatkovic.com/pub/libxml/libxml2-2.6.27.win32.zip
+http://www.zlatkovic.com/pub/libxml/libxslt-1.1.19.win32.zip
+
+I just took the things appearing in \bin of each package and
+placed them in c:\tools\libxml:
+
+Directory of c:\tools\libxml
+ 
+05/29/2007  02:17p      <DIR>          .
+05/29/2007  02:17p      <DIR>          ..
+05/03/2006  09:57p             888,832 iconv.dll
+11/07/2006  12:18a             963,584 libxml2.dll
+11/07/2006  12:19a              10,240 xmlcatalog.exe
+11/07/2006  12:19a              36,352 xmllint.exe
+08/06/2005  04:15p              73,728 zlib1.dll
+
+Then I added c:\tools\libxml to my path in the System panel
+
+Rebooted.
+
+Verified that c:\tools\libxml is in the path by opening a
+DOS box and echo %PATH%
+
+You should be able to verify XML install at the cmd prompt
+by typing xmllint --version<ENTER>
+
+nb: If xmllint doesn't work, you probably didn't download
+and unzip all the necessary binaries, or you didn't set
+the path in System panel, or you didn't reboot after setting
+the path in System panel. Do not proceed with the rest of
+the instructions until you can get xmllint to run.
+
+Next, you should make sure you have a recent vintage of
+ActiveState Perl. In these tests, I ran 5.8.8 build 820.
+
+Install the Perl LibXML bindings by typing the following
+at Windows cmd prompt:
+
+ppm install http://theoryx5.uwinnipeg.ca/ppms/XML-LibXML-Common.ppd
+ppm install http://theoryx5.uwinnipeg.ca/ppms/XML-LibXML.ppd
+ppm install http://theoryx5.uwinnipeg.ca/ppms/XML-LibXSLT.ppd
+
+Install other necessary packages:
+
+ppm install TimeDate
+ppm install Data-HexDump
+ppm install Clone
+ppm install Text-Template
+
+cd to Perl\examples directory
+
+perl inventory_example.pl -n=reader-xx-yy-zz
+perl simple_encode_decode.pl
+
+where reader-xx-yy-zz is the DNS name or IP address of a
+reader or reader simulator
+
+Thanks in advance for letting me know about success or
+failures with LLRP-XML/Perl under Windows.
+
+John R. Hogerhuis  jhoger@pobox.com
