@@ -11,7 +11,10 @@ From Linux or Cygwin (under Windows) the following command works:
  
    cvs -z3 -d:pserver:anonymous@llrp-toolkit.cvs.sourceforge.net:/cvsroot/llrp-toolkit co -P LTK
 
-Copy Definitions/Core/llrp-1x0-def.xml to LTKPerl/RFID/LLRP.
+Copy Definitions/Core/llrp-1x0-def.xml to LTKPerl/RFID/LLRP/llrpdef.xml .
+
+MAKE SURE TO MAKE THE FILENAME MATCH llrpdef.xml EXACTLY.
+
 RFID::LLRP::Schema needs to be able to find the binary schema
 somewhere, and RFID/LLRP seemed like the best place.
 
@@ -127,6 +130,10 @@ perl simple_encode_decode.pl
 
 where reader-xx-yy-zz is the DNS name or IP address of a
 reader or reader simulator
+
+NOTE: If you get an error about llrpdef.xml you probably missed the step:
+
+' Copy Definitions/Core/llrp-1x0-def.xml to LTKPerl/RFID/LLRP/llrpdef.xml '
 
 Thanks in advance for letting me know about success or
 failures with LLRP-XML/Perl under Windows.
