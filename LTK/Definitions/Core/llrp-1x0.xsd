@@ -45,9 +45,9 @@
 
 <xs:schema
 	xmlns:xs="http://www.w3.org/2001/XMLSchema"
-	targetNamespace="http://www.llrp.org/ltk/schema/core/encoding/xml/0.7"
-	xmlns="http://www.llrp.org/ltk/schema/core/encoding/xml/0.7"
-	xmlns:rp="http://www.llrp.org/ltk/schema/core/encoding/xml/0.7"
+	targetNamespace="http://www.llrp.org/ltk/schema/core/encoding/xml/0.8"
+	xmlns="http://www.llrp.org/ltk/schema/core/encoding/xml/0.8"
+	xmlns:rp="http://www.llrp.org/ltk/schema/core/encoding/xml/0.8"
 	elementFormDefault="qualified"
 >
 
