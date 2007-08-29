@@ -1548,8 +1548,7 @@
 
 	<xs:complexType name="C1G2TagSpec">
 		<xs:sequence>
-			<xs:element name="TagPattern1" type="rp:C1G2TargetTag" />
-			<xs:element name="TagPattern2" type="rp:C1G2TargetTag" minOccurs="0" />
+			<xs:element name="C1G2TargetTag" type="rp:C1G2TargetTag" maxOccurs="unbounded" />
 		</xs:sequence>
 		<xs:attributeGroup ref="rp:paramAttrs"/>
 	</xs:complexType>
