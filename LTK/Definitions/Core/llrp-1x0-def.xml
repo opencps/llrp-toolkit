@@ -1281,7 +1281,7 @@
         reference 13.2.3.11 and 16.2.7.3.11
       </documentation>
     </annotation>
-    <field     type="u64"   name="Microseconds"/>
+    <field     type="u64"   name="Microseconds" format="Datetime"/>
   </parameterDefinition>
 
   <parameterDefinition name="LastSeenTimestampUptime" typeNum="5">
