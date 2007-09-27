@@ -45,9 +45,9 @@
 
 <xs:schema
 	xmlns:xs="http://www.w3.org/2001/XMLSchema"
-	targetNamespace="http://www.llrp.org/ltk/schema/core/encoding/xml/0.8"
-	xmlns="http://www.llrp.org/ltk/schema/core/encoding/xml/0.8"
-	xmlns:rp="http://www.llrp.org/ltk/schema/core/encoding/xml/0.8"
+	targetNamespace="http://www.llrp.org/ltk/schema/core/encoding/xml/0.9"
+	xmlns="http://www.llrp.org/ltk/schema/core/encoding/xml/0.9"
+	xmlns:rp="http://www.llrp.org/ltk/schema/core/encoding/xml/0.9"
 	elementFormDefault="qualified"
 >
 
@@ -766,7 +766,7 @@
 
 	<xs:complexType name="FirstSeenTimestampUTC">
 		<xs:sequence>
-			<xs:element name="Microseconds" type="xs:unsignedLong" />
+			<xs:element name="Microseconds" type="xs:dateTime" />
 		</xs:sequence>
 		<xs:attributeGroup ref="rp:paramAttrs"/>
 	</xs:complexType>
@@ -1211,7 +1211,7 @@
 
 	<xs:complexType name="LastSeenTimestampUTC">
 		<xs:sequence>
-			<xs:element name="Microseconds" type="xs:unsignedLong" />
+			<xs:element name="Microseconds" type="xs:dateTime" />
 		</xs:sequence>
 		<xs:attributeGroup ref="rp:paramAttrs"/>
 	</xs:complexType>
