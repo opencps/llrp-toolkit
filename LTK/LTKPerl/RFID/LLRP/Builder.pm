@@ -150,7 +150,8 @@ sub gen_format_leaf {
 				my $value = $xml_node->textContent;
 				return $value, length ($value);
 			}
-			if ($desc->{Format} eq 'Hex' && ($type =~ /Byte|Bit/) && $desc->{Array}) {
+
+		if ($type eq 'EPC96' || ($desc->{Format} eq 'Hex' && ($type =~ /Byte|Bit/) && $desc->{Array})) {
 				my $value = pack ('H*', $xml_node->textContent);
 				my $vector_len = $xml_node->getAttribute ('Count');
 				if (!defined $vector_len) { $vector_len = (length ($value) * 8) / $bits; }
