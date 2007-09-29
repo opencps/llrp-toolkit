@@ -85,9 +85,8 @@ use Data::HexDump;
 use Clone qw(clone);
 
 use Memoize;
-memoize ('is_power_of_two');
-
-$| = 1;
+use bytes;
+#memoize ('is_power_of_two');
 
 # read schema
 our ($llrp, $msg, $lookup_param, $lookup_mid, $lookup_pid) =
@@ -116,11 +115,14 @@ sub first_element {
 
 # network order pack/unpack for different bit lengths
 my %pack_fmts = (
-	8	=> "C",
-	16	=> "n",
-	32	=> "N",
-	64	=> "NN",
-	96	=> "CCCCCCCCCCCC"
+	'8_U'	=> "C",
+	'8_S'	=> "c",
+	'16_U'	=> "n",
+	'16_S'	=> ['n','S', 's'],
+	'32_U'	=> "N",
+	'32_S'	=> ['N','L','l'],
+	'64_U'	=> "NN",
+	'96_U'	=> "CCCCCCCCCCCC",
 );
 
 use constant MSG_HEADER_LEN => 5;
@@ -128,6 +130,13 @@ use constant MSG_HEADER_LEN => 5;
 sub is_numeric {
 	use warnings FATAL => 'numeric';
 	return defined eval { $_[0] == 0 };
+}
+
+sub trim($) {
+	my $string = shift;
+	
+	$string =~ s/^\s+|\s+$//g ;
+	return $string;
 }
 
 # parses XML node text and formats as LLRP binary
@@ -151,7 +160,7 @@ sub gen_format_leaf {
 				return $value, length ($value);
 			}
 
-		if ($type eq 'EPC96' || ($desc->{Format} eq 'Hex' && ($type =~ /Byte|Bit/) && $desc->{Array})) {
+			if ($type eq 'EPC96' || ($desc->{Format} eq 'Hex' && ($type =~ /Byte|Bit/) && $desc->{Array})) {
 				my $value = pack ('H*', $xml_node->textContent);
 				my $vector_len = $xml_node->getAttribute ('Count');
 				if (!defined $vector_len) { $vector_len = (length ($value) * 8) / $bits; }
@@ -164,7 +173,7 @@ sub gen_format_leaf {
 		if (defined $desc->{DefaultValue}) {
 			@raw_values = ($desc->{DefaultValue});
 		} else {
-			@raw_values = split (/\s+/, $xml_node->textContent);
+			@raw_values = split (/\s+/, trim ($xml_node->textContent));
 			if (scalar (@raw_values) && !$desc->{Array}) {
 				@raw_values = ($raw_values[0]);
 			}
@@ -194,12 +203,12 @@ sub gen_format_leaf {
 				defined $enum || die "Unknown enumeration type $etype";
 				my $ident = shift;
 				my $value = $enum->{Lookup}->{$ident};
-				defined $value || die "Unknown enumeration value $etype:$ident";
+				defined $value || die "Unknown enumeration value $etype ($ident)";
 				return ($value);
 			}
 		);
 
-		foreach $raw_value (@raw_values) {
+		foreach my $raw_value (@raw_values) {
 
 			# determine the value to place
 			# (parse from XML or use DefaultValue)
@@ -223,7 +232,7 @@ sub gen_format_leaf {
 			}
 
 			# place value if accumulated to 8-bit boundary
-			my $pack_fmt = $pack_fmts{$packed_bits};
+			my $pack_fmt = $pack_fmts{$packed_bits . '_' . ($desc->{Signed} ? 'S' : 'U')};
 			if (defined $pack_fmt) {
 				# note that there may be loss of precision
 				# on 64-bit values.
@@ -232,7 +241,9 @@ sub gen_format_leaf {
 					my $lower_32 = int ($value % (2**32));
 					$byte_str = pack ($pack_fmt, $upper_32, $lower_32);
 				} else {
-					$byte_str .= pack ($pack_fmt, $packed_int);
+					$byte_str .= pack (
+						(ref ($pack_fmt) ? $pack_fmt->[0] : $pack_fmt),
+						$packed_int);
 				}
 				$packed_bits = $packed_int = 0;
 			}
@@ -281,7 +292,7 @@ sub format_node {
 	my ($param_ary, $xml_node, %aux) = @_;
 	my $bin;
 	my $param_next	= gen_array_iter ($param_ary);
-	my $node_name = $xml_node->getName;
+	my $node_name = $xml_node->localname;
 	my $elem_next	= gen_elem_iter	 ($xml_node);
 
 	# process all nodes
@@ -399,7 +410,7 @@ sub format_node {
 
 	# die if there are more XML nodes or parameter descriptors to process
 	if ($xml_node && !$aux{Force})	{
-		die "Unformatted XML nodes in the tail"
+		die "Invalid content at the end of infoset starting with: name=" . $xml_node->getName();
 	}
 	if (defined $desc && !$aux{Force})	{
 		my $msg = "Invalid LLRP XML... missing " . $desc->{Name};
@@ -430,7 +441,7 @@ sub format_node {
 	return $bin;
 }
 
-=item C<C<encode_message ($document, %options)>>
+=item C<encode_message ($document, %options)>
 
 This function will take an XML document and encode it as a LLRP Binary
 formatted message.
@@ -452,6 +463,7 @@ understands LLRP.
 sub encode_message {
 	my ($document, %options) = @_;
 	my $parser = XML::LibXML->new();
+	$parser->keep_blanks(0);
 	my $tree;
 	my %aux;
 	if (exists $options{Force}) {
@@ -461,7 +473,11 @@ sub encode_message {
 	# parse the file
 	if ($options{File}) {
 		$tree = $parser->parse_file($document);
+		delete $options{File};
 	} elsif ($options{Tree}) {
+		$tree = $document;
+		delete $options{Tree};
+	} elsif (ref($document) eq 'XML::LibXML::Document') {
 		$tree = $document;
 	} else {
 		$tree = $parser->parse_string($document);
@@ -476,10 +492,14 @@ sub encode_message {
 	defined $msg_desc || die "No format descriptor for $msg_name";
 
 	# compile the XML file to binary format
-	my $bin = format_node ($msg_desc->{Parameter}, $root, %aux);
+	my $bin = format_node ($msg_desc->{Parameter}, $root, %options);
 	
 	# backpatch the message length
-	substr ($bin, 2, 4, pack ("N", length ($bin)));
+	my $len_override = $root->findvalue('@MessageLength');
+	substr ($bin, 2, 4, pack ("N",
+		length($len_override)?($len_override+0):length ($bin))
+#		defined($len_override)?$len_override:length ($bin))
+	);
 	
 	if (wantarray) {
 		return ($bin, $tree);
@@ -558,7 +578,14 @@ sub gen_unpack_fields {
 		while ($remaining) {
 
 			if (!length ($remainder) && $bits >= 8 && ($bits == 96 || is_power_of_two ($bits))) {
-				push @values, unpack ($pack_fmts{$bits} . $remaining, substr ($buf, $ndx));
+				my $fmt = $pack_fmts{$bits . '_' . ($desc->{Signed} ? 'S' : 'U')};
+				if (ref $fmt) {
+					my @native =	unpack	($fmt->[0] . $remaining, substr ($buf, $ndx));
+					my $packed =	pack	($fmt->[1] . '*', @native);
+					push @values,	unpack	($fmt->[2] . $remaining, $packed);
+				} else {
+					push @values, unpack ($fmt . $remaining, substr ($buf, $ndx));
+				}
 				$ndx += ($bits / 8) * $cells;
 				$remaining = 0;
 			} else {
