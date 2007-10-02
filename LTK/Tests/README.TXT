@@ -44,5 +44,17 @@ dx101/dx101_a_out.txt
     a direct byte-by-byte comparisson. We need to change
     the test of have a tool for the comparisson.
 
+dx101/dx101_b.bin -- a second test case aimed specifically at
+    EPC size in LLRP RO_ACCESS_REPORT MESSAGES
+
+dx101/dx101_b.xml -- the corresponding reference XML output
+	for dx101_b.bin
+
+dx101/dx101_c.bin -- a second test case aimed specifically at
+    large RO_ACCESS_REPORTS
+
+dx101/dx101_c.xml -- the corresponding reference XML output
+	for dx101_c.bin
+
 README.TXT
     This file that you are reading.
