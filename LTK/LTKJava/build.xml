@@ -1,0 +1,153 @@
+<?xml version="1.0"?> 
+<project name="LLRPGenerator" default="createJavaDoc" basedir=".">
+     <property name="src" value="src/main/java"/> 
+     <property name="version" value="0_1_0-SNAPSHOT"/> 
+     <property name="res" value="src/main/resources"/> 
+     <property name="build" value="target"/>
+     <property name="docs" value="docs"/>
+     <property name="def" value="../Definitions"/>
+     <property name="classpath" value="${build}/classes"/>
+     <property name="propertiesFile" value="${res}/generator.properties"/>
+     <property name="generated" value="org/llrp/ltk/generated"/>
+     <property name="JAXBgenerated" value="org.llrp.ltkGenerator"/>
+     <property name="llrpdef_xsd" value="${def}/llrpdef.xsd"/>
+     <property name="llrpdef_xml" value="${def}/Core/llrp-1x0-def.xml"/>
+     
+     <taskdef name="xjc" classname="com.sun.tools.xjc.XJCTask">
+             <classpath>
+	        <fileset dir="lib" includes="*.jar" />
+  	     </classpath>
+     </taskdef>
+            
+            
+     <target name="init"> 
+          <mkdir dir="${src}/${generated}/messages"/>
+          <mkdir dir="${src}/${generated}/parameters"/>
+          <mkdir dir="${src}/${generated}/enumerations"/>
+          <mkdir dir="${src}/${generated}/interfaces"/>
+          <mkdir dir="${src}/${generated}/custom/messages"/>
+          <mkdir dir="${src}/${generated}/custom/parameters"/>
+          <mkdir dir="${build}"/>
+          <mkdir dir="${build}/classes"/>
+          <mkdir dir="${build}/docs/apidoc"/>
+     </target>
+	
+	<target name="jaxb" depends="init">
+        <!-- generate the Java content classes from the llrpdef.xsd schema -->
+	     <echo message="Compiling the llrpdef.xsd schema with jaxb ..."/>
+             <xjc schema="${llrpdef_xsd}" destdir="${src}" package="${JAXBgenerated}.generated"/>
+        </target>   
+	
+	
+	<target name="compileCodeGenerator" depends="jaxb"> 
+          <!-- Compile the java code -->
+             <echo message="Compiling Code Generator ..."/>
+		  <javac srcdir="${src}" 
+		  		 destdir="${build}/classes" 
+		  		 debug="on" 
+		  		 target="1.5">
+	        <classpath>
+	        	<pathelement path="${classpath}"/>
+	      		<fileset dir="lib">
+	        		<include name="**/*.jar"/>
+	      		</fileset>
+	         </classpath>
+		  </javac>
+	</target>
+	<target name="generate" depends="compileCodeGenerator"> 
+	        <!-- run the java code -->
+	        <echo message="Generating LTK Java classes from llrpdef.xml and extensions ..."/>
+			<java classname="org.llrp.ltkGenerator.CodeGenerator" fork="yes" >
+				<arg value="${propertiesFile}"/>
+		        <classpath>
+		        	<pathelement path="${classpath}"/>
+		      		<fileset dir="lib">
+		        		<include name="**/*.jar"/>
+		      		</fileset>
+		         </classpath>
+		  	</java>
+		</target>
+	<target name="format" depends="generate">  
+	        <!-- format the java code -->
+	        <echo message="Formatting generated classes ..."/>
+			<java classname="org.llrp.ltkGenerator.CodeFormatter" fork="yes" >
+				<arg value="${propertiesFile}"/>
+		        <classpath>
+		        	<pathelement path="${classpath}"/>
+		      		<fileset dir="lib">
+		        		<include name="**/*.jar"/>
+		      		</fileset>
+		         </classpath>
+		  	</java>
+	</target>
+	<target name="compile" depends="format"> 
+          <!-- Compile the java code -->
+          	<echo message="Compiling LTKJava (generated classes and non-generated classes)..."/>
+		  <javac srcdir="${src}" 
+		  		 destdir="${build}/classes" 
+		  		 debug="on" 
+		  		 target="1.5"
+		  		 excludes="**/testing/**">
+	        <classpath>
+	        	<pathelement path="${classpath}"/>
+	      		<fileset dir="lib">
+	        		<include name="**/*.jar"/>
+	      		</fileset>
+	         </classpath>
+		  </javac>
+	</target>	
+        
+	<target name="jar" depends="compile"> 
+	 <echo message="Creating binary jar ..."/>
+		  <jar destfile="${build}/LTKJava_${version}.jar">
+		  	<fileset dir="${build}"
+		  	includes="org/llrp/ltk/**"
+            		 excludes="**/testing/"
+    		/>
+    		<!-- <fileset dir="${res}"/> -->
+		    
+		  </jar>
+	</target>
+        <target name="sourceJar" depends="compile"> 
+          <echo message="Creating source jar ..."/>
+			  <jar destfile="${build}/LTKJava_src_${version}.jar">
+			  	<fileset dir="${src}"
+	            		 includes="org/llrp/ltk/**"
+	    		/>
+	    		<!-- <fileset dir="${res}"/> -->
+			    
+	</jar>
+	</target>
+	<target name="javadoc" depends="compile"> 
+		  <javadoc
+	           destdir="${build}/docs/apidoc"
+	           author="false"
+	           version="false"
+	           use="true"
+	           windowtitle="LLRP Toolkit for Java">
+	
+		    <packageset dir="${src}" defaultexcludes="yes">
+		      <include name="org/llrp/ltk/**"/>
+		      <exclude name="org/llrp/testing/**"/>
+		      <exclude name="org/llrp/ltkGenerator/**"/>
+		    </packageset>
+		
+		    <doctitle><![CDATA[<h1>LLRP Implementation</h1>]]></doctitle>
+		    <bottom><![CDATA[<i>Copyright &#169; 2007 ETH Zurich.</i>]]></bottom>
+		    <tag name="todo" scope="all" description="To do:"/>
+		    <group title="org.llrp" packages="org.llrp*"/>
+		    <link offline="true" href="http://llrp-toolkit.cvs.sourceforge.net/llrp-toolkit/Java/" packagelistLoc="C:\temp"/>
+		    <link href="http://llrp-toolkit.cvs.sourceforge.net/llrp-toolkit/Java/"/>
+	  	</javadoc>
+	</target>	
+	
+	<!-- ===================================== -->
+	<!-- Remove build directories -->
+	<!-- ===================================== -->
+	<target name="clean" >
+		<delete dir="${build}" />
+		<delete dir="${src}/${generated}" />
+		<delete dir="${src}/org/llrp/ltkGenerator/generated" />
+	</target>
+	
+</project>
