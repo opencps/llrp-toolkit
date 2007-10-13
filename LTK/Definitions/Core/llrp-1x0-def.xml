@@ -29,7 +29,7 @@
    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
    xmlns:h="http://www.w3.org/1999/xhtml"
     xmlns:llrpdef="http://www.llrp.org/ltk/schema/core/encoding/binary/0.8"
-    xsi:schemaLocation="http://www.llrp.org/ltk/schema/core/encoding/binary/0.8 file:///C:/Documents%20and%20Settings/pdietric/Desktop/LTK/Definitions/llrpdef.xsd"
+    xsi:schemaLocation="http://www.llrp.org/ltk/schema/core/encoding/binary/0.8 http://www.llrp.org/ltk/schema/core/encoding/binary/0.8/llrpdef.xsd"
 >
 
   <parameterDefinition name="UTCTimestamp" typeNum="128" required="false">
