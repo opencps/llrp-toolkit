@@ -100,7 +100,7 @@
 	<target name="jar" depends="compile"> 
 	 <echo message="Creating binary jar ..."/>
 		  <jar destfile="${build}/LTKJava_${version}.jar">
-		  	<fileset dir="${build}"
+		  	<fileset dir="${build}/classes"
 		  	includes="org/llrp/ltk/**"
             		 excludes="**/testing/"
     		/>
