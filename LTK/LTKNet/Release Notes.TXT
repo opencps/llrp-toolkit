@@ -1,0 +1,21 @@
+1. About this release
+
+   This is release 1.0 of EPCGlobal Low Level Reader Protocol (LLRP) compatible .Net driver. For more information
+or LLRP drivers for other languages, Please check http://sourceforge.net/projects/llrp-toolkit.
+
+2. Supported platform
+
+   This driver runs on microsoft .Net framework 2.0 and up.
+
+3. Features in this version
+
+   > Auto generated code
+   > Object oriented and event based message processing 
+   > Messages and Parameters are individual functional atom
+   > Support Xml serialization. Xml serialization is enforced by the LTK XML Schema
+   > Support type checking or promtion at compile time
+
+4. Issues
+   
+   1. Custom parameter in vendor extended parameters is not processed. A dummy class is created to process the binary.
+      It will be updated by code generator once the vendor extension definition file is ready. 
