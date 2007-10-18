@@ -17,17 +17,22 @@ package org.llrp.ltk.types;
 
 import org.apache.log4j.Logger;
 
-import org.jdom.*;
+import org.jdom.Document;
 
 import org.llrp.ltk.exceptions.IllegalBitListException;
 import org.llrp.ltk.exceptions.LLRPException;
 import org.llrp.ltk.exceptions.WrongParameterException;
 
-import javax.xml.parsers.*;
-
 
 /**
- * representing a message in LLRP.
+ * representing a message in LLRP. * The binary encoding Is always: Reserved(3
+ * Bits) | Version (3 Bits) | Message Type (10 Bits) | Message Length (32 Bits) |
+ * Parameters
+ *
+ * call empty constructor to create new message. Use constructor taking
+ * LLRPBitList or Byte[] to create message from binary encoded message. Use
+ * constructor taking JDOM document to create message from XML encoding
+ *
  */
 public abstract class LLRPMessage {
     public static Logger logging = Logger.getLogger(LLRPMessage.class);
@@ -41,9 +46,9 @@ public abstract class LLRPMessage {
     protected UnsignedInteger messageLength = new UnsignedInteger();
 
     /**
-     * encode this message.
+     * encode this message to binary formate.
      *
-     * @return LLRPBitList
+     * @return Byte[] which can directly be sent over a stream
      */
     public final Byte[] encodeBinary() {
         LLRPBitList result = new LLRPBitList();
@@ -56,7 +61,10 @@ public abstract class LLRPMessage {
                 typeNumberLength));
         result.append(messageLength.encodeBinary());
         result.append(messageID.encodeBinary());
+        // call the message specific encode function
         result.append(encodeBinarySpecific());
+        // finalizeEncode sets the length correctly. It must be called after
+        // encoding as length can only be set after message is encoded
         finalizeEncode(result);
 
         return result.toByteArray();
@@ -70,7 +78,7 @@ public abstract class LLRPMessage {
     protected abstract LLRPBitList encodeBinarySpecific();
 
     /**
-     * create message from bitstring.
+     * create message from Byte[]. Will also be called from Constructor taking a Byte[] Argument
      *
      * @param bits
      *            representing message
@@ -179,8 +187,8 @@ public abstract class LLRPMessage {
     }
 
     /**
-     * create BitList
-     * easiest is to use variadic argument - for example BitList(0,1,1) for value 3
+     * create BitList easiest is to use variadic argument - for example
+     * BitList(0,1,1) for value 3
      *
      * @param version
      *            as bit array

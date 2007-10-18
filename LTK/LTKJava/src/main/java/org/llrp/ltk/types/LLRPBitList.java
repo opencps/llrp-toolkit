@@ -15,8 +15,6 @@
  */
 package org.llrp.ltk.types;
 
-import org.jdom.Element;
-
 import org.llrp.ltk.exceptions.LLRPException;
 
 import java.util.BitSet;

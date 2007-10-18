@@ -47,11 +47,10 @@ package org.llrp.ltk.generated.parameters;
 #set ($choiceDefinition = "ChoiceDefinition")
 #set ($reservedDefinition = "ReservedDefinition")
 #set ($fieldDefinition = "FieldDefinition")
-#set ($listRepeat = "1-N")
-#set ($singleParameter = "1")
-#set ($optionalParameter = "0-1")
-#set ($optionalRepeat = "0-N")
-	
+#set ($mustListRepeat = "1-N")
+#set ($exactlyOnceRepeat = "1")
+#set ($optionalRepeat = "0-1")
+#set ($optionalListRepeat = "0-N")
 	
 	
 ##imports
@@ -123,7 +122,7 @@ $utility.clearImports()
 			#end
 		## FieldDefinition
 		#else
-					//TODO template wrote this - unexpected object $field
+					//TODO 1 template wrote this - unexpected object $field
 		#end	
 	#end
 	
@@ -157,7 +156,7 @@ $utility.clearImports()
 	
 		
 /**
- * $parameter.getAnnotation().get(0).getChildNodes().item(0).item(0).getNodeValue();
+ * $utility.getAnnotation($parameter)
  */
  
 ## TV Parameters have type number from 0 - 127, TLV from 128 - 2047
@@ -201,7 +200,7 @@ public class $parameter.Name extends $superType $interfaces{
 		#end
 	## FieldDefinition
 	#else
-				//TODO template wrote this - unexpected object $field
+				//TODO 2 template wrote this - unexpected object $field
 	#end	
 #end
 
@@ -217,28 +216,45 @@ public class $parameter.Name extends $superType $interfaces{
 		#set ($curName = $utility.firstToLowerCase($field.getType()))
 	#end 	
 	
-	#if ($field.getRepeat() == $listRepeat || $field.getRepeat() == $optionalRepeat)
+	#if ($field.getRepeat() == $mustListRepeat || $field.getRepeat() == $optionalListRepeat)
 		protected List<$field.getType()> $curName$list = new LinkedList<$field.getType()>();
 	#else
 		protected $field.getType() $curName;
 	#end
 #end
 
-## constructors
 
+## constructor
+		
+/**
+ * empty constructor to create new parameter
+ */
 	public $parameter.getName()(){
 	}
-	
+
+/**
+ * Constructor to create parameter from binary encoded parameter
+ * calls decodeBinary to decode parameter
+ * @param list
+ */
 	public $parameter.getName()(LLRPBitList list){
 		decodeBinary(list);
 	}
 
 	
+	/**
+ * Constructor to create parameter from xml encoded parameter
+ * calls decodeXML to decode parameter
+ * @param document
+ */	
 	public $parameter.getName()(Element element){
 		decodeXML(element);
 	}
 	
 ## encode method
+		/**
+	 * {@inheritDoc}
+	 */
 	public LLRPBitList encodeBinarySpecific(){
 	LLRPBitList resultBits = new LLRPBitList();
 	## field or reserved
@@ -253,7 +269,7 @@ public class $parameter.Name extends $superType $interfaces{
 			resultBits.append($utility.firstToLowerCase($field.getName())$encode);
 		## FieldDefinition
 		#else
-			//TODO template parameter encode wrote this - unexpected object $field
+			//TODO 3 template parameter encode wrote this - unexpected object $field
 		#end
 	#end
 	## parameter or choice
@@ -267,8 +283,7 @@ public class $parameter.Name extends $superType $interfaces{
 			#set ($curName = $utility.firstToLowerCase($field.getType()))
 		#end
 		## check if it is a list 	
-		#if ($field.getRepeat()==$listRepeat)
-			// $field.getRepeat()
+		#if ($field.getRepeat()==$mustListRepeat)
 			if ($curName$list== null){
 				logging.warn(" $curName$list not set");
 				//parameter has to be set - throw exception
@@ -278,8 +293,7 @@ public class $parameter.Name extends $superType $interfaces{
 					resultBits.append(field$encode);
 				}
 			}
-		#elseif ($field.getRepeat()==$optionalRepeat)
-			// $field.getRepeat()
+		#elseif ($field.getRepeat()==$optionalListRepeat)
 			if ($curName$list== null){
 				//just warn - it is optional 
 				logging.warn(" $curName$list not set");
@@ -288,8 +302,7 @@ public class $parameter.Name extends $superType $interfaces{
 					resultBits.append(field$encode);
 				}
 			}
-		#elseif ($field.getRepeat()==$singleParameter)
-			// $field.getRepeat()
+		#elseif ($field.getRepeat()==$exactlyOnceRepeat)
 			if ($curName == null){
 				// single parameter, may not be null
 				logging.warn(" $curName not set");
@@ -297,8 +310,7 @@ public class $parameter.Name extends $superType $interfaces{
 			} else {
 				resultBits.append($curName$encode);
 			}
-		#elseif ($field.getRepeat()==$optionalParameter)
-			// $field.getRepeat()
+		#elseif ($field.getRepeat()==$optionalRepeat)
 			if ($curName == null){
 				// optional parameter, may be null
 				logging.warn(" $curName not set");
@@ -315,26 +327,30 @@ public class $parameter.Name extends $superType $interfaces{
 
 
 ## encode xml
+		/**
+	 * {@inheritDoc}
+	 */
 	public Content encodeXML(String name){
 		Element xmlElement = new Element(name);
 		
 		## field or reserved
 		#foreach($field in $parameter.getFieldOrReserved())
 			#if ($utility.hasType($field,$reservedDefinition))
-				xmlElement.addContent($resName$encodeXML("$field.getType()"));
+				xmlElement.addContent($resName$encodeXML("reserved"));
 			#elseif ($utility.hasType($field,$fieldDefinition))
+				## FieldDefinition
 				if ($utility.firstToLowerCase($field.getName())== null){
 					logging.warn(" $utility.firstToLowerCase($field.getName()) not set");
 					throw new MissingParameterException(" $utility.firstToLowerCase($field.getName()) not set");
 				} else {
 					xmlElement.addContent($utility.firstToLowerCase($field.getName())$encodeXML("$field.getName()"));
 				}
-			## FieldDefinition
 			#else
-				//TODO template parameter encode wrote this - unexpected object $field
+				//TODO 4 template parameter encode wrote this - unexpected object $field $field.getName()
 			#end
 		#end
 		## parameter or choice
+		//parameters
 		#foreach($field in $parameter.getParameterOrChoice())
 			## parameters usually don't have names, so the variable gets the type with first letter to lower case as name
 			## however there are some exceptions to this where there is a name given
@@ -345,7 +361,7 @@ public class $parameter.Name extends $superType $interfaces{
 				#set ($curName = $utility.firstToLowerCase($field.getType()))
 			#end
 			## check if it is a list 	
-			#if ($field.getRepeat()==$listRepeat)
+			#if ($field.getRepeat()==$mustListRepeat)
 				if ($curName$list== null){
 					logging.warn(" $curName$list not set");
 					throw new MissingParameterException("  $curName$list not set");
@@ -354,7 +370,7 @@ public class $parameter.Name extends $superType $interfaces{
 					##choices have to be set by the actual name - not the name of the interface
 					xmlElement.addContent(field$encodeXML(field.getClass().getName().replaceAll(field.getClass().getPackage().getName()+".", "")));
 				}
-			#elseif ($field.getRepeat()== $optionalRepeat)
+			#elseif ($field.getRepeat()== $optionalListRepeat)
 				if ($curName$list == null){
 					logging.info("$curName$list not set");
 				} else {
@@ -362,13 +378,13 @@ public class $parameter.Name extends $superType $interfaces{
 						xmlElement.addContent(field$encodeXML(field.getClass().getName().replaceAll(field.getClass().getPackage().getName()+".", "")));
 					}
 				}
-			#elseif ($field.getRepeat()== $optionalParameter)
+			#elseif ($field.getRepeat()== $optionalRepeat)
 				if ($curName == null){
 					logging.info("$curName not set");
 				} else {
 					xmlElement.addContent($curName$encodeXML("$field.getType()"));
 				}
-			#elseif ($field.getRepeat()== $singleParameter)
+			#elseif ($field.getRepeat()== $exactlyOnceRepeat)
 				if ($curName == null){
 					logging.info("$curName not set");
 					throw new MissingParameterException("$curName not set");
@@ -385,7 +401,9 @@ public class $parameter.Name extends $superType $interfaces{
 	
 ##decode
   
-  	@Override
+		/**
+	 * {@inheritDoc}
+	 */
 	protected void decodeBinarySpecific(LLRPBitList binary){
 		int position = 0;
 		int tempByteLength;
@@ -429,7 +447,7 @@ public class $parameter.Name extends $superType $interfaces{
 					position += $curType$length;
 				#end
 			#else
-						//TODO template wrote this - unexpected object $field
+						//TODO 5 template wrote this - unexpected object $field
 			#end
 		#end  
 		
@@ -443,7 +461,7 @@ public class $parameter.Name extends $superType $interfaces{
 			#set ($curName = $utility.firstToLowerCase($field.getType()))
 		#end
 		## check if it is a list 	
-		#if ($field.getRepeat()==$listRepeat  || $field.getRepeat()== $optionalRepeat)
+		#if ($field.getRepeat()==$mustListRepeat  || $field.getRepeat()== $optionalListRepeat)
 			// list of parameters
 			$curName$list = new LinkedList<$field.getType()>();
 			logging.debug("decoding parameter $curName$list ");
@@ -494,7 +512,7 @@ public class $parameter.Name extends $superType $interfaces{
 					#end
 					
 					//if no parameter matched, jump out of while loop, if it is not an optional parameter, show warning
-					if (!atLeastOnce && (" $field.getRepeat() ".equals(" $listRepeat "))){
+					if (!atLeastOnce && (" $field.getRepeat() ".equals(" $mustListRepeat "))){
 						logging.warn("encoded message does not contain non optional parameter $curName$list");
 					}
 					break;
@@ -527,10 +545,10 @@ public class $parameter.Name extends $superType $interfaces{
 					logging.debug("adding $field.getType() to $curName$list ");
 					position+=tempLength;		
 				#else
-					//TODO template wrote this in decode > list- unexpected object $field in while
+					//TODO 6 template wrote this in decode > list- unexpected object $field in while
 				#end
 			}
-		#elseif ($field.getRepeat()==$singleParameter || $field.getRepeat() == $optionalParameter)
+		#elseif ($field.getRepeat()==$exactlyOnceRepeat || $field.getRepeat() == $optionalRepeat)
 			## single parameter - must be set 
 			// look ahead to see type
 			// may be optional or exactly once
@@ -548,12 +566,12 @@ public class $parameter.Name extends $superType $interfaces{
 				type = new SignedShort(0);
 				// if a LLRPException is thrown, list was not long enough so the parameter is missing
 				## throw exception only when single Parameter - if it is optinal it is okay that it is not set
-				#if ( $field.getRepeat() == $singleParameter)
+				#if ( $field.getRepeat() == $exactlyOnceRepeat)
 					logging.warn("$parameter.getName() misses non optional parameter of type $field.getType()");
 					throw new MissingParameterException("$parameter.getName() misses non optional parameter of type $field.getType()");
 				#else
 				##if it is optional, just inform that it is not set
-					logging.info("$parameter.getName() misses non optional parameter of type $field.getType()");
+					logging.info("$parameter.getName() misses optional parameter of type $field.getType()");
 				#end
 			}
 			##distinguish between choices and parameters. For choices, we must find the actual types
@@ -619,12 +637,12 @@ public class $parameter.Name extends $superType $interfaces{
 					}
 				}
 				if (!found){
-					#if ( $field.getRepeat() == $singleParameter)
+					#if ( $field.getRepeat() == $exactlyOnceRepeat)
 						logging.warn("$parameter.getName() misses non optional parameter of type $field.getType()");
 						throw new MissingParameterException("$parameter.getName() misses non optional parameter of type $field.getType()");
 					#else	
 						##if it is optional, just inform that it is not set
-						logging.info("$parameter.getName() misses non optional parameter of type $field.getType()");
+						logging.info("$parameter.getName() misses optional parameter of type $field.getType()");
 					#end
 				}				
 			#elseif ($utility.hasType($field,$parameterReference))
@@ -634,17 +652,17 @@ public class $parameter.Name extends $superType $interfaces{
 					logging.debug(" $curName is instantiated with $field.getType() with length"+tempLength);
 				} else {
 					## if it is an optional parameter it is ok to come to here. Therefor only print an error message if it is not optional
-					#if ( $field.getRepeat() == $singleParameter)
+					#if ( $field.getRepeat() == $exactlyOnceRepeat)
 						logging.warn("$parameter.getName() misses non optional parameter of type $field.getType()");
 						throw new MissingParameterException("$parameter.getName() misses non optional parameter of type $field.getType()");
 					#else	
 						##if it is optional, just inform that it is not set
-						logging.info("$parameter.getName() misses non optional parameter of type $field.getType()");
+						logging.info("$parameter.getName() misses optional parameter of type $field.getType()");
 					#end
 				}	
 			#end
 		#else
-			//TODO template wrote this - unexpected object $field
+			//TODO 7 template wrote this - unexpected object $field
 		#end
 	#end
   	}
@@ -654,7 +672,9 @@ public class $parameter.Name extends $superType $interfaces{
   		
 ##decode XML
   
-  	@Override
+		/**
+	 * {@inheritDoc}
+	 */
 	public void decodeXML(Element element){
 		Element temp = null;
 		List<Element> tempList = null;
@@ -676,7 +696,7 @@ public class $parameter.Name extends $superType $interfaces{
 					$curName = new $curType (temp);
 				}
 			#else
-						//TODO template wrote this - unexpected object $field
+						//TODO 8 template wrote this - unexpected object $field
 			#end
 		#end  
 		
@@ -690,7 +710,7 @@ public class $parameter.Name extends $superType $interfaces{
 			#end
 			#if ($utility.hasType($field,$parameterReference))
 				//parameter - not choices - no special actions needed
-				#if ($field.getRepeat()==$listRepeat  || $field.getRepeat()== $optionalRepeat)
+				#if ($field.getRepeat()==$mustListRepeat  || $field.getRepeat()== $optionalListRepeat)
 					//we expect a list of parameters
 					$curName$list = new LinkedList<$field.getType()>();
 					tempList = element.getChildren("$field.getType()");
@@ -712,7 +732,7 @@ public class $parameter.Name extends $superType $interfaces{
 							logging.debug("adding $field.getType() to $curName$list ");
 						#end
 					}	
-					#if ( $field.getRepeat() == $listRepeat)
+					#if ( $field.getRepeat() == $mustListRepeat)
 						if (tempList == null || tempList.isEmpty() ){
 							logging.warn("$parameter.getName() misses non optional parameter of type $curName$list");
 							throw new MissingParameterException("$parameter.getName() misses non optional parameter of type $curName$list");
@@ -730,7 +750,7 @@ public class $parameter.Name extends $superType $interfaces{
 						$curName = new $field.getType()(temp);
 						logging.info("setting parameter $curName for parameter $parameter.getType()");
 					} else {
-						#if ( $field.getRepeat() == $singleParameter)
+						#if ( $field.getRepeat() == $exactlyOnceRepeat)
 							logging.warn("$parameter.getName() misses non optional parameter of type $curName");
 							throw new MissingParameterException("$parameter.getName() misses non optional parameter of type $curName");
 						#else
@@ -741,7 +761,7 @@ public class $parameter.Name extends $superType $interfaces{
 				#end		
 			#elseif ($utility.hasType($field,$choiceReference))
 				//choices - must check all possible subtypes
-				#if ($field.getRepeat()==$listRepeat  || $field.getRepeat()== $optionalRepeat)
+				#if ($field.getRepeat()==$mustListRepeat  || $field.getRepeat()== $optionalListRepeat)
 					//list of Choice Type Parameter
 					$curName$list = new LinkedList<$field.getType()>();
 					// for each possible subtype get all childs
@@ -771,11 +791,11 @@ public class $parameter.Name extends $superType $interfaces{
 							
 						#end
 						if (!atLeastOnce){
-							#if ( $field.getRepeat() == $listRepeat)
+							#if ( $field.getRepeat() == $mustListRepeat)
 								logging.warn("$parameter.getName() misses non optional parameter of type $curName$list");
 								throw new MissingParameterException("$parameter.getName() misses non optional parameter of type $curName$list");
 							#else
-								logging.info("$parameter.getName() misses non optional parameter of type $curName$list");
+								logging.info("$parameter.getName() misses optional parameter of type $curName$list");
 							#end	
 						}
 						atLeastOnce = false;		
@@ -809,18 +829,18 @@ public class $parameter.Name extends $superType $interfaces{
 						#end
 					#end
 					if (!found){
-						#if ( $field.getRepeat() == $listRepeat)
+						#if ( $field.getRepeat() == $mustListRepeat)
 							logging.warn("$parameter.getName() misses non optional parameter of type $curName$list");
 							throw new MissingParameterException("$parameter.getName() misses non optional parameter of type $curName$list");
 						#else
 						##if it is optional, just inform that it is not set
-							logging.info("$parameter.getName() misses non optional parameter of type $curName$list");
+							logging.info("$parameter.getName() misses optional parameter of type $curName$list");
 						#end	
 					}				
 				
 				#end
 			#else
-				//TODO template wrote this in decode > list- unexpected object $field in while
+				//TODO 9 template wrote this in decode > list- unexpected object $field in while
 			#end	
 		#end
   	}
@@ -851,7 +871,7 @@ public class $parameter.Name extends $superType $interfaces{
 
 		## FieldDefinition
 		#else
-					//TODO template wrote this - unexpected object $field
+					//TODO 10 template wrote this - unexpected object $field
 		#end	
 	#end
 
@@ -865,7 +885,7 @@ public class $parameter.Name extends $superType $interfaces{
 		#else
 			#set ($curName = $utility.firstToLowerCase($field.getType()))
 		#end 
-		#if ($field.getRepeat()== $listRepeat  || $field.getRepeat()== $optionalRepeat)
+		#if ($field.getRepeat()== $mustListRepeat  || $field.getRepeat()== $optionalListRepeat)
 			public List<$field.getType()> get$utility.firstToUpperCase($curName)$list$emptyBrack {
 				return $curName$list;
 			}
@@ -878,79 +898,74 @@ public class $parameter.Name extends $superType $interfaces{
 	#end
 
 
+
 	
-## generate setters 
+	## generate setters 
 	//setters
 	## field or reserved
 	#foreach($field in $parameter.getFieldOrReserved())
+		//$field
 		## reserved field
 		#if ($utility.hasType($field,$reservedDefinition))
 			## nothing
 		#elseif ($utility.hasType($field,$fieldDefinition))
-			#set ($curName = $utility.firstToLowerCase($field.getType()))
 			#if ($field.getEnumeration())
-				public void  set$field.getName() ($field.getEnumeration() $utility.firstToLowerCase($field.getName())){
+				/**
+				 * set $field.getName()
+				 * @param  $field.getEnumeration()
+				 */
+				public void set$field.getName()(final $field.getEnumeration()  $utility.firstToLowerCase($field.getName())){
 					this.$utility.firstToLowerCase($field.getName()) = $utility.firstToLowerCase($field.getName());
 				}
 			#else
-				public void  set$field.getName() ($utility.convertType($field.getType().value()) $utility.firstToLowerCase($field.getName())){
+				/**
+				 * set $field.getName()
+				 * @param  $utility.convertType($field.getType().value())
+				 */
+				public void set$field.getName()(final $utility.convertType($field.getType().value())  $utility.firstToLowerCase($field.getName())){
 					this.$utility.firstToLowerCase($field.getName()) = $utility.firstToLowerCase($field.getName());
 				}
+			
 			#end
-
+			
 		## FieldDefinition
 		#else
-					//TODO template wrote this - unexpected object $field
+					//TODO 11 template wrote this - unexpected object $field
 		#end	
 	#end
 
 
 	## parameter or choice
 	#foreach($field in $parameter.getParameterOrChoice())
+		
 		## parameters usually don't have names, so the variable gets the typ with first letter to lower case as name
 		## however there are some exceptions to this where there is a name given
 		#if ($field.getName())
-			#set ($curName = $utility.firstToLowerCase($field.getName()))
+			#set ($curName = $field.getName())
 		#else
 			#set ($curName = $utility.firstToLowerCase($field.getType()))
 		#end 
-		#if ($field.getRepeat()== $listRepeat  || $field.getRepeat()== $optionalRepeat)
-			public void set$utility.firstToUpperCase($curName)$list (List<$field.getType()> $curName$list) {
+		#if ($field.getRepeat()== $mustListRepeat  || $field.getRepeat()== $optionalListRepeat)
+			/**
+			 * set $utility.firstToUpperCase($curName)$list
+			 * @param  List<$field.getType()>
+			 */
+			public void set$utility.firstToUpperCase($curName)$list (final List<$field.getType()> $curName$list) {
 				this.$curName$list = $curName$list;
 			}
 				
 		#else
-			public void set$utility.firstToUpperCase($curName) ($field.getType()  $curName)  {
-				this. $curName =  $curName;
+			/**
+			 * set $curName
+			 * @param  $field.getType()
+			 */
+			public void set$utility.firstToUpperCase($curName) (final $field.getType() $curName)  {
+				this.$curName = $curName;
 			}
 		#end
 	#end
-
 	
 	
-	
-//add methods
-	## parameter or choice
-	#foreach($field in $parameter.getParameterOrChoice())
-		## parameters usually don't have names, so the variable gets the typ with first letter to lower case as name
-		## however there are some exceptions to this where there is a name given
-		#if ($field.getName())
-			#set ($curName = $utility.firstToLowerCase($field.getName()))
-		#else
-			#set ($curName = $utility.firstToLowerCase($field.getType()))
-		#end 
-		#if ($field.getRepeat()== $listRepeat  || $field.getRepeat()== $optionalRepeat)
-			public void add$utility.firstToUpperCase($curName) ($field.getType() $curName) {
-				if (this.$curName$list == null){
-					this.$curName$list = new LinkedList<$field.getType()>();
-				} 
-			 	this.$curName$list$add ($curName);
-			}
-				
-		#else
-		#end
-	#end
-
 	
 	
 	
@@ -959,5 +974,7 @@ public class $parameter.Name extends $superType $interfaces{
 		return typeNum;
 	}
 	
+	
 ## end of Class	
 }
+	

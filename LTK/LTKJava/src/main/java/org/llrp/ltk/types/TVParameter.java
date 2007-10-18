@@ -19,34 +19,39 @@ import org.llrp.ltk.exceptions.LLRPException;
 
 
 /**
- * TV Parameter do not encode length as the length is implicitly given by the type
- * TV parameter have type values from 0 to 127
+ * TV Parameter do not encode length as the length is implicitly given by the
+ * type TV parameter have type values from 0 to 127 TV Parameters encode the
+ * length of a parameter when encoded. The binary encoding Is always: Reserved
+ * (Bit set to 1) Parameter Type (7 Bits) | Parameter Value
  *
  * @author gasserb
  */
 public abstract class TVParameter extends LLRPParameter {
     private final int parameterTypeLength = 8;
-    protected LLRPBitList bits;
 
     /**
-     * create parameter from bitlist
+     * decodeBinary should be called from Constructor Taking binary encoded
+     * parameter as argument.
      *
      * @param bits
      *
-     * @throws LLRPException in case of any error or unexpected behaviour
+     * @throw LLRPException
+     *             in case of any error or unexpected behaviour
+     *
      */
     public void decodeBinary(LLRPBitList bits) {
-        this.bits = bits.clone();
-
-        // 8 bits only for type!!
-        SignedShort tN = new SignedShort(bits.subList(0, 8));
+        // 7 bits only for type!!
+        // very first bit is always set to 1
+        SignedShort tN = new SignedShort(bits.subList(1, 7));
 
         if (!tN.equals(getTypeNum())) {
-            //			LLRPMessage.logger.error("incorrect type. Expected "+getTypeNum().toShort()+" message indicates "+tN.toShort());
+            // LLRPMessage.logger.error("incorrect type. Expected
+            // "+getTypeNum().toShort()+" message indicates "+tN.toShort());
             throw new LLRPException("incorrect type. Expected " +
                 getTypeNum().toShort() + " message indicates " + tN.toShort());
         }
 
+        //decodeBinarySpecific is called for parameter specific decoding. Each parameter must have implemented it
         decodeBinarySpecific(bits.subList(parameterTypeLength,
                 bits.length() - parameterTypeLength));
     }
@@ -59,21 +64,25 @@ public abstract class TVParameter extends LLRPParameter {
      * @throws LLRPException
      */
     public LLRPBitList encodeBinary() {
-        LLRPBitList result = new LLRPBitList();
         LLRPBitList le = getTypeNum().encodeBinary();
-        // type Number is saved as a short, but we need only the last 8 bits
-        result.append(le.subList(le.length() - parameterTypeLength,
-                parameterTypeLength));
-        result.append(encodeBinarySpecific());
-        bits = result;
 
-        return bits;
+        // type Number is saved as a short, but we need only the last 8 bits
+        LLRPBitList result = le.subList(le.length() - parameterTypeLength,
+                parameterTypeLength);
+
+        // first bit must always be set to 1
+        result.set(0);
+        // call parameter specific encoding method
+        result.append(encodeBinarySpecific());
+
+        return result;
     }
 
     /**
      * function to be implemented
      *
-     * @param binary binary representation of this parameter
+     * @param binary
+     *            binary representation of this parameter
      */
     protected abstract void decodeBinarySpecific(LLRPBitList binary);
 

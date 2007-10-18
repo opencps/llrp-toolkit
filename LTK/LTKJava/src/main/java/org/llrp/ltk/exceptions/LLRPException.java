@@ -11,13 +11,14 @@
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and limitations under the License.
+ * See the License for the specific language governing permissions
+ * and limitations under the License.
  */
 package org.llrp.ltk.exceptions;
 
 
 /**
- * Main class of exceptions - any error is thrown as a LLRPException
+ * Main class of exceptions - any error is thrown as a LLRPException.
  *
  * @author Basil Gasser - ETH Zurich
  */
@@ -25,9 +26,9 @@ public class LLRPException extends RuntimeException {
     /**
          * Creates a new LLRPException object.
          *
-         * @param message
+         * @param message string
          */
-    public LLRPException(String message) {
+    public LLRPException(final String message) {
         super(message);
     }
 }

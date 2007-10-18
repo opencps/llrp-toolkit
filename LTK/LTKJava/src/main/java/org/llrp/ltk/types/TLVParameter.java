@@ -21,29 +21,34 @@ import org.llrp.ltk.exceptions.LLRPException;
 
 
 /**
- *  * TLV parameter have type values from 128 to 1024
+ * TLVParameter have type values from 128 to 1024 TLVParameters encode the
+ * length of a parameter when encoded. The binary encoding Is always: Reserved(6
+ * Bits) | Parameter Type (10 Bits) | Parameter Length (16 Bits) | Parameters
  *
  * @author gasserb
  */
 public abstract class TLVParameter extends LLRPParameter {
-    public static Logger logging = Logger.getLogger(TLVParameter.class);
-    public final int reservedLength = 6;
-    public final int typeNumberLength = 10;
-    public BitList reserved = new BitList(reservedLength);
+    private static Logger logging = Logger.getLogger(TLVParameter.class);
+    protected final int reservedLength = 6;
+    protected final int typeNumberLength = 10;
+    private BitList reserved = new BitList(reservedLength);
 
     /**
-     * create parameter from bitlist
+     * decodeBinary should be called from Constructor Taking binary encoded
+     * parameter as argument
      *
      * @param bits
      *
-     * @throws LLRPException in case of any error or unexpected behaviour
+     * @throws LLRPException
+     *             in case of any error or unexpected behaviour
      */
     public final void decodeBinary(LLRPBitList binary) {
         SignedShort tN = new SignedShort(binary.subList(reservedLength,
                     typeNumberLength));
 
         if (!tN.equals(getTypeNum())) {
-            //			LLRPMessage.logger.error("incorrect type. Expected "+getTypeNum().toShort()+" message indicates "+tN.toShort());
+            logging.error("incorrect type. Expected " + getTypeNum().toShort() +
+                " message indicates " + tN.toShort());
             throw new LLRPException("incorrect type. Expected " +
                 getTypeNum().toShort() + " message indicates " + tN.toShort());
         }
@@ -53,31 +58,40 @@ public abstract class TLVParameter extends LLRPParameter {
         bitLength = new UnsignedShort(8 * byteLength);
 
         if (bitLength.toShort() != binary.length()) {
-            //			LLRPMessage.logger.error("incorrect length. Expected "+bits.length()+" message indicates "+bitLength.toShort());
+            logging.error("incorrect length. Expected " + binary.length() +
+                " message indicates " + bitLength.toShort());
             throw new LLRPException("incorrect length");
         }
 
         int headLength = reservedLength + typeNumberLength +
             UnsignedShort.length();
+        // decodeBinarySpecific is called for parameter specific decoding. Each
+        // parameter must have implemented it
         decodeBinarySpecific(binary.subList(headLength,
                 binary.length() - headLength));
     }
 
     /**
-     * create binary representation of this binary
+     * create binary encoding of this parameter. Returns a LLRPBitList which can
+     * concatenated with binary encoding of other parameters to form a binary
+     * encoded messages
      *
      * @return LLRPBitList
      *
      * @throws LLRPException
      */
     public final LLRPBitList encodeBinary() {
+        //
         LLRPBitList result = new LLRPBitList();
         result.append(reserved.encodeBinary());
 
+        // encode everything that each parameter has
         LLRPBitList le = getTypeNum().encodeBinary();
         result.append(le.subList(reservedLength, typeNumberLength));
         result.append(bitLength.encodeBinary());
+        // call parameter specific encoding method
         result.append(encodeBinarySpecific());
+        // call finalize to set length correctly
         finalizeEncode(result);
 
         return result;
@@ -86,7 +100,8 @@ public abstract class TLVParameter extends LLRPParameter {
     /**
      * decoding function to be implemented by each parameter
      *
-     * @param binary binary representation of the parameter
+     * @param binary
+     *            binary representation of the parameter
      */
     protected abstract void decodeBinarySpecific(LLRPBitList binary);
 
@@ -98,7 +113,9 @@ public abstract class TLVParameter extends LLRPParameter {
     protected abstract LLRPBitList encodeBinarySpecific();
 
     /**
-     * finalize encoding by setting length of parameter
+     * finalize encoding by setting length of parameter Must be called at very
+     * end since length can not be known before message is completly encoded
+     *
      * @param result
      */
     private void finalizeEncode(LLRPBitList result) {

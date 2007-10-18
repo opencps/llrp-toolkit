@@ -73,11 +73,23 @@ public class Integer96 extends LLRPNumberType {
      * @param bitList
      */
     public void decodeBinary(LLRPBitList bitList) {
-        if (bitList.length() < length) {
-            bitList.pad(length - bitList.length());
-        }
+        String bitString = bitList.toString();
 
-        value = new BigInteger(bitList.toString(), 2);
+        //if first bit is set and list is exactly length bits long, its negative
+        // number is in 2's complement format
+        if ((bitString.length() == length) && (bitString.charAt(0) == '1')) {
+            //flip all bits
+            // add one
+            bitString = bitString.replaceAll("0", "#");
+            bitString = bitString.replaceAll("1", "0");
+            bitString = bitString.replaceAll("#", "1");
+            bitString = bitString.replaceFirst("0", "");
+            value = new BigInteger(bitString, 2);
+            value = value.add(new BigInteger("1"));
+            value = value.negate();
+        } else {
+            value = new BigInteger(bitString, 2);
+        }
     }
 
     @Override

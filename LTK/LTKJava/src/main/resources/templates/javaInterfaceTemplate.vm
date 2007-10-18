@@ -31,9 +31,29 @@ package org.llrp.ltk.generated.interfaces;
  */
 
 public interface $interface.getName() {
-
+	
+	/**
+	 * encode parameter to binary
+	 * @return LLRPBitList
+	 */	
 	public LLRPBitList encodeBinary();
-	public void decodeXML(Element element);
+
+	/**
+	 * encode parameter to xml
+	 * @return JDom Content object
+	 */
 	public Content encodeXML(String name);
+	
+	/**
+	 * decode parameter from binary
+	 * @param list
+	 */
+	public void decodeBinary(LLRPBitList list);
+	
+	/**
+	 * decode parameter from xml
+	 * @param element
+	 */
+	public void decodeXML(Element element);
 
 }

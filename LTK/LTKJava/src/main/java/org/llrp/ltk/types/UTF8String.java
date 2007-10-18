@@ -19,10 +19,6 @@ import org.jdom.Content;
 import org.jdom.Element;
 import org.jdom.Text;
 
-import org.llrp.ltk.exceptions.LLRPException;
-
-import java.io.UnsupportedEncodingException;
-
 
 /**
  * Strig with UT8 Encoding!
@@ -147,5 +143,9 @@ public class UTF8String extends LLRPType {
         element.setContent(new Text(string));
 
         return element;
+    }
+
+    public String toString() {
+        return string;
     }
 }

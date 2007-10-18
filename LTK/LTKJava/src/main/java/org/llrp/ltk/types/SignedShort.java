@@ -82,7 +82,22 @@ public class SignedShort extends LLRPNumberType {
      * @param bitList
      */
     public void decodeBinary(LLRPBitList bitList) {
-        value = Integer.parseInt(bitList.toString(), 2);
+        String bitString = bitList.toString();
+
+        //if first bit is set and list is exactly length bits long, its negative
+        // number is in 2's complement format
+        if ((bitString.length() == length) && (bitString.charAt(0) == '1')) {
+            //flip all bits
+            // add one
+            bitString = bitString.replaceAll("0", "#");
+            bitString = bitString.replaceAll("1", "0");
+            bitString = bitString.replaceAll("#", "1");
+            bitString = bitString.replaceFirst("0", "");
+            value = Integer.parseInt(bitString, 2) + 1;
+            value = -value;
+        } else {
+            value = Integer.parseInt(bitString, 2);
+        }
     }
 
     /**

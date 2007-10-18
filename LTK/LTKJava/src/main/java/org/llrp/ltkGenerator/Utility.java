@@ -1,9 +1,20 @@
 package org.llrp.ltkGenerator;
 
+import com.sun.org.apache.xerces.internal.dom.ElementNSImpl;
+
 import org.apache.log4j.Logger;
 
+import org.jdom.Element;
+
+import org.llrp.ltkGenerator.generated.Annotation;
 import org.llrp.ltkGenerator.generated.ChoiceDefinition;
 import org.llrp.ltkGenerator.generated.ChoiceParameterReference;
+import org.llrp.ltkGenerator.generated.Description;
+import org.llrp.ltkGenerator.generated.Documentation;
+import org.llrp.ltkGenerator.generated.MessageDefinition;
+import org.llrp.ltkGenerator.generated.ParameterDefinition;
+
+import org.w3c.dom.Node;
 
 import java.util.Collection;
 import java.util.Date;
@@ -176,7 +187,7 @@ public class Utility {
     }
 
     public boolean isArray(String type) {
-        return type.endsWith("Array");
+        return type.endsWith("Array") || type.toLowerCase().contains("utf8");
     }
 
     public boolean isByteToEnd(String type) {
@@ -332,5 +343,71 @@ public class Utility {
         Date date = new Date();
 
         return date.toString();
+    }
+
+    public String getAnnotation(Object o) {
+        String doc = "";
+
+        if (o instanceof MessageDefinition) {
+            MessageDefinition m = (MessageDefinition) o;
+            Annotation a = m.getAnnotation().get(0);
+            List<Object> list = a.getDocumentationOrDescription();
+
+            for (Object ob : list) {
+                doc += "* ";
+
+                if (ob instanceof Documentation) {
+                    doc += ((Documentation) ob).getContent().get(0).toString();
+                }
+
+                if (ob instanceof Description) {
+                    Object x = ((Description) ob).getContent().get(0);
+
+                    //allowed are only Element or String
+                    if (x instanceof ElementNSImpl) {
+                        ElementNSImpl el = (ElementNSImpl) x;
+                        doc += el.getTextContent();
+                    } else {
+                        doc += x.toString();
+                    }
+                }
+
+                doc += '\n';
+            }
+        }
+
+        if (o instanceof ParameterDefinition) {
+            ParameterDefinition m = (ParameterDefinition) o;
+            Annotation a = m.getAnnotation().get(0);
+            List<Object> list = a.getDocumentationOrDescription();
+
+            for (Object ob : list) {
+                doc += "* ";
+
+                if (ob instanceof Documentation) {
+                    doc += ((Documentation) ob).getContent().get(0).toString();
+                }
+
+                if (ob instanceof Description) {
+                    Object x = ((Description) ob).getContent().get(0);
+
+                    //allowed are only Element or String
+                    if (x instanceof ElementNSImpl) {
+                        ElementNSImpl el = (ElementNSImpl) x;
+                        doc += el.getTextContent();
+                    } else {
+                        doc += x.toString();
+                    }
+                }
+
+                doc += '\n';
+            }
+        }
+
+        if (doc.equals("")) {
+            return "no documentation found";
+        } else {
+            return doc;
+        }
     }
 }

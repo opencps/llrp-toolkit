@@ -11,14 +11,15 @@
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and limitations under the License.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.llrp.ltk.exceptions;
 
 
 /**
  * IllegalBitList Exception is thrown whenever a LLRPBitList is not in
- * an expected format - this mainly happens during decoding
+ * an expected format - this mainly happens during decoding.
  *
  * @author Basil Gasser - ETH Zurich
  */
@@ -26,9 +27,9 @@ public class IllegalBitListException extends LLRPException {
     /**
          * Creates a new IllegalBitListException object.
          *
-         * @param message
+         * @param message with information
          */
-    public IllegalBitListException(String message) {
+    public IllegalBitListException(final String message) {
         super(message);
     }
 }
