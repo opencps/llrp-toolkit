@@ -125,7 +125,7 @@ public class CodeFormatter {
         }
 
         CodeFormatter formatter = new CodeFormatter(propertiesFile);
-        File file = new File(formatter.properties.getProperty("sourceFolder"));
+        File file = new File(formatter.properties.getProperty("generatedBase"));
         formatter.formatDirectory(file);
     }
 }
