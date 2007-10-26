@@ -115,9 +115,9 @@ public class $enum.getName() extends $utility.getSuperType($enum.getName()) impl
 	 * @throw IllegalArgumentException
 	 * if the value found for given String is not allowed
 	 * for this enumeration.
-	 * @param name
+	 * @param name set this enumeration to hold one of the allowed values
 	 */
-	public void set(final String name){
+	public final void set(final String name){
 		if (!isValidName(name)) throw new IllegalArgumentException("name not allowed");
 		value = getValue(name);
 	}
@@ -129,9 +129,9 @@ public class $enum.getName() extends $utility.getSuperType($enum.getName()) impl
 	 * @throw IllegalArgumentException
 	 * if the value is not allowed
 	 * for this enumeration.
-	 * @param value
+	 * @param value to be set 
 	 */	
-	public void set(final Integer value){
+	public final void set(final Integer value){
 		if (!isValidValue(value)) throw new IllegalArgumentException("value not allowed");
 		this.value = value;
 	}
@@ -213,4 +213,15 @@ public class $enum.getName() extends $utility.getSuperType($enum.getName()) impl
 			return false;
 		}
 		
+	 
+		
+		    /**
+     * number of bits used to represent this type.
+     *
+     * @return Integer
+     */
+    public static Integer length() {
+    	#set($length = ".length()")
+        return $utility.getSuperType($enum.getName())$length; 
+    }
 }
