@@ -10,6 +10,8 @@ import org.apache.velocity.exception.MethodInvocationException;
 import org.apache.velocity.exception.ParseErrorException;
 import org.apache.velocity.exception.ResourceNotFoundException;
 
+import org.llrp.ltk.types.LLRPMessage;
+
 import org.llrp.ltkGenerator.generated.ChoiceDefinition;
 import org.llrp.ltkGenerator.generated.CustomMessageDefinition;
 import org.llrp.ltkGenerator.generated.CustomParameterDefinition;
@@ -42,9 +44,11 @@ public class CodeGenerator {
 
     /**
      * instantiate new code generate - probably want to call generate after.
+     * @param propertiesFile path to properties file
      */
     public CodeGenerator(String propertiesFile) {
         try {
+            System.out.println(System.getProperty("user.dir"));
             properties = new Properties();
             properties.load(new FileInputStream(propertiesFile));
             PropertyConfigurator.configure(properties);
@@ -76,8 +80,15 @@ public class CodeGenerator {
         String jaxBPackage = properties.getProperty("jaxBPackage");
         String llrpSchemaPath = properties.getProperty("llrpSchema");
         String llrpXMLPath = properties.getProperty("llrpXML");
+        String extensionsPath = properties.getProperty("extensionXMLs");
+
+        if (extensionsPath == null) {
+            // if no extensions provided it is null - avoid null pointer exception
+            extensionsPath = "";
+        }
+
         LlrpDefinition llrp = LLRPUnmarshaller.getLLRPDefinition(jaxBPackage,
-                llrpSchemaPath, llrpXMLPath);
+                llrpSchemaPath, llrpXMLPath, extensionsPath);
         logger.debug("finished retrieving llrp definitions");
         logger.debug("start filling objects");
         fillObjects(llrp);
@@ -106,6 +117,7 @@ public class CodeGenerator {
     }
 
     private void generateMessages() {
+        // set xml schema location in LLRPMessage. This is necessary to validate xml messages
         logger.debug(messages.size() + " messages to generate");
         logger.debug("using template " +
             properties.getProperty("messageTemplate"));
@@ -117,6 +129,8 @@ public class CodeGenerator {
                 VelocityContext context = new VelocityContext();
                 context.put("message", m);
                 context.put("utility", utility);
+                context.put("XMLSCHEMALOCATION",
+                    properties.getProperty("messageSchema"));
 
                 Template template = Velocity.getTemplate(properties.getProperty(
                             "messageTemplate"));
@@ -127,19 +141,19 @@ public class CodeGenerator {
                 writer.flush();
                 writer.close();
             } catch (ResourceNotFoundException e) {
-                logger.equals("Exception while generating code: " +
+                logger.error("Exception while generating code: " +
                     e.getLocalizedMessage() + " caused by " + e.getCause());
             } catch (ParseErrorException e) {
-                logger.equals("Exception while generating code: " +
+                logger.error("Exception while generating code: " +
                     e.getLocalizedMessage() + " caused by " + e.getCause());
             } catch (MethodInvocationException e) {
-                logger.equals("Exception while generating code: " +
+                logger.error("Exception while generating code: " +
                     e.getLocalizedMessage() + " caused by " + e.getCause());
             } catch (IOException e) {
-                logger.equals("Exception while generating code: " +
+                logger.error("Exception while generating code: " +
                     e.getLocalizedMessage() + " caused by " + e.getCause());
             } catch (Exception e) {
-                logger.equals("Exception while generating code: " +
+                logger.error("Exception while generating code: " +
                     e.getLocalizedMessage() + " caused by " + e.getCause());
             }
         }
@@ -169,19 +183,19 @@ public class CodeGenerator {
                 writer.flush();
                 writer.close();
             } catch (ResourceNotFoundException e) {
-                logger.equals("Exception while generating code: " +
+                logger.error("Exception while generating code: " +
                     e.getLocalizedMessage() + " caused by " + e.getCause());
             } catch (ParseErrorException e) {
-                logger.equals("Exception while generating code: " +
+                logger.error("Exception while generating code: " +
                     e.getLocalizedMessage() + " caused by " + e.getCause());
             } catch (MethodInvocationException e) {
-                logger.equals("Exception while generating code: " +
+                logger.error("Exception while generating code: " +
                     e.getLocalizedMessage() + " caused by " + e.getCause());
             } catch (IOException e) {
-                logger.equals("Exception while generating code: " +
+                logger.error("Exception while generating code: " +
                     e.getLocalizedMessage() + " caused by " + e.getCause());
             } catch (Exception e) {
-                logger.equals("Exception while generating code: " +
+                logger.error("Exception while generating code: " +
                     e.getLocalizedMessage() + " caused by " + e.getCause());
             }
         }
@@ -209,19 +223,19 @@ public class CodeGenerator {
                 writer.flush();
                 writer.close();
             } catch (ResourceNotFoundException e) {
-                logger.equals("Exception while generating code: " +
+                logger.error("Exception while generating code: " +
                     e.getLocalizedMessage() + " caused by " + e.getCause());
             } catch (ParseErrorException e) {
-                logger.equals("Exception while generating code: " +
+                logger.error("Exception while generating code: " +
                     e.getLocalizedMessage() + " caused by " + e.getCause());
             } catch (MethodInvocationException e) {
-                logger.equals("Exception while generating code: " +
+                logger.error("Exception while generating code: " +
                     e.getLocalizedMessage() + " caused by " + e.getCause());
             } catch (IOException e) {
-                logger.equals("Exception while generating code: " +
+                logger.error("Exception while generating code: " +
                     e.getLocalizedMessage() + " caused by " + e.getCause());
             } catch (Exception e) {
-                logger.equals("Exception while generating code: " +
+                logger.error("Exception while generating code: " +
                     e.getLocalizedMessage() + " caused by " + e.getCause());
             }
         }
@@ -249,19 +263,19 @@ public class CodeGenerator {
                 writer.flush();
                 writer.close();
             } catch (ResourceNotFoundException e) {
-                logger.equals("Exception while generating code: " +
+                logger.error("Exception while generating code: " +
                     e.getLocalizedMessage() + " caused by " + e.getCause());
             } catch (ParseErrorException e) {
-                logger.equals("Exception while generating code: " +
+                logger.error("Exception while generating code: " +
                     e.getLocalizedMessage() + " caused by " + e.getCause());
             } catch (MethodInvocationException e) {
-                logger.equals("Exception while generating code: " +
+                logger.error("Exception while generating code: " +
                     e.getLocalizedMessage() + " caused by " + e.getCause());
             } catch (IOException e) {
-                logger.equals("Exception while generating code: " +
+                logger.error("Exception while generating code: " +
                     e.getLocalizedMessage() + " caused by " + e.getCause());
             } catch (Exception e) {
-                logger.equals("Exception while generating code: " +
+                logger.error("Exception while generating code: " +
                     e.getLocalizedMessage() + " caused by " + e.getCause());
             }
         }
@@ -290,19 +304,19 @@ public class CodeGenerator {
                 writer.flush();
                 writer.close();
             } catch (ResourceNotFoundException e) {
-                logger.equals("Exception while generating code: " +
+                logger.error("Exception while generating code: " +
                     e.getLocalizedMessage() + " caused by " + e.getCause());
             } catch (ParseErrorException e) {
-                logger.equals("Exception while generating code: " +
+                logger.error("Exception while generating code: " +
                     e.getLocalizedMessage() + " caused by " + e.getCause());
             } catch (MethodInvocationException e) {
-                logger.equals("Exception while generating code: " +
+                logger.error("Exception while generating code: " +
                     e.getLocalizedMessage() + " caused by " + e.getCause());
             } catch (IOException e) {
-                logger.equals("Exception while generating code: " +
+                logger.error("Exception while generating code: " +
                     e.getLocalizedMessage() + " caused by " + e.getCause());
             } catch (Exception e) {
-                logger.equals("Exception while generating code: " +
+                logger.error("Exception while generating code: " +
                     e.getLocalizedMessage() + " caused by " + e.getCause());
             }
         }
@@ -331,19 +345,19 @@ public class CodeGenerator {
                 writer.flush();
                 writer.close();
             } catch (ResourceNotFoundException e) {
-                logger.equals("Exception while generating code: " +
+                logger.error("Exception while generating code: " +
                     e.getLocalizedMessage() + " caused by " + e.getCause());
             } catch (ParseErrorException e) {
-                logger.equals("Exception while generating code: " +
+                logger.error("Exception while generating code: " +
                     e.getLocalizedMessage() + " caused by " + e.getCause());
             } catch (MethodInvocationException e) {
-                logger.equals("Exception while generating code: " +
+                logger.error("Exception while generating code: " +
                     e.getLocalizedMessage() + " caused by " + e.getCause());
             } catch (IOException e) {
-                logger.equals("Exception while generating code: " +
+                logger.error("Exception while generating code: " +
                     e.getLocalizedMessage() + " caused by " + e.getCause());
             } catch (Exception e) {
-                logger.equals("Exception while generating code: " +
+                logger.error("Exception while generating code: " +
                     e.getLocalizedMessage() + " caused by " + e.getCause());
             }
         }
@@ -384,7 +398,5 @@ public class CodeGenerator {
 
         CodeGenerator cg = new CodeGenerator(propertiesFile);
         cg.generate();
-
-        //        CodeFormatter.formatDirectory(new File(properties.getProperty("generatedBase")));;
     }
 }

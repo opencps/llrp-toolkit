@@ -37,27 +37,28 @@ public class LLRPUnmarshaller {
     private static final String JAXP_SCHEMA_LANGUAGE = "http://java.sun.com/xml/jaxp/properties/schemaLanguage";
     private static final String JAXP_SCHEMA_LOCATION = "http://java.sun.com/xml/jaxp/properties/schemaSource";
     private static final String W3C_XML_SCHEMA = "http://www.w3.org/2001/XMLSchema";
-    private static Logger logger = CodeGenerator.logger;
+    private static final Logger LOGGER = Logger.getLogger(LLRPUnmarshaller.class);
 
+    @SuppressWarnings("unchecked")
     public static LlrpDefinition getLLRPDefinition(String jaxBPackage,
-        String llrpSchemaPath, String llrpXMLPath) {
+        String llrpSchemaPath, String llrpXMLPath, String extensionsPath) {
         Object o = null;
         LlrpDefinition def = null;
 
         try {
-            logger.debug("set JaxBContext to " + jaxBPackage);
+            LOGGER.debug("set JaxBContext to " + jaxBPackage);
 
             JAXBContext context = JAXBContext.newInstance(jaxBPackage);
-            logger.debug("create Unmarshaller ");
+            LOGGER.debug("create Unmarshaller ");
 
             Unmarshaller unmarshaller = context.createUnmarshaller();
             SchemaFactory sf = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
             Schema schema = sf.newSchema(new File(llrpSchemaPath));
-            logger.debug("set schema file: " + llrpSchemaPath);
+            LOGGER.debug("set schema file: " + llrpSchemaPath);
             unmarshaller.setSchema(schema);
-            o = unmarshaller.unmarshal(new File(llrpXMLPath));
+            //o = unmarshaller.unmarshal(new File(llrpXMLPath));
+            o = unmarshaller.unmarshal(createOne(llrpXMLPath, extensionsPath));
 
-            //            o = unmarshaller.unmarshal(createOne());
             if (o instanceof LlrpDefinition) {
                 def = (LlrpDefinition) o;
             } else {
@@ -74,45 +75,42 @@ public class LLRPUnmarshaller {
         return def;
     }
 
-    public static InputStream createOne() {
-        logger.debug("combine llrp xml with vendor extensions");
-
-        Properties properties = new Properties();
-
-        try {
-            properties.load(new FileInputStream("generator.properties"));
-        } catch (IOException e) {
-        }
+    @SuppressWarnings("unchecked")
+    public static InputStream createOne(String llrpXMLPath,
+        String extensionsPath) {
+        LOGGER.debug("combine llrp xml with vendor extensions");
 
         try {
             // ---- Read XML file ----
             SAXBuilder builder = new SAXBuilder();
-            logger.debug("read llrp XML into Sax Document ");
-            logger.debug("llrp xml is " + properties.getProperty("llrpXML"));
+            LOGGER.debug("read llrp XML into Sax Document ");
+            LOGGER.debug("llrp xml is " + llrpXMLPath);
 
-            Document doc = builder.build(properties.getProperty("llrpXML"));
+            Document doc = builder.build(llrpXMLPath);
 
-            // ---- Modify XML data ----
-            String extensionsString = properties.getProperty("extensionXMLs");
-            String[] extensions = extensionsString.split(";");
+            // if string is not empty or holding semicolon only
+            if (extensionsPath.length() > 1) {
+                // ---- Modify XML data ----
+                String[] extensions = extensionsPath.split(";");
 
-            for (int i = 0; i < extensions.length; i++) {
-                logger.debug("add vendor extension " + extensions[i]);
+                for (int i = 0; i < extensions.length; i++) {
+                    LOGGER.debug("add vendor extension " + extensions[i]);
 
-                Document temp = builder.build(extensions[i]);
-                List<Element> children = new LinkedList(temp.getRootElement()
-                                                            .getChildren());
+                    Document temp = builder.build(extensions[i]);
+                    List<Element> children = new LinkedList<Element>(temp.getRootElement()
+                                                                         .getChildren());
 
-                for (Element child : children) {
-                    temp.getRootElement().removeContent(child);
-                    doc.getRootElement().addContent(child);
+                    for (Element child : children) {
+                        temp.getRootElement().removeContent(child);
+                        doc.getRootElement().addContent(child);
+                    }
                 }
             }
 
             XMLOutputter output = new XMLOutputter();
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
             output.output(doc, stream);
-            logger.debug("finished combining xml - writing to stream");
+            LOGGER.debug("finished combining xml - writing to stream");
 
             byte[] a = stream.toByteArray();
             InputStream is = new ByteArrayInputStream(a);

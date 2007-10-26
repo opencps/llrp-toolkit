@@ -2,12 +2,8 @@ package org.llrp.ltkGenerator;
 
 import de.hunsicker.jalopy.Jalopy;
 
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.FileAppender;
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
-import org.apache.log4j.SimpleLayout;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -37,7 +33,7 @@ public class CodeFormatter {
 
     /**
      * format code - provide file or directory.
-     * @param file
+     * @param file to be formatted
      */
     public void format(File file) {
         logger.debug("start formating at folder " + file.getName());
@@ -47,7 +43,7 @@ public class CodeFormatter {
 
     /**
      * format files within a directory.
-     * @param directory
+     * @param directory to be formatted
      */
     private void formatDirectory(File directory) {
         String[] children = directory.list();
@@ -73,7 +69,7 @@ public class CodeFormatter {
     /**
      * format a file
      *
-     * @param file
+     * @param file to be formatted
      */
     private void formatFile(File file) {
         // create a new Jalopy instance with the currently active code convention settings
@@ -112,7 +108,7 @@ public class CodeFormatter {
     /**
      * set up logger and read properties, then format files in source Folder (see properties file to specify source folder location)
      *
-     * @param args
+     * @param args of main
      */
     public static void main(String[] args) {
         String propertiesFile = null;
@@ -125,7 +121,7 @@ public class CodeFormatter {
         }
 
         CodeFormatter formatter = new CodeFormatter(propertiesFile);
-        File file = new File(formatter.properties.getProperty("generatedBase"));
+        File file = new File(formatter.properties.getProperty("sourceFolder"));
         formatter.formatDirectory(file);
     }
 }

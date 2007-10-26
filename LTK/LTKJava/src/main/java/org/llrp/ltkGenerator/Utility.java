@@ -44,8 +44,8 @@ public class Utility {
 
     /**
      * check if object o has type s
-     * @param o
-     * @param s
+     * @param o to check for type s
+     * @param s name of type to be checked fo
      * @return
      */
     public boolean hasType(Object o, String s) {
@@ -66,7 +66,7 @@ public class Utility {
 
     /**
      * match between types used in xml file and llrp types
-     * @param xmlType
+     * @param xmlType to convert
      * @return
      */
     public String convertType(String xmlType) {
@@ -75,8 +75,8 @@ public class Utility {
 
     /**
      * match between types used in xml file and llrp types - specify if it is an enumeration
-     * @param xmlType
-     * @param isEnum
+     * @param xmlType found in xml
+     * @param isEnum indicate if type is enumeration
      * @return
      */
     public String convertType(String xmlType, boolean isEnum) {
@@ -196,7 +196,7 @@ public class Utility {
 
     /**
      * get base type of an array
-     * @param arrayType
+     * @param arrayType name
      * @return
      */
     public String arrayBaseType(String arrayType) {
@@ -291,7 +291,7 @@ public class Utility {
 
     /**
      * return a list of custom parameters that are allowed for this parameter
-     * @param type
+     * @param type for which to get custom parameters
      * @return
      */
     public List<String> allowedCustom(String type) {
@@ -304,11 +304,11 @@ public class Utility {
         return result;
     }
 
-    public int getLength(Collection l) {
+    public int getLength(Collection<Object> l) {
         return l.size();
     }
 
-    public boolean isEmptyCollection(Collection c) {
+    public boolean isEmptyCollection(Collection<Object> c) {
         return c.isEmpty();
     }
 
