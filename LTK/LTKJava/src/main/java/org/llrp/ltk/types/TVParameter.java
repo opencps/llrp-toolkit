@@ -33,7 +33,7 @@ public abstract class TVParameter extends LLRPParameter {
      * decodeBinary should be called from Constructor Taking binary encoded
      * parameter as argument.
      *
-     * @param bits
+     * @param bits to be decoded
      *
      * @throw LLRPException
      *             in case of any error or unexpected behaviour

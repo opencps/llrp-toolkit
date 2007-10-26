@@ -30,13 +30,13 @@ import java.math.BigInteger;
 public class UnsignedInteger extends LLRPNumberType {
     // value interpreted as unsigned Integer
     // leading zero not sign but number
-    private static final Integer length = 32;
+    private static final Integer LENGTH = 32;
     protected BigInteger value;
 
     /**
      * Creates a new UnsignedInteger object from Java Integer - might loose precision
      *
-     * @param value
+     * @param value to set
      */
     public UnsignedInteger(Integer value) {
         this.value = new BigInteger(value.toString());
@@ -46,7 +46,7 @@ public class UnsignedInteger extends LLRPNumberType {
     /**
      * Creates a new UnsignedInteger object.
      *
-     * @param value
+     * @param valueString value as string
      */
     public UnsignedInteger(String valueString) {
         value = new BigInteger(valueString);
@@ -63,7 +63,7 @@ public class UnsignedInteger extends LLRPNumberType {
     /**
      * Creates a new UnsignedInteger object.
      *
-     * @param bitList
+     * @param bitList to be decoded
      */
     public UnsignedInteger(LLRPBitList bitList) {
         decodeBinary(bitList);
@@ -73,7 +73,7 @@ public class UnsignedInteger extends LLRPNumberType {
     /**
      * Creates a new UnsignedInteger object from jdom element - used for xml decoding
      *
-     * @param bitList
+     * @param element to be decoded
      */
     public UnsignedInteger(Element element) {
         decodeXML(element);
@@ -82,7 +82,7 @@ public class UnsignedInteger extends LLRPNumberType {
     /**
      * decode to binary representation
      *
-     * @param bitList
+     * @param bitList to be decoded
      */
     public void decodeBinary(LLRPBitList bitList) {
         value = new BigInteger(bitList.toString(), 2);
@@ -94,7 +94,7 @@ public class UnsignedInteger extends LLRPNumberType {
      * @return Integer
      */
     public static Integer length() {
-        return length;
+        return LENGTH;
     }
 
     /**
@@ -125,11 +125,11 @@ public class UnsignedInteger extends LLRPNumberType {
     public LLRPBitList encodeBinary() {
         LLRPBitList result = new LLRPBitList(value.toString(2));
 
-        if (result.length() < length) {
-            result.pad(length - result.length());
+        if (result.length() < LENGTH) {
+            result.pad(LENGTH - result.length());
         }
 
-        return result.subList(result.length() - length, length);
+        return result.subList(result.length() - LENGTH, LENGTH);
     }
 
     @Override

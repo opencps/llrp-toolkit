@@ -31,7 +31,7 @@ public class UnsignedShortArray extends LLRPType {
     /**
          * Creates a new UnsignedShortArray object.
          *
-         * @param shorts
+         * @param shorts to create array from
          */
     public UnsignedShortArray(UnsignedShort[] shorts) {
         this.shorts = shorts.clone();
@@ -40,7 +40,7 @@ public class UnsignedShortArray extends LLRPType {
     /**
      * Creates a new UnsignedShortArray object from jdom element - used for xml decoding
      *
-     * @param bitList
+     * @param element to be decoded
      */
     public UnsignedShortArray(Element element) {
         decodeXML(element);
@@ -49,7 +49,7 @@ public class UnsignedShortArray extends LLRPType {
     /**
          * Creates a new UnsignedShortArray object.
          *
-         * @param length
+         * @param length of array
          */
     public UnsignedShortArray(Integer length) {
         shorts = new UnsignedShort[length];
@@ -57,6 +57,7 @@ public class UnsignedShortArray extends LLRPType {
 
     /**
          * first 16 bits of LLRPBitlist must indicate number of entries that follow
+         * @param bits  to be decoded
          */
     public UnsignedShortArray(LLRPBitList bits) {
         decodeBinary(bits);
@@ -72,7 +73,7 @@ public class UnsignedShortArray extends LLRPType {
     /**
      * first 16 bits of LLRPBitlist must indicate number of entries that follow
      *
-     * @param list
+     * @param list to be decoded
      */
     public void decodeBinary(LLRPBitList list) {
         Integer length = new SignedInteger(list.subList(0, 16)).toInteger();
@@ -103,14 +104,14 @@ public class UnsignedShortArray extends LLRPType {
     /**
      * compare each element
      *
-     * @param other
+     * @param other to compare
      *
      * @return boolean
      */
     public boolean equals(LLRPType other) {
         UnsignedShortArray ba = (UnsignedShortArray) other;
 
-        if (ba.length() != this.length()) {
+        if (!ba.size().equals(this.size())) {
             return false;
         }
 
@@ -126,7 +127,7 @@ public class UnsignedShortArray extends LLRPType {
     /**
      * get UnsignedShort at specified position
      *
-     * @param i
+     * @param i position
      *
      * @return UnsignedShort
      */
@@ -164,8 +165,8 @@ public class UnsignedShortArray extends LLRPType {
     /**
      * set UnsignedShort at given location
      *
-     * @param i
-     * @param b
+     * @param i position
+     * @param b UnsignedShort to be set
      */
     public void set(Integer i, UnsignedShort b) {
         if ((i < 0) || (i > shorts.length)) {
@@ -190,7 +191,12 @@ public class UnsignedShortArray extends LLRPType {
 
         for (UnsignedShort b : shorts) {
             s += " ";
-            s += b.toInteger().toString();
+
+            if (b != null) {
+                s += b.toInteger().toString();
+            } else {
+                s += "x";
+            }
         }
 
         s = s.replaceFirst(" ", "");
@@ -210,5 +216,16 @@ public class UnsignedShortArray extends LLRPType {
         for (int i = 0; i < strings.length; i++) {
             shorts[i] = new UnsignedShort(strings[i]);
         }
+    }
+
+    public void add(UnsignedShort aShort) {
+        UnsignedShort[] newShorts = new UnsignedShort[shorts.length + 1];
+        System.arraycopy(shorts, 0, newShorts, 0, shorts.length);
+        newShorts[shorts.length] = aShort;
+        shorts = newShorts;
+    }
+
+    public int hashCode() {
+        return shorts.hashCode();
     }
 }

@@ -31,16 +31,16 @@ public class UnsignedIntegerArray extends LLRPType {
     /**
          * Creates a new UnsignedIntegerArray object.
          *
-         * @param Integers
+         * @param ints to create UsnignedIntegerArray from
          */
-    public UnsignedIntegerArray(UnsignedInteger[] Integers) {
-        this.integers = Integers.clone();
+    public UnsignedIntegerArray(UnsignedInteger[] ints) {
+        this.integers = ints.clone();
     }
 
     /**
      * Creates a new UnsignedIntegerArray object from jdom element - used for xml decoding
      *
-     * @param bitList
+     * @param element to be decoded
      */
     public UnsignedIntegerArray(Element element) {
         decodeXML(element);
@@ -49,7 +49,7 @@ public class UnsignedIntegerArray extends LLRPType {
     /**
          * Creates a new UnsignedIntegerArray object.
          *
-         * @param length
+         * @param length of array
          */
     public UnsignedIntegerArray(Integer length) {
         integers = new UnsignedInteger[length];
@@ -57,6 +57,7 @@ public class UnsignedIntegerArray extends LLRPType {
 
     /**
          * first 16 bits of LLRPBitlist must indicate number of entries that follow
+         * @param bits  to be decoded
          */
     public UnsignedIntegerArray(LLRPBitList bits) {
         decodeBinary(bits);
@@ -106,7 +107,7 @@ public class UnsignedIntegerArray extends LLRPType {
     /**
      * first 16 bits of LLRPBitlist must indicate number of entries that follow
      *
-     * @param list
+     * @param list to be decoded
      */
     public void decodeBinary(LLRPBitList list) {
         Integer length = new SignedInteger(list.subList(0,
@@ -122,7 +123,7 @@ public class UnsignedIntegerArray extends LLRPType {
     /**
      * get UnsignedInteger at specified position
      *
-     * @param i
+     * @param i position
      *
      * @return UnsignedInteger
      */
@@ -133,8 +134,8 @@ public class UnsignedIntegerArray extends LLRPType {
     /**
      * set UnsignedInteger at i to b
      *
-     * @param i
-     * @param b
+     * @param i position
+     * @param b unsignedInteger to be set
      */
     public void set(Integer i, UnsignedInteger b) {
         if ((i < 0) || (i > integers.length)) {
@@ -179,5 +180,13 @@ public class UnsignedIntegerArray extends LLRPType {
         for (int i = 0; i < strings.length; i++) {
             integers[i] = new UnsignedInteger(strings[i]);
         }
+    }
+
+    public void add(UnsignedInteger aInteger) {
+        UnsignedInteger[] newIntegers = new UnsignedInteger[integers.length +
+            1];
+        System.arraycopy(integers, 0, newIntegers, 0, integers.length);
+        newIntegers[integers.length] = aInteger;
+        integers = newIntegers;
     }
 }

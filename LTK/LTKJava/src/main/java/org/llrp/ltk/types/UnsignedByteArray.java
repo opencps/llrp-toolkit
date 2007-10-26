@@ -26,21 +26,21 @@ import org.jdom.Text;
  * @author gasserb
  */
 public class UnsignedByteArray extends LLRPType {
-    private LLRPInteger[] bytes;
+    private UnsignedByte[] bytes;
 
     /**
          * Creates a new UnsignedByteArray object.
          *
-         * @param bytes
+         * @param bytes to create UnsignedByteArray
          */
-    public UnsignedByteArray(LLRPInteger[] bytes) {
+    public UnsignedByteArray(UnsignedByte[] bytes) {
         this.bytes = bytes.clone();
     }
 
     /**
      * Creates a new UnsignedByteArray object from jdom element - used for xml decoding
      *
-     * @param bitList
+     * @param element to be decoded
      */
     public UnsignedByteArray(Element element) {
         decodeXML(element);
@@ -48,21 +48,22 @@ public class UnsignedByteArray extends LLRPType {
 
     /**
          * all values initially set to 0
-         * @param length
+         * @param length of array
          */
     public UnsignedByteArray(Integer length) {
-        bytes = new LLRPInteger[length];
+        bytes = new UnsignedByte[length];
     }
 
     /**
          * Creates a new UnsignedByteArray object.
          */
     public UnsignedByteArray() {
-        bytes = new LLRPInteger[0];
+        bytes = new UnsignedByte[0];
     }
 
     /**
          * create ByteArray from BitList. First 16 Bits must be length of ByteArray
+         * @param list to be decoded
          */
     public UnsignedByteArray(LLRPBitList list) {
         decodeBinary(list);
@@ -71,13 +72,13 @@ public class UnsignedByteArray extends LLRPType {
     /**
          * Creates a new UnsignedByteArray object.
          *
-         * @param bytes
+         * @param bytes to create UnsignedByteArray
          */
     public UnsignedByteArray(byte[] bytes) {
-        this.bytes = new LLRPInteger[bytes.length];
+        this.bytes = new UnsignedByte[bytes.length];
 
         for (Integer i = 0; i < bytes.length; i++) {
-            this.bytes[i] = new LLRPInteger(bytes[i]);
+            this.bytes[i] = new UnsignedByte(bytes[i]);
         }
     }
 
@@ -118,37 +119,37 @@ public class UnsignedByteArray extends LLRPType {
     /**
      * first 16 bits must be number of Bytes that follow
      *
-     * @param list
+     * @param list to be decoded
      */
     @Override
     public void decodeBinary(LLRPBitList list) {
         Integer length = new SignedShort(list.subList(0, SignedShort.length())).toInteger();
-        bytes = new LLRPInteger[length];
+        bytes = new UnsignedByte[length];
 
         for (Integer i = 1; i <= length; i++) {
-            bytes[i - 1] = new LLRPInteger(list.subList(
-                        i * LLRPInteger.length(), LLRPInteger.length()));
+            bytes[i - 1] = new UnsignedByte(list.subList(
+                        i * UnsignedByte.length(), UnsignedByte.length()));
         }
     }
 
     /**
      * get UnsignedByte at specified position
      *
-     * @param i
+     * @param i position
      *
      * @return LLRPInteger
      */
-    public LLRPInteger get(Integer i) {
+    public UnsignedByte get(Integer i) {
         return bytes[i];
     }
 
     /**
      * set Byte at provided position to provided byte
      *
-     * @param i
-     * @param b
+     * @param i position
+     * @param b byte to be set
      */
-    public void set(Integer i, LLRPInteger b) {
+    public void set(Integer i, UnsignedByte b) {
         if ((i < 0) || (i > bytes.length)) {
             return;
         } else {
@@ -169,7 +170,7 @@ public class UnsignedByteArray extends LLRPType {
     public Content encodeXML(String name) {
         String s = "";
 
-        for (LLRPInteger b : bytes) {
+        for (UnsignedByte b : bytes) {
             s += " ";
             s += b.toInteger().toString();
         }
@@ -186,10 +187,17 @@ public class UnsignedByteArray extends LLRPType {
     public void decodeXML(Element element) {
         String text = element.getText();
         String[] strings = text.split(" ");
-        bytes = new LLRPInteger[strings.length];
+        bytes = new UnsignedByte[strings.length];
 
         for (int i = 0; i < strings.length; i++) {
-            bytes[i] = new LLRPInteger(strings[i]);
+            bytes[i] = new UnsignedByte(strings[i]);
         }
+    }
+
+    public void add(UnsignedByte aByte) {
+        UnsignedByte[] newBytes = new UnsignedByte[bytes.length + 1];
+        System.arraycopy(bytes, 0, newBytes, 0, bytes.length);
+        newBytes[bytes.length] = aByte;
+        bytes = newBytes;
     }
 }

@@ -31,7 +31,7 @@ public class TwoBitField extends LLRPType {
 
     /**
          * Generate a list of bits
-         * @param bits
+         * @param bits to be decoded
          */
     public TwoBitField(Bit[] bits) {
         this.bits = new Bit[length];
@@ -42,7 +42,7 @@ public class TwoBitField extends LLRPType {
     /**
          * Creates a new TwoBitField object.
          *
-         * @param list
+         * @param list to be decoded
          */
     public TwoBitField(LLRPBitList list) {
         this.bits = new Bit[length];
@@ -62,6 +62,7 @@ public class TwoBitField extends LLRPType {
 
     /**
      * Creates a new TwoBitField object.
+     * @param element to be decoded
      */
     public TwoBitField(Element element) {
         decodeXML(element);
@@ -70,7 +71,7 @@ public class TwoBitField extends LLRPType {
     /**
      * set Bit at specified position to 0
      *
-     * @param i
+     * @param i position to be set to 0
      */
     public void clear(Integer i) {
         if ((i < 0) || (i > bits.length)) {
@@ -111,7 +112,7 @@ public class TwoBitField extends LLRPType {
     /**
      * decode bits from BitList. Length must not be provided
      *
-     * @param list
+     * @param list to be decoded
      */
     @Override
     public void decodeBinary(LLRPBitList list) {
@@ -125,7 +126,7 @@ public class TwoBitField extends LLRPType {
     /**
      * get bit at I
      *
-     * @param i
+     * @param i position to be returned
      *
      * @return bIT
      */
@@ -136,7 +137,7 @@ public class TwoBitField extends LLRPType {
     /**
      * set Bit at specified position to 1
      *
-     * @param i
+     * @param i position to be set to 1
      */
     public void set(Integer i) {
         if ((i < 0) || (i > bits.length)) {

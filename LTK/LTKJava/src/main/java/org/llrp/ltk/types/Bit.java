@@ -21,16 +21,16 @@ import org.jdom.Text;
 
 
 /**
- * A single bit
+ * A single bit.
  *
  * @author Basil Gasser - ETH Zurich
  */
 public class Bit extends LLRPNumberType {
-    private static final Integer length = 1;
+    private static final Integer LENGTH = 1;
     protected Integer value;
 
     /**
-     * initially set to 0
+     * initially set to 0.
      */
     public Bit() {
         value = 0;
@@ -38,7 +38,7 @@ public class Bit extends LLRPNumberType {
     }
 
     /**
-     * create a bit
+     * create a bit.
      *
      * @param x -
      *            everything but 0 is Integererpreted as 1
@@ -54,7 +54,7 @@ public class Bit extends LLRPNumberType {
     }
 
     /**
-     * create a bit
+     * create a bit.
      *
      * @param x -
      *            everything but 0 is Integererpreted as 1
@@ -70,7 +70,7 @@ public class Bit extends LLRPNumberType {
     }
 
     /**
-     * create a bit. Look at first bit of list only
+     * create a bit. Look at first bit of list only.
      *
      * @param bitList -
      *            everything but 0 is Integererpreted as 1
@@ -86,7 +86,8 @@ public class Bit extends LLRPNumberType {
     }
 
     /**
-     * everything but 0 is Integererpreted as 1
+     * everything but 0 is Integererpreted as 1.
+     * @param bool initial value
      */
     public Bit(Boolean bool) {
         if (bool) {
@@ -99,38 +100,34 @@ public class Bit extends LLRPNumberType {
     }
 
     /**
-     * Creates a new Bit object from jdom element - used for xml decoding
+     * Creates a new Bit object from jdom element - used for xml decoding.
      *
-     * @param bitList
+     * @param element to be decoded
      */
     public Bit(Element element) {
         decodeXML(element);
     }
 
     /**
-     * length in number of bits used to represent this type
+     * length in number of bits used to represent this type.
      *
      * @return
      */
     public static Integer length() {
-        return length;
+        return LENGTH;
     }
 
     /**
-     * 0 is false, 1 is true
+     * 0 is false, 1 is true.
      *
      * @return boolean
      */
     public boolean toBoolean() {
-        if (value != 0) {
-            return true;
-        } else {
-            return false;
-        }
+        return !value.equals(0);
     }
 
     /**
-     * bit as byte - the last bit is set or not
+     * bit as byte - the last bit is set or not.
      *
      * @return byte
      */
@@ -139,7 +136,7 @@ public class Bit extends LLRPNumberType {
     }
 
     /**
-     * either 0 or 1
+     * either 0 or 1.
      *
      * @return either 0 or 1!
      */

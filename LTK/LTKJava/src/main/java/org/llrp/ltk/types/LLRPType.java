@@ -20,7 +20,7 @@ import org.jdom.Element;
 
 
 /**
- * super type for all types
+ * super type for all types in LLRP.
  *
  * @author Basil Gasser - ETH Zurich
  */
@@ -28,7 +28,7 @@ public abstract class LLRPType {
     /**
      * decode
      *
-     * @param list
+     * @param list to be decoded
      */
     public abstract void decodeBinary(LLRPBitList list);
 
@@ -42,14 +42,14 @@ public abstract class LLRPType {
     /**
      * create xml representation of this parameter.
      *
-     * @param root element to add childs
+     * @param name returned content should have
      */
     public abstract Content encodeXML(String name);
 
     /**
      * create objects from xml.
      *
-     * @param dom element
+     * @param element to be decoded
      */
     public abstract void decodeXML(Element element);
 }

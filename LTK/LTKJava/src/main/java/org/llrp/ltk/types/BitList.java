@@ -30,12 +30,12 @@ import java.util.ArrayList;
  * @author gasserb
  */
 public class BitList extends LLRPType {
-    private static Integer length;
+    private Integer length;
     private Bit[] bits;
 
     /**
-         * Generate a list of bits - bit[0] is the least significant bit
-         * @param bits
+         * Generate a list of bits - bit[0] is the least significant bit.
+         * @param bits to be decoded
          */
     public BitList(Bit[] bits) {
         //the bits are provided with least significant bit first. However internally
@@ -50,7 +50,7 @@ public class BitList extends LLRPType {
 
     /**
      * create BitList - String must consist of numbers only. Everything but 0 is interpreted as 1
-     * @param bitString
+     * @param bitString to be decoded
      */
     public BitList(String bitString) {
         this();
@@ -60,7 +60,7 @@ public class BitList extends LLRPType {
     /**
          * Creates a new BitList object.
          *
-         * @param list
+         * @param list to be decoded
          */
     public BitList(LLRPBitList list) {
         decodeBinary(list);
@@ -86,18 +86,18 @@ public class BitList extends LLRPType {
     }
 
     /**
-         * Generate a list of bits
+         * Generate a list of bits.
          * All bits initially set to 0
-         * @param bits
+         * @param l length
          */
-    public BitList(Integer length) {
-        bits = new Bit[length];
+    public BitList(Integer l) {
+        bits = new Bit[l];
 
-        for (Integer i = 0; i < length; i++) {
+        for (Integer i = 0; i < l; i++) {
             bits[i] = new Bit(false);
         }
 
-        this.length = length;
+        length = l;
     }
 
     /**
@@ -127,9 +127,9 @@ public class BitList extends LLRPType {
     }
 
     /**
-     * set Bit at specified position to 0
+     * set Bit at specified position to 0.
      *
-     * @param i
+     * @param i position to clear
      */
     public void clear(Integer i) {
         if ((i < 0) || (i > bits.length)) {
@@ -140,7 +140,7 @@ public class BitList extends LLRPType {
     }
 
     /**
-     * just like BitArray but does not encode length before values
+     * just like BitArray but does not encode length before values.
      *
      * @return
      */
@@ -159,18 +159,18 @@ public class BitList extends LLRPType {
     }
 
     /**
-     * length of the list
+     * length of the list.
      *
      * @return Integer
      */
-    public static Integer length() {
+    public Integer length() {
         return length;
     }
 
     /**
      * decode bits from BitList. Length must not be provided
      *
-     * @param list
+     * @param list to be decoded
      */
     @Override
     public void decodeBinary(LLRPBitList list) {
@@ -182,9 +182,9 @@ public class BitList extends LLRPType {
     }
 
     /**
-     * get bit at specified position
+     * get bit at specified position.
      *
-     * @param i
+     * @param i position to get
      *
      * @return Bit
      */
@@ -193,9 +193,9 @@ public class BitList extends LLRPType {
     }
 
     /**
-     * set Bit at specified position to 1
+     * set Bit at specified position to 1.
      *
-     * @param i
+     * @param i position to be set
      */
     public void set(Integer i) {
         if ((i < 0) || (i > bits.length)) {
@@ -214,7 +214,7 @@ public class BitList extends LLRPType {
             s += b.toInteger().toString();
         }
 
-        s.replaceFirst(" ", "");
+        s = s.replaceFirst(" ", "");
 
         Element element = new Element(name);
         element.setContent(new Text(s));

@@ -37,7 +37,7 @@ public abstract class TLVParameter extends LLRPParameter {
      * decodeBinary should be called from Constructor Taking binary encoded
      * parameter as argument
      *
-     * @param bits
+     * @param binary list to be decoded
      *
      * @throws LLRPException
      *             in case of any error or unexpected behaviour
@@ -116,7 +116,7 @@ public abstract class TLVParameter extends LLRPParameter {
      * finalize encoding by setting length of parameter Must be called at very
      * end since length can not be known before message is completly encoded
      *
-     * @param result
+     * @param result to be finalized
      */
     private void finalizeEncode(LLRPBitList result) {
         int lengthBits = result.length();

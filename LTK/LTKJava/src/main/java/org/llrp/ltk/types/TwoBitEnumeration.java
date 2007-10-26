@@ -24,7 +24,7 @@ import org.jdom.Element;
  * @author Basil Gasser - ETH Zurich
  */
 public class TwoBitEnumeration extends LLRPInteger {
-    private static final Integer length = 2;
+    private static final Integer LENGTH = 2;
 
     /**
          * Creates a new TwoBitEnumeration object.
@@ -36,7 +36,7 @@ public class TwoBitEnumeration extends LLRPInteger {
     /**
      * Creates a new TwoBitEnumeration object from jdom element - used for xml decoding
      *
-     * @param bitList
+     * @param element to be decoded
      */
     public TwoBitEnumeration(Element element) {
         decodeXML(element);
@@ -45,7 +45,7 @@ public class TwoBitEnumeration extends LLRPInteger {
     /**
          * Creates a new TwoBitEnumeration object.
          *
-         * @param value
+         * @param value to set
          */
     public TwoBitEnumeration(Integer value) {
         super(value);
@@ -59,11 +59,11 @@ public class TwoBitEnumeration extends LLRPInteger {
     public LLRPBitList encodeBinary() {
         LLRPBitList result = new LLRPBitList(Integer.toBinaryString(value));
 
-        if (result.length() < length) {
-            result.pad(length - result.length());
+        if (result.length() < LENGTH) {
+            result.pad(LENGTH - result.length());
         }
 
-        return result.subList(result.length() - length, length);
+        return result.subList(result.length() - LENGTH, LENGTH);
     }
 
     /**
@@ -72,6 +72,6 @@ public class TwoBitEnumeration extends LLRPInteger {
      * @return Integer
      */
     public static Integer length() {
-        return length;
+        return LENGTH;
     }
 }

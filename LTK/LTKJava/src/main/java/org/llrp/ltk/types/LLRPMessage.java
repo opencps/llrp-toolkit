@@ -19,9 +19,29 @@ import org.apache.log4j.Logger;
 
 import org.jdom.Document;
 
+import org.jdom.output.XMLOutputter;
+
 import org.llrp.ltk.exceptions.IllegalBitListException;
 import org.llrp.ltk.exceptions.LLRPException;
 import org.llrp.ltk.exceptions.WrongParameterException;
+
+import org.xml.sax.SAXException;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+
+import javax.xml.XMLConstants;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.Source;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+import javax.xml.validation.Validator;
 
 
 /**
@@ -35,12 +55,15 @@ import org.llrp.ltk.exceptions.WrongParameterException;
  *
  */
 public abstract class LLRPMessage {
-    public static Logger logging = Logger.getLogger(LLRPMessage.class);
-    public final int reservedLength = 3;
+    private static final Logger LOGGER = Logger.getLogger(LLRPMessage.class);
+    public final int messageReservedLength = 3;
+
+    // reserved length comes from parameter
+    public final int reservedLength = 6;
     public final int versionLength = 3;
     public final int typeNumberLength = 10;
     public final int minHeaderLength = 80;
-    protected BitList reserved = new BitList(reservedLength);
+    protected BitList reserved = new BitList(messageReservedLength);
     protected BitList version;
     protected UnsignedInteger messageID = new UnsignedInteger();
     protected UnsignedInteger messageLength = new UnsignedInteger();
@@ -57,7 +80,7 @@ public abstract class LLRPMessage {
         // type number only last 10 bits of first two bytes. Bit 0-5 used for
         // reserved and version
         result.append(getTypeNum().encodeBinary()
-                          .subList(reservedLength + versionLength,
+                          .subList(messageReservedLength + versionLength,
                 typeNumberLength));
         result.append(messageLength.encodeBinary());
         result.append(messageID.encodeBinary());
@@ -78,9 +101,10 @@ public abstract class LLRPMessage {
     protected abstract LLRPBitList encodeBinarySpecific();
 
     /**
-     * create message from Byte[]. Will also be called from Constructor taking a Byte[] Argument
+     * create message from Byte[]. Will also be called from Constructor taking a
+     * Byte[] Argument
      *
-     * @param bits
+     * @param byteArray
      *            representing message
      *
      * @throws LLRPException
@@ -92,20 +116,21 @@ public abstract class LLRPMessage {
 
         // message must have at least 80 bits for header
         if (bits.length() < minHeaderLength) {
-            logging.error("Bit String too short, must be at least 80, is " +
+            LOGGER.error("Bit String too short, must be at least 80, is " +
                 bits.length());
             throw new IllegalBitListException("Bit String too short");
         }
 
-        Short messageType = new SignedShort(bits.subList(reservedLength +
+        Short messageType = new SignedShort(bits.subList(messageReservedLength +
                     versionLength,
-                    SignedShort.length() - (reservedLength + versionLength))).toShort();
+                    SignedShort.length() -
+                    (messageReservedLength + versionLength))).toShort();
 
         // this should never occur. Implies an error in Message Decoder,
         // since it is the one responsible for calling the appropriate
         // class constructors according to message type
         if (!messageType.equals(getTypeNum().toShort())) {
-            logging.error("incorrect type. Message of Type " +
+            LOGGER.error("incorrect type. Message of Type " +
                 getTypeNum().toShort() + " expected, but message indicates " +
                 messageType);
             throw new LLRPException("incorrect type. Message of Type " +
@@ -114,7 +139,7 @@ public abstract class LLRPMessage {
         }
 
         // skip first three bits as they are reserved
-        int position = reservedLength;
+        int position = messageReservedLength;
         version = new BitList(versionLength);
 
         // version is a BitList of length versionLength
@@ -181,14 +206,15 @@ public abstract class LLRPMessage {
      * setMessageID.
      *
      * @param messageID
+     *            of type UnsignedInteger
      */
     public void setMessageID(UnsignedInteger messageID) {
         this.messageID = messageID;
     }
 
     /**
-     * create BitList easiest is to use variadic argument - for example
-     * BitList(0,1,1) for value 3
+     * create BitList easiest is to use variadic argument. for example
+     * BitList(0,1,1) for value 3.
      *
      * @param version
      *            as bit array
@@ -228,6 +254,7 @@ public abstract class LLRPMessage {
      * finalizeEncode sets the length of the message.
      *
      * @param result
+     *            LLRPBitList to finalize
      */
     private void finalizeEncode(LLRPBitList result) {
         // get length of BitList
@@ -241,11 +268,11 @@ public abstract class LLRPMessage {
         for (int i = 0; i < binLength.length(); i++) {
             // replace bits starting from bit 16 up to bit 48
             if (binLength.get(i)) {
-                result.set(versionLength + reservedLength + typeNumberLength +
-                    i);
+                result.set(versionLength + messageReservedLength +
+                    typeNumberLength + i);
             } else {
-                result.clear(versionLength + reservedLength + typeNumberLength +
-                    i);
+                result.clear(versionLength + messageReservedLength +
+                    typeNumberLength + i);
             }
         }
     }
@@ -260,8 +287,52 @@ public abstract class LLRPMessage {
     /**
      * create objects from xml.
      *
-     * @param dom
-     *            document
+     * @param xml document as jdom document
+     *
      */
     public abstract void decodeXML(Document xml);
+
+    /**
+     * Check xml file against xml schema.
+     * @param jdomDoc to be checked
+     * @param XMLSCHEMALOCATION path to xml schema file
+     * @return boolean ture if valid
+     */
+    public boolean isValidXMLMessage(Document jdomDoc, String XMLSCHEMALOCATION) {
+        try {
+            //create input stream of jdomDoc 
+            XMLOutputter output = new XMLOutputter();
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            output.output(jdomDoc, stream);
+            LOGGER.debug("finished combining xml - writing to stream");
+
+            byte[] a = stream.toByteArray();
+            InputStream is = new ByteArrayInputStream(a);
+
+            // create a SchemaFactory capable of understanding WXS schemas
+            SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+
+            // load a WXS schema, represented by a Schema instance
+            Source schemaFile = new StreamSource(new File(XMLSCHEMALOCATION));
+            Schema schema = factory.newSchema(schemaFile);
+
+            // create a Validator instance, which can be used to validate an instance document
+            Validator validator = schema.newValidator();
+
+            // validate the DOM tree
+            validator.validate(new StreamSource(is));
+        } catch (SAXException e) {
+            LOGGER.warn("document can not be validated against schema " +
+                XMLSCHEMALOCATION);
+
+            return false;
+        } catch (IOException e) {
+            LOGGER.warn("document can not be validated against schema " +
+                XMLSCHEMALOCATION);
+
+            return false;
+        }
+
+        return true;
+    }
 }

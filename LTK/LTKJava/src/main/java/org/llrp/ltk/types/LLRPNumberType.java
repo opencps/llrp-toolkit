@@ -25,16 +25,16 @@ public abstract class LLRPNumberType extends LLRPType {
     protected boolean signed;
 
     /**
-     * as Integereger
+     * LLRPNumberType is super type of all types representing a number.
      *
      * @return Integer!
      */
     public abstract Integer toInteger();
 
     /**
-     * compare two numbers
+     * compare two numbers.
      *
-     * @param other
+     * @param other to compare
      *
      * @return boolean
      */
@@ -42,6 +42,10 @@ public abstract class LLRPNumberType extends LLRPType {
         String a = this.encodeXML("value").getValue();
         String b = other.encodeXML("value").getValue();
 
-        return a.equals(b);
+        return a.equalsIgnoreCase(b);
+    }
+
+    public int hashCode() {
+        return this.encodeXML("value").getValue().hashCode();
     }
 }

@@ -26,13 +26,13 @@ import org.jdom.Text;
  * @author Basil Gasser - ETH Zurich
  */
 public class SignedShort extends LLRPNumberType {
-    private static final Integer length = 16;
+    private static final Integer LENGTH = 16;
     protected Integer value;
 
     /**
      * Creates a new SignedShort object.
      *
-     * @param value
+     * @param value to set
      */
     public SignedShort(Short value) {
         this.value = new Integer(value);
@@ -40,9 +40,9 @@ public class SignedShort extends LLRPNumberType {
     }
 
     /**
-     * Creates a new SignedShort object from jdom element - used for xml decoding
+     * Creates a new SignedShort object from jdom element - used for xml decoding.
      *
-     * @param bitList
+     * @param element to be decoded
      */
     public SignedShort(Element element) {
         decodeXML(element);
@@ -51,7 +51,7 @@ public class SignedShort extends LLRPNumberType {
     /**
      * Creates a new SignedShort object - might loose precision.
      *
-     * @param value
+     * @param value to set
      */
     public SignedShort(Integer value) {
         this.value = value;
@@ -69,7 +69,7 @@ public class SignedShort extends LLRPNumberType {
     /**
      * Creates a new SignedShort object.
      *
-     * @param bitList
+     * @param bitList to be decoded
      */
     public SignedShort(LLRPBitList bitList) {
         decodeBinary(bitList);
@@ -79,14 +79,14 @@ public class SignedShort extends LLRPNumberType {
     /**
      * decode from binary
      *
-     * @param bitList
+     * @param bitList to be decoded
      */
     public void decodeBinary(LLRPBitList bitList) {
         String bitString = bitList.toString();
 
         //if first bit is set and list is exactly length bits long, its negative
         // number is in 2's complement format
-        if ((bitString.length() == length) && (bitString.charAt(0) == '1')) {
+        if ((bitString.length() == LENGTH) && (bitString.charAt(0) == '1')) {
             //flip all bits
             // add one
             bitString = bitString.replaceAll("0", "#");
@@ -106,7 +106,7 @@ public class SignedShort extends LLRPNumberType {
      * @return Integer
      */
     public static Integer length() {
-        return length;
+        return LENGTH;
     }
 
     /**
@@ -136,11 +136,11 @@ public class SignedShort extends LLRPNumberType {
     public LLRPBitList encodeBinary() {
         LLRPBitList result = new LLRPBitList(Integer.toBinaryString(value));
 
-        if (result.length() < length) {
-            result.pad(length - result.length());
+        if (result.length() < LENGTH) {
+            result.pad(LENGTH - result.length());
         }
 
-        return result.subList(result.length() - length, length);
+        return result.subList(result.length() - LENGTH, LENGTH);
     }
 
     @Override

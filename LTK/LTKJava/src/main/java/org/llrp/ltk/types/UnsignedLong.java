@@ -28,13 +28,13 @@ import java.math.BigInteger;
  * @author Basil Gasser - ETH Zurich
  */
 public class UnsignedLong extends LLRPNumberType {
-    private static final Integer length = 64;
+    private static final Integer LENGTH = 64;
     protected BigInteger value;
 
     /**
          * Creates a new UnsignedLong object.
          *
-         * @param value
+         * @param value to set
          */
     public UnsignedLong(Long value) {
         this.value = new BigInteger(value.toString());
@@ -44,7 +44,7 @@ public class UnsignedLong extends LLRPNumberType {
     /**
      * Creates a new UnsignedLong object from jdom element - used for xml decoding
      *
-     * @param bitList
+     * @param element to be decoded
      */
     public UnsignedLong(Element element) {
         decodeXML(element);
@@ -53,7 +53,7 @@ public class UnsignedLong extends LLRPNumberType {
     /**
          * Creates a new UnsignedLong object.
          *
-         * @param bitList
+         * @param bitList to be decoded
          */
     public UnsignedLong(LLRPBitList bitList) {
         decodeBinary(bitList);
@@ -63,7 +63,7 @@ public class UnsignedLong extends LLRPNumberType {
     /**
      * decode to binary representation
      *
-     * @param bitList
+     * @param bitList to be decoded
      */
     public void decodeBinary(LLRPBitList bitList) {
         value = new BigInteger(bitList.toString(), 2);
@@ -72,7 +72,7 @@ public class UnsignedLong extends LLRPNumberType {
     /**
      * compare
      *
-     * @param other
+     * @param other to compare
      *
      * @return boolean
      */
@@ -91,7 +91,7 @@ public class UnsignedLong extends LLRPNumberType {
      * @return Integer
      */
     public static Integer length() {
-        return length;
+        return LENGTH;
     }
 
     /**
@@ -131,11 +131,11 @@ public class UnsignedLong extends LLRPNumberType {
     public LLRPBitList encodeBinary() {
         LLRPBitList result = new LLRPBitList(value.toString(2));
 
-        if (result.length() < length) {
-            result.pad(length - result.length());
+        if (result.length() < LENGTH) {
+            result.pad(LENGTH - result.length());
         }
 
-        return result.subList(result.length() - length, length);
+        return result.subList(result.length() - LENGTH, LENGTH);
     }
 
     @Override
@@ -144,5 +144,9 @@ public class UnsignedLong extends LLRPNumberType {
         element.setContent(new Text(value.toString()));
 
         return element;
+    }
+
+    public int hashCode() {
+        return value.hashCode();
     }
 }

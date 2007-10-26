@@ -55,14 +55,14 @@ public abstract class LLRPParameter {
     /**
      * create xml representation of this parameter.
      *
-     * @param root element to add childs
+     * @param name of element
      */
     public abstract Content encodeXML(String name);
 
     /**
      * create objects from xml.
      *
-     * @param dom element
+     * @param element to be decoded
      */
     public abstract void decodeXML(Element element);
 

@@ -26,13 +26,13 @@ import org.jdom.Text;
  * @author Basil Gasser - ETH Zurich
  */
 public class UnsignedByte extends LLRPNumberType {
-    private static final Integer length = 8;
+    private static final Integer LENGTH = 8;
     protected Integer value;
 
     /**
          * Creates a new UnsignedByte object.
          *
-         * @param value
+         * @param value to set
          */
     public UnsignedByte(Integer value) {
         this.value = value;
@@ -40,9 +40,9 @@ public class UnsignedByte extends LLRPNumberType {
     }
 
     /**
-     * Creates a new UnsignedByte object from byte - might loose information
+     * Creates a new UnsignedByte object from byte
      *
-     * @param value
+     * @param value interpreted as unsigned byte
      */
     public UnsignedByte(byte value) {
         this.value = new Integer(value);
@@ -50,9 +50,18 @@ public class UnsignedByte extends LLRPNumberType {
     }
 
     /**
+     * Creates a new UnsignedByte object.
+     *
+     * @param valueString value as string
+     */
+    public UnsignedByte(String valueString) {
+        this(new Byte(valueString));
+    }
+
+    /**
          * Creates a new UnsignedByte object.
          *
-         * @param bitList
+         * @param bitList to be decoded
          */
     public UnsignedByte(LLRPBitList bitList) {
         decodeBinary(bitList);
@@ -73,7 +82,7 @@ public class UnsignedByte extends LLRPNumberType {
      * @return Integer
      */
     public static Integer length() {
-        return length;
+        return LENGTH;
     }
 
     /**
@@ -108,11 +117,11 @@ public class UnsignedByte extends LLRPNumberType {
     public LLRPBitList encodeBinary() {
         LLRPBitList result = new LLRPBitList(Integer.toBinaryString(value));
 
-        if (result.length() < length) {
-            result.pad(length - result.length());
+        if (result.length() < LENGTH) {
+            result.pad(LENGTH - result.length());
         }
 
-        return result.subList(result.length() - length, length);
+        return result.subList(result.length() - LENGTH, LENGTH);
     }
 
     @Override

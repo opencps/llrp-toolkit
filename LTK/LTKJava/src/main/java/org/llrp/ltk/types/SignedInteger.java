@@ -21,12 +21,12 @@ import org.jdom.Text;
 
 
 /**
- * SignedInteger
+ * SignedInteger.
  *
  * @author Basil Gasser - ETH Zurich
  */
 public class SignedInteger extends LLRPNumberType {
-    private static final Integer length = 32;
+    private static final Integer LENGTH = 32;
     protected Integer value;
 
     /**
@@ -40,7 +40,7 @@ public class SignedInteger extends LLRPNumberType {
     /**
          * Creates a new SignedInteger object.
          *
-         * @param value
+         * @param value to set
          */
     public SignedInteger(Integer value) {
         this.value = value;
@@ -50,23 +50,23 @@ public class SignedInteger extends LLRPNumberType {
     /**
          * Creates a new SignedInteger object.
          *
-         * @param bitList
+         * @param bitList to be decoded
          */
     public SignedInteger(LLRPBitList bitList) {
         decodeBinary(bitList);
     }
 
     /**
-     * decode to binary representation
+     * decode to binary representation.
      *
-     * @param list
+     * @param list to be decoded
      */
     public void decodeBinary(LLRPBitList list) {
         String bitString = list.toString();
 
         //if first bit is set and list is exactly length bits long, its negative
         // number is in 2's complement format
-        if ((bitString.length() == length) && (bitString.charAt(0) == '1')) {
+        if ((bitString.length() == LENGTH) && (bitString.charAt(0) == '1')) {
             //flip all bits
             // add one
             bitString = bitString.replaceAll("0", "#");
@@ -81,12 +81,12 @@ public class SignedInteger extends LLRPNumberType {
     }
 
     /**
-     * get number of bits used to represent this type
+     * get number of bits used to represent this type.
      *
      * @return Integer
      */
     public static Integer length() {
-        return length;
+        return LENGTH;
     }
 
     /**
@@ -107,11 +107,11 @@ public class SignedInteger extends LLRPNumberType {
     public LLRPBitList encodeBinary() {
         LLRPBitList result = new LLRPBitList(Integer.toBinaryString(value));
 
-        if (result.length() < length) {
-            result.pad(length - result.length());
+        if (result.length() < LENGTH) {
+            result.pad(LENGTH - result.length());
         }
 
-        return result.subList(result.length() - length, length);
+        return result.subList(result.length() - LENGTH, LENGTH);
     }
 
     @Override

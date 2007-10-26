@@ -27,24 +27,21 @@ import org.jdom.Text;
  */
 public class UTF8String extends LLRPType {
     private static Integer length;
-    private LLRPBitList bits;
     protected String string;
 
     /**
          * Creates a new UTF8String object.
          *
-         * @param subList
+         * @param subList to be decoded
          */
     public UTF8String(LLRPBitList subList) {
-        bits = subList.clone();
-        length = subList.length();
         decodeBinary(subList);
     }
 
     /**
      * Creates a new UTF8String object from jdom element - used for xml decoding
      *
-     * @param bitList
+     * @param element to be decoded
      */
     public UTF8String(Element element) {
         decodeXML(element);
@@ -53,20 +50,18 @@ public class UTF8String extends LLRPType {
     /**
          * Creates a new UTF8String object.
          *
-         * @param string2
+         * @param string to be represented
          */
-    public UTF8String(String string2) {
-        string = string2;
+    public UTF8String(String string) {
+        this.string = string;
     }
 
     /**
      * decode bits from BitList.
      *
-     * @param list
+     * @param list to be decoded
      */
     public void decodeBinary(LLRPBitList list) {
-        Integer length = new UnsignedShort(list.subList(0,
-                    UnsignedShort.length())).toInteger();
         LLRPBitList subList = list.subList(UnsignedShort.length(),
                 list.length() - UnsignedShort.length());
         Byte[] bigBytes = subList.toByteArray();
@@ -113,7 +108,7 @@ public class UTF8String extends LLRPType {
     /**
      * compare two UTF8Strings
      *
-     * @param other
+     * @param other to compare
      *
      * @return boolean
      */
@@ -129,7 +124,7 @@ public class UTF8String extends LLRPType {
      * @return Integer
      */
     public Integer getByteLength() {
-        return (length / 8) + 1;
+        return (string.length() / 8);
     }
 
     @Override
@@ -147,5 +142,9 @@ public class UTF8String extends LLRPType {
 
     public String toString() {
         return string;
+    }
+
+    public int hashCode() {
+        return string.hashCode();
     }
 }

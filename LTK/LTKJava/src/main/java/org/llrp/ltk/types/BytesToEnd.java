@@ -24,7 +24,7 @@ import java.util.List;
 
 
 /**
- * List of Bytes of unbound length
+ * List of Bytes of unbound length.
  *
  * @author Basil Gasser - ETH Zurich
  */
@@ -39,7 +39,7 @@ public class BytesToEnd extends LLRPType {
     }
 
     /**
-         * basically an endless array of bytes
+         * basically an endless array of bytes.
          * @param bits Integererpredet as block of bytes
          */
     public BytesToEnd(LLRPBitList bits) {
@@ -47,27 +47,27 @@ public class BytesToEnd extends LLRPType {
     }
 
     /**
-     * Creates a new BytesToEnd object from jdom element - used for xml decoding
+     * Creates a new BytesToEnd object from jdom element - used for xml decoding.
      *
-     * @param bitList
+     * @param element to be decoded
      */
     public BytesToEnd(Element element) {
         decodeXML(element);
     }
 
     /**
-     * add a byte to the end of all bytes
+     * add a byte to the end of all bytes.
      *
-     * @param aByte
+     * @param aByte to be added
      */
     public void add(LLRPInteger aByte) {
         bytes.add(aByte);
     }
 
     /**
-     * overwritten decoding function
+     * overwritten decoding function.
      *
-     * @param list
+     * @param list to be decoded
      */
     public void decodeBinary(LLRPBitList list) {
         if (list.length() <= 16) {
@@ -83,7 +83,7 @@ public class BytesToEnd extends LLRPType {
     }
 
     /**
-     * overwritten encoding function
+     * overwritten encoding function.
      *
      * @return LLRPBitList
      */
@@ -98,9 +98,9 @@ public class BytesToEnd extends LLRPType {
     }
 
     /**
-     * get a byte at a specified position
+     * get a byte at a specified position.
      *
-     * @param i
+     * @param i position to be get
      *
      * @return LLRPInteger
      */
@@ -109,7 +109,7 @@ public class BytesToEnd extends LLRPType {
     }
 
     /**
-     * length in number of bytes (equal to number of bytes in list)
+     * length in number of bytes (equal to number of bytes in list).
      *
      * @return Integer
      */
@@ -118,7 +118,7 @@ public class BytesToEnd extends LLRPType {
     }
 
     /**
-     * length of BaseType - not of the array - for array length call size()
+     * length of BaseType - not of the array - for array length call size().
      *
      * @return
      */
@@ -127,7 +127,7 @@ public class BytesToEnd extends LLRPType {
     }
 
     /**
-     * number of elements
+     * number of elements.
      *
      * @return
      */

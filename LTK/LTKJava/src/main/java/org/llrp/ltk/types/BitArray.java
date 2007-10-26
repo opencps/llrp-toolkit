@@ -28,28 +28,28 @@ public class BitArray extends LLRPType {
     private Bit[] bits;
 
     /**
-         * create BitArray
-         * When encoded, BitArray also encodes its length
-         * @param bits
+         * create a new BitArray.
+         * When encoded, BitArray also encodes its length.
+         * @param bits to be decoded
          */
     public BitArray(Bit[] bits) {
         this.bits = bits.clone();
     }
 
     /**
-         * create BitArray
-         * When encoded, BitArray also encodes its length
-         * @param bits - must have length as first part of BitList
+         * create a new BitArray.
+         * When encoded, BitArray also encodes its length.
+         * @param list to be decoded
          */
     public BitArray(LLRPBitList list) {
         decodeBinary(list);
     }
 
     /**
-         * create BitArray
-         * When encoded, BitArray also encodes its length
+         * create a new BitArray.
+         * When encoded, BitArray also encodes its length.
          * Initially all bits set to 0
-         * @param bits
+         * @param length of array
          */
     public BitArray(Integer length) {
         bits = new Bit[length];
@@ -60,23 +60,23 @@ public class BitArray extends LLRPType {
     }
 
     /**
-         * empty bit array
+         * empty bit array.
          */
     public BitArray() {
         bits = new Bit[1];
     }
 
     /**
-     * empty bit array
+     * @param element to be decoded
      */
     public BitArray(Element element) {
         decodeXML(element);
     }
 
     /**
-     * set bit at provided positionto 0
+     * set bit at provided positionto 0.
      *
-     * @param i
+     * @param i to be cleared
      */
     public void clear(Integer i) {
         if ((i < 0) || (i > bits.length)) {
@@ -87,7 +87,7 @@ public class BitArray extends LLRPType {
     }
 
     /**
-     * encodes length before encoding containing values
+     * encodes length before encoding containing values.
      *
      * @return LLRPBitList
      */
@@ -114,7 +114,7 @@ public class BitArray extends LLRPType {
     }
 
     /**
-     * length of BaseType - not the array - for array length call size()
+     * length of BaseType - not the array - for array length call size().
      *
      * @return
      */
@@ -123,9 +123,9 @@ public class BitArray extends LLRPType {
     }
 
     /**
-     * Create BitArray from BitList. Must provide length with first 16 bits
+     * Create BitArray from BitList. Must provide length with first 16 bits.
      *
-     * @param list
+     * @param list to be decoded
      */
     @Override
     public void decodeBinary(LLRPBitList list) {
@@ -138,9 +138,9 @@ public class BitArray extends LLRPType {
     }
 
     /**
-     * get bit at specified position
+     * get bit at specified position.
      *
-     * @param i
+     * @param i to get
      *
      * @return Bit
      */
@@ -149,9 +149,9 @@ public class BitArray extends LLRPType {
     }
 
     /**
-     * set bit at provided position to 1
+     * set bit at provided position to 1.
      *
-     * @param i
+     * @param i to be set to 1
      */
     public void set(Integer i) {
         if ((i < 0) || (i > bits.length)) {
@@ -162,7 +162,7 @@ public class BitArray extends LLRPType {
     }
 
     /**
-     * number of elements in array
+     * number of elements in array.
      *
      * @return
      */
@@ -196,5 +196,12 @@ public class BitArray extends LLRPType {
         for (int i = 0; i < bits.length; i++) {
             bits[i] = new Bit(bitStrings[i]);
         }
+    }
+
+    public void add(Bit aBit) {
+        Bit[] newBits = new Bit[bits.length + 1];
+        System.arraycopy(bits, 0, newBits, 0, bits.length);
+        newBits[bits.length] = aBit;
+        bits = newBits;
     }
 }

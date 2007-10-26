@@ -26,13 +26,13 @@ import org.jdom.Text;
  * @author Basil Gasser - ETH Zurich
  */
 public class LLRPInteger extends LLRPNumberType {
-    private static final Integer length = 8;
+    private static final Integer LENGTH = 8;
     protected Integer value;
 
     /**
      * Creates a new LLRPInteger object.
      *
-     * @param value
+     * @param value to set
      */
     public LLRPInteger(Byte value) {
         this.value = new Integer(value);
@@ -42,16 +42,16 @@ public class LLRPInteger extends LLRPNumberType {
     /**
      * Creates a new LLRPInteger object.
      *
-     * @param value
+     * @param stringValue value as string
      */
-    public LLRPInteger(String valueString) {
-        this(new Byte(valueString));
+    public LLRPInteger(String stringValue) {
+        this(new Byte(stringValue));
     }
 
     /**
-     * Creates a new LLRPInteger object from Integer - might loose precision
+     * Creates a new LLRPInteger object from Integer. One might loose precision.
      *
-     * @param value
+     * @param value to set
      */
     public LLRPInteger(Integer value) {
         this(value.byteValue());
@@ -60,7 +60,7 @@ public class LLRPInteger extends LLRPNumberType {
     /**
      * Creates a new LLRPInteger object.
      *
-     * @param bitList
+     * @param bitList to be decoded
      */
     public LLRPInteger(LLRPBitList bitList) {
         decodeBinary(bitList);
@@ -70,7 +70,7 @@ public class LLRPInteger extends LLRPNumberType {
     /**
      * Creates a new LLRPInteger object.
      *
-     * @param bitList
+     * @param element to be decoded
      */
     public LLRPInteger(Element element) {
         decodeXML(element);
@@ -86,16 +86,17 @@ public class LLRPInteger extends LLRPNumberType {
     }
 
     /**
-     * number of bits used to represent this type
+     *
+     * number of bits used to represent this type.
      *
      * @return Integer
      */
     public static Integer length() {
-        return length;
+        return LENGTH;
     }
 
     /**
-     * this represented as byte - no loss of precision
+     * this represented as byte - no loss of precision.
      *
      * @return Byte
      */
@@ -104,12 +105,12 @@ public class LLRPInteger extends LLRPNumberType {
     }
 
     /**
-     * this represented as Integereger - no loss of precision
+     * this represented as Integereger - no loss of precision.
      *
      * @return Integer
      */
     public Integer toInteger() {
-        return new Integer(toByte());
+        return Integer.valueOf(toByte());
     }
 
     @Override
@@ -121,9 +122,6 @@ public class LLRPInteger extends LLRPNumberType {
     public Content encodeXML(String name) {
         Element element = new Element(name);
         element.setContent(new Text(value.toString()));
-        LLRPBitList.class.getName()
-                         .replaceAll(LLRPBitList.class.getPackage().getName(),
-            "");
 
         return element;
     }
@@ -134,7 +132,7 @@ public class LLRPInteger extends LLRPNumberType {
 
         //if first bit is set and list is exactly length bits long, its negative
         // number is in 2's complement format
-        if ((bitString.length() == length) && (bitString.charAt(0) == '1')) {
+        if ((bitString.length() == LENGTH) && (bitString.charAt(0) == '1')) {
             //flip all bits
             // add one
             bitString = bitString.replaceAll("0", "#");
@@ -154,11 +152,11 @@ public class LLRPInteger extends LLRPNumberType {
     public LLRPBitList encodeBinary() {
         LLRPBitList result = new LLRPBitList(Integer.toBinaryString(value));
 
-        if (result.length() < length) {
-            result.pad(length - result.length());
+        if (result.length() < LENGTH) {
+            result.pad(LENGTH - result.length());
         }
 
-        return result.subList(result.length() - length, length);
+        return result.subList(result.length() - LENGTH, LENGTH);
     }
 
     public String toString() {

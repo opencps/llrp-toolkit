@@ -26,13 +26,13 @@ import org.jdom.Text;
  * @author Basil Gasser - ETH Zurich
  */
 public class UnsignedShort extends LLRPNumberType {
-    private static final Integer length = 16;
+    private static final Integer LENGTH = 16;
     protected Integer value;
 
     /**
      * Creates a new UnsignedShort object - might loose precision
      *
-     * @param value
+     * @param value to set
      */
     public UnsignedShort(Short value) {
         this.value = new Integer(value);
@@ -42,7 +42,7 @@ public class UnsignedShort extends LLRPNumberType {
     /**
      * Creates a new UnsignedShort object from jdom element - used for xml decoding
      *
-     * @param bitList
+     * @param element to be decoded
      */
     public UnsignedShort(Element element) {
         decodeXML(element);
@@ -59,7 +59,7 @@ public class UnsignedShort extends LLRPNumberType {
     /**
      * Creates a new UnsignedShort object.
      *
-     * @param value
+     * @param value  to set
      */
     public UnsignedShort(Integer value) {
         this.value = value;
@@ -69,17 +69,17 @@ public class UnsignedShort extends LLRPNumberType {
     /**
      * Creates a new UnsignedShort object.
      *
-     * @param value as string
+     * @param valueString value as string
      */
-    public UnsignedShort(String valueText) {
-        value = new Integer(valueText);
+    public UnsignedShort(String valueString) {
+        value = new Integer(valueString);
         signed = false;
     }
 
     /**
      * Creates a new UnsignedShort object.
      *
-     * @param bitList
+     * @param bitList to be decoded
      */
     public UnsignedShort(LLRPBitList bitList) {
         decodeBinary(bitList);
@@ -94,11 +94,11 @@ public class UnsignedShort extends LLRPNumberType {
     public LLRPBitList encodeBinary() {
         LLRPBitList result = new LLRPBitList(Integer.toBinaryString(value));
 
-        if (result.length() < length) {
-            result.pad(length - result.length());
+        if (result.length() < LENGTH) {
+            result.pad(LENGTH - result.length());
         }
 
-        return result.subList(result.length() - length, length);
+        return result.subList(result.length() - LENGTH, LENGTH);
     }
 
     /**
@@ -107,7 +107,7 @@ public class UnsignedShort extends LLRPNumberType {
      * @return test
      */
     public static Integer length() {
-        return length;
+        return LENGTH;
     }
 
     /**
