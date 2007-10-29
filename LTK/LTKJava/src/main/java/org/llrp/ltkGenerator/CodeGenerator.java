@@ -74,7 +74,7 @@ public class CodeGenerator {
      * generate code - definitons in generator.properties.
      */
     public void generate() {
-        logger.debug("start code generation");
+        logger.info("start code generation");
         logger.debug("retrieve llrp definitions");
 
         String jaxBPackage = properties.getProperty("jaxBPackage");
@@ -94,7 +94,6 @@ public class CodeGenerator {
         fillObjects(llrp);
         logger.debug("finished filling objects");
         //generateCustom must be before Parameters because it sets the allowed in values
-        logger.debug("finished filling objects");
         logger.debug("start generating custom parameters");
         generateCustomParameters();
         logger.debug("finished generating custom parameters");
