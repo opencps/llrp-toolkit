@@ -17,6 +17,7 @@ package org.llrp.ltk.types;
 
 import org.jdom.Content;
 import org.jdom.Element;
+import org.jdom.Namespace;
 import org.jdom.Text;
 
 import java.math.BigInteger;
@@ -28,8 +29,12 @@ import java.math.BigInteger;
  * @author Basil Gasser - ETH Zurich
  */
 public class UnsignedLong extends LLRPNumberType {
-    private static final Integer LENGTH = 64;
+    protected static final Integer LENGTH = 64;
     protected BigInteger value;
+
+    protected UnsignedLong() {
+        this.value = BigInteger.ZERO;
+    }
 
     /**
          * Creates a new UnsignedLong object.
@@ -139,8 +144,8 @@ public class UnsignedLong extends LLRPNumberType {
     }
 
     @Override
-    public Content encodeXML(String name) {
-        Element element = new Element(name);
+    public Content encodeXML(String name, Namespace ns) {
+        Element element = new Element(name, ns);
         element.setContent(new Text(value.toString()));
 
         return element;

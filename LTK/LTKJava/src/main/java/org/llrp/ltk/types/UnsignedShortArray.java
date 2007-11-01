@@ -17,6 +17,7 @@ package org.llrp.ltk.types;
 
 import org.jdom.Content;
 import org.jdom.Element;
+import org.jdom.Namespace;
 import org.jdom.Text;
 
 
@@ -26,7 +27,7 @@ import org.jdom.Text;
  * @author gasserb
  */
 public class UnsignedShortArray extends LLRPType {
-    private UnsignedShort[] shorts;
+    protected UnsignedShort[] shorts;
 
     /**
          * Creates a new UnsignedShortArray object.
@@ -186,7 +187,7 @@ public class UnsignedShortArray extends LLRPType {
     }
 
     @Override
-    public Content encodeXML(String name) {
+    public Content encodeXML(String name, Namespace ns) {
         String s = "";
 
         for (UnsignedShort b : shorts) {
@@ -201,7 +202,7 @@ public class UnsignedShortArray extends LLRPType {
 
         s = s.replaceFirst(" ", "");
 
-        Element element = new Element(name);
+        Element element = new Element(name, ns);
         element.setContent(new Text(s));
 
         return element;

@@ -17,6 +17,7 @@ package org.llrp.ltk.types;
 
 import org.jdom.Content;
 import org.jdom.Element;
+import org.jdom.Namespace;
 
 
 /**
@@ -25,6 +26,7 @@ import org.jdom.Element;
  * @author gasserb
  */
 public class BitArray extends LLRPType {
+    protected static final Integer LENGTH = 1;
     private Bit[] bits;
 
     /**
@@ -171,7 +173,7 @@ public class BitArray extends LLRPType {
     }
 
     @Override
-    public Content encodeXML(String name) {
+    public Content encodeXML(String name, Namespace ns) {
         String s = "";
 
         for (Bit b : bits) {
@@ -181,7 +183,7 @@ public class BitArray extends LLRPType {
 
         s = s.replaceFirst(" ", "");
 
-        Element element = new Element(name);
+        Element element = new Element(name, ns);
         element.setText(s);
 
         return element;

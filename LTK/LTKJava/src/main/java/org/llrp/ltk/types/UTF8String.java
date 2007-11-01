@@ -17,6 +17,7 @@ package org.llrp.ltk.types;
 
 import org.jdom.Content;
 import org.jdom.Element;
+import org.jdom.Namespace;
 import org.jdom.Text;
 
 
@@ -26,8 +27,13 @@ import org.jdom.Text;
  * @author gasserb
  */
 public class UTF8String extends LLRPType {
-    private static Integer length;
+    //8 because we encode it as a list of bytes
+    protected static Integer LENGTH = 8;
     protected String string;
+
+    protected UTF8String() {
+        string = "";
+    }
 
     /**
          * Creates a new UTF8String object.
@@ -133,8 +139,8 @@ public class UTF8String extends LLRPType {
     }
 
     @Override
-    public Content encodeXML(String name) {
-        Element element = new Element(name);
+    public Content encodeXML(String name, Namespace ns) {
+        Element element = new Element(name, ns);
         element.setContent(new Text(string));
 
         return element;

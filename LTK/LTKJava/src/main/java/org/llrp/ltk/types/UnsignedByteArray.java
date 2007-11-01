@@ -17,6 +17,7 @@ package org.llrp.ltk.types;
 
 import org.jdom.Content;
 import org.jdom.Element;
+import org.jdom.Namespace;
 import org.jdom.Text;
 
 
@@ -26,7 +27,7 @@ import org.jdom.Text;
  * @author gasserb
  */
 public class UnsignedByteArray extends LLRPType {
-    private UnsignedByte[] bytes;
+    protected UnsignedByte[] bytes;
 
     /**
          * Creates a new UnsignedByteArray object.
@@ -167,7 +168,7 @@ public class UnsignedByteArray extends LLRPType {
     }
 
     @Override
-    public Content encodeXML(String name) {
+    public Content encodeXML(String name, Namespace ns) {
         String s = "";
 
         for (UnsignedByte b : bytes) {
@@ -177,7 +178,7 @@ public class UnsignedByteArray extends LLRPType {
 
         s = s.replaceFirst(" ", "");
 
-        Element element = new Element(name);
+        Element element = new Element(name, ns);
         element.setContent(new Text(s));
 
         return element;

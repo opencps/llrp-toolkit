@@ -17,6 +17,7 @@ package org.llrp.ltk.types;
 
 import org.jdom.Content;
 import org.jdom.Element;
+import org.jdom.Namespace;
 import org.jdom.Text;
 
 
@@ -155,7 +156,7 @@ public class UnsignedIntegerArray extends LLRPType {
     }
 
     @Override
-    public Content encodeXML(String name) {
+    public Content encodeXML(String name, Namespace ns) {
         String s = "";
 
         for (UnsignedInteger b : integers) {
@@ -165,7 +166,7 @@ public class UnsignedIntegerArray extends LLRPType {
 
         s = s.replaceFirst(" ", "");
 
-        Element element = new Element(name);
+        Element element = new Element(name, ns);
         element.setContent(new Text(s));
 
         return element;

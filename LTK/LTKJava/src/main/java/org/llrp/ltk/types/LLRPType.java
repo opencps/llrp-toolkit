@@ -17,6 +17,7 @@ package org.llrp.ltk.types;
 
 import org.jdom.Content;
 import org.jdom.Element;
+import org.jdom.Namespace;
 
 
 /**
@@ -44,7 +45,7 @@ public abstract class LLRPType {
      *
      * @param name returned content should have
      */
-    public abstract Content encodeXML(String name);
+    public abstract Content encodeXML(String name, Namespace ns);
 
     /**
      * create objects from xml.

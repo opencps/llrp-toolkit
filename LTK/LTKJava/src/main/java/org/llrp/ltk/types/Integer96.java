@@ -17,6 +17,7 @@ package org.llrp.ltk.types;
 
 import org.jdom.Content;
 import org.jdom.Element;
+import org.jdom.Namespace;
 import org.jdom.Text;
 
 import java.math.BigInteger;
@@ -28,7 +29,7 @@ import java.math.BigInteger;
  * @author Basil Gasser - ETH Zurich
  */
 public class Integer96 extends LLRPNumberType {
-    private static final Integer LENGTH = 96;
+    protected static final Integer LENGTH = 96;
     protected BigInteger value;
 
     /**
@@ -136,8 +137,8 @@ public class Integer96 extends LLRPNumberType {
     }
 
     @Override
-    public Content encodeXML(String name) {
-        Element element = new Element(name);
+    public Content encodeXML(String name, Namespace ns) {
+        Element element = new Element(name, ns);
         element.setContent(new Text(value.toString()));
 
         return element;

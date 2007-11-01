@@ -17,6 +17,7 @@ package org.llrp.ltk.types;
 
 import org.jdom.Content;
 import org.jdom.Element;
+import org.jdom.Namespace;
 import org.jdom.Text;
 
 import java.util.LinkedList;
@@ -136,14 +137,14 @@ public class BytesToEnd extends LLRPType {
     }
 
     @Override
-    public Content encodeXML(String name) {
+    public Content encodeXML(String name, Namespace ns) {
         String s = "";
 
         for (LLRPInteger b : bytes) {
             s += b.toString();
         }
 
-        Element element = new Element(name);
+        Element element = new Element(name, ns);
         element.setContent(new Text(s));
 
         return element;

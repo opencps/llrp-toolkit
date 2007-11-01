@@ -19,11 +19,13 @@ import org.apache.log4j.Logger;
 
 import org.jdom.Document;
 
+import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 
 import org.llrp.ltk.exceptions.IllegalBitListException;
 import org.llrp.ltk.exceptions.LLRPException;
 import org.llrp.ltk.exceptions.WrongParameterException;
+import org.llrp.ltk.generated.LLRPConstants;
 
 import org.xml.sax.SAXException;
 
@@ -34,10 +36,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import javax.xml.XMLConstants;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Source;
-import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
@@ -45,43 +44,13 @@ import javax.xml.validation.Validator;
 
 
 /**
- * LLRPMessage is the abstract base class for all messages defined in the LLRP 
- * specification. It provides methods to encode/decode binary messages and LTK-XML 
- * messages.  
- * 
- * <p/>
- * LLRP Messages can be created in three different ways:
- * <ul>
- * <li>from a valid binary message
- * <li>from a valid LTK-XML message
- * <li>by using the individual get/set methods to construct a message
- * </ul>
- *  <p/>
- * 
- * <p/>
- * To generate the binary encoding or LTK-XML encoding from an object representation, 
- * use the <code>encodeBinary</code> or <code>encodeXML</code> methods respectively.
- *  <p/>
- * 
- * The abstract LLRPMessage methods implement the functionality that all LLRP 
- * messages have in common.
- * Each individual LTKJava message extends the LLRPMessage and implement the custom behaviour 
- * for each message type. For the binary encoding, subclasses specify the custom behaviour in a method
- * <code>encodeBinarySpecific</code> that is called from <code>encodeBinary</code>.
- *  <p/>
- * Some information on the binary message encoding defined in the LLRP specification:
- * Each binary message for example has the same format:<p/>
+ * representing a message in LLRP. * The binary encoding Is always: Reserved(3
+ * Bits) | Version (3 Bits) | Message Type (10 Bits) | Message Length (32 Bits) |
+ * Parameters
  *
- * [ Reserved (3 Bits) | Version (3 Bits) | Message Type (10 Bits) | Message Length (32 Bits) 
- * | Message ID (32 Bits) | other parameters ...]
- * <p/>
- * Reserved bits: The reserved bits are reserved for future extensions. 
- * All reserved bits in messages SHALL be set to 0 in outgoing messages.<p/>
- * Version: The version of LLRP. Implementations of LLRP based on the current 
- * specification are using the value 0x1. Other values are reserved for future use.<p/>
- * Message Type: The type of LLRP message being carried in the message.<p/>
- * Message Length: This value represents the size of the entire message 
- * in octets starting from bit offset 0 of the first word. 
+ * call empty constructor to create new message. Use constructor taking
+ * LLRPBitList or Byte[] to create message from binary encoded message. Use
+ * constructor taking JDOM document to create message from XML encoding
  *
  */
 public abstract class LLRPMessage {
@@ -99,9 +68,9 @@ public abstract class LLRPMessage {
     protected UnsignedInteger messageLength = new UnsignedInteger();
 
     /**
-     * encodes this object in the binary format specified in EPCglobal LLRP spec.
+     * encode this message to binary formate.
      *
-     * @return message in binary format
+     * @return Byte[] which can directly be sent over a stream
      */
     public final Byte[] encodeBinary() {
         LLRPBitList result = new LLRPBitList();
@@ -124,27 +93,18 @@ public abstract class LLRPMessage {
     }
 
     /**
-     * encodes the parts of the binary message that are specific for each LLRP 
-     * message. This method is implemented by each message class that extends 
-     * {@link LLRPMessage} and is called by the encodeBinary method.
-     * 
-     * @see #encodeBinary()
+     * encoding function - has to be implemented by each message.
      *
-     * @return list of bits that represent the part of the binary message
+     * @return LLRPBitList
      */
     protected abstract LLRPBitList encodeBinarySpecific();
 
     /**
-     * decodes LLRP message in binary format
-     * <p/>
-     * This method is also called by the constructor when a new LLRP Message
-     * of this type is instantiated from a binary message.
-     * <p/>
-     * The result is available via a number of <code>get</code> methods and 
-     * can also be encoded in XML.
+     * create message from Byte[]. Will also be called from Constructor taking a
+     * Byte[] Argument
      *
-     * @param byteArray binary LLRP message
-     *            
+     * @param byteArray
+     *            representing message
      *
      * @throws LLRPException
      *             if bitstring is not well formatted or has any other error
@@ -206,45 +166,43 @@ public abstract class LLRPMessage {
         decodeBinarySpecific(bits.subList(position, bits.length() - position));
     }
 
-
+    // /**
     /**
-     * get Message ID to distinguish messages of the same type.
-     * 
-     * @return message ID of current message
+     * Message ID to distinguish messages of same type.
+     *
+     * @return UnsignedInteger
      */
     public UnsignedInteger getMessageID() {
         return messageID;
     }
 
     /**
-     * get length of encoded binary message. This value represents the size of the entire message 
-     * in octets starting from bit offset 0 of the first word. 
+     * number of bytes of encoded message.
      *
-     * @return length of message in bytes
+     * @return UnsignedInteger
      */
     public UnsignedInteger getMessageLength() {
         return messageLength;
     }
 
     /**
-     * get type number as defined in Table 4 of EPCglobal LLRP specification.
+     * type number uniquely identifies message.
      *
-     * @return message type
+     * @return SignedShort
      */
     public abstract SignedShort getTypeNum();
 
     /**
-     * get version of LLRP used. Implementations of LLRP based on the current LLRP 
-     * specification are using the value 0x1. Other values are reserved for future use.
+     * version of llrp.
      *
-     * @return lists of bits representing version. e.g. (0,0,1) for Ox1
+     * @return BitList
      */
     public BitList getVersion() {
         return version;
     }
 
     /**
-     * set message ID of current message. 
+     * setMessageID.
      *
      * @param messageID
      *            of type UnsignedInteger
@@ -254,11 +212,8 @@ public abstract class LLRPMessage {
     }
 
     /**
-     * set version of LLRP Message. Implementations of LLRP based on the current LLRP 
-     * specification are using the value 0x1. Other values are reserved for future use.
-     * 
-     * set version 0x1 by using the variadic argument for the BitList constructor. 
-     * e.g. <code>setVersion(new BitList(0,0,1)).
+     * create BitList easiest is to use variadic argument. for example
+     * BitList(0,1,1) for value 3.
      *
      * @param version
      *            as bit array
@@ -276,33 +231,29 @@ public abstract class LLRPMessage {
     }
 
     /**
-     * get binary representation of message as a string
+     * Message as Bitstring.
      *
-     * @return message in binary format as a string
+     * @return String
      */
     public String toString() {
         return encodeBinary().toString();
     }
 
     /**
-     * decodes the parts of the binary message that are specific for each LLRP 
-     * message. This method is implemented by each message class that extends 
-     * {@link LLRPMessage} and is called by the decodeBinary method.
-     * 
-     * @see #decodeBinary()
+     * to be implemented by specific message.
      *
-     * @param list of bits in message without header (reserved, version, ...)
+     * @param bits
+     *            without header
      *
      * @throws LLRPException
      */
     protected abstract void decodeBinarySpecific(LLRPBitList bits);
 
     /**
-     * finalizeEncode computes the length of the binary message. 
-     * The method is called at the end of <code>encodeBinary</code> method
-     * to set the message length appropriately.
+     * finalizeEncode sets the length of the message.
      *
-     * @param result binary message which was just encoded
+     * @param result
+     *            LLRPBitList to finalize
      */
     private void finalizeEncode(LLRPBitList result) {
         // get length of BitList
@@ -326,23 +277,17 @@ public abstract class LLRPMessage {
     }
 
     /**
-     * encodes/serializes this object in the LTK-XML format specified LTK project. The corresponding
-     * XML Schema LLRP.xsd is available from {@link www.llrp.org}.
+     * create xml representation of this parameter.
      *
-     * @return message in LTK-XML format
+     * @return Dom Document
      */
     public abstract Document encodeXML();
 
     /**
-     * decodes/deserializes LLRP message from LTK-XML format
-     * <p/>
-     * This method is also called by the constructor when a new LLRP Message
-     * of this type is instantiated from a LTK-XML message.
-     * <p/>
-     * The result is available via a number of <code>get</code> methods and 
-     * can also be encoded in binary.
+     * create objects from xml.
      *
-     * @param xml LTK-XML message as a jdom document
+     * @param xml document as jdom document
+     *
      */
     public abstract void decodeXML(Document xml);
 
@@ -352,13 +297,12 @@ public abstract class LLRPMessage {
      * @param XMLSCHEMALOCATION path to xml schema file
      * @return boolean ture if valid
      */
-    public boolean isValidXMLMessage(Document jdomDoc, String XMLSCHEMALOCATION) {
+    public boolean isValidXMLMessage(Document jdomDoc, String schemaPath) {
         try {
             //create input stream of jdomDoc 
             XMLOutputter output = new XMLOutputter();
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
             output.output(jdomDoc, stream);
-            LOGGER.debug("finished combining xml - writing to stream");
 
             byte[] a = stream.toByteArray();
             InputStream is = new ByteArrayInputStream(a);
@@ -367,7 +311,7 @@ public abstract class LLRPMessage {
             SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
 
             // load a WXS schema, represented by a Schema instance
-            Source schemaFile = new StreamSource(new File(XMLSCHEMALOCATION));
+            Source schemaFile = new StreamSource(new File(schemaPath));
             Schema schema = factory.newSchema(schemaFile);
 
             // create a Validator instance, which can be used to validate an instance document
@@ -377,16 +321,28 @@ public abstract class LLRPMessage {
             validator.validate(new StreamSource(is));
         } catch (SAXException e) {
             LOGGER.warn("document can not be validated against schema " +
-                XMLSCHEMALOCATION);
+                schemaPath);
 
             return false;
         } catch (IOException e) {
             LOGGER.warn("document can not be validated against schema " +
-                XMLSCHEMALOCATION);
+                schemaPath);
 
             return false;
         }
 
         return true;
+    }
+
+    public String toXMLString() {
+        Document d = this.encodeXML();
+        XMLOutputter outputter = new XMLOutputter();
+        outputter.setFormat(Format.getPrettyFormat());
+
+        return outputter.outputString(d);
+    }
+
+    public String toBinaryString() {
+        return new LLRPBitList(this.encodeBinary()).toString();
     }
 }

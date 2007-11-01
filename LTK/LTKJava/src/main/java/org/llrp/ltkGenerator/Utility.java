@@ -182,16 +182,25 @@ public class Utility {
         return "NoTypeFound";
     }
 
+    public String formatType(String baseType, String format) {
+        return convertType(baseType, false) + "_" + format;
+    }
+
     public String getBaseType(String arrayType) {
         return arrayType.replace("Array", "");
     }
 
     public boolean isArray(String type) {
-        return type.endsWith("Array") || type.toLowerCase().contains("utf8");
+        if (type == null) {
+            return false;
+        }
+
+        return type.toLowerCase().contains("array") ||
+        type.toLowerCase().contains("utf8string");
     }
 
     public boolean isByteToEnd(String type) {
-        return type.equalsIgnoreCase("BytesToEnd");
+        return type.toLowerCase().contains("bytestoend");
     }
 
     /**

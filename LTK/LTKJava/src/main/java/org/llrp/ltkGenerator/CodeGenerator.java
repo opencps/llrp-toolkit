@@ -44,7 +44,9 @@ public class CodeGenerator {
 
     /**
      * instantiate new code generate - probably want to call generate after.
-     * @param propertiesFile path to properties file
+     *
+     * @param propertiesFile
+     *            path to properties file
      */
     public CodeGenerator(String propertiesFile) {
         try {
@@ -74,7 +76,7 @@ public class CodeGenerator {
      * generate code - definitons in generator.properties.
      */
     public void generate() {
-        logger.info("start code generation");
+        logger.debug("start code generation");
         logger.debug("retrieve llrp definitions");
 
         String jaxBPackage = properties.getProperty("jaxBPackage");
@@ -83,7 +85,8 @@ public class CodeGenerator {
         String extensionsPath = properties.getProperty("extensionXMLs");
 
         if (extensionsPath == null) {
-            // if no extensions provided it is null - avoid null pointer exception
+            // if no extensions provided it is null - avoid null pointer
+            // exception
             extensionsPath = "";
         }
 
@@ -93,11 +96,15 @@ public class CodeGenerator {
         logger.debug("start filling objects");
         fillObjects(llrp);
         logger.debug("finished filling objects");
-        //generateCustom must be before Parameters because it sets the allowed in values
+        // generateCustom must be before Parameters because it sets the allowed
+        // in values
+        logger.debug("finished filling objects");
         logger.debug("start generating custom parameters");
         generateCustomParameters();
         logger.debug("finished generating custom parameters");
-        // generateMessages() and generateParameters must be executed before generateEnumerations because enumeration supertypes are determined in this methods
+        // generateMessages() and generateParameters must be executed before
+        // generateEnumerations because enumeration supertypes are determined in
+        // this methods
         logger.debug("start generating messages");
         generateMessages();
         logger.debug("finished generating messages");
@@ -112,11 +119,15 @@ public class CodeGenerator {
         logger.debug("finished generating enumerations");
         logger.debug("start generating custom messages");
         generateCustomMessages();
-        logger.debug("finished generatins custom messages");
+        logger.debug("finished generating custom messages");
+        logger.debug("start generating constants");
+        generateConstants();
+        logger.debug("finished generatins constants");
     }
 
     private void generateMessages() {
-        // set xml schema location in LLRPMessage. This is necessary to validate xml messages
+        // set xml schema location in LLRPMessage. This is necessary to validate
+        // xml messages
         logger.debug(messages.size() + " messages to generate");
         logger.debug("using template " +
             properties.getProperty("messageTemplate"));
@@ -359,6 +370,50 @@ public class CodeGenerator {
                 logger.error("Exception while generating code: " +
                     e.getLocalizedMessage() + " caused by " + e.getCause());
             }
+        }
+    }
+
+    private void generateConstants() {
+        logger.debug("using template " +
+            properties.getProperty("constantsTemplate"));
+        logger.debug("generating files into " +
+            properties.getProperty("generateConstantsPackage"));
+
+        try {
+            VelocityContext context = new VelocityContext();
+            context.put("schemaPath",
+                properties.getProperty("XMLEncodingSchemaPath"));
+            context.put("namespace",
+                properties.getProperty("XMLEncodingNamespace"));
+            context.put("XMLEncodingSchema",
+                properties.getProperty("XMLEncodingSchema"));
+
+            context.put("NamespacePrefix",
+                properties.getProperty("NamespacePrefix"));
+
+            Template template = Velocity.getTemplate(properties.getProperty(
+                        "constantsTemplate"));
+            BufferedWriter writer = new BufferedWriter(new FileWriter(properties.getProperty(
+                            "generateConstantsPackage") + "LLRPConstants" +
+                        properties.getProperty("fileEnding")));
+            template.merge(context, writer);
+            writer.flush();
+            writer.close();
+        } catch (ResourceNotFoundException e) {
+            logger.error("Exception while generating code: " +
+                e.getLocalizedMessage() + " caused by " + e.getCause());
+        } catch (ParseErrorException e) {
+            logger.error("Exception while generating code: " +
+                e.getLocalizedMessage() + " caused by " + e.getCause());
+        } catch (MethodInvocationException e) {
+            logger.error("Exception while generating code: " +
+                e.getLocalizedMessage() + " caused by " + e.getCause());
+        } catch (IOException e) {
+            logger.error("Exception while generating code: " +
+                e.getLocalizedMessage() + " caused by " + e.getCause());
+        } catch (Exception e) {
+            logger.error("Exception while generating code: " +
+                e.getLocalizedMessage() + " caused by " + e.getCause());
         }
     }
 

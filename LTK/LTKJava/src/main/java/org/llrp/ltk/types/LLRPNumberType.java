@@ -15,6 +15,8 @@
  */
 package org.llrp.ltk.types;
 
+import org.jdom.Namespace;
+
 
 /**
  * Super Type for all numerical types!
@@ -39,13 +41,16 @@ public abstract class LLRPNumberType extends LLRPType {
      * @return boolean
      */
     public boolean equals(LLRPNumberType other) {
-        String a = this.encodeXML("value").getValue();
-        String b = other.encodeXML("value").getValue();
+        String a = this.encodeXML("value", Namespace.getNamespace("foo"))
+                       .getValue();
+        String b = other.encodeXML("value", Namespace.getNamespace("foo"))
+                        .getValue();
 
         return a.equalsIgnoreCase(b);
     }
 
     public int hashCode() {
-        return this.encodeXML("value").getValue().hashCode();
+        return this.encodeXML("value", Namespace.getNamespace("foo")).getValue()
+                   .hashCode();
     }
 }

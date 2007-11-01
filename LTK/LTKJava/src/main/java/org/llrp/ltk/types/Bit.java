@@ -1,5 +1,4 @@
 /*
- * Copyright 2007 ETH Zurich
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  *
@@ -17,6 +16,7 @@ package org.llrp.ltk.types;
 
 import org.jdom.Content;
 import org.jdom.Element;
+import org.jdom.Namespace;
 import org.jdom.Text;
 
 
@@ -154,8 +154,8 @@ public class Bit extends LLRPNumberType {
     }
 
     @Override
-    public Content encodeXML(String name) {
-        Element element = new Element(name);
+    public Content encodeXML(String name, Namespace ns) {
+        Element element = new Element(name, ns);
         element.setContent(new Text(value.toString()));
 
         return element;
