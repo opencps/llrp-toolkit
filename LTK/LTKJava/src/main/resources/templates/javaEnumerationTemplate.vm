@@ -38,6 +38,7 @@ import org.llrp.ltk.types.LLRPEnumeration;
 import org.jdom.Element;
 import org.jdom.Text;
 import org.jdom.Content;
+import org.jdom.Namespace;
 
 
 /**
@@ -139,9 +140,9 @@ public class $enum.getName() extends $utility.getSuperType($enum.getName()) impl
 	/**
 		* {@inheritDoc}
 	 */	
-    public Content encodeXML(final String name) {
+    public Content encodeXML(final String name, Namespace ns) {
 
-    	Element element = new Element(name);
+    	Element element = new Element(name,ns);
     	element.setContent(new Text(toString()));
         return element;
     }

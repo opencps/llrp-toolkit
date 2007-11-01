@@ -42,6 +42,7 @@ package org.llrp.ltk.generated.parameters;
 #set($subtypeNr = ".subtype")
 #set($add = ".add")
 #set($emptyBrack = "()")
+#set($getClassName = ".getClass().getSimpleName()")
 
 ##set the class names here
 #set ($parameterReference = "ParameterReference")
@@ -76,6 +77,8 @@ $utility.clearImports()
 	$utility.addImport("element")
 	import org.jdom.Content;
 	$utility.addImport("content")
+	import org.jdom.Namespace;
+	$utility.addImport("Namespace")
 	
 	import org.llrp.ltk.types.LLRPBitList;
 	$utility.addImport("LLRPBitList")
@@ -97,6 +100,8 @@ $utility.clearImports()
 	$utility.addImport("TLVParameter")
 	import org.llrp.ltk.types.TVParameter;
 	$utility.addImport("TVParameter")
+import org.llrp.ltk.generated.LLRPConstants;
+	$utility.addImport("LLRPConstants")
 	
 	
 	##custom parameters
@@ -120,7 +125,16 @@ $utility.clearImports()
 				import org.llrp.ltk.generated.enumerations.$field.getEnumeration();
 				$utility.setSuperType($field.getEnumeration(),$field.getType().value())
 				$utility.addImport($field.getEnumeration())
-			#elseif (!$utility.hasImport($utility.convertType($field.getType().value())))
+		#elseif ($field.getFormat())
+			#set ($firstF = "$utility.convertType($field.getType().value())")
+			#set ($secondF = "_")
+			#set ($thirdF = "$field.getFormat()")
+			#set ($together = "$firstF$secondF$thirdF")
+			#if (!$utility.hasImport($together))
+				import org.llrp.ltk.types.$together;
+				$utility.addImport($together)
+			#end
+		#elseif (!$utility.hasImport($utility.convertType($field.getType().value())))
 				import org.llrp.ltk.types.$utility.convertType($field.getType().value());
 				$utility.addImport($utility.convertType($field.getType().value()))
 			#end
@@ -199,6 +213,11 @@ public class $parameter.Name extends $superType $interfaces{
 	#elseif ($utility.hasType($field,$fieldDefinition))
 		#if ($field.getEnumeration())
 			protected $field.getEnumeration() $utility.firstToLowerCase($field.getName());
+		#elseif ($field.getFormat())
+			#set ($firstF = "$utility.convertType($field.getType().value())")
+			#set ($secondF = "_")
+			#set ($thirdF = "$field.getFormat()")
+			protected $firstF$secondF$thirdF $utility.firstToLowerCase($field.getName()); 
 		#else
 			protected $utility.convertType($field.getType().value()) $utility.firstToLowerCase($field.getName());
 		#end
@@ -334,20 +353,20 @@ public class $parameter.Name extends $superType $interfaces{
 		/**
 	 * {@inheritDoc}
 	 */
-	public Content encodeXML(String name){
-		Element xmlElement = new Element(name);
-		
+	public Content encodeXML(String name, Namespace ns){
+		//Element xmlElement = new Element(name,Namespace.getNamespace("rp"));
+		Element xmlElement = new Element(name,ns);
 		## field or reserved
 		#foreach($field in $parameter.getFieldOrReserved())
 			#if ($utility.hasType($field,$reservedDefinition))
-				xmlElement.addContent($resName$encodeXML("reserved"));
+				//xmlElement.addContent($resName$encodeXML("reserved",ns));
 			#elseif ($utility.hasType($field,$fieldDefinition))
 				## FieldDefinition
 				if ($utility.firstToLowerCase($field.getName())== null){
 					LOGGER.warn(" $utility.firstToLowerCase($field.getName()) not set");
 					throw new MissingParameterException(" $utility.firstToLowerCase($field.getName()) not set");
 				} else {
-					xmlElement.addContent($utility.firstToLowerCase($field.getName())$encodeXML("$field.getName()"));
+					xmlElement.addContent($utility.firstToLowerCase($field.getName())$encodeXML("$field.getName()",ns));
 				}
 			#else
 				//TODO 4 template parameter encode wrote this - unexpected object $field $field.getName()
@@ -372,28 +391,38 @@ public class $parameter.Name extends $superType $interfaces{
 				} 
 				for ($field.getType() field : $curName$list){
 					##choices have to be set by the actual name - not the name of the interface
-					xmlElement.addContent(field$encodeXML(field.getClass().getName().replaceAll(field.getClass().getPackage().getName()+".", "")));
+					xmlElement.addContent(field$encodeXML(field.getClass().getName().replaceAll(field.getClass().getPackage().getName()+".", ""),ns));
 				}
 			#elseif ($field.getRepeat()== $optionalListRepeat)
 				if ($curName$list == null){
 					LOGGER.info("$curName$list not set");
 				} else {
 					for ($field.getType() field : $curName$list){
-						xmlElement.addContent(field$encodeXML(field.getClass().getName().replaceAll(field.getClass().getPackage().getName()+".", "")));
+						xmlElement.addContent(field$encodeXML(field.getClass().getName().replaceAll(field.getClass().getPackage().getName()+".", ""),ns));
 					}
 				}
 			#elseif ($field.getRepeat()== $optionalRepeat)
 				if ($curName == null){
 					LOGGER.info("$curName not set");
 				} else {
-					xmlElement.addContent($curName$encodeXML("$field.getType()"));
+					#if ($field.getName())
+							// name was defined for this parameter - must use it to avoid confusion with parameters of same type
+							xmlElement.addContent($curName$encodeXML("$curName",ns));
+					#else
+							xmlElement.addContent($curName$encodeXML($curName$getClassName,ns));
+					#end
 				}
 			#elseif ($field.getRepeat()== $exactlyOnceRepeat)
 				if ($curName == null){
 					LOGGER.info("$curName not set");
 					throw new MissingParameterException("$curName not set");
 				} else {
-					xmlElement.addContent($curName$encodeXML("$field.getType()"));
+					#if ($field.getName())
+							// name was defined for this parameter - must use it to avoid confusion with parameters of same type
+							xmlElement.addContent($curName$encodeXML("$curName",ns));
+					#else
+							xmlElement.addContent($curName$encodeXML($curName$getClassName,ns));
+					#end					
 				}
 			#else
 				// TODO field.getRepeat() = $field.getRepeat()
@@ -425,7 +454,12 @@ public class $parameter.Name extends $superType $interfaces{
 				#set ($curName = $utility.firstToLowerCase($field.getName()))
 				#if ($field.getEnumeration())
 					#set ($curType = $field.getEnumeration())
-				#else
+				#elseif ($field.getFormat())
+					#set ($firstF = "$utility.convertType($field.getType().value())")
+					#set ($secondF = "_")
+					#set ($thirdF = "$field.getFormat()")
+					#set ($curType ="$firstF$secondF$thirdF")
+				#else					
 					#set ($curType = $utility.convertType($field.getType().value()))
 				#end
 				#if ($utility.isArray($curType))
@@ -469,6 +503,7 @@ public class $parameter.Name extends $superType $interfaces{
 			$curName$list = new LinkedList<$field.getType()>();
 			LOGGER.debug("decoding parameter $curName$list ");
 			while (position < binary.length()){
+				// store if one parameter matched
 				boolean atLeastOnce = false;
 				// look ahead to see type
 				type = new SignedShort(binary.subList(position+reservedLength, typeNumberLength));
@@ -492,7 +527,6 @@ public class $parameter.Name extends $superType $interfaces{
 									LOGGER.debug("adding $custom to $curName$list ");	
 									position+=tempLength;
 									atLeastOnce = true;
-									continue;
 								}
 							#end	
 							//end allowed parameters
@@ -500,7 +534,6 @@ public class $parameter.Name extends $superType $interfaces{
 							$curName$list$add (cus);
 							position+=tempLength;
 							atLeastOnce = true;
-							continue;
 						}
 						#else						
 							if (type != null && type.equals($subtype$typeNum)){
@@ -508,17 +541,12 @@ public class $parameter.Name extends $superType $interfaces{
 								LOGGER.debug("adding $subtype to $curName$list ");
 								position+=tempLength;
 								atLeastOnce = true;
-								continue;
 							}
 						#end
 						
 					#end
 					
-					//if no parameter matched, jump out of while loop, if it is not an optional parameter, show warning
-					if (!atLeastOnce && (" $field.getRepeat() ".equals(" $mustListRepeat "))){
-						LOGGER.warn("encoded message does not contain non optional parameter $curName$list");
-					}
-					break;
+					
 				#elseif ($utility.isCustom($field.getType()))
 							## custom parameter need separate treatment
 							// custom
@@ -540,17 +568,35 @@ public class $parameter.Name extends $superType $interfaces{
 							$curName$list$add (cus);
 							position+=tempLength;
 							atLeastOnce = true;
-							continue;
 						}
 				#elseif ($utility.hasType($field,$parameterReference))
 					//paramRef
 					$curName$list$add (new $field.getType() (binary.subList(position,tempLength)));
 					LOGGER.debug("adding $field.getType() to $curName$list ");
-					position+=tempLength;		
+					atLeastOnce = true;	
+					position+=tempLength;	
 				#else
 					//TODO 6 template wrote this in decode > list- unexpected object $field in while
 				#end
+				if (!atLeastOnce){
+					//no parameter matched therefore we jump out of the loop
+					break;
+				}
 			}
+			#set($isEmpty = ".isEmpty()")
+			#if ($field.getRepeat() == $mustListRepeat)
+					//if list is still empty no parameter matched
+					if ($curName$list$isEmpty){
+						LOGGER.warn("encoded message does not contain parameter for non optional $curName$list");
+						throw new MissingParameterException("$parameter.getName() misses non optional parameter of type $field.getType()");
+					}
+				#else
+					//if list is still empty no parameter matched
+					if ($curName$list$isEmpty){
+						LOGGER.info("encoded message does not contain parameter for optional $curName$list");
+						
+					}
+			#end
 		#elseif ($field.getRepeat()==$exactlyOnceRepeat || $field.getRepeat() == $optionalRepeat)
 			## single parameter - must be set 
 			// look ahead to see type
@@ -689,10 +735,16 @@ public class $parameter.Name extends $superType $interfaces{
 				#set ($curName = $utility.firstToLowerCase($field.getName()))
 				#if ($field.getEnumeration())
 					#set ($curType = $field.getEnumeration())
+				
+				#elseif ($field.getFormat())
+					#set ($firstF = "$utility.convertType($field.getType().value())")
+					#set ($secondF = "_")
+					#set ($thirdF = "$field.getFormat()")
+					#set ($curType ="$firstF$secondF$thirdF")
 				#else
 					#set ($curType = $utility.convertType($field.getType().value()))
 				#end
-				temp = element.getChild("$field.getName()");
+				temp = element.getChild("$field.getName()",element.getNamespace());
 				if (temp != null){
 					$curName = new $curType (temp);
 				}
@@ -714,7 +766,7 @@ public class $parameter.Name extends $superType $interfaces{
 				#if ($field.getRepeat()==$mustListRepeat  || $field.getRepeat()== $optionalListRepeat)
 					//we expect a list of parameters
 					$curName$list = new LinkedList<$field.getType()>();
-					tempList = element.getChildren("$field.getType()");
+					tempList = element.getChildren("$field.getType()",element.getNamespace());
 					#if ( $field.getRepeat() == $mustListRepeat)
 						if (tempList == null || tempList.isEmpty() ){
 							LOGGER.warn("$parameter.getName() misses non optional parameter of type $curName$list");
@@ -724,7 +776,7 @@ public class $parameter.Name extends $superType $interfaces{
 								#if ($utility.isCustom($field.getType()))
 									//custom parameter
 									#foreach ($custom in $utility.allowedCustom($custom))
-										tempList = element.getChildren("$custom");
+										tempList = element.getChildren("$custom",element.getNamespace());
 										for Element e: tempList){
 											custom = new Custom(e); 
 											$curName$list$add (new $custom (custom));
@@ -748,7 +800,7 @@ public class $parameter.Name extends $superType $interfaces{
 								#if ($utility.isCustom($field.getType()))
 									//custom parameter
 									#foreach ($custom in $utility.allowedCustom($custom))
-										tempList = element.getChildren("$custom");
+										tempList = element.getChildren("$custom",element.getNamespace());
 										for Element e: tempList){
 											custom = new Custom(e); 
 											$curName$list$add (new $custom (custom));
@@ -768,7 +820,7 @@ public class $parameter.Name extends $superType $interfaces{
 			
 				#else
 					// single parameter
-					temp = element.getChild("$field.getType()");
+					temp = element.getChild("$field.getType()",element.getNamespace());
 					if (temp != null){
 						$curName = new $field.getType()(temp);
 						LOGGER.info("setting parameter $curName for parameter $parameter.getType()");
@@ -794,7 +846,7 @@ public class $parameter.Name extends $superType $interfaces{
 								## custom parameter need separate treatment
 								// check for all custom parameters allowed for this parameter 
 								#foreach ($custom in $utility.allowedCustom($custom))
-									tempList = element.getChildren("$custom");
+									tempList = element.getChildren("$custom",element.getNamespace());
 									for Element e: tempList){
 										custom = new Custom(e); 
 										$curName$list$add (new $custom (custom));
@@ -804,7 +856,7 @@ public class $parameter.Name extends $superType $interfaces{
 								#end
 								//end allowed parameters
 							#else
-								tempList = element.getChildren("$subtype");
+								tempList = element.getChildren("$subtype",element.getNamespace());
 								for (Element e : tempList){
 									$curName$list$add (new $subtype(e));
 									LOGGER.debug("adding $subtype to $curName$list ");
@@ -831,7 +883,7 @@ public class $parameter.Name extends $superType $interfaces{
 						#if ($utility.isCustom($subtype))
 							## custom parameter need separate treatment
 							// custom
-							temp = element.getChild("$subtype");
+							temp = element.getChild("$subtype",element.getNamespace());
 							if (temp != null){
 								custom = new $field.getType() (temp));	
 								#foreach ($custom in $utility.allowedCustom($field.getType()))
@@ -843,7 +895,7 @@ public class $parameter.Name extends $superType $interfaces{
 							}
 						#else		
 							// try to get child for each possible subtype
-							temp = element.getChild("$subtype");			
+							temp = element.getChild("$subtype",element.getNamespace());			
 							if (temp != null){
 								$curName = new $subtype (temp);
 								LOGGER.debug(" $curName instatiated to $subtype with");
@@ -891,6 +943,19 @@ public class $parameter.Name extends $superType $interfaces{
 				public void set$field.getName()(final $field.getEnumeration()  $utility.firstToLowerCase($field.getName())){
 					this.$utility.firstToLowerCase($field.getName()) = $utility.firstToLowerCase($field.getName());
 				}
+			#elseif ($field.getFormat())
+				#set ($firstF = "$utility.convertType($field.getType().value())")
+				#set ($secondF = "_")
+				#set ($thirdF = "$field.getFormat()")
+				#set ($together = "$firstF$secondF$thirdF")
+				/**
+				 * set $utility.firstToLowerCase($field.getName()) of type $together .
+				 * @param  $utility.firstToLowerCase($field.getName()) to be set
+				 */
+				public void set$field.getName()(final $together $utility.firstToLowerCase($field.getName())){
+					this.$utility.firstToLowerCase($field.getName()) = $utility.firstToLowerCase($field.getName());
+				}
+			
 			#else
 				/**
 				 * set   $utility.firstToLowerCase($field.getName()) of type $utility.convertType($field.getType().value()) .
@@ -956,6 +1021,19 @@ public class $parameter.Name extends $superType $interfaces{
 				public $field.getEnumeration() get$field.getName()$emptyBrack{
 					return $utility.firstToLowerCase($field.getName());
 				}
+			#elseif ($field.getFormat())
+					#set ($firstF = "$utility.convertType($field.getType().value())")
+					#set ($secondF = "_")
+					#set ($thirdF = "$field.getFormat()")
+					#set ($together = "$firstF$secondF$thirdF")
+				/**
+				 * get $utility.firstToLowerCase($field.getName()) of type  $together.
+				 * @return  $together
+				 */
+				public  $together get$field.getName()$emptyBrack{
+					return $utility.firstToLowerCase($field.getName());
+				}
+			
 			#else
 				/**
 				 * get   $utility.firstToLowerCase($field.getName()) of type $utility.convertType($field.getType().value()).
@@ -1056,7 +1134,7 @@ public class $parameter.Name extends $superType $interfaces{
 				 * add element $curName of type $field.getType() .
 				 * @param  $curName of type $field.getType() 
 				 */
-			public void add$utility.firstToUpperCase($curName) ($field.getType() $curName) {
+			public void addTo$utility.firstToUpperCase($curName)$list ($field.getType() $curName) {
 				if (this.$curName$list == null){
 					this.$curName$list = new LinkedList<$field.getType()>();
 				} 

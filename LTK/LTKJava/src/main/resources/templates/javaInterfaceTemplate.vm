@@ -4,6 +4,7 @@ package org.llrp.ltk.generated.interfaces;
 	import org.llrp.ltk.types.LLRPBitList;
 	import org.jdom.Element;
 	import org.jdom.Content;
+	import org.jdom.Namespace;
 	
 /*
  *
@@ -49,7 +50,7 @@ public interface $interface.getName() {
 	 * @param name of element
 	 * @return JDom Content object
 	 */
-	public Content encodeXML(String name);
+	public Content encodeXML(String name,Namespace ns);
 	
 	/**
 	 * decode parameter from binary.

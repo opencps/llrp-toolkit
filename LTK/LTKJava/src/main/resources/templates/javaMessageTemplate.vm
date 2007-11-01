@@ -41,14 +41,16 @@ package org.llrp.ltk.generated.messages;
 #set($add = ".add")
 #set($emptyBrack = "()")
 #set($subtypeNr = ".subtype")
+#set($getClassName = ".getClass().getSimpleName()")
 
 ##set the class names here
-#set ($parameterReference = "ParameterReference")
+#set ($messageReference = "ParameterReference")
 #set ($choiceReference = "ChoiceReference")
 #set ($messageDefinition = "ParameterDefinition")
 #set ($choiceDefinition = "ChoiceDefinition")
 #set ($reservedDefinition = "ReservedDefinition")
 #set ($fieldDefinition = "FieldDefinition")
+
 #set ($mustListRepeat = "1-N")
 #set ($exactlyOnceRepeat = "1")
 #set ($optionalRepeat = "0-1")
@@ -73,6 +75,8 @@ $utility.clearImports()
 	$utility.addImport("document")
 	import org.jdom.Element;
 	$utility.addImport("element")
+	import org.jdom.Namespace;
+	$utility.addImport("Namespace")
 	
 	import org.llrp.ltk.types.LLRPBitList;
 	$utility.addImport("LLRPBitList")
@@ -92,6 +96,8 @@ $utility.clearImports()
 	$utility.addImport("WrongParameterException")
 	import org.llrp.ltk.exceptions.LLRPException;
 	$utility.addImport("LLRPException")
+import org.llrp.ltk.generated.LLRPConstants;
+	$utility.addImport("LLRPConstants")
 	
 	
 	import org.llrp.ltk.generated.parameters.Custom;
@@ -102,7 +108,7 @@ $utility.clearImports()
 	import org.llrp.ltk.generated.custom.parameters.$custom;
 	$utility.addImport($custom)
 	#end
-	
+
 	## field or reserved
 	#foreach($field in $message.getFieldOrReserved())
 		## reserved field
@@ -118,7 +124,16 @@ $utility.clearImports()
 				import org.llrp.ltk.generated.enumerations.$field.getEnumeration();
 				$utility.setSuperType($field.getEnumeration(),$field.getType().value())
 				$utility.addImport($field.getEnumeration())
-			#elseif (!$utility.hasImport($utility.convertType($field.getType().value())))
+		#elseif ($field.getFormat())
+			#set ($firstF = "$utility.convertType($field.getType().value())")
+			#set ($secondF = "_")
+			#set ($thirdF = "$field.getFormat()")
+			#set ($together = "$firstF$secondF$thirdF")
+			#if (!$utility.hasImport($together))
+				import org.llrp.ltk.types.$together;
+				$utility.addImport($together)
+			#end
+		#elseif (!$utility.hasImport($utility.convertType($field.getType().value())))
 				import org.llrp.ltk.types.$utility.convertType($field.getType().value());
 				$utility.addImport($utility.convertType($field.getType().value()))
 			#end
@@ -127,7 +142,6 @@ $utility.clearImports()
 					//TODO 1 template wrote this - unexpected object $field
 		#end	
 	#end
-	
 	
 	## parameter or choice
 	#foreach($field in $message.getParameterOrChoice())
@@ -175,19 +189,24 @@ public class $message.getName() extends LLRPMessage{
 #foreach($field in $message.getFieldOrReserved())
 	## reserved field
 	#if ($utility.hasType($field,$reservedDefinition))
-		private $resType $resName = new $resType ($field.getBitCount());
+		protected $resType $resName = new $resType ($field.getBitCount());
 	#elseif ($utility.hasType($field,$fieldDefinition))
 		#if ($field.getEnumeration())
 			protected $field.getEnumeration() $utility.firstToLowerCase($field.getName());
+		#elseif ($field.getFormat())
+			#set ($firstF = "$utility.convertType($field.getType().value())")
+			#set ($secondF = "_")
+			#set ($thirdF = "$field.getFormat()")
+			protected $firstF$secondF$thirdF $utility.firstToLowerCase($field.getName()); 
 		#else
 			protected $utility.convertType($field.getType().value()) $utility.firstToLowerCase($field.getName());
-		#end		
-
+		#end
 	## FieldDefinition
 	#else
-				//TODO template wrote this - unexpected object $field
+				//TODO 2 template wrote this - unexpected object $field
 	#end	
 #end
+
 
 ## constructor
 		
@@ -287,7 +306,10 @@ public class $message.getName() extends LLRPMessage{
 	 * {@inheritDoc}
 	 */
 	public Document encodeXML(){
-			Element root = new Element("$message.getName()");
+			Namespace ns = Namespace.getNamespace(LLRPConstants.NAMESPACEPREFIX,LLRPConstants.XMLNAMESPACE);
+			Element root = new Element("$message.getName()",ns);
+        	//root.addNamespaceDeclaration(Namespace.getNamespace("xsi",LLRPConstants.XMLENCODINGSCHEMA));
+        
 			if (version == null){
 				throw new MissingParameterException("Version not set");
 			} else {
@@ -303,14 +325,14 @@ public class $message.getName() extends LLRPMessage{
 		#foreach($field in $message.getFieldOrReserved())
 			#if ($utility.hasType($field,$reservedDefinition))
 			
-				root.addContent($resName$encodeXML("reserved"));
+				root.addContent($resName$encodeXML("reserved",ns));
 			#elseif ($utility.hasType($field,$fieldDefinition))
 				## FieldDefinition
 				if ($utility.firstToLowerCase($field.getName())== null){
 					LOGGER.warn(" $utility.firstToLowerCase($field.getName()) not set");
 					throw new MissingParameterException(" $utility.firstToLowerCase($field.getName()) not set");
 				} else {
-					root.addContent($utility.firstToLowerCase($field.getName())$encodeXML("$field.getName()"));
+					root.addContent($utility.firstToLowerCase($field.getName())$encodeXML("$field.getName()",ns));
 				}
 			#else
 				//TODO 4 template parameter encode wrote this - unexpected object $field $field.getName()
@@ -335,37 +357,37 @@ public class $message.getName() extends LLRPMessage{
 				} 
 				for ($field.getType() field : $curName$list){
 					##choices have to be set by the actual name - not the name of the interface
-					root.addContent(field$encodeXML(field.getClass().getName().replaceAll(field.getClass().getPackage().getName()+".", "")));
+					root.addContent(field$encodeXML(field.getClass().getName().replaceAll(field.getClass().getPackage().getName()+".", ""),ns));
 				}
 			#elseif ($field.getRepeat()== $optionalListRepeat)
 				if ($curName$list == null){
 					LOGGER.info("$curName$list not set");
 				} else {
 					for ($field.getType() field : $curName$list){
-						root.addContent(field$encodeXML(field.getClass().getName().replaceAll(field.getClass().getPackage().getName()+".", "")));
+						root.addContent(field$encodeXML(field.getClass().getName().replaceAll(field.getClass().getPackage().getName()+".", ""),ns));
 					}
 				}
 			#elseif ($field.getRepeat()== $optionalRepeat)
 				if ($curName == null){
 					LOGGER.info("$curName not set");
 				} else {
-					root.addContent($curName$encodeXML("$field.getType()"));
+					root.addContent($curName$encodeXML("$field.getType()",ns));
 				}
 			#elseif ($field.getRepeat()== $exactlyOnceRepeat)
 				if ($curName == null){
 					LOGGER.info("$curName not set");
 					throw new MissingParameterException("$curName not set");
 				} else {
-					root.addContent($curName$encodeXML("$field.getType()"));
+					root.addContent($curName$encodeXML("$field.getType()",ns));
 				}
 			#else
 				// TODO field.getRepeat() = $field.getRepeat()
 			#end
 		#end
 		Document doc = new Document(root);
-//		if (!isValidXMLMessage(doc,"$XMLSCHEMALOCATION")){
-//			throw new LLRPException("message can not be decoded to valid xml");
-//		}
+		if (!isValidXMLMessage(doc, LLRPConstants.LLRPDEFSCHEMAPATH)){
+			throw new LLRPException("message can not be decoded to valid xml");
+		}
 		return doc;
 	}
 	
@@ -391,6 +413,11 @@ public class $message.getName() extends LLRPMessage{
 				#set ($curName = $utility.firstToLowerCase($field.getName()))
 				#if ($field.getEnumeration())
 					#set ($curType = $field.getEnumeration())
+				#elseif ($field.getFormat())
+					#set ($firstF = "$utility.convertType($field.getType().value())")
+					#set ($secondF = "_")
+					#set ($thirdF = "$field.getFormat()")
+					#set ($curType ="$firstF$secondF$thirdF")
 				#else
 					#set ($curType = $utility.convertType($field.getType().value()))
 				#end
@@ -480,11 +507,20 @@ public class $message.getName() extends LLRPMessage{
 						
 					#end
 					
-					//if no parameter matched, jump out of while loop, if it is not an optional parameter, show warning
-					if (!atLeastOnce && (" $field.getRepeat() ".equals(" $mustListRepeat "))){
-						LOGGER.warn("encoded message does not contain non optional parameter $curName$list");
-					}
-					break;
+					#if ($field.getRepeat() == $mustListRepeat)
+						//if no parameter matched throw exception since it is non optional
+						if (!atLeastOnce){
+							LOGGER.warn("encoded message does not contain parameter for non optional $curName$list");
+							throw new MissingParameterException("$message.getName() misses non optional parameter of type $field.getType()");
+						}
+					#else
+						//if no parameter matched log warning and jump out of while loop
+						if (!atLeastOnce){
+							LOGGER.info("encoded message does not contain parameter for optional $curName$list");
+							break;
+						}
+					#end
+					
 				#elseif ($utility.isCustom($field.getType()))
 							## custom parameter need separate treatment
 							// custom
@@ -508,15 +544,34 @@ public class $message.getName() extends LLRPMessage{
 							atLeastOnce = true;
 							continue;
 						}
-				#elseif ($utility.hasType($field,$parameterReference))
+				#elseif ($utility.hasType($field,$messageReference))
 					//paramRef
 					$curName$list$add (new $field.getType() (binary.subList(position,tempLength)));
 					LOGGER.debug("adding $field.getType() to $curName$list ");
+					atLeastOnce = true;	
 					position+=tempLength;		
 				#else
 					//TODO 6 template wrote this in decode > list- unexpected object $field in while
 				#end
+							if (!atLeastOnce){
+					//no parameter matched therefore we jump out of the loop
+					break;
+				}
 			}
+			#set($isEmpty = ".isEmpty()")
+			#if ($field.getRepeat() == $mustListRepeat)
+					//if list is still empty no parameter matched
+					if ($curName$list$isEmpty){
+						LOGGER.warn("encoded message does not contain parameter for non optional $curName$list");
+						throw new MissingParameterException("$message.getName() misses non optional parameter of type $field.getType()");
+					}
+				#else
+					//if list is still empty no parameter matched
+					if ($curName$list$isEmpty){
+						LOGGER.info("encoded message does not contain parameter for optional $curName$list");
+						
+					}
+			#end
 		#elseif ($field.getRepeat()==$exactlyOnceRepeat || $field.getRepeat() == $optionalRepeat)
 			// look ahead to see type
 			// may be optional or exactly once
@@ -611,7 +666,7 @@ public class $message.getName() extends LLRPMessage{
 						LOGGER.info("$message.getName() misses optional parameter of type $field.getType()");
 					#end
 				}				
-			#elseif ($utility.hasType($field,$parameterReference))
+			#elseif ($utility.hasType($field,$messageReference))
 				if(type != null && type.equals($field.getType()$typeNum)){
 					$curName = new $field.getType() (binary.subList(position,tempLength));	
 					position+=tempLength;
@@ -636,16 +691,13 @@ public class $message.getName() extends LLRPMessage{
   	
   	
   ## decode XML
-    /**
-     * decode from xml.
-     *
-     * @param document to be decoded
-     *            
-     */
+		/**
+	 * {@inheritDoc}
+	 */
   	public void decodeXML(final Document document){
-//  		if (!isValidXMLMessage(document,"$XMLSCHEMALOCATION")){
-//			throw new IllegalArgumentException("message is not correct according to xml schema");
-//		}
+  		if (!isValidXMLMessage(document,LLRPConstants.LLRPDEFSCHEMAPATH)){
+			throw new IllegalArgumentException("message is not correct according to xml schema");
+		}
   		Element root = document.getRootElement();
   		List<Element> tempList = null;
         version = new BitList();
@@ -661,10 +713,15 @@ public class $message.getName() extends LLRPMessage{
 				#set ($curName = $utility.firstToLowerCase($field.getName()))
 				#if ($field.getEnumeration())
 					#set ($curType = $field.getEnumeration())
+				#elseif ($field.getFormat())
+					#set ($firstF = "$utility.convertType($field.getType().value())")
+					#set ($secondF = "_")
+					#set ($thirdF = "$field.getFormat()")
+					#set ($curType ="$firstF$secondF$thirdF")					
 				#else
 					#set ($curType = $utility.convertType($field.getType().value()))
 				#end
-				temp = root.getChild("$curType");
+				temp = root.getChild("$curType",root.getNamespace());
 				//check if this element exist
 				if (temp != null){
 					$curName = new $curType(temp);
@@ -690,7 +747,7 @@ public class $message.getName() extends LLRPMessage{
 		## check if it is a list 	
 		#if ($field.getRepeat()==$mustListRepeat  || $field.getRepeat()== $optionalListRepeat)
 			$curName$list = new LinkedList<$field.getType()>();
-			tempList = root.getChildren("$field.getType()");
+			tempList = root.getChildren("$field.getType()",root.getNamespace());
 			for (Element e : tempList){
 				#if ($utility.hasType($field,$choiceReference))
 					//choiceRef
@@ -703,7 +760,7 @@ public class $message.getName() extends LLRPMessage{
 					#end
 					//if no parameter matched, jump out of while loop
 					break;
-				#elseif ($utility.hasType($field,$parameterReference))
+				#elseif ($utility.hasType($field,$messageReference))
 					//paramRef
 					$curName$list$add (new $field.getType() (e));	
 				#else
@@ -720,15 +777,15 @@ public class $message.getName() extends LLRPMessage{
 				##check all subtypes
 				#foreach ($subtype in $utility.getSubTypes($field.getType()))
 					// try to get the element of name $field.getType()
-					temp = root.getChild("$field.getType()");
+					temp = root.getChild("$field.getType()",root.getNamespace());
 					// if it exists - we can instantiate it
 					if (temp != null){
 						$curName = new $subtype (temp);
 					}
 				#end
 			
-			#elseif ($utility.hasType($field,$parameterReference))
-				temp = root.getChild("$field.getType()");
+			#elseif ($utility.hasType($field,$messageReference))
+				temp = root.getChild("$field.getType()",root.getNamespace());
 				if(temp != null){
 					$curName = new $field.getType()(temp);
 				} else {
@@ -753,7 +810,7 @@ public class $message.getName() extends LLRPMessage{
 
 
  
-   
+      
    	
 	
 ## generate setters 
@@ -773,6 +830,19 @@ public class $message.getName() extends LLRPMessage{
 				public void set$field.getName()(final $field.getEnumeration()  $utility.firstToLowerCase($field.getName())){
 					this.$utility.firstToLowerCase($field.getName()) = $utility.firstToLowerCase($field.getName());
 				}
+			#elseif ($field.getFormat())
+				#set ($firstF = "$utility.convertType($field.getType().value())")
+				#set ($secondF = "_")
+				#set ($thirdF = "$field.getFormat()")
+				#set ($together = "$firstF$secondF$thirdF")
+				/**
+				 * set $utility.firstToLowerCase($field.getName()) of type $together .
+				 * @param  $utility.firstToLowerCase($field.getName()) to be set
+				 */
+				public void set$field.getName()(final $together $utility.firstToLowerCase($field.getName())){
+					this.$utility.firstToLowerCase($field.getName()) = $utility.firstToLowerCase($field.getName());
+				}
+			
 			#else
 				/**
 				 * set   $utility.firstToLowerCase($field.getName()) of type $utility.convertType($field.getType().value()) .
@@ -838,6 +908,19 @@ public class $message.getName() extends LLRPMessage{
 				public $field.getEnumeration() get$field.getName()$emptyBrack{
 					return $utility.firstToLowerCase($field.getName());
 				}
+			#elseif ($field.getFormat())
+					#set ($firstF = "$utility.convertType($field.getType().value())")
+					#set ($secondF = "_")
+					#set ($thirdF = "$field.getFormat()")
+					#set ($together = "$firstF$secondF$thirdF")
+				/**
+				 * get $utility.firstToLowerCase($field.getName()) of type  $together.
+				 * @return  $together
+				 */
+				public  $together get$field.getName()$emptyBrack{
+					return $utility.firstToLowerCase($field.getName());
+				}
+			
 			#else
 				/**
 				 * get   $utility.firstToLowerCase($field.getName()) of type $utility.convertType($field.getType().value()).
@@ -884,7 +967,7 @@ public class $message.getName() extends LLRPMessage{
 	// end getters
 ##end getters	
 	
-
+   
 	
 ## add methods
 	 //add methods
@@ -938,7 +1021,7 @@ public class $message.getName() extends LLRPMessage{
 				 * add element $curName of type $field.getType() .
 				 * @param  $curName of type $field.getType() 
 				 */
-			public void add$utility.firstToUpperCase($curName) ($field.getType() $curName) {
+			public void addTo$utility.firstToUpperCase($curName)$list ($field.getType() $curName) {
 				if (this.$curName$list == null){
 					this.$curName$list = new LinkedList<$field.getType()>();
 				} 
