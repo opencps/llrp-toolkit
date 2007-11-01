@@ -25,7 +25,6 @@ import org.jdom.output.XMLOutputter;
 import org.llrp.ltk.exceptions.IllegalBitListException;
 import org.llrp.ltk.exceptions.LLRPException;
 import org.llrp.ltk.exceptions.WrongParameterException;
-import org.llrp.ltk.generated.LLRPConstants;
 
 import org.xml.sax.SAXException;
 
