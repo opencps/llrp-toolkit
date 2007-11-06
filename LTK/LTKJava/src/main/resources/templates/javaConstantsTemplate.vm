@@ -28,6 +28,10 @@
  
 package org.llrp.ltk.generated;
 
+/**
+ * defining some constants
+ *
+ */
 public class LLRPConstants {
 
 	public static final String LLRPDEFSCHEMAPATH = "$schemaPath";

@@ -25,6 +25,7 @@ import org.jdom.output.XMLOutputter;
 import org.llrp.ltk.exceptions.IllegalBitListException;
 import org.llrp.ltk.exceptions.LLRPException;
 import org.llrp.ltk.exceptions.WrongParameterException;
+import org.llrp.ltk.generated.LLRPConstants;
 
 import org.xml.sax.SAXException;
 
@@ -54,13 +55,13 @@ import javax.xml.validation.Validator;
  */
 public abstract class LLRPMessage {
     private static final Logger LOGGER = Logger.getLogger(LLRPMessage.class);
-    public final int messageReservedLength = 3;
 
     // reserved length comes from parameter
-    public final int reservedLength = 6;
-    public final int versionLength = 3;
-    public final int typeNumberLength = 10;
-    public final int minHeaderLength = 80;
+    public static final int RESERVEDLENGTH = 6;
+    public static final int VERSIONLENGTH = 3;
+    public static final int TYPENUMBERLENGTH = 10;
+    public static final int MINHEADERLENGTH = 80;
+    public final int messageReservedLength = 3;
     protected BitList reserved = new BitList(messageReservedLength);
     protected BitList version;
     protected UnsignedInteger messageID = new UnsignedInteger();
@@ -78,8 +79,8 @@ public abstract class LLRPMessage {
         // type number only last 10 bits of first two bytes. Bit 0-5 used for
         // reserved and version
         result.append(getTypeNum().encodeBinary()
-                          .subList(messageReservedLength + versionLength,
-                typeNumberLength));
+                          .subList(messageReservedLength + VERSIONLENGTH,
+                TYPENUMBERLENGTH));
         result.append(messageLength.encodeBinary());
         result.append(messageID.encodeBinary());
         // call the message specific encode function
@@ -113,16 +114,16 @@ public abstract class LLRPMessage {
         LLRPBitList bits = new LLRPBitList(byteArray);
 
         // message must have at least 80 bits for header
-        if (bits.length() < minHeaderLength) {
+        if (bits.length() < MINHEADERLENGTH) {
             LOGGER.error("Bit String too short, must be at least 80, is " +
                 bits.length());
             throw new IllegalBitListException("Bit String too short");
         }
 
         Short messageType = new SignedShort(bits.subList(messageReservedLength +
-                    versionLength,
+                    VERSIONLENGTH,
                     SignedShort.length() -
-                    (messageReservedLength + versionLength))).toShort();
+                    (messageReservedLength + VERSIONLENGTH))).toShort();
 
         // this should never occur. Implies an error in Message Decoder,
         // since it is the one responsible for calling the appropriate
@@ -138,10 +139,10 @@ public abstract class LLRPMessage {
 
         // skip first three bits as they are reserved
         int position = messageReservedLength;
-        version = new BitList(versionLength);
+        version = new BitList(VERSIONLENGTH);
 
-        // version is a BitList of length versionLength
-        for (int i = 0; i < versionLength; i++) {
+        // version is a BitList of length VERSIONLENGTH
+        for (int i = 0; i < VERSIONLENGTH; i++) {
             // read bits starting at position (position==reservedLength)
             if (bits.get(position + i)) {
                 version.set(i);
@@ -220,7 +221,7 @@ public abstract class LLRPMessage {
      * @throws WrongParameterException
      */
     public void setVersion(BitList version) {
-        if (version.length() != versionLength) {
+        if (version.length() != VERSIONLENGTH) {
             // LLRPMessage.logger.warn("wrong length of version - must be bit
             // array of length 3");
             throw new LLRPException("wrong length of version");
@@ -266,11 +267,11 @@ public abstract class LLRPMessage {
         for (int i = 0; i < binLength.length(); i++) {
             // replace bits starting from bit 16 up to bit 48
             if (binLength.get(i)) {
-                result.set(versionLength + messageReservedLength +
-                    typeNumberLength + i);
+                result.set(VERSIONLENGTH + messageReservedLength +
+                    TYPENUMBERLENGTH + i);
             } else {
-                result.clear(versionLength + messageReservedLength +
-                    typeNumberLength + i);
+                result.clear(VERSIONLENGTH + messageReservedLength +
+                    TYPENUMBERLENGTH + i);
             }
         }
     }
@@ -293,8 +294,9 @@ public abstract class LLRPMessage {
     /**
      * Check xml file against xml schema.
      * @param jdomDoc to be checked
-     * @param XMLSCHEMALOCATION path to xml schema file
-     * @return boolean ture if valid
+     * @param schemaPath path to xml schema file
+     *
+     * @return boolean true if valid
      */
     public boolean isValidXMLMessage(Document jdomDoc, String schemaPath) {
         try {

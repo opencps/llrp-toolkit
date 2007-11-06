@@ -48,6 +48,7 @@ public interface $interface.getName() {
 	/**
 	 * encode parameter to xml.
 	 * @param name of element
+     * @param ns Namespace of elements
 	 * @return JDom Content object
 	 */
 	public Content encodeXML(String name,Namespace ns);

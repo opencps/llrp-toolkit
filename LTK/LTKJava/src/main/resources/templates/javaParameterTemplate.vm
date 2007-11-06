@@ -209,7 +209,7 @@ public class $parameter.Name extends $superType $interfaces{
 #foreach($field in $parameter.getFieldOrReserved())
 	## reserved field
 	#if ($utility.hasType($field,$reservedDefinition))
-		protected $resType $resName = new $resType ($field.getBitCount());
+		protected $resType $resName$utility.getCurrentNumerOfReserved() = new $resType ($field.getBitCount());
 	#elseif ($utility.hasType($field,$fieldDefinition))
 		#if ($field.getEnumeration())
 			protected $field.getEnumeration() $utility.firstToLowerCase($field.getName());
@@ -227,6 +227,8 @@ public class $parameter.Name extends $superType $interfaces{
 	#end	
 #end
 
+##must clear numbers of reserved definitons found
+$utility.clearNumberOfReserved()
 
 ## parameter or choice
 #foreach($field in $parameter.getParameterOrChoice())
@@ -283,7 +285,7 @@ public class $parameter.Name extends $superType $interfaces{
 	## field or reserved
 	#foreach($field in $parameter.getFieldOrReserved())
 		#if ($utility.hasType($field,$reservedDefinition))
-			resultBits.append($resName$encode);
+			resultBits.append($resName$utility.getCurrentNumerOfReserved()$encode);
 		#elseif ($utility.hasType($field,$fieldDefinition))
 			if ($utility.firstToLowerCase($field.getName())== null){
 				LOGGER.warn(" $utility.firstToLowerCase($field.getName()) not set");
@@ -348,6 +350,8 @@ public class $parameter.Name extends $superType $interfaces{
 		return resultBits;
 	}
 
+##must clear numbers of reserved definitons found
+$utility.clearNumberOfReserved()
 
 ## encode xml
 		/**
@@ -359,7 +363,7 @@ public class $parameter.Name extends $superType $interfaces{
 		## field or reserved
 		#foreach($field in $parameter.getFieldOrReserved())
 			#if ($utility.hasType($field,$reservedDefinition))
-				//xmlElement.addContent($resName$encodeXML("reserved",ns));
+				//xmlElement.addContent($resName$utility.getCurrentNumerOfReserved()$encodeXML("reserved",ns));
 			#elseif ($utility.hasType($field,$fieldDefinition))
 				## FieldDefinition
 				if ($utility.firstToLowerCase($field.getName())== null){
@@ -430,7 +434,9 @@ public class $parameter.Name extends $superType $interfaces{
 		#end
 		return xmlElement;
 	}
-	
+
+##must clear numbers of reserved definitons found
+$utility.clearNumberOfReserved()	
 	
 ##decode
   
@@ -449,7 +455,7 @@ public class $parameter.Name extends $superType $interfaces{
 		#foreach($field in $parameter.getFieldOrReserved())
 			## reserved field
 			#if ($utility.hasType($field,$reservedDefinition))
-				position+= $resName$length;
+				position+= $resName$utility.getCurrentNumerOfReserved()$length;
 			#elseif ($utility.hasType($field,$fieldDefinition))
 				#set ($curName = $utility.firstToLowerCase($field.getName()))
 				#if ($field.getEnumeration())
@@ -506,8 +512,8 @@ public class $parameter.Name extends $superType $interfaces{
 				// store if one parameter matched
 				boolean atLeastOnce = false;
 				// look ahead to see type
-				type = new SignedShort(binary.subList(position+reservedLength, typeNumberLength));
-				tempByteLength = new UnsignedShort(binary.subList(position+reservedLength+ typeNumberLength, UnsignedShort.length())).toShort();			
+				type = new SignedShort(binary.subList(position+RESERVEDLENGTH, TYPENUMBERLENGTH));
+				tempByteLength = new UnsignedShort(binary.subList(position+RESERVEDLENGTH+ TYPENUMBERLENGTH, UnsignedShort.length())).toShort();			
 				tempLength=8*tempByteLength;
 				##distinguish between choices and parameters. For choices, we must find the actual types
 				#if ($utility.hasType($field,$choiceReference))
@@ -606,8 +612,8 @@ public class $parameter.Name extends $superType $interfaces{
 			tempLength=0;
 			
 			try {
-				type = new SignedShort(binary.subList(position+reservedLength, typeNumberLength));
-				tempByteLength = new UnsignedShort(binary.subList(position+reservedLength+ typeNumberLength, UnsignedShort.length())).toShort();			
+				type = new SignedShort(binary.subList(position+RESERVEDLENGTH, TYPENUMBERLENGTH));
+				tempByteLength = new UnsignedShort(binary.subList(position+RESERVEDLENGTH+ TYPENUMBERLENGTH, UnsignedShort.length())).toShort();			
 				tempLength=8*tempByteLength;
 			
 			} catch (LLRPException le) {
@@ -714,7 +720,9 @@ public class $parameter.Name extends $superType $interfaces{
 	#end
   	}
   	
-  	
+ 
+##must clear numbers of reserved definitons found
+$utility.clearNumberOfReserved() 	
   	
   		
 ##decode XML

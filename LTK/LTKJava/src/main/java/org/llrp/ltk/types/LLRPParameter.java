@@ -57,6 +57,7 @@ public abstract class LLRPParameter {
      * create xml representation of this parameter.
      *
      * @param name of element
+     * @param ns Namespace of elements
      */
     public abstract Content encodeXML(String name, Namespace ns);
 

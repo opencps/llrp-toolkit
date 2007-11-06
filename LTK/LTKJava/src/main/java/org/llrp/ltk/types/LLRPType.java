@@ -44,6 +44,7 @@ public abstract class LLRPType {
      * create xml representation of this parameter.
      *
      * @param name returned content should have
+     * @param ns Namespace of elements
      */
     public abstract Content encodeXML(String name, Namespace ns);
 

@@ -138,6 +138,7 @@ $utility.clearImports()
 		$utility.addImport($interface)
 	#end
 ##end imports
+
 	
 	
 		
@@ -159,7 +160,7 @@ public class $message.getName() extends LLRPMessage{
 #foreach($field in $message.getFieldOrReserved())
 	## reserved field
 	#if ($utility.hasType($field,$reservedDefinition))
-		private $resType $resName = new $resType ($field.getBitCount());
+		private $resType $resName$utility.getCurrentNumerOfReserved() = new $resType ($field.getBitCount());
 	#elseif ($utility.hasType($field,$fieldDefinition))
 		private $utility.convertType($field.getType().value()) $utility.firstToLowerCase($field.getName());
 	## FieldDefinition
@@ -167,6 +168,10 @@ public class $message.getName() extends LLRPMessage{
 				//TODO template wrote this - unexpected object $field
 	#end	
 #end
+
+##must clear numbers of reserved definitons found
+$utility.clearNumberOfReserved()
+
 
 ## constructor
 	public $message.getName()(){
@@ -212,7 +217,7 @@ public class $message.getName() extends LLRPMessage{
 	## field or reserved
 	#foreach($field in $message.getFieldOrReserved())
 		#if ($utility.hasType($field,$reservedDefinition))
-			resultBits.append($resName$encode);
+			resultBits.append($resName$utility.getCurrentNumerOfReserved()$encode);
 		#elseif ($utility.hasType($field,$fieldDefinition))
 			resultBits.append($utility.firstToLowerCase($field.getName())$encode);
 		## FieldDefinition
@@ -241,6 +246,9 @@ public class $message.getName() extends LLRPMessage{
 	#end
 		return resultBits;
 	}
+##must clear numbers of reserved definitons found
+$utility.clearNumberOfReserved()
+
 
 
 ##decode
@@ -255,7 +263,7 @@ public class $message.getName() extends LLRPMessage{
 		SignedShort type;
 		
 
-		Short messageType = new SignedShort(bits.subList(reservedLength, 10)).toShort();
+		Short messageType = new SignedShort(bits.subList(RESERVEDLENGTH, 10)).toShort();
 
 		// skip first three bits as they are reserved
 		position=3;
@@ -270,7 +278,7 @@ public class $message.getName() extends LLRPMessage{
 			}
 		}
 		//skip message type - length starts at position 16
-		position =reservedLength+typeNumberLength;
+		position =RESERVEDLENGTH+TYPENUMBERLENGTH;
 		messageLength = new UnsignedInteger(bits.subList(position, UnsignedInteger.length()));
 		position+=UnsignedInteger.length();
 		messageID = new UnsignedInteger(bits.subList(position, UnsignedInteger.length()));
@@ -329,8 +337,8 @@ public class $message.getName() extends LLRPMessage{
 			$curName$list = new LinkedList<$field.getType()>();
 			while (position < bits.length()){
 				// look ahead to see type
-				type = new SignedShort(bits.subList(position+reservedLength, typeNumberLength));
-				tempByteLength = new UnsignedShort(bits.subList(position+typeNumberLength+reservedLength, UnsignedShort.length())).toShort();			
+				type = new SignedShort(bits.subList(position+RESERVEDLENGTH, TYPENUMBERLENGTH));
+				tempByteLength = new UnsignedShort(bits.subList(position+TYPENUMBERLENGTH+RESERVEDLENGTH, UnsignedShort.length())).toShort();			
 				tempLength=8*tempByteLength;
 				##distinguish between choices and parameters. For choices, we must find the actual types
 				#if ($utility.hasType($field,$choiceReference))
@@ -360,8 +368,8 @@ public class $message.getName() extends LLRPMessage{
 			##may be optional or exactly once
 			// look ahead to see type
 			// may be optional or exactly once
-			type = new SignedShort(bits.subList(position+reservedLength, typeNumberLength));
-			tempByteLength = new UnsignedShort(bits.subList(position+typeNumberLength+reservedLength, UnsignedShort.length())).toShort();			
+			type = new SignedShort(bits.subList(position+RESERVEDLENGTH, TYPENUMBERLENGTH));
+			tempByteLength = new UnsignedShort(bits.subList(position+TYPENUMBERLENGTH+RESERVEDLENGTH, UnsignedShort.length())).toShort();			
 			tempLength=8*tempByteLength;
 			##distinguish between choices and parameters. For choices, we must find the actual types
 			#if ($utility.hasType($field,$choiceReference))

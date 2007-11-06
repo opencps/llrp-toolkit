@@ -118,7 +118,8 @@ public class BitArray extends LLRPType {
     /**
      * length of BaseType - not the array - for array length call size().
      *
-     * @return
+     *
+     * @return Integer representing number of bits nedded for this type
      */
     public static Integer length() {
         return Bit.length();
@@ -166,7 +167,7 @@ public class BitArray extends LLRPType {
     /**
      * number of elements in array.
      *
-     * @return
+     * @return number of elements in array
      */
     public Integer size() {
         return bits.length;

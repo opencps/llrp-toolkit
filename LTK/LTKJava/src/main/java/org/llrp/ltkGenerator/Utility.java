@@ -34,8 +34,10 @@ public class Utility {
     private Map<String, List<String>> allowedIn;
     private Logger logger = CodeGenerator.logger;
     private Properties properties;
+    private int numberOfReserved;
 
     public Utility(Properties properties) {
+        numberOfReserved = 0;
         superTypes = new HashMap<String, String>();
         imports = new HashSet<String>();
         allowedIn = new HashMap<String, List<String>>();
@@ -418,5 +420,20 @@ public class Utility {
         } else {
             return doc;
         }
+    }
+
+    /**
+     * helper method to store number of reserved fields. Increases after each call automatically
+     * @return number of reserved definitions found to moment of calling
+     */
+    public int getCurrentNumerOfReserved() {
+        return numberOfReserved++;
+    }
+
+    /**
+     * reset the counter of number of reserved definitions to 0
+     */
+    public void clearNumberOfReserved() {
+        numberOfReserved = 0;
     }
 }

@@ -40,16 +40,20 @@ import org.jdom.Text;
 import org.jdom.Content;
 import org.jdom.Namespace;
 
+import org.apache.log4j.Logger;
+import java.math.BigInteger;
+
 
 /**
  * $enum.getName() is Enumeration of Type $utility.getSuperType($enum.getName())
  * Use isValidValue to check if value to be set is allowed.
  */
 public class $enum.getName() extends $utility.getSuperType($enum.getName()) implements LLRPEnumeration{
-
+	#set($class = ".class");
+	Logger logger = Logger.getLogger($enum.getName()$class);
 	
 	/**
-	 * Create new $parameter.getName() by passing integer value.
+	 * Create new $enum.getName() by passing integer value.
 	 *
 	 * @throw IllegalArgumentException
 	 * if the value is not allowed for this enumeration
@@ -64,7 +68,7 @@ public class $enum.getName() extends $utility.getSuperType($enum.getName()) impl
 	}
 	
 	/**
-	 * Create new $parameter.getName() by passing jdom element.
+	 * Create new $enum.getName() by passing jdom element.
 	 *
 	 * @throw IllegalArgumentException
 	 * if the value found in element is not allowed 
@@ -73,14 +77,11 @@ public class $enum.getName() extends $utility.getSuperType($enum.getName()) impl
 	 * that is the name for a value of the enumeration.
 	 */
 	public $enum.getName() (final Element element){
-		this.value = new Integer(getValue(element.getText()));
-		if (!isValidValue(this.value)){
-			throw new IllegalArgumentException("Value not allowed");
-		}
+        this(element.getText());
 	}
 
 	/**
-	 * Create new $parameter.getName() by passing a string.
+	 * Create new $enum.getName() by passing a string.
 	 *
 	 * @throw IllegalArgumentException
 	 * if the string does not stand for a valid value.
@@ -90,12 +91,16 @@ public class $enum.getName() extends $utility.getSuperType($enum.getName()) impl
 		if (!isValidName(name)){
 			throw new IllegalArgumentException("Name not allowed");
 		}
-		value = getValue(name);
+		#if ($utility.getSuperType($enum.getName()) == "UnsignedInteger")
+        	this.value = BigInteger.valueOf(getValue(name));
+        #else
+        	this.value = getValue(name);
+        #end
 		signed = false;			
 	}
 
 	/**
-	 * Create new $parameter.getName() by passing LLRPBitList.
+	 * Create new $enum.getName() by passing LLRPBitList.
 	 *
 	 * @throw IllegalArgumentException
 	 * if the value found in the BitList is not allowed
@@ -120,7 +125,11 @@ public class $enum.getName() extends $utility.getSuperType($enum.getName()) impl
 	 */
 	public final void set(final String name){
 		if (!isValidName(name)) throw new IllegalArgumentException("name not allowed");
-		value = getValue(name);
+		#if ($utility.getSuperType($enum.getName()) == "UnsignedInteger")
+        	this.value = BigInteger.valueOf(getValue(name));
+        #else
+        	this.value = getValue(name);
+        #end
 	}
 
 	/**
@@ -134,7 +143,11 @@ public class $enum.getName() extends $utility.getSuperType($enum.getName()) impl
 	 */	
 	public final void set(final Integer value){
 		if (!isValidValue(value)) throw new IllegalArgumentException("value not allowed");
-		this.value = value;
+		#if ($utility.getSuperType($enum.getName()) == "UnsignedInteger")
+        	this.value = BigInteger.valueOf(value);
+        #else
+        	this.value = value;
+        #end
 	}
 
 	/**
@@ -225,4 +238,22 @@ public class $enum.getName() extends $utility.getSuperType($enum.getName()) impl
     	#set($length = ".length()")
         return $utility.getSuperType($enum.getName())$length; 
     }
+    
+       /**
+             * wrapper method for UnsignedIntegers that use BigIntegers to store value
+    * 
+     */
+    private final String getName(final BigInteger value) {
+			logger.warn("$enum.getName() must convert BigInteger "+value+" to Integer value "+value.intValue());
+			return getName(value.intValue());
+		}
+		
+		       /**
+             * wrapper method for UnsignedIntegers that use BigIntegers to store value
+    * 
+     */
+    private final boolean isValidValue(final BigInteger value) {
+			logger.warn("$enum.getName() must convert BigInteger "+value+" to Integer value "+value.intValue());
+			return isValidValue(value.intValue());
+		}
 }

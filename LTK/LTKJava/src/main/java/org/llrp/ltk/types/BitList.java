@@ -143,7 +143,7 @@ public class BitList extends LLRPType {
     /**
      * just like BitArray but does not encode length before values.
      *
-     * @return
+     * @return LLRPBitList
      */
     public LLRPBitList encodeBinary() {
         LLRPBitList result = new LLRPBitList(bits.length);

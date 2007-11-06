@@ -27,7 +27,7 @@ import org.llrp.ltk.exceptions.LLRPException;
  * @author gasserb
  */
 public abstract class TVParameter extends LLRPParameter {
-    private final int parameterTypeLength = 8;
+    private final int PARAMETERTYPELENGTH = 8;
 
     /**
      * decodeBinary should be called from Constructor Taking binary encoded
@@ -52,8 +52,8 @@ public abstract class TVParameter extends LLRPParameter {
         }
 
         //decodeBinarySpecific is called for parameter specific decoding. Each parameter must have implemented it
-        decodeBinarySpecific(bits.subList(parameterTypeLength,
-                bits.length() - parameterTypeLength));
+        decodeBinarySpecific(bits.subList(PARAMETERTYPELENGTH,
+                bits.length() - PARAMETERTYPELENGTH));
     }
 
     /**
@@ -67,8 +67,8 @@ public abstract class TVParameter extends LLRPParameter {
         LLRPBitList le = getTypeNum().encodeBinary();
 
         // type Number is saved as a short, but we need only the last 8 bits
-        LLRPBitList result = le.subList(le.length() - parameterTypeLength,
-                parameterTypeLength);
+        LLRPBitList result = le.subList(le.length() - PARAMETERTYPELENGTH,
+                PARAMETERTYPELENGTH);
 
         // first bit must always be set to 1
         result.set(0);
@@ -89,7 +89,7 @@ public abstract class TVParameter extends LLRPParameter {
     /**
      * protected method to force subclasses to implement their specific encoding
      *
-     * @return
+     * @return LLRPBitList
      */
     protected abstract LLRPBitList encodeBinarySpecific();
 }

@@ -100,7 +100,7 @@ $utility.clearImports()
 			## its a field and therefore it might be also an enumeration
 			## only place where we can find super types of enumerations
 			#if ($field.getEnumeration() && !$utility.hasImport($field.getEnumeration()))
-				import org.llrp.ltk.generated.interfaces.$field.getEnumeration();
+				import org.llrp.ltk.generated.enumerations.$field.getEnumeration();
 				$utility.setSuperType($field.getEnumeration(),$field.getType().value())
 				$utility.addImport($field.getEnumeration())
 			#elseif (!$utility.hasImport($utility.convertType($field.getType().value())))
@@ -141,7 +141,9 @@ $utility.clearImports()
 ##end imports
 
 
-
+/**
+ * $utility.getAnnotation($custom).
+ */
 ## beginning of class
 public class $custom.getName() extends Custom{
 
@@ -157,7 +159,7 @@ public class $custom.getName() extends Custom{
 #foreach($field in $custom.getFieldOrReserved())
 	## reserved field
 	#if ($utility.hasType($field,$reservedDefinition))
-		private $resType $resName = new $resType ($field.getBitCount());
+		private $resType $resName$utility.getCurrentNumerOfReserved() = new $resType ($field.getBitCount());
 	#elseif ($utility.hasType($field,$fieldDefinition))
 		#if ($field.getEnumeration())
 			private $field.getEnumeration() $utility.firstToLowerCase($field.getName());
@@ -169,6 +171,9 @@ public class $custom.getName() extends Custom{
 				//TODO template wrote this - unexpected object $field
 	#end	
 #end
+
+##must clear numbers of reserved definitons found
+$utility.clearNumberOfReserved()
 
 
 ## parameter or choice
@@ -216,7 +221,7 @@ public class $custom.getName() extends Custom{
 	## field or reserved
 	#foreach($field in $custom.getFieldOrReserved())
 		#if ($utility.hasType($field,$reservedDefinition))
-			resultBits.append($resName$encode);
+			resultBits.append($resName$utility.getCurrentNumerOfReserved()$encode);
 		#elseif ($utility.hasType($field,$fieldDefinition))
 			if ($utility.firstToLowerCase($field.getName())== null){
 				logging.warn(" $utility.firstToLowerCase($field.getName()) not set");
@@ -260,6 +265,9 @@ public class $custom.getName() extends Custom{
 	#end
 		return resultBits;
 	}
+##must clear numbers of reserved definitons found
+$utility.clearNumberOfReserved()
+
 
 
 ##decode
@@ -285,7 +293,7 @@ public class $custom.getName() extends Custom{
 		#foreach($field in $custom.getFieldOrReserved())
 			## reserved field
 			#if ($utility.hasType($field,$reservedDefinition))
-				position+= $resName$length;
+				position+= $resName$utility.getCurrentNumerOfReserved()$length;
 			#elseif ($utility.hasType($field,$fieldDefinition))
 				#set ($curName = $utility.firstToLowerCase($field.getName()))
 				#if ($field.getEnumeration())
@@ -335,7 +343,7 @@ public class $custom.getName() extends Custom{
 			while (position < binary.length()){
 				boolean atLeastOnce = false;
 				// look ahead to see type
-				type = new SignedShort(binary.subList(position+reservedLength, typeNumberLength));
+				type = new SignedShort(binary.subList(position+RESERVEDLENGTH, TYPENUMBERLENGTH));
 				tempByteLength = new UnsignedShort(binary.subList(position+16, 16)).toShort();			
 				tempLength=8*tempByteLength;
 				##distinguish between choices and parameters. For choices, we must find the actual types
@@ -399,8 +407,8 @@ public class $custom.getName() extends Custom{
 				if (position < binary.length()){
 				// we checked to see if binary is finished since this is an optional parameter
 			#end
-					type = new SignedShort(binary.subList(position+reservedLength, typeNumberLength));
-					tempByteLength = new UnsignedShort(binary.subList(position+reservedLength+ typeNumberLength, UnsignedShort.length())).toShort();			
+					type = new SignedShort(binary.subList(position+RESERVEDLENGTH, TYPENUMBERLENGTH));
+					tempByteLength = new UnsignedShort(binary.subList(position+RESERVEDLENGTH+ TYPENUMBERLENGTH, UnsignedShort.length())).toShort();			
 					tempLength=8*tempByteLength;
 					##distinguish between choices and parameters. For choices, we must find the actual types
 					#if ($utility.hasType($field,$choiceReference))
@@ -463,6 +471,9 @@ public class $custom.getName() extends Custom{
 	#end
   	}
   	
+
+##must clear numbers of reserved definitons found
+$utility.clearNumberOfReserved()
 
 
 

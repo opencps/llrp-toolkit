@@ -121,7 +121,7 @@ public class BytesToEnd extends LLRPType {
     /**
      * length of BaseType - not of the array - for array length call size().
      *
-     * @return
+     * @return  length of BaseType
      */
     public static Integer length() {
         return LLRPInteger.length();
@@ -130,13 +130,16 @@ public class BytesToEnd extends LLRPType {
     /**
      * number of elements.
      *
-     * @return
+     * @return number of elements
      */
     public Integer size() {
         return bytes.size();
     }
 
-    @Override
+    /**
+     * @Override
+     * {@inheritDoc}
+     */
     public Content encodeXML(String name, Namespace ns) {
         String s = "";
 
@@ -150,7 +153,10 @@ public class BytesToEnd extends LLRPType {
         return element;
     }
 
-    @Override
+    /**
+     * @Override
+     * {@inheritDoc}
+     */
     public void decodeXML(Element element) {
         String byteString = element.getText();
         bytes = new LinkedList<LLRPInteger>();
