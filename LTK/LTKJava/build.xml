@@ -21,6 +21,8 @@
             
             
      <target name="init"> 
+     	  <echo>using ant version '${ant.version}'</echo>
+   	<echo>using java version '${java.version}'</echo>
           <mkdir dir="${src}/${generated}/messages"/>
           <mkdir dir="${src}/${generated}/parameters"/>
           <mkdir dir="${src}/${generated}/enumerations"/>
