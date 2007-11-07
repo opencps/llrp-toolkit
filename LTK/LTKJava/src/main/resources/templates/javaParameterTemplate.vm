@@ -533,6 +533,7 @@ $utility.clearNumberOfReserved()
 									LOGGER.debug("adding $custom to $curName$list ");	
 									position+=tempLength;
 									atLeastOnce = true;
+									continue;
 								}
 							#end	
 							//end allowed parameters
@@ -679,6 +680,7 @@ $utility.clearNumberOfReserved()
 							$curName=new $custom (cus);
 							atLeastOnce = true;
 							position+=tempLength;
+							continue;
 						}
 					#end	
 					//end allowed parameters
@@ -783,14 +785,21 @@ $utility.clearNumberOfReserved()
 							for (Element e : tempList){
 								#if ($utility.isCustom($field.getType()))
 									//custom parameter
+									#set($hasAllowed = "false")
 									#foreach ($custom in $utility.allowedCustom($custom))
+										#set($hasAllowed = "true")
 										tempList = element.getChildren("$custom",element.getNamespace());
 										for Element e: tempList){
 											custom = new Custom(e); 
 											$curName$list$add (new $custom (custom));
 											atLeastOnce = true;
 											LOGGER.debug("adding $custom to $curName$list ");
+											
 										}
+									#end
+									#if ($hasAllowed == "false")
+											$curName$list$add (new $field.getType()(e));
+											LOGGER.debug("adding $field.getType() to $curName$list ");
 									#end
 									//end custom
 								#else 
@@ -807,7 +816,9 @@ $utility.clearNumberOfReserved()
 							for (Element e : tempList){
 								#if ($utility.isCustom($field.getType()))
 									//custom parameter
+									#set($hasAllowed = "false")
 									#foreach ($custom in $utility.allowedCustom($custom))
+										#set($hasAllowed = "true")
 										tempList = element.getChildren("$custom",element.getNamespace());
 										for Element e: tempList){
 											custom = new Custom(e); 
@@ -815,6 +826,10 @@ $utility.clearNumberOfReserved()
 											atLeastOnce = true;
 											LOGGER.debug("adding $custom to $curName$list ");
 										}
+									#end
+									#if ($hasAllowed == "false")
+											$curName$list$add (new $field.getType()(e));
+											LOGGER.debug("adding $field.getType() to $curName$list ");
 									#end
 									//end custom
 								#else 
@@ -853,14 +868,24 @@ $utility.clearNumberOfReserved()
 							#if ($utility.isCustom($subtype))
 								## custom parameter need separate treatment
 								// check for all custom parameters allowed for this parameter 
+								#set($hasAllowed = "false")
 								#foreach ($custom in $utility.allowedCustom($custom))
+									#set($hasAllowed = "true")
 									tempList = element.getChildren("$custom",element.getNamespace());
-									for Element e: tempList){
+									for (Element e: tempList){
 										custom = new Custom(e); 
 										$curName$list$add (new $custom (custom));
 										atLeastOnce = true;
 										LOGGER.debug("adding $custom to $curName$list ");
 									}
+								#end
+								#if ($hasAllowed == "false")
+									tempList = element.getChildren("Custom",element.getNamespace());
+									for (Element e: tempList){
+										$curName$list$add (new Custom(e));
+										LOGGER.debug("adding $field.getType() to $curName$list ");
+									}
+									
 								#end
 								//end allowed parameters
 							#else
