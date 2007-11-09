@@ -577,11 +577,13 @@ $utility.clearNumberOfReserved()
 							atLeastOnce = true;
 						}
 				#elseif ($utility.hasType($field,$parameterReference))
-					//paramRef
-					$curName$list$add (new $field.getType() (binary.subList(position,tempLength)));
-					LOGGER.debug("adding $field.getType() to $curName$list ");
-					atLeastOnce = true;	
-					position+=tempLength;	
+					//add parameter to list if type number matches
+					if (type != null && type.equals($field.getType()$typeNum)){
+						$curName$list$add (new $field.getType() (binary.subList(position,tempLength)));
+						LOGGER.debug("adding $field.getType() to $curName$list ");
+						atLeastOnce = true;	
+						position+=tempLength;
+					}
 				#else
 					//TODO 6 template wrote this in decode > list- unexpected object $field in while
 				#end
