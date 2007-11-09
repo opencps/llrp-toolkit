@@ -73,7 +73,8 @@ public class CodeGenerator {
     }
 
     /**
-     * generate code - definitons in generator.properties.
+     * generates LLRP messages, parameters, enumeration from the definitions in
+     * llrpdef.xml and any extensions definitions in specified in the generator.properties file.
      */
     public void generate() {
         logger.debug("start code generation");
