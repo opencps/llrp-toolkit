@@ -44,7 +44,7 @@ package org.llrp.ltk.generated.messages;
 #set($getClassName = ".getClass().getSimpleName()")
 
 ##set the class names here
-#set ($messageReference = "ParameterReference")
+#set ($parameterReference = "ParameterReference")
 #set ($choiceReference = "ChoiceReference")
 #set ($messageDefinition = "ParameterDefinition")
 #set ($choiceDefinition = "ChoiceDefinition")
@@ -481,26 +481,26 @@ $utility.clearNumberOfReserved()
 						#if ($utility.isCustom($subtype))
 							## custom parameter need separate treatment
 							// custom
-						if(type != null && type.equals(Custom$typeNum)){
-							Custom cus = new Custom(binary.subList(position,tempLength)); 
-							//allowed custom parameters for this parameter	
-							#foreach ($custom in $utility.allowedCustom($message.getName()))
-								if (cus.getParameterSubtype().equals($custom$subtypeNr)){ 
-									$curName$list$add (new $custom (cus));
-									atLeastOnce = true;
-									LOGGER.debug("adding $custom to $curName$list ");	
-									position+=tempLength;
-									atLeastOnce = true;
-									continue;
-								}
-							#end	
-							//end allowed parameters
-							//if none matched continue wasn't called and we add just cus as we found no specific vendor implementation
-							$curName$list$add (cus);
-							position+=tempLength;
-							atLeastOnce = true;
-							continue;
-						}
+							if(type != null && type.equals(Custom$typeNum)){
+								Custom cus = new Custom(binary.subList(position,tempLength)); 
+								//allowed custom parameters for this parameter	
+								#foreach ($custom in $utility.allowedCustom($message.getName()))
+									if (cus.getParameterSubtype().equals($custom$subtypeNr)){ 
+										$curName$list$add (new $custom (cus));
+										atLeastOnce = true;
+										LOGGER.debug("adding $custom to $curName$list ");	
+										position+=tempLength;
+										atLeastOnce = true;
+										continue;
+									}
+								#end	
+								//end allowed parameters
+								//if none matched continue wasn't called and we add just cus as we found no specific vendor implementation
+								$curName$list$add (cus);
+								position+=tempLength;
+								atLeastOnce = true;
+								continue;
+							}
 						#else						
 							if (type != null && type.equals($subtype$typeNum)){
 								$curName$list$add (new $subtype (binary.subList(position,tempLength)));
@@ -550,14 +550,20 @@ $utility.clearNumberOfReserved()
 							atLeastOnce = true;
 							continue;
 						}
-				#elseif ($utility.hasType($field,$messageReference))
-					//paramRef
-					$curName$list$add (new $field.getType() (binary.subList(position,tempLength)));
-					LOGGER.debug("adding $field.getType() to $curName$list ");
-					atLeastOnce = true;	
-					position+=tempLength;		
+				#elseif ($utility.hasType($field,$parameterReference))
+					//parameter reference
+					
+					if (type != null && type.equals($field.getType()$typeNum)){
+						$curName$list$add (new $field.getType() (binary.subList(position,tempLength)));
+						LOGGER.debug("adding $field.getType() to $curName$list ");
+						atLeastOnce = true;	
+						position+=tempLength;
+					}
+							
+							
+							
 				#else
-					//TODO 6 template wrote this in decode > list- unexpected object $field in while
+					//TODO 6 template wrote this in decode > list- unexpected object $field in foreach
 				#end
 							if (!atLeastOnce){
 					//no parameter matched therefore we jump out of the loop
@@ -672,7 +678,7 @@ $utility.clearNumberOfReserved()
 						LOGGER.info("$message.getName() misses optional parameter of type $field.getType()");
 					#end
 				}				
-			#elseif ($utility.hasType($field,$messageReference))
+			#elseif ($utility.hasType($field,$parameterReference))
 				if(type != null && type.equals($field.getType()$typeNum)){
 					$curName = new $field.getType() (binary.subList(position,tempLength));	
 					position+=tempLength;
@@ -768,7 +774,7 @@ $utility.clearNumberOfReserved()
 					#end
 					//if no parameter matched, jump out of while loop
 					break;
-				#elseif ($utility.hasType($field,$messageReference))
+				#elseif ($utility.hasType($field,$parameterReference))
 					//paramRef
 					$curName$list$add (new $field.getType() (e));	
 				#else
@@ -792,7 +798,7 @@ $utility.clearNumberOfReserved()
 					}
 				#end
 			
-			#elseif ($utility.hasType($field,$messageReference))
+			#elseif ($utility.hasType($field,$parameterReference))
 				temp = root.getChild("$field.getType()",root.getNamespace());
 				if(temp != null){
 					$curName = new $field.getType()(temp);
