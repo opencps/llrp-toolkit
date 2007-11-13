@@ -144,11 +144,12 @@
     public bool Open(string llrp_reader_name, int timeout, out ENUM_ConnectionAttemptStatusType status)
     {
     status = ENUM_ConnectionAttemptStatusType.Success;
+    
+    cI.OnMessageReceived += new delegateMessageReceived(ProcesssMessage);
 
     try{ cI.Open(llrp_reader_name, LLRP1_TCP_PORT);}
     catch{return false;}
 
-    cI.OnMessageReceived += new delegateMessageReceived(ProcesssMessage);
 
     conn_evt = new ManualResetEvent(false);
     if (conn_evt.WaitOne(timeout, false))
