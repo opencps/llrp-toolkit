@@ -46,7 +46,7 @@ package org.llrp.ltk.generated.messages;
 ##set the class names here
 #set ($parameterReference = "ParameterReference")
 #set ($choiceReference = "ChoiceReference")
-#set ($messageDefinition = "ParameterDefinition")
+#set ($parameterDefinition = "ParameterDefinition")
 #set ($choiceDefinition = "ChoiceDefinition")
 #set ($reservedDefinition = "ReservedDefinition")
 #set ($fieldDefinition = "FieldDefinition")
@@ -275,10 +275,14 @@ $utility.clearNumberOfReserved()
 		#if ($utility.hasType($field,$reservedDefinition))
 			resultBits.append($resName$utility.getCurrentNumerOfReserved()$encode);
 		#elseif ($utility.hasType($field,$fieldDefinition))
+			if ($utility.firstToLowerCase($field.getName())== null){
+				LOGGER.warn(" $utility.firstToLowerCase($field.getName()) not set");
+				throw new MissingParameterException(" $utility.firstToLowerCase($field.getName()) not set  for Parameter of Type $message.getType()");
+			} 
 			resultBits.append($utility.firstToLowerCase($field.getName())$encode);
 		## FieldDefinition
 		#else
-			//TODO template parameter encode wrote this - unexpected object $field
+			//TODO 3 template parameter encode wrote this - unexpected object $field
 		#end
 	#end
 	## parameter or choice
@@ -287,17 +291,48 @@ $utility.clearNumberOfReserved()
 		## however there are some exceptions to this where there is a name given
 
 		#if ($field.getName())
-			#set ($curName = $field.getName())
+			#set ($curName = $utility.firstToLowerCase($field.getName()))
 		#else
 			#set ($curName = $utility.firstToLowerCase($field.getType()))
 		#end
 		## check if it is a list 	
-		#if ($field.getRepeat()==$mustListRepeat  || $field.getRepeat()== $optionalListRepeat)
-			for ($field.Type field : $curName$list){
-				resultBits.append(field$encode);
+		#if ($field.getRepeat()==$mustListRepeat)
+			if ($curName$list== null){
+				LOGGER.warn(" $curName$list not set");
+				//parameter has to be set - throw exception
+				throw new MissingParameterException(" $curName$list not set");
+			} else {
+				for ($field.Type field : $curName$list){
+					resultBits.append(field$encode);
+				}
 			}
+		#elseif ($field.getRepeat()==$optionalListRepeat)
+			if ($curName$list== null){
+				//just warn - it is optional 
+				LOGGER.warn(" $curName$list not set");
+			} else {
+				for ($field.Type field : $curName$list){
+					resultBits.append(field$encode);
+				}
+			}
+		#elseif ($field.getRepeat()==$exactlyOnceRepeat)
+			if ($curName == null){
+				// single parameter, may not be null
+				LOGGER.warn(" $curName not set");
+				throw new MissingParameterException(" $curName not set");
+			} else {
+				resultBits.append($curName$encode);
+			}
+		#elseif ($field.getRepeat()==$optionalRepeat)
+			if ($curName == null){
+				// optional parameter, may be null
+				LOGGER.warn(" $curName not set");
+			} else {
+				resultBits.append($curName$encode);
+			}
+				 
 		#else
-			resultBits.append($curName$encode);
+			// TODO field.getRepeat = $field.getRepeat() not handled
 		#end
 	#end
 		return resultBits;
