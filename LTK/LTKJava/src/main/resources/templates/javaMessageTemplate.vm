@@ -327,10 +327,8 @@ $utility.clearNumberOfReserved()
 		
 		## field or reserved
 		#foreach($field in $message.getFieldOrReserved())
-			#if ($utility.hasType($field,$reservedDefinition))
-			
-				root.addContent($resName$utility.getCurrentNumerOfReserved()$encodeXML("reserved",ns));
-			#elseif ($utility.hasType($field,$fieldDefinition))
+			## "reserved" does not get encoded as elements in LTK-XML only fields
+			#if ($utility.hasType($field,$fieldDefinition))
 				## FieldDefinition
 				if ($utility.firstToLowerCase($field.getName())== null){
 					LOGGER.warn(" $utility.firstToLowerCase($field.getName()) not set");
