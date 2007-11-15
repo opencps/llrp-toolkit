@@ -320,13 +320,14 @@ public abstract class LLRPMessage {
             // validate the DOM tree
             validator.validate(new StreamSource(is));
         } catch (SAXException e) {
-            LOGGER.warn("document can not be validated against schema " +
-                schemaPath);
+            XMLOutputter output = new XMLOutputter();
+            output.setFormat(Format.getPrettyFormat());
+            LOGGER.warn("LTK XML message can not be validated against schema " +
+                schemaPath + output.outputString(jdomDoc));
 
             return false;
         } catch (IOException e) {
-            LOGGER.warn("document can not be validated against schema " +
-                schemaPath);
+            LOGGER.warn("LLRP.xsd schema cannot be found " + schemaPath);
 
             return false;
         }
