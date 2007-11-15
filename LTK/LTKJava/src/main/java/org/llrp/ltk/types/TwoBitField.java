@@ -150,15 +150,11 @@ public class TwoBitField extends LLRPType {
 
     @Override
     public Content encodeXML(String name, Namespace ns) {
-        String s = "";
-
-        for (Bit b : bits) {
-            s += " ";
-            s += b.toInteger().toString();
-        }
+        
+    	Integer s = bits[0].toInteger() + (bits[1].toInteger() * 2);
 
         Element element = new Element(name, ns);
-        element.setContent(new Text(s));
+        element.setContent(new Text(s.toString()));
 
         return element;
     }
