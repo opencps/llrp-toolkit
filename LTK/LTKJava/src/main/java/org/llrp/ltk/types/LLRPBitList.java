@@ -65,7 +65,7 @@ public class LLRPBitList {
     }
 
     /**
-     * create BitList from String. Everything but '0' is Integererpreted as 1.
+     * create BitList from String. Everything but '0' is interpreted as 1.
      *
      * @param bitString to be decoded
      */
