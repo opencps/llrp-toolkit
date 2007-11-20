@@ -37,7 +37,9 @@
 	<target name="jaxb" depends="init">
         <!-- generate the Java content classes from the llrpdef.xsd schema -->
 	     <echo message="Compiling the llrpdef.xsd schema with jaxb ..."/>
-             <xjc schema="${llrpdef_xsd}" destdir="${src}" package="${JAXBgenerated}.generated"/>
+             <xjc schema="${llrpdef_xsd}" destdir="${src}" package="${JAXBgenerated}.generated">
+             	<produces dir="${src}/org/llrp/ltkGenerator/generated" includes="**/*.java" />
+             </xjc>	
         </target>   
 	
 	
