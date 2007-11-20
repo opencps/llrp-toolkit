@@ -10,8 +10,6 @@ import org.apache.velocity.exception.MethodInvocationException;
 import org.apache.velocity.exception.ParseErrorException;
 import org.apache.velocity.exception.ResourceNotFoundException;
 
-import org.llrp.ltk.types.LLRPMessage;
-
 import org.llrp.ltkGenerator.generated.ChoiceDefinition;
 import org.llrp.ltkGenerator.generated.CustomMessageDefinition;
 import org.llrp.ltkGenerator.generated.CustomParameterDefinition;
@@ -30,6 +28,20 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 
+/**
+ * generates LLRP messages, parameters, enumeration from the definitions in
+ * llrpdef.xml and any extensions definitions in specified in the generator.properties file.
+ * 
+ * the generations process uses apache velocity template engine. Each MessageDefinition,
+ * ParameterDefinition, ChoiceDefinition, ... in llrpdef.xml is applied to a template.
+ * The resulting Java classes are stored at the locations specified in the propery file.
+ * 
+ * Extensions can be specified by listing the path to the extension 
+ * "extensionXMLs" propery in generator.properties e.g.
+ * extensionXMLs = src/main/resources/customExtensions.xml; 
+ * 
+ */
+
 
 public class CodeGenerator {
     public static Logger logger = Logger.getLogger(Class.class.getName());
@@ -43,7 +55,7 @@ public class CodeGenerator {
     private Utility utility;
 
     /**
-     * instantiate new code generate - probably want to call generate after.
+     * instantiate new code generator - probably want to call generate after.
      *
      * @param propertiesFile
      *            path to properties file
@@ -109,6 +121,9 @@ public class CodeGenerator {
         logger.debug("start generating messages");
         generateMessages();
         logger.debug("finished generating messages");
+        logger.debug("start generating messageFactory");
+        generateMessageFactory();
+        logger.debug("finished generating messageFactory");
         logger.debug("start generating parameters");
         generateParameters();
         logger.debug("finished generating parameters");
@@ -126,6 +141,47 @@ public class CodeGenerator {
         logger.debug("finished generatins constants");
     }
 
+    /**
+     * generates LLRPMessageFactory.java using the MessageFactoryTemplate.
+     */
+    private void generateMessageFactory() {
+        logger.debug("using template " +
+            properties.getProperty("messageFactoryTemplate"));
+        logger.debug("generating MessageFactory");
+
+        try {
+            VelocityContext context = new VelocityContext();
+            context.put("messages", messages);
+
+            Template template = Velocity.getTemplate(properties.getProperty(
+                        "messageFactoryTemplate"));
+            BufferedWriter writer = new BufferedWriter(new FileWriter(properties.getProperty(
+                            "generatedMessagePackage") + "LLRPMessageFactory" +
+                        properties.getProperty("fileEnding")));
+            template.merge(context, writer);
+            writer.flush();
+            writer.close();
+        } catch (ResourceNotFoundException e) {
+            logger.error("Exception while generating code: " +
+                e.getLocalizedMessage() + " caused by " + e.getCause());
+        } catch (ParseErrorException e) {
+            logger.error("Exception while generating code: " +
+                e.getLocalizedMessage() + " caused by " + e.getCause());
+        } catch (MethodInvocationException e) {
+            logger.error("Exception while generating code: " +
+                e.getLocalizedMessage() + " caused by " + e.getCause());
+        } catch (IOException e) {
+            logger.error("Exception while generating code: " +
+                e.getLocalizedMessage() + " caused by " + e.getCause());
+        } catch (Exception e) {
+            logger.error("Exception while generating code: " +
+                e.getLocalizedMessage() + " caused by " + e.getCause());
+        }
+    }
+
+    /**
+     * generates LLRP Messages using the MessageTemplate and the definitions in llrpdef.xml.
+     */
     private void generateMessages() {
         // set xml schema location in LLRPMessage. This is necessary to validate
         // xml messages
@@ -170,6 +226,9 @@ public class CodeGenerator {
         }
     }
 
+    /**
+     * generates LLRP Parameters using the ParameterTemplate and the definitions in llrpdef.xml.
+     */
     private void generateParameters() {
         logger.debug(parameters.size() + " parameters to generate");
 
@@ -212,6 +271,11 @@ public class CodeGenerator {
         }
     }
 
+    
+    /**
+     * generates interfaces that represent the choice constructs in llrpdef.xml using the InterfaceTemplate.
+     */
+    
     private void generateInterfaces() {
         logger.debug(choices.size() + " interfaces to generate");
         logger.debug("using template " +
@@ -252,6 +316,10 @@ public class CodeGenerator {
         }
     }
 
+    /**
+     * generates enumerations that represent the enumerations defined in llrpdef.xml using the EnumerationTemplate.
+     */
+    
     private void generateEnumerations() {
         logger.debug(enumerations.size() + " enumerations to generate");
         logger.debug("using template " +
@@ -291,6 +359,11 @@ public class CodeGenerator {
             }
         }
     }
+    
+    /**
+     * generates custom parameters using the CustomParameterTemplate and user defined parameters in 
+     * an xml file that validates against llrpdef.xsd
+     */
 
     private void generateCustomParameters() {
         logger.debug(customParams.size() + " custom parameters to generate");
@@ -332,6 +405,11 @@ public class CodeGenerator {
             }
         }
     }
+    
+    /**
+     * generates custom messages using the CustomMessageTemplate and user defined messages from 
+     * an xml file that validates against llrpdef.xsd
+     */
 
     private void generateCustomMessages() {
         logger.debug(customMessages.size() + " custom messages to generate");
@@ -373,6 +451,12 @@ public class CodeGenerator {
             }
         }
     }
+    
+    
+    /**
+     * generates LLRPConstants.java from properties defined in generator.properties
+     * this properties include NamespacePrefix for XML encoding, namespace etc.
+     */
 
     private void generateConstants() {
         logger.debug("using template " +
@@ -417,6 +501,13 @@ public class CodeGenerator {
                 e.getLocalizedMessage() + " caused by " + e.getCause());
         }
     }
+    
+    /**
+     * add all messages, parameters, or choice defintions to corresponding lists. Each item in these lists 
+     * will later be passed to the velocity context which generates the corresponding java class. 
+     * 
+     * @param llrp java objects of definitions from llrpdef.xml
+     */
 
     private void fillObjects(LlrpDefinition llrp) {
         List<Object> childs = llrp.getMessageDefinitionOrParameterDefinitionOrChoiceDefinition();
