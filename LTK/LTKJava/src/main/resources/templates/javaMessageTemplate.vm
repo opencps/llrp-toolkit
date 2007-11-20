@@ -747,7 +747,8 @@ $utility.clearNumberOfReserved()
 		}
   		Element root = document.getRootElement();
   		List<Element> tempList = null;
-        version = new BitList();
+  		// the version field is always 3 bit long
+        version = new BitList(3);
         version.setValue(new Integer(root.getAttributeValue("Version")));
         messageID = new UnsignedInteger(root.getAttributeValue("MessageID"));
   		Element temp = null;
