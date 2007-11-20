@@ -147,4 +147,5 @@ public class Integer96 extends LLRPNumberType {
     public String toString() {
         return value.toString();
     }
+ 
 }

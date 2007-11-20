@@ -30,7 +30,7 @@ import java.util.List;
  * @author Basil Gasser - ETH Zurich
  */
 public class BytesToEnd extends LLRPType {
-    private List<LLRPInteger> bytes = new LinkedList<LLRPInteger>();
+    protected List<LLRPInteger> bytes = new LinkedList<LLRPInteger>();
 
     /**
          * Creates a new BytesToEnd object.
@@ -163,7 +163,7 @@ public class BytesToEnd extends LLRPType {
 
         int length = byteString.length();
 
-        for (Integer i = 16; i < length; i = i + LLRPInteger.length()) {
+        for (Integer i = 0; i < length; i = i + LLRPInteger.length()) {
             bytes.add(new LLRPInteger(byteString.substring(i,
                         LLRPInteger.length())));
         }

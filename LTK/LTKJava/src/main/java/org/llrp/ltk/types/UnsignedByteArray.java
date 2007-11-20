@@ -55,9 +55,10 @@ public class UnsignedByteArray extends LLRPType {
         bytes = new UnsignedByte[length];
     }
 
-    /**
-         * Creates a new UnsignedByteArray object.
-         */
+	/**
+	 * Creates an empty UnsignedByteArray. Do not call methood 'set' on an empty array.
+	 * Add an UnsignedByte by calling the add method
+	 */
     public UnsignedByteArray() {
         bytes = new UnsignedByte[0];
     }
@@ -172,7 +173,6 @@ public class UnsignedByteArray extends LLRPType {
         String s = "";
 
         for (UnsignedByte b : bytes) {
-            s += " ";
             s += b.toInteger().toString();
         }
 

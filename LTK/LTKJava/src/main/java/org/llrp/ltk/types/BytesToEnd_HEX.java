@@ -1,32 +1,87 @@
 package org.llrp.ltk.types;
 
-import org.jdom.Element;
+import java.util.LinkedList;
 
+import org.jdom.Content;
+import org.jdom.Element;
+import org.jdom.Namespace;
+import org.jdom.Text;
 
 /**
  * class representing BytesToEnd in Hex format.
- *
+ * 
  */
 public class BytesToEnd_HEX extends BytesToEnd {
-    /**
-     * class representing BytesToEnd in Hex format.
-     */
-    public BytesToEnd_HEX() {
-        super();
+	/**
+	 * class representing BytesToEnd in Hex format.
+	 */
+	public BytesToEnd_HEX() {
+		super();
+	}
+
+	/**
+	 * bits interpreted to be in hexadecimal format.
+	 * 
+	 * @param list
+	 */
+	public BytesToEnd_HEX(LLRPBitList list) {
+		super(list);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public BytesToEnd_HEX(Element element) {
+		super(element);
+	}
+
+	@Override
+    public Content encodeXML(String name, Namespace ns) {
+        String s = "";
+        int i = 0;
+        for (LLRPInteger b : bytes) {
+        	if (i%4==0){
+        		// add space every 4th element
+        		s+=" ";
+        	}
+        	if (b != null) {
+        		// a byte must always consitst of two hexadecimal digits. If
+				// integer is smaller than 16 and therefore only needs one hex
+				// digit,add 0
+                String t = Integer.toHexString(b.value);
+                if (t.length()<2){
+                	t="0"+t;
+                }
+                s+=t;
+            	i++;
+                
+            } 
+        }
+
+        s = s.replaceFirst(" ", "");
+
+        Element element = new Element(name, ns);
+        element.setContent(new Text(s));
+
+        return element;
     }
 
-    /**
-     * bits interpreted to be in hexadecimal format.
-     * @param list
-     */
-    public BytesToEnd_HEX(LLRPBitList list) {
-        super(list);
-    }
+	/**
+	 * @Override {@inheritDoc}
+	 */
+	public void decodeXML(Element element) {
+		String hexString = element.getText().replaceAll(" ", "");
+		bytes = new LinkedList<LLRPInteger>();
 
-    /**
-     * {@inheritDoc}
-     */
-    public BytesToEnd_HEX(Element element) {
-        super(element);
-    }
+		for (int a = 0; a < hexString.length(); a = a + 2) {
+			String twoHexDigits = "";
+			if (a + 2 <= hexString.length()) {
+				twoHexDigits = hexString.substring(a, a + 2);
+			} else {
+				twoHexDigits = "0" + hexString.substring(a, a + 1);
+			}
+			Integer hexInt = Integer.parseInt(twoHexDigits + "", 16);
+			bytes.add(new LLRPInteger(hexInt));
+		}
+	}
 }

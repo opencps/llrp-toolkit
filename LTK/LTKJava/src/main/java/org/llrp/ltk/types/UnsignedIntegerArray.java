@@ -64,9 +64,10 @@ public class UnsignedIntegerArray extends LLRPType {
         decodeBinary(bits);
     }
 
-    /**
-         * Creates a new UnsignedIntegerArray object.
-         */
+	/**
+	 * Creates an empty UnsignedIntegerArray. Do not call methood 'set' on an empty array.
+	 * Add UnsignedInteger by calling the add method
+	 */
     public UnsignedIntegerArray() {
         integers = new UnsignedInteger[0];
     }
@@ -160,7 +161,6 @@ public class UnsignedIntegerArray extends LLRPType {
         String s = "";
 
         for (UnsignedInteger b : integers) {
-            s += " ";
             s += b.toLong();
         }
 

@@ -323,7 +323,7 @@ public abstract class LLRPMessage {
             XMLOutputter output = new XMLOutputter();
             output.setFormat(Format.getPrettyFormat());
             LOGGER.warn("LTK XML message can not be validated against schema " +
-                schemaPath + output.outputString(jdomDoc));
+                schemaPath + output.outputString(jdomDoc)+"because "+e.getMessage());
 
             return false;
         } catch (IOException e) {

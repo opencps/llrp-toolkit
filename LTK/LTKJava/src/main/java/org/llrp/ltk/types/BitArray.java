@@ -27,7 +27,7 @@ import org.jdom.Namespace;
  */
 public class BitArray extends LLRPType {
     protected static final Integer LENGTH = 1;
-    private Bit[] bits;
+    protected Bit[] bits;
 
     /**
          * create a new BitArray.
@@ -61,11 +61,12 @@ public class BitArray extends LLRPType {
         }
     }
 
-    /**
-         * empty bit array.
-         */
+	/**
+	 * Creates an empty BitArray. Do not call method 'set' on an empty array.
+	 * Add a Bit by calling the add method
+	 */
     public BitArray() {
-        bits = new Bit[1];
+        bits = new Bit[0];
     }
 
     /**
@@ -103,8 +104,9 @@ public class BitArray extends LLRPType {
             padding = new LLRPBitList();
         }
 
-        // length before bits
-        LLRPBitList result = new UnsignedShort(bits.length).encodeBinary();
+        // length before bits, in number of bytes
+        int len = bits.length+padding.length()/8;
+        LLRPBitList result = new UnsignedShort(len).encodeBinary();
 
         for (Integer i = 0; i < bits.length; i++) {
             result.add(bits[i].toBoolean());
@@ -178,7 +180,6 @@ public class BitArray extends LLRPType {
         String s = "";
 
         for (Bit b : bits) {
-            s += " ";
             s += b.toInteger().toString();
         }
 
