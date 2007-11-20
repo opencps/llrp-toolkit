@@ -768,7 +768,7 @@ $utility.clearNumberOfReserved()
 				#else
 					#set ($curType = $utility.convertType($field.getType().value()))
 				#end
-				temp = root.getChild("$curType",root.getNamespace());
+				temp = root.getChild("$utility.firstToUpperCase($curName)",root.getNamespace());
 				//check if this element exist
 				if (temp != null){
 					$curName = new $curType(temp);
