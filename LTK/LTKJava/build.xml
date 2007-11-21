@@ -1,6 +1,8 @@
 <?xml version="1.0"?> 
-<project name="LLRPGenerator" default="createJavaDoc" basedir=".">
+<project name="LLRPGenerator" default="compile" basedir=".">
      <property name="src" value="src/main/java"/> 
+	 <property name="src.test" value="src/test/java"/> 
+	 <property name="testCaseDirectory" value="src/test/resources"/> 
      <property name="version" value="0_1_0-SNAPSHOT"/> 
      <property name="res" value="src/main/resources"/> 
      <property name="build" value="target"/>
@@ -12,7 +14,7 @@
      <property name="JAXBgenerated" value="org.llrp.ltkGenerator"/>
      <property name="llrpdef_xsd" value="${def}/llrpdef.xsd"/>
      <property name="llrpdef_xml" value="${def}/Core/llrp-1x0-def.xml"/>
-     
+
      <taskdef name="xjc" classname="com.sun.tools.xjc.XJCTask">
              <classpath>
 	        <fileset dir="lib" includes="*.jar" />
@@ -30,6 +32,7 @@
           <mkdir dir="${src}/${generated}/custom/messages"/>
           <mkdir dir="${src}/${generated}/custom/parameters"/>
           <mkdir dir="${build}"/>
+     	  <mkdir dir="${build}/test-reports"/>
           <mkdir dir="${build}/classes"/>
           <mkdir dir="${build}/docs/apidoc"/>
      </target>
@@ -154,6 +157,22 @@
 		<delete dir="${build}" />
 		<delete dir="${src}/${generated}" />
 		<delete dir="${src}/org/llrp/ltkGenerator/generated" />
+	</target>
+	
+	<target name="test" depends="compile">
+		<junit printsummary="yes">
+			  <batchtest fork="no" todir="${build}/test-reports">
+			    <fileset dir="${src.test}">
+			      <include name="**/*Test*.java"/>
+			    </fileset>
+			  </batchtest>
+			<formatter type="plain"/>
+			<sysproperty key="propertiesFile" value="${propertiesFile}"/>
+			  <classpath>
+			    <pathelement location="target/classes"/>
+			  	<fileset dir="lib" includes="*.jar" />
+			  </classpath>
+		</junit>
 	</target>
 	
 </project>
