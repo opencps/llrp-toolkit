@@ -301,7 +301,7 @@ public class LLRPConverter {
 			printUsage();                                                       
 			System.exit(2);
 		}
-		if ((fileValue != null) && (!(new File(dirValue)).isFile())){
+		if ((fileValue != null) && (!(new File(fileValue)).isFile())){
 			System.err.println("File does not exist: " + fileValue);
 			printUsage();                                                       
 			System.exit(2);
