@@ -29,7 +29,10 @@ Daily build are currently available from
 
 2. Add the runtime dependencies listed below to the classpath.
 
-3. Check out one of the examples that will be available in the near future from the project wiki and use the javadoc
+3. You can then start assembling LLRP messages or use the org.llrp.ltk.generated.messages.LLRPMessageFactory to create 
+message objects from binary and XML messages
+
+
 
 
 BUILDING FROM SOURCE
