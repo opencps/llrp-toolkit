@@ -161,12 +161,28 @@ public class TwoBitField extends LLRPType {
 
     @Override
     public void decodeXML(Element element) {
-        String text = element.getText();
-        String[] bitStrings = text.split(" ");
-        bits = new Bit[bitStrings.length];
-
-        for (int i = 0; i < bits.length; i++) {
-            bits[i] = new Bit(bitStrings[i]);
+    	
+    	this.bits = new Bit[length];
+        int i = Integer.parseInt(element.getText());
+        if (i == 0) {
+        	this.bits[0] = new Bit(0);
+            this.bits[1] = new Bit(0);
         }
+        else if (i == 1) {
+        	this.bits[0] = new Bit(1);
+            this.bits[1] = new Bit(0);
+        }
+        else if (i == 2) {
+        	this.bits[0] = new Bit(0);
+            this.bits[1] = new Bit(1);
+        }
+        else if (i == 3) {
+        	this.bits[0] = new Bit(1);
+            this.bits[1] = new Bit(1);
+        }
+        else {
+        	// TODO: this should never happen since the XML schema checks the range of allowable integers
+        }
+        
     }
 }
