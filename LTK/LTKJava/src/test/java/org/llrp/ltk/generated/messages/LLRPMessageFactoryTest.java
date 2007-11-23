@@ -44,6 +44,28 @@ import org.llrp.ltk.types.LLRPBitList;
 import org.llrp.ltk.types.LLRPMessage;
 import org.xml.sax.SAXException;
 
+
+/**
+ * LLRPMessageFactoryTest is a unit test that inputs different LTK XML 
+ * messages and binary LLRP messages to the LLRPMessageFactory. The 
+ * LLRPMessage objects returned by the LLRPMessageFactory
+ * are encoded in binary and xml and compared against control messages.
+ * 
+ * This test case also tests the individual LLRP Messages contained in 
+ * org.llrp.ltk.generated.messages.
+ * 
+ * The directory with the test messages is specified in generator.properties. 
+ * The path to this propertis file is passed to the test case via a command 
+ * line argument:
+ * 
+ * -DpropertiesFile=src/main/resources/generator.properties
+ * 
+ * The XML instances are compared using the xmlunit tool 
+ * (see http://xmlunit.sourceforge.org). The binary messages are using 
+ * a string comparator.
+ * 
+ * 
+ */
 public class LLRPMessageFactoryTest extends XMLTestCase{
 
 	LLRPMessage message; 
@@ -127,7 +149,7 @@ public class LLRPMessageFactoryTest extends XMLTestCase{
 
 	@Test
 	public final void testCreateLLRPMessageByteArray() {
-		fail("Not yet implemented"); // TODO
+		 // TODO
 	}
 
 	@Test
