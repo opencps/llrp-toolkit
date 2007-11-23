@@ -49,16 +49,16 @@ import org.xml.sax.SAXException;
  * LLRPMessageFactoryTest is a unit test that inputs different LTK XML 
  * messages and binary LLRP messages to the LLRPMessageFactory. The 
  * LLRPMessage objects returned by the LLRPMessageFactory
- * are encoded in binary and xml and compared against control messages.
+ * are encoded in binary and xml and compared against control messages.<p>
  * 
  * This test case also tests the individual LLRP Messages contained in 
- * org.llrp.ltk.generated.messages.
+ * org.llrp.ltk.generated.messages.<p>
  * 
  * The directory with the test messages is specified in generator.properties. 
  * The path to this propertis file is passed to the test case via a command 
- * line argument:
+ * line argument:<p>
  * 
- * -DpropertiesFile=src/main/resources/generator.properties
+ * -DpropertiesFile=src/main/resources/generator.properties<p>
  * 
  * The XML instances are compared using the xmlunit tool 
  * (see http://xmlunit.sourceforge.org). The binary messages are using 
