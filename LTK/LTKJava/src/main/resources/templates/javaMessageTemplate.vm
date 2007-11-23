@@ -743,7 +743,7 @@ $utility.clearNumberOfReserved()
 	 */
   	public void decodeXML(final Document document){
   		if (!isValidXMLMessage(document,LLRPConstants.LLRPDEFSCHEMAPATH)){
-			throw new IllegalArgumentException("message is not correct according to xml schema");
+			throw new IllegalArgumentException("Validation of input XML LLRP message against LLRP.xsd schema failed.");
 		}
   		Element root = document.getRootElement();
   		List<Element> tempList = null;
