@@ -42,15 +42,22 @@ import org.llrp.ltk.types.LLRPBitList;
 import org.llrp.ltk.types.LLRPMessage;
 
 /**
- * LLRPConverter converts LLRP binary messages to LTK-XML messages and vice versa.
+ * LLRPConverter is a (command line) tool to convert 
+ * LLRP binary messages to LTK-XML messages and vice versa.<p>
  * 
- * use case: specify one binary message
- * use case: specify folder of binary messages
- * use case: specify one xml message
- * use case: specify folder of xml messages
- * use case: specify output file
- * use case: specify output directory
- * use case: set debug level
+ * Usage: java -jar LTKJava<Version>.jar  
+ * [{-v,--verbose}]
+ * [{-b,--binary}] input message(s) is in LLRP binary format<p>
+ * [{-x,--xml}] input message(s) is in LTK XML format<p>
+ * [{-d,--dir} directory path] directory with messages<p>
+ * [{-f,--file} file path] single message to be converted<p>
+ * [{-t,--targetDir} targetDirectory path] target directory for converted messages<p>
+ * Example binary->xml file conversion to console: java -jar LTKJava<Version>.jar -b ADD_ROSPEC.bin<p>
+ * Example xml->binary file conversion to console: java -jar LTKJava<Version>.jar -x ADD_ROSPEC.xml<p>
+ * Example xml->binary file conversion of all files in a dir:
+ * java -jar LTKJava<Version>.jar -x -d messages/xml -t messages/bin");<p>
+	
+	}                                         
  *
  */
 public class LLRPConverter {
@@ -206,12 +213,17 @@ public class LLRPConverter {
 
 	private static void printUsage() {                                          
 		System.err.println(                                                     
-				"Usage: LLRPConverter  [{-v,--verbose}]\n" +
-				"                      [{-b,--binary}]\n" +
-				"                      [{-x,--xml}]\n" +
-				"                      [{-d,--dir} directory path]\n" +
-				"                      [{-f,--file} file path]\n" +
-		"                      [{-t,--targetDir} targetDirectory path]\n");
+				"Usage: java -jar LTKJava<Version>.jar  [{-v,--verbose}]\n" +
+				"                      [{-b,--binary}] input message(s) is in LLRP binary format\n" +
+				"                      [{-x,--xml}] input message(s) is in LTK XML format\n" +
+				"                      [{-d,--dir} directory path] directory with messages\n" +
+				"                      [{-f,--file} file path] single message to be converted\n" +
+		"                      [{-t,--targetDir} targetDirectory path] target directory for converted messages\n\n" +
+	    "Example binary->xml file conversion to console:\n java -jar LTKJava<Version>.jar -b ADD_ROSPEC.bin\n" +
+	    "Example xml->binary file conversion to console:\n java -jar LTKJava<Version>.jar -x ADD_ROSPEC.xml\n" +
+	    "Example xml->binary file conversion of all files in a dir:\n" +
+	    "       java -jar LTKJava<Version>.jar -x -d messages/xml -t messages/bin\n");
+	
 	}                                                                           
 
 	public static void main( String[] args ) {                                  
