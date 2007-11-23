@@ -40,8 +40,26 @@ import org.llrp.ltk.generated.messages.*;
 /**
  * 
  * LLRPMessageFactory generates LLRPMessage objects from LLRP Messages
- * in binary and XML encoding
+ * in binary and XML encoding.
+ *
+ * LLRPMessageFactory detects the message types in a binary or XML message and 
+ * instantiates the corresponding LTK Java message object, e.g. ADD_ROSPEC. 
+ * The static factory methods return the abstract LLRPMessage.
  * 
+ * Example: Input a LLRP message in LTK XML format and output the binary 
+ * representation:
+ * 
+ * // build JDOM document from file
+ * org.jdom.Document doc = new org.jdom.input.SAXBuilder().build(new
+ *						FileReader(filename));
+ * // create LTK-Java object			
+ * LLRPMessage message = LLRPMessageFactory.createLLRPMessage(doc);
+ * 
+ * // output as a binary message
+ * Byte[] output = message.encodeBinary();
+ * 
+ *
+ *
  * @author Andreas Huebner - andreas@pramari.com
  *
  */
