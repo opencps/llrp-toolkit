@@ -49,7 +49,7 @@
 	<target name="compileCodeGenerator" depends="jaxb"> 
           <!-- Compile the java code -->
              <echo message="Compiling Code Generator ..."/>
-		  <javac srcdir="${src}" 
+		  <javac srcdir="${src}/org/llrp/ltkGenerator" 
 		  		 destdir="${build}/classes" 
 		  		 debug="on" 
 		  		 target="1.5"
