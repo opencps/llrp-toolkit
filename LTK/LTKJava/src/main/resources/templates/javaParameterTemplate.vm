@@ -848,7 +848,7 @@ $utility.clearNumberOfReserved()
 					temp = element.getChild("$field.getType()",element.getNamespace());
 					if (temp != null){
 						$curName = new $field.getType()(temp);
-						LOGGER.info("setting parameter $curName for parameter $parameter.getType()");
+						LOGGER.info("setting parameter $curName for parameter $parameter.getName()");
 					} else {
 						#if ( $field.getRepeat() == $exactlyOnceRepeat)
 							LOGGER.warn("$parameter.getName() misses non optional parameter of type $curName");
@@ -895,6 +895,7 @@ $utility.clearNumberOfReserved()
 								for (Element e : tempList){
 									$curName$list$add (new $subtype(e));
 									LOGGER.debug("adding $subtype to $curName$list ");
+									atLeastOnce = true;
 								}
 								
 							#end
