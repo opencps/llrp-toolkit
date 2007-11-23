@@ -1,8 +1,7 @@
 <?xml version="1.0"?> 
 <project name="LLRPGenerator" default="compile" basedir=".">
      <property name="src" value="src/main/java"/> 
-	 <property name="src.test" value="src/test/java"/> 
-	 <property name="testCaseDirectory" value="src/test/resources"/> 
+     <property name="src.test" value="src/test/java"/> 
      <property name="version" value="0_1_0-SNAPSHOT"/> 
      <property name="res" value="src/main/resources"/> 
      <property name="build" value="target"/>
@@ -14,7 +13,7 @@
      <property name="JAXBgenerated" value="org.llrp.ltkGenerator"/>
      <property name="llrpdef_xsd" value="${def}/llrpdef.xsd"/>
      <property name="llrpdef_xml" value="${def}/Core/llrp-1x0-def.xml"/>
-
+     <property name="llrp_xsd" value="${def}/Core/llrp-1x0.xsd"/>
      <taskdef name="xjc" classname="com.sun.tools.xjc.XJCTask">
              <classpath>
 	        <fileset dir="lib" includes="*.jar" />
@@ -34,6 +33,7 @@
           <mkdir dir="${build}"/>
      	  <mkdir dir="${build}/test-reports"/>
           <mkdir dir="${build}/classes"/>
+          <mkdir dir="${build}/test-classes"/>
           <mkdir dir="${build}/docs/apidoc"/>
      </target>
 	
@@ -62,6 +62,9 @@
 	         </classpath>
 		  </javac>
 	</target>
+	
+	
+	
 	<target name="generate" depends="compileCodeGenerator"> 
 	        <!-- run the java code -->
 	        <echo message="Generating LTK Java classes from llrpdef.xml and extensions ..."/>
@@ -75,6 +78,8 @@
 		         </classpath>
 		  	</java>
 		</target>
+			
+		
 	<target name="format" depends="generate">  
 	        <!-- format the java code -->
 	        <echo message="Formatting generated classes ..."/>
@@ -88,7 +93,13 @@
 		         </classpath>
 		  	</java>
 	</target>
-	<target name="compile" depends="format"> 
+
+	<target name="copyLLRP.xsd">  
+		<echo message="Copy LLRP.xsd from Definitions directory to org.llrp.ltk so it can be loaded as a resource"/>
+		<copy file="${llrp_xsd}" todir="${build}/classes/org/llrp/ltk"/>	
+	</target>
+	
+	<target name="compile" depends="format,copyLLRP.xsd"> 
           <!-- Compile the java code -->
           	<echo message="Compiling LTKJava (generated classes and non-generated classes)..."/>
 		  <javac srcdir="${src}" 
@@ -106,27 +117,58 @@
 		  </javac>
 	</target>	
         
+        <!-- ===================================== -->
+	<!-- Jar Generation -->
+	<!-- ===================================== -->
+        
+        
 	<target name="jar" depends="compile"> 
-	 <echo message="Creating binary jar ..."/>
+	 <echo message="Creating binary jar without dependencies..."/>
 		  <jar destfile="${build}/LTKJava_${version}.jar">
 		  	<fileset dir="${build}/classes"
 		  	includes="org/llrp/ltk/**"
             		 excludes="**/testing/"
     		/>
-    		<!-- <fileset dir="${res}"/> -->
-		    
-		  </jar>
+    		<fileset dir="." includes="NOTICE.TXT,README.TXT,LICENSE.txt" />
+    		<manifest>
+			<attribute name="Main-Class" value="org.llrp.ltk.util.LLRPConverter" />
+		</manifest>
+  		    
+		</jar>
 	</target>
+	
+	<target name="jarWithDep" depends="compile">
+			<jar destfile="${build}/LTKJava_with_dep_${version}.jar">
+				<zipfileset dir="${build}/classes" prefix="" />
+				<zipfileset src="lib/log4j-1.2.14.jar" />
+				<zipfileset src="lib/jdom.jar" />
+				<zipfileset src="lib/jargs.jar" />
+				<zipfileset dir="." includes="NOTICE.TXT" prefix="" />
+				<zipfileset dir="." includes="README.TXT" prefix="" />
+				<zipfileset dir="." includes="LICENSE.txt" prefix="" />
+				<manifest>
+					<attribute name="Main-Class" value="org.llrp.ltk.util.LLRPConverter" />
+				</manifest>
+			</jar>
+	</target>
+	
         <target name="sourceJar" depends="compile"> 
           <echo message="Creating source jar ..."/>
 			  <jar destfile="${build}/LTKJava_src_${version}.jar">
 			  	<fileset dir="${src}"
 	            		 includes="org/llrp/ltk/**"
 	    		/>
-	    		<!-- <fileset dir="${res}"/> -->
+	    		<fileset dir="." includes="NOTICE.TXT,README.TXT,LICENSE.txt" />
 			    
 	</jar>
 	</target>
+	
+	
+	<!-- ===================================== -->
+	<!-- Javadoc -->
+	<!-- ===================================== -->
+	
+	
 	<target name="javadoc" depends="compile"> 
 		  <javadoc
 	           destdir="${build}/docs/apidoc"
@@ -159,17 +201,42 @@
 		<delete dir="${src}/org/llrp/ltkGenerator/generated" />
 	</target>
 	
-	<target name="test" depends="compile">
+	
+	<!-- ===================================== -->
+	<!-- Unit testing -->
+	<!-- ===================================== -->
+	
+	<target name="compile-test" depends="compile"> 
+	          	<echo message="Compiling LTKJava test cases ..."/>
+			  <javac srcdir="${src.test}" 
+			  		 destdir="${build}/test-classes" 
+			  		 debug="on" 
+			  		 target="1.5"
+			  		 source="1.5">
+		        <classpath>
+		        	<pathelement path="${classpath}"/>
+		      		<fileset dir="lib">
+		        		<include name="**/*.jar"/>
+		      		</fileset>
+		         </classpath>
+			  </javac>
+	</target>
+	
+	
+	<target name="test" depends="compile-test">
+	    <echo message="Running the test cases ..."/>
 		<junit printsummary="yes">
-			  <batchtest fork="no" todir="${build}/test-reports">
+			<test name="org.llrp.ltk.generated.messages.LLRPMessageFactoryTest"/>
+			  <!--<batchtest fork="no" todir="${build}/test-reports">
 			    <fileset dir="${src.test}">
 			      <include name="**/*Test*.java"/>
 			    </fileset>
-			  </batchtest>
+			  </batchtest> -->
 			<formatter type="plain"/>
 			<sysproperty key="propertiesFile" value="${propertiesFile}"/>
 			  <classpath>
-			    <pathelement location="target/classes"/>
+			    <pathelement location="target/test-classes"/>
+			     <pathelement location="target/classes"/>
 			  	<fileset dir="lib" includes="*.jar" />
 			  </classpath>
 		</junit>
