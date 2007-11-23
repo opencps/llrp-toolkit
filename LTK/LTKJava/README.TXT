@@ -27,11 +27,29 @@ Daily build are currently available from
 
 	http://people.inf.ethz.ch/floerkem/ltk/
 
-2. Add the runtime dependencies listed below to the classpath.
+2. Add the runtime dependencies listed below to the classpath if you did not download the
+jar with the dependencies (LTKJava_with_dep_<version>.jar)
 
-3. You can then start assembling LLRP messages or use the org.llrp.ltk.generated.messages.LLRPMessageFactory to create 
-message objects from binary and XML messages
+3. Start using the library:
 
+A. from the command line: convert binary messages to XML messages and vice versa.
+at the command line type the following command for usage info:
+
+java -jar LTKJava_with_dep_<version>.jar 
+
+B. in a java application
+
+instantiate an LTK Java Message object from an LTK-XML file and convert it to 
+the binary representation: 
+
+// build JDOM document from file<p>
+org.jdom.Document doc = new org.jdom.input.SAXBuilder().build(new
+                                 FileReader(filename));
+// create LTK-Java object<p>
+LLRPMessage message = LLRPMessageFactory.createLLRPMessage(doc);
+
+// output as a binary message<p>
+Byte[] output = message.encodeBinary();
 
 
 
