@@ -65,10 +65,7 @@ public class UnsignedByteArray_HEX extends UnsignedByteArray {
         String s = "";
         int i = 0;
         for (UnsignedByte b : bytes) {
-        	if (i%4==0){
-        		// add space every 4th element
-        		s+=" ";
-        	}
+        	// U8v does not have spaces - this is a special case
         	if (b != null) {
                 s += Integer.toHexString(b.value);
             	i++;
