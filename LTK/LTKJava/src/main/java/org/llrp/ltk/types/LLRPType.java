@@ -16,8 +16,11 @@
 package org.llrp.ltk.types;
 
 import org.jdom.Content;
+import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.Namespace;
+import org.jdom.output.Format;
+import org.jdom.output.XMLOutputter;
 
 
 /**
@@ -54,4 +57,15 @@ public abstract class LLRPType {
      * @param element to be decoded
      */
     public abstract void decodeXML(Element element);
+    
+    
+    public String toXMLString() {
+        Content c = encodeXML(this.getClass().getName(), Namespace.getNamespace(""));
+        XMLOutputter outputter = new XMLOutputter();
+        outputter.setFormat(Format.getPrettyFormat());
+        Document d = new Document();
+        d.addContent(c);
+        return outputter.outputString(d);
+    }
+
 }

@@ -84,13 +84,14 @@ public class UnsignedShortArray extends LLRPType {
 	 *            to be decoded
 	 */
 	public void decodeBinary(LLRPBitList list) {
-		Integer length = new SignedInteger(list.subList(0, 16)).toInteger();
-		shorts = new UnsignedShort[length];
+	   Integer length = new SignedShort(list.subList(0,
+                   SignedShort.length())).toInteger();
+       shorts = new UnsignedShort[length];
 
-		for (Integer i = 1; i <= length; i++) {
-			shorts[i - 1] = new UnsignedShort(list.subList(i
-					* UnsignedShort.length(), UnsignedShort.length()));
-		}
+       for (Integer i = 0; i < length; i++) {
+           shorts[i] = new UnsignedShort(list.subList(
+                       i * UnsignedShort.length()+SignedShort.length(), UnsignedShort.length()));
+       }
 	}
 
 	/**

@@ -112,13 +112,13 @@ public class UnsignedIntegerArray extends LLRPType {
      * @param list to be decoded
      */
     public void decodeBinary(LLRPBitList list) {
-        Integer length = new SignedInteger(list.subList(0,
-                    SignedInteger.length())).toInteger();
+        Integer length = new SignedShort(list.subList(0,
+                    SignedShort.length())).toInteger();
         integers = new UnsignedInteger[length];
 
-        for (Integer i = 1; i <= length; i++) {
-            integers[i - 1] = new UnsignedInteger(list.subList(
-                        i * SignedInteger.length(), SignedInteger.length()));
+        for (Integer i = 0; i < length; i++) {
+            integers[i] = new UnsignedInteger(list.subList(
+                        i * UnsignedInteger.length()+SignedShort.length(), SignedInteger.length()));
         }
     }
 
@@ -161,6 +161,7 @@ public class UnsignedIntegerArray extends LLRPType {
         String s = "";
 
         for (UnsignedInteger b : integers) {
+            s += " ";
             s += b.toLong();
         }
 
