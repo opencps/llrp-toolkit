@@ -69,6 +69,15 @@ public class Integer96 extends LLRPNumberType {
     }
 
     /**
+     * Creates a new Integer96 object.
+     *
+     * @param string in decimal representation
+     */
+    public Integer96(String string) {
+        this(new BigInteger(string));
+    }
+
+    /**
      *        overwrite decodeBinary as it ha to work differently.
      *
      * @param bitList to be decoded
@@ -147,5 +156,4 @@ public class Integer96 extends LLRPNumberType {
     public String toString() {
         return value.toString();
     }
- 
 }
