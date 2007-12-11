@@ -446,7 +446,7 @@ $utility.clearNumberOfReserved()
 	protected void decodeBinarySpecific(LLRPBitList binary){
 		int position = 0;
 		int tempByteLength;
-		int tempLength;
+		int tempLength=0;
 		int count;
 		SignedShort type;
 		int fieldCount;
@@ -512,9 +512,15 @@ $utility.clearNumberOfReserved()
 				// store if one parameter matched
 				boolean atLeastOnce = false;
 				// look ahead to see type
-				type = new SignedShort(binary.subList(position+RESERVEDLENGTH, TYPENUMBERLENGTH));
-				tempByteLength = new UnsignedShort(binary.subList(position+RESERVEDLENGTH+ TYPENUMBERLENGTH, UnsignedShort.length())).toShort();			
-				tempLength=8*tempByteLength;
+				if (binary.get(position)){
+					// do not take the first bit as it is always 1
+        			type = new SignedShort(binary.subList(position+1, 7));
+				} else {
+					type = new SignedShort(binary.subList(position+RESERVEDLENGTH, TYPENUMBERLENGTH));
+					tempByteLength = new UnsignedShort(binary.subList(position+RESERVEDLENGTH+ TYPENUMBERLENGTH, UnsignedShort.length())).toShort();			
+					tempLength=8*tempByteLength;
+				}
+				
 				##distinguish between choices and parameters. For choices, we must find the actual types
 				#if ($utility.hasType($field,$choiceReference))
 					//choiceRef
@@ -523,27 +529,30 @@ $utility.clearNumberOfReserved()
 						#if ($utility.isCustom($subtype))
 							## custom parameter need separate treatment
 							// custom
-						if(type != null && type.equals(Custom$typeNum)){
-							Custom cus = new Custom(binary.subList(position,tempLength)); 
-							//allowed custom parameters for this parameter	
-							#foreach ($custom in $utility.allowedCustom($parameter.getName()))
-								if (cus.getParameterSubtype().equals($custom$subtypeNr)){ 
-									$curName$list$add (new $custom (cus));
-									atLeastOnce = true;
-									LOGGER.debug("adding $custom to $curName$list ");	
-									position+=tempLength;
-									atLeastOnce = true;
-									continue;
-								}
-							#end	
-							//end allowed parameters
-							//if none matched continue wasn't called and we add just cus as we found no specific vendor implementation
-							$curName$list$add (cus);
-							position+=tempLength;
-							atLeastOnce = true;
-						}
+							if(type != null && type.equals(Custom$typeNum)){
+								Custom cus = new Custom(binary.subList(position,tempLength)); 
+								//allowed custom parameters for this parameter	
+								#foreach ($custom in $utility.allowedCustom($parameter.getName()))
+									if (cus.getParameterSubtype().equals($custom$subtypeNr)){ 
+										$curName$list$add (new $custom (cus));
+										LOGGER.debug("adding $custom to $curName$list ");	
+										position+=tempLength;
+										atLeastOnce = true;
+										continue;
+									}
+								#end	
+								//end allowed parameters
+								//if none matched continue wasn't called and we add just cus as we found no specific vendor implementation
+								$curName$list$add (cus);
+								position+=tempLength;
+								atLeastOnce = true;
+							}
 						#else						
 							if (type != null && type.equals($subtype$typeNum)){
+								if (binary.get(position)){
+									// length can statically be determined for TV Parameters
+        							tempLength = $subtype$length;
+								} 
 								$curName$list$add (new $subtype (binary.subList(position,tempLength)));
 								LOGGER.debug("adding $subtype to $curName$list ");
 								position+=tempLength;
@@ -579,6 +588,10 @@ $utility.clearNumberOfReserved()
 				#elseif ($utility.hasType($field,$parameterReference))
 					//add parameter to list if type number matches
 					if (type != null && type.equals($field.getType()$typeNum)){
+						if (binary.get(position)){
+							// length can statically be determined for TV Parameters
+	        				tempLength = $field.getType()$length;
+						} 
 						$curName$list$add (new $field.getType() (binary.subList(position,tempLength)));
 						LOGGER.debug("adding $field.getType() to $curName$list ");
 						atLeastOnce = true;	
@@ -615,9 +628,15 @@ $utility.clearNumberOfReserved()
 			tempLength=0;
 			
 			try {
-				type = new SignedShort(binary.subList(position+RESERVEDLENGTH, TYPENUMBERLENGTH));
-				tempByteLength = new UnsignedShort(binary.subList(position+RESERVEDLENGTH+ TYPENUMBERLENGTH, UnsignedShort.length())).toShort();			
-				tempLength=8*tempByteLength;
+				// if first bit is one it is a TV Parameter
+				if (binary.get(position)){
+					// do not take the first bit as it is always 1
+        			type = new SignedShort(binary.subList(position+1, 7));
+				} else {
+					type = new SignedShort(binary.subList(position+RESERVEDLENGTH, TYPENUMBERLENGTH));
+					tempByteLength = new UnsignedShort(binary.subList(position+RESERVEDLENGTH+ TYPENUMBERLENGTH, UnsignedShort.length())).toShort();			
+					tempLength=8*tempByteLength;
+				}
 			
 			} catch (LLRPException le) {
 				// if a LLRPException is thrown, list was not long enough so the parameter is missing
@@ -636,6 +655,12 @@ $utility.clearNumberOfReserved()
 				boolean found = false;
 				LOGGER.debug("decoding choice type $field.getType() ");
 				#foreach ($subtype in $utility.getSubTypes($field.getType()))
+					//if first bit is 1 it is a TV Parameter
+					
+					if (binary.get(position)){
+						// length can statically be determined for TV Parameters
+        				tempLength = $subtype$length;
+					} 
 					#if ($utility.isCustom($subtype))
 					## custom parameter need separate treatment
 					// custom
@@ -668,8 +693,13 @@ $utility.clearNumberOfReserved()
 					#end
 				#end
 				if (!found){
-					LOGGER.warn("encoded message misses non optional parameter $curName");
-					throw new MissingParameterException("$parameter.getName() misses non optional parameter of type $field.getType()");
+					#if ( $field.getRepeat() == $exactlyOnceRepeat)
+						LOGGER.warn("encoded message misses non optional parameter $curName");
+						throw new MissingParameterException("$parameter.getName() misses non optional parameter of type $field.getType()");
+					#else	
+						##if it is optional, just inform that it is not set
+						LOGGER.warn("encoded message misses non optional parameter $curName");
+					#end				
 				}
 			#elseif ($utility.isCustom($field.getType()))
 			    if(type != null && type.equals(Custom$typeNum)){
@@ -703,6 +733,10 @@ $utility.clearNumberOfReserved()
 					#end
 				}				
 			#elseif ($utility.hasType($field,$parameterReference))
+				if (binary.get(position)){
+					// length can statically be determined for TV Parameters
+        			tempLength = $curName$length;
+				} 
 				if(type != null && type.equals($field.getType()$typeNum)){
 					$curName = new $field.getType() (binary.subList(position,tempLength));	
 					position+=tempLength;
@@ -1182,7 +1216,40 @@ $utility.clearNumberOfReserved()
 	// end add
 ## end add	
 	
-	
+## TV Parameters have type number from 0 - 127, TLV from 128 - 2047
+#if ($parameter.getTypeNum() < 128)
+## TV Parameters need static length method for decoding
+	/**
+	* return length of parameter. For TV Parameter it is always length of its field plus 8 bits for type.
+	* @return Integer giving length
+	*/
+	public static Integer length(){
+		int tempLength = PARAMETERTYPELENGTH;
+		#foreach($field in $parameter.getFieldOrReserved())
+			// the length of a TV parameter in bits is always the type 
+		#if ($field.getEnumeration())
+			tempLength += $field.getEnumeration()$length;
+		#elseif ($field.getFormat())
+			#set ($firstF = "$utility.convertType($field.getType().value())")
+			#set ($secondF = "_")
+			#set ($thirdF = "$field.getFormat()")
+			 tempLength += $firstF$secondF$thirdF$length; 
+		#else
+			tempLength += $utility.convertType($field.getType().value())$length;
+		#end			
+		#end
+		return tempLength;
+	}
+#else
+## these method basically only exists for compile reasons
+	/**
+	* For TLV Parameter length can not be determined at compile time. This method therefore always returns 0.
+	* @return Integer always zero
+	*/
+	public static Integer length(){
+		return 0;
+	}
+#end
 
 	/**
 	* return uniuque type number.
@@ -1194,4 +1261,8 @@ $utility.clearNumberOfReserved()
 	
 ## end of Class	
 }
+
+
+
+
 	

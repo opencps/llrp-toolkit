@@ -276,7 +276,7 @@ $utility.clearNumberOfReserved()
 	protected void decodeBinarySpecific(LLRPBitList binary) {
 		int position = 0;
 		int tempByteLength;
-		int tempLength;
+		int tempLength=0;
 		int count;
 		SignedShort type;
 		int fieldCount;
@@ -407,14 +407,26 @@ $utility.clearNumberOfReserved()
 				if (position < binary.length()){
 				// we checked to see if binary is finished since this is an optional parameter
 			#end
+				// if first bit is one it is a TV Parameter
+				if (binary.get(position)){
+					// do not take the first bit as it is always 1
+        			type = new SignedShort(binary.subList(position+1, 7));
+				} else {
 					type = new SignedShort(binary.subList(position+RESERVEDLENGTH, TYPENUMBERLENGTH));
 					tempByteLength = new UnsignedShort(binary.subList(position+RESERVEDLENGTH+ TYPENUMBERLENGTH, UnsignedShort.length())).toShort();			
 					tempLength=8*tempByteLength;
+				}
 					##distinguish between choices and parameters. For choices, we must find the actual types
 					#if ($utility.hasType($field,$choiceReference))
 						##check all subtypes
 						boolean found = false;
 						#foreach ($subtype in $utility.getSubTypes($field.getType()))
+													//if first bit is 1 it is a TV Parameter
+							
+							if (binary.get(position)){
+								// length can statically be determined for TV Parameters
+		        				tempLength = $subtype$length;
+							} 
 							#if ($utility.isCustom($subtype))
 								## custom parameter need separate treatment
 								// custom
@@ -426,6 +438,10 @@ $utility.clearNumberOfReserved()
 								#end
 							#else						
 								if (typeNum.equals($subtype$typeNum)){
+									if (binary.get(position)){
+										// length can statically be determined for TV Parameters
+        								tempLength = $curName$length;
+									} 
 									$curName = new $subtype (binary.subList(position,tempLength));
 									position += tempLength;
 									found = true;
@@ -446,6 +462,10 @@ $utility.clearNumberOfReserved()
 						#end
 					#elseif ($utility.hasType($field,$parameterReference))
 						if(type.equals($field.getType()$typeNum)){
+							if (binary.get(position)){
+								// length can statically be determined for TV Parameters
+        						tempLength = $curName$length;
+							} 
 							$curName = new $field.getType() (binary.subList(position,tempLength));	
 							position+=tempLength;
 						} else {
