@@ -27,7 +27,7 @@ import org.llrp.ltk.exceptions.LLRPException;
  * @author gasserb
  */
 public abstract class TVParameter extends LLRPParameter {
-    private final int PARAMETERTYPELENGTH = 8;
+    protected static final int PARAMETERTYPELENGTH = 8;
 
     /**
      * decodeBinary should be called from Constructor Taking binary encoded
