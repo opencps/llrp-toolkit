@@ -77,6 +77,15 @@ public class BitArray extends LLRPType {
     }
 
     /**
+     * @param binary String
+     */
+    public BitArray(String string) {
+    	Element element = new Element("foo","ns");
+    	element.setText(string);
+        decodeXML(element);
+    }
+    
+    /**
      * set bit at provided positionto 0.
      *
      * @param i to be cleared

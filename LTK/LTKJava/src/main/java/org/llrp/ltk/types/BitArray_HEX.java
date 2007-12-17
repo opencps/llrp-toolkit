@@ -1,6 +1,7 @@
 package org.llrp.ltk.types;
 
 import java.util.LinkedList;
+import java.util.List;
 
 import org.jdom.Content;
 import org.jdom.Element;
@@ -56,6 +57,14 @@ public class BitArray_HEX extends BitArray {
 		super(element);
 	}
 
+    /**
+     * @param binary String in Hexadecimal format
+     */
+    public BitArray_HEX(String hexString) {
+    	Element element = new Element("foo","ns");
+    	element.setText(hexString);
+        decodeXML(element);
+    }
 	/**
 	 * length in number of bits used to represent this type.
 	 * 
@@ -67,27 +76,28 @@ public class BitArray_HEX extends BitArray {
 
 	@Override
 	public Content encodeXML(String name, Namespace ns) {
-		String s = "";
-		String result = "";
-		for (int i = 0; i < bits.length; i++) {
-			s += bits[i].toString();
-			// stop after 8 elements. we start at 0 so it is one off to 8
-			if (i % 8 == 7 && i > 0) {
-				Integer t = Integer.parseInt(s, 2);
-				result += Integer.toHexString(t);
-				s = "";
-			}
-		}
-		// if s is not empty string we didn't have a number of bits divisible by
-		// 8 so we need padding.
-		if (!s.equals("") && s.length() < 8) {
-			for (int i = s.length(); i < 8; i++) {
-				s += "0";
-			}
-			Integer t = Integer.parseInt(s, 2);
-			result += Integer.toHexString(t);
-		}
 		Element element = new Element(name, ns);
+		// xs:hexBinary only lets you define a number of bits evenly divisible
+		// by 8
+		// if you don't have a number of bits evenly divisible by 8, then put a
+		// Count attribute to indicate the actual total number of bits you are
+		// attempting to represent.
+		String bitString = "";
+		for (int i=0;i<bits.length;i++){
+			bitString += bits[i];
+		}
+		int mod = bitString.length() % 8;
+		if (mod != 0) {
+			element.setAttribute("Count", new Integer(bitString.length()).toString());
+			//add zeros to front
+			for (int a = 0;a<8-mod;a++){
+				bitString = "0"+bitString;
+			}
+		}
+		String result = "";
+		for (int i=0;i<bitString.length();i=i+4){
+			result += Integer.toHexString(Integer.parseInt(bitString.substring(i, i+4), 2));
+		}
 		element.setContent(new Text(result));
 
 		return element;
@@ -97,26 +107,36 @@ public class BitArray_HEX extends BitArray {
 	 * @Override {@inheritDoc}
 	 */
 	public void decodeXML(Element element) {
-		 String hexString = element.getText();
-		 LinkedList<Bit> tempList = new LinkedList<Bit>();
-		
-		 int length = hexString.length();
-		
-		 for (int a = 0; a < length; a++) {
-			 char hexDigit = hexString.charAt(a);
-			 Integer hexInt = Integer.parseInt(hexDigit+"",16);
-			 String bitString = Integer.toBinaryString(hexInt);
-			 // add always four bits, if bitString is too short, at zeros
-			 String padding = "";
-			 for (int j=0;j<4-bitString.length();j++){
-				 padding += "0";
-			 }
-			 bitString = padding+bitString;
-			 for (int j=0;j<bitString.length();j++){
-				 tempList.add(new Bit(bitString.charAt(j)+""));
-			 }
-		 }
-		 Bit[] bs = new Bit[tempList.size()];
-		 bits = tempList.toArray(bs);
+		String hexString = element.getText();
+		String countString = element.getAttributeValue("Count");
+		Integer count;
+		if (countString != null){
+			count = Integer.parseInt(countString);
+		} else {
+			count = hexString.length()*4;
+		}
+		//count indicates that we only have to take a certain number of bits
+		LinkedList<Bit> tempList = new LinkedList<Bit>();
+
+		int length = hexString.length();
+
+		for (int a = 0; a < length; a++) {
+			char hexDigit = hexString.charAt(a);
+			Integer hexInt = Integer.parseInt(hexDigit + "", 16);
+			String bitString = Integer.toBinaryString(hexInt);
+			// add always four bits, if bitString is too short, at zeros
+			String padding = "";
+			for (int j = 0; j < 4 - bitString.length(); j++) {
+				padding += "0";
+			}
+			bitString = padding + bitString;
+			for (int j = 0; j < bitString.length(); j++) {
+				tempList.add(new Bit(bitString.charAt(j) + ""));
+			}
+		}
+		//take only the number of bits indicated by the count attribute
+		List<Bit> shortenedList = tempList.subList(tempList.size()-count, tempList.size());
+		Bit[] bs = new Bit[shortenedList.size()];
+		bits = shortenedList.toArray(bs);
 	}
 }
