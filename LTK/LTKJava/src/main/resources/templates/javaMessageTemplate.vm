@@ -423,7 +423,7 @@ $utility.clearNumberOfReserved()
 		#end
 		Document doc = new Document(root);
 		if (!isValidXMLMessage(doc, LLRPConstants.LLRPDEFSCHEMAPATH)){
-			throw new LLRPException("message can not be decoded to valid xml");
+			throw new LLRPException("message can not be encoded to valid xml");
 		}
 		return doc;
 	}
