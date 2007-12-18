@@ -42,11 +42,8 @@ public class UnsignedShortArray_HEX extends UnsignedShortArray {
         String s = "";
         int i = 0;
         for (UnsignedShort b : shorts) {
-        	if ((i)%4==0){
-        		// add space every 4th element
-        		s+=" ";
-        	}
         	if (b != null) {
+            	s+=" ";
                 s += Integer.toHexString(b.value);
             	i++;
                 
@@ -70,7 +67,7 @@ public class UnsignedShortArray_HEX extends UnsignedShortArray {
         shorts = new UnsignedShort[strings.length];
 
         for (int i = 0; i < strings.length; i++) {
-            shorts[i] = new UnsignedShort(Integer.decode("0x"+strings[i]));
+            shorts[i] = new UnsignedShort(Integer.parseInt(strings[i],16));
         }
     }
     
