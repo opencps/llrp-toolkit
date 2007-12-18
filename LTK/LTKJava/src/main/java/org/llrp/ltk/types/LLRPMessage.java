@@ -24,6 +24,7 @@ import org.jdom.output.XMLOutputter;
 
 import org.llrp.ltk.exceptions.IllegalBitListException;
 import org.llrp.ltk.exceptions.LLRPException;
+import org.llrp.ltk.exceptions.MissingParameterException;
 import org.llrp.ltk.exceptions.WrongParameterException;
 
 import org.xml.sax.SAXException;
@@ -74,7 +75,11 @@ public abstract class LLRPMessage {
     public final Byte[] encodeBinary() {
         LLRPBitList result = new LLRPBitList();
         result.append(reserved.encodeBinary());
-        result.append(version.encodeBinary());
+        if (version != null){
+        	result.append(version.encodeBinary());
+        } else {
+        	throw new MissingParameterException("version not set");
+        }
         // type number only last 10 bits of first two bytes. Bit 0-5 used for
         // reserved and version
         result.append(getTypeNum().encodeBinary()
