@@ -30,6 +30,8 @@
           <mkdir dir="${src}/${generated}/interfaces"/>
           <mkdir dir="${src}/${generated}/custom/messages"/>
           <mkdir dir="${src}/${generated}/custom/parameters"/>
+          <mkdir dir="${src}/${generated}/custom/interfaces"/>
+          <mkdir dir="${src}/${generated}/custom/enumerations"/>
           <mkdir dir="${build}"/>
      	  <mkdir dir="${build}/test-reports"/>
           <mkdir dir="${build}/classes"/>
