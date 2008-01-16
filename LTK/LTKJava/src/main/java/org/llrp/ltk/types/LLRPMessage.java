@@ -72,7 +72,7 @@ public abstract class LLRPMessage {
      *
      * @return Byte[] which can directly be sent over a stream
      */
-    public final Byte[] encodeBinary() {
+    public final byte[] encodeBinary() {
         LLRPBitList result = new LLRPBitList();
         result.append(reserved.encodeBinary());
         if (version != null){
@@ -104,8 +104,8 @@ public abstract class LLRPMessage {
     protected abstract LLRPBitList encodeBinarySpecific();
 
     /**
-     * create message from Byte[]. Will also be called from Constructor taking a
-     * Byte[] Argument
+     * create message from byte[]. Will also be called from Constructor taking a
+     * byte[] Argument
      *
      * @param byteArray
      *            representing message
@@ -114,7 +114,7 @@ public abstract class LLRPMessage {
      *             if bitstring is not well formatted or has any other error
      * @throws IllegalBitListException
      */
-    public final void decodeBinary(Byte[] byteArray) {
+    public final void decodeBinary(byte[] byteArray) {
         LLRPBitList bits = new LLRPBitList(byteArray);
 
         // message must have at least 80 bits for header

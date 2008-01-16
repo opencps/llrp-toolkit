@@ -185,6 +185,13 @@ public class $message.getName() extends LLRPMessage{
 ##typeNum is always needed
 	public static final SignedShort TYPENUM = new SignedShort($message.getTypeNum());
 	private static final Logger LOGGER = Logger.getLogger("$message.getName()");
+	#if ($message.getResponseType())
+		public static final String RESPONSETYPE = "$message.getResponseType()";
+	#else 
+		public static final String RESPONSETYPE = "";
+	#end
+	
+	
 ## field or reserved
 #foreach($field in $message.getFieldOrReserved())
 	## reserved field
@@ -232,7 +239,7 @@ $utility.clearNumberOfReserved()
  * calls decodeBinary to decode message.
  * @param byteArray representing message
  */
-	public $message.getName()(final Byte[] byteArray){
+	public $message.getName()(final byte[] byteArray){
 		decodeBinary(byteArray);
 	}
 	

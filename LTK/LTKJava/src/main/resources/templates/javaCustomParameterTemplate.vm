@@ -40,7 +40,7 @@ package org.llrp.ltk.generated.custom.parameters;
 #set($length = ".length()")
 #set($resName = "reserved")
 #set($resType = "BitList")
-#set($typeNum = ".typeNum")
+#set($typeNum = ".TYPENUM")
 #set($subtypeNr = ".subtype")
 #set($add = ".add")
 #set($emptyBrack = "()")
@@ -99,10 +99,17 @@ $utility.clearImports()
 		#elseif ($utility.hasType($field,$fieldDefinition))
 			## its a field and therefore it might be also an enumeration
 			## only place where we can find super types of enumerations
-			#if ($field.getEnumeration() && !$utility.hasImport($field.getEnumeration()))
+			## distinguish between custom and normal enumerations
+			#if ($field.getEnumeration() && !$utility.hasImport($field.getEnumeration()) && !$utility.isCustomEnumeration($field.getEnumeration()))
 				import org.llrp.ltk.generated.enumerations.$field.getEnumeration();
 				$utility.setSuperType($field.getEnumeration(),$field.getType().value())
 				$utility.addImport($field.getEnumeration())
+			#elseif ($field.getEnumeration() && !$utility.hasImport($field.getEnumeration()) && $utility.isCustomEnumeration($field.getEnumeration()))
+				#set($custEnum = $utility.firstToUpperCase($field.getEnumeration()))
+				import org.llrp.ltk.generated.custom.enumerations.$custEnum;
+				$utility.setSuperType($field.getEnumeration(),$field.getType().value())
+				$utility.addImport($field.getEnumeration())
+
 			#elseif (!$utility.hasImport($utility.convertType($field.getType().value())))
 				import org.llrp.ltk.types.$utility.convertType($field.getType().value());
 				$utility.addImport($utility.convertType($field.getType().value()))
@@ -117,35 +124,65 @@ $utility.clearImports()
 	## parameter or choice
 	#foreach($field in $custom.getParameterOrChoice())
 		##for choices we must also import implementing classes
+			// $field.getType()
 		#if ($utility.hasType($field,$choiceReference))
 			##check all subtypes
 			#foreach ($subtype in $utility.getSubTypes($field.getType()))
-				import org.llrp.ltk.generated.parameters.$subtype;
-				$utility.addImport($subtype)
+				#if (!$utility.hasImport($subtype) && $utility.isCustomParameter($subtype))
+					import org.llrp.ltk.generated.custom.parameters.$subtype;
+					$utility.addImport($subtype)
+				#elseif (!$utility.hasImport($subtype) && !$utility.isCustomParameter($subtype))
+					import org.llrp.ltk.generated.parameters.$subtype;
+					$utility.addImport($subtype)
+				#end
 			#end
-			import org.llrp.ltk.generated.interfaces.$field.getType();
-			$utility.addImport($field.getType())
+			#if ($utility.isCustomChoice($field.getType()))
+				import org.llrp.ltk.generated.custom.interfaces.$field.getType();
+				$utility.addImport($field.getType())
+			#else 
+				import org.llrp.ltk.generated.interfaces.$field.getType();
+				$utility.addImport($field.getType())
+			#end
 		#else
-			#if (!$utility.hasImport($field.getType()))
+			#if (!$utility.hasImport($field.getType()) && $utility.isCustomParameter($field.getType()))
+				import org.llrp.ltk.generated.custom.parameters.$field.getType();
+				$utility.addImport($field.getType())
+			#elseif (!$utility.hasImport($field.getType()) && !$utility.isCustomParameter($field.getType()))
 				import org.llrp.ltk.generated.parameters.$field.getType();
 				$utility.addImport($field.getType())
 			#end
 		#end
 	#end
-	
-	##import interfaces to implement
+		##import interfaces to implement
 	#foreach ($interface in $utility.getInterfaces($custom.getName()))
-		import org.llrp.ltk.generated.interfaces.$interface;
-		$utility.addImport($interface)
+	
+			#if ($utility.isCustomChoice($interface))
+				import org.llrp.ltk.generated.custom.interfaces.$interface;
+				$utility.addImport($interface)
+			#else 
+				import org.llrp.ltk.generated.interfaces.$interface;
+				$utility.addImport($interface)
+			#end
 	#end
 ##end imports
 
 
+##set interfaces
+#set ($interfaces = "")
+#set ($first = true)
+#foreach ($interface in $utility.getInterfaces($custom.getName()))
+	#if ($first)
+		#set ($interfaces = "implements $interface")
+		#set ($first = false)
+	#else
+		#set ($interfaces = "$interfaces, $interface")
+	#end
+#end
 /**
  * $utility.getAnnotation($custom).
  */
 ## beginning of class
-public class $custom.getName() extends Custom{
+public class $custom.getName() extends Custom $interfaces{
 
 
 
@@ -162,7 +199,7 @@ public class $custom.getName() extends Custom{
 		private $resType $resName$utility.getCurrentNumerOfReserved() = new $resType ($field.getBitCount());
 	#elseif ($utility.hasType($field,$fieldDefinition))
 		#if ($field.getEnumeration())
-			private $field.getEnumeration() $utility.firstToLowerCase($field.getName());
+			private $utility.firstToUpperCase($field.getEnumeration()) $utility.firstToLowerCase($field.getName());
 		#else
 			private $utility.convertType($field.getType().value()) $utility.firstToLowerCase($field.getName());
 		#end
@@ -351,7 +388,7 @@ $utility.clearNumberOfReserved()
 					//choiceRef
 					##check all subtypes
 					#foreach ($subtype in $utility.getSubTypes($field.getType()))
-						#if ($utility.isCustom($subtype))
+						#if ($utility.isCustomParameter($subtype))
 							## custom parameter need separate treatment
 							// custom
 							custom = new Custom(binary.subList(position,tempLength)); 

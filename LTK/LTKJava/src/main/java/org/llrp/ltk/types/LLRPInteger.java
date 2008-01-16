@@ -35,7 +35,7 @@ public class LLRPInteger extends LLRPNumberType {
      *
      * @param value to set
      */
-    public LLRPInteger(Byte value) {
+    public LLRPInteger(byte value) {
         this.value = new Integer(value);
         signed = false;
     }
@@ -101,7 +101,7 @@ public class LLRPInteger extends LLRPNumberType {
      *
      * @return Byte
      */
-    public Byte toByte() {
+    public byte toByte() {
         return value.byteValue();
     }
 

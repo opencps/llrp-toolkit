@@ -32,7 +32,7 @@ package org.llrp.ltk.generated.custom.messages;
 #set($length = ".length()")
 #set($resName = "reserved")
 #set($resType = "BitList")
-#set($typeNum = ".typeNum")
+#set($typeNum = ".TYPENUM")
 #set($add = ".add")
 #set($emptyBrack = "()")
 
@@ -99,10 +99,17 @@ $utility.clearImports()
 		#elseif ($utility.hasType($field,$fieldDefinition))
 			## its a field and therefore it might be also an enumeration
 			## only place where we can find super types of enumerations
-			#if ($field.getEnumeration())
+			## distinguish between custom and normal enumerations
+			#if ($field.getEnumeration() && !$utility.hasImport($field.getEnumeration()) && !$utility.isCustomEnumeration($field.getEnumeration()))
+				import org.llrp.ltk.generated.enumerations.$field.getEnumeration();
 				$utility.setSuperType($field.getEnumeration(),$field.getType().value())
-			#end
-			#if (!$utility.hasImport($utility.convertType($field.getType().value())))
+				$utility.addImport($field.getEnumeration())
+			#elseif ($field.getEnumeration() && !$utility.hasImport($field.getEnumeration()) && $utility.isCustomEnumeration($field.getEnumeration()))
+				#set($custEnum = $utility.firstToUpperCase($field.getEnumeration()))
+				import org.llrp.ltk.generated.custom.enumerations.$custEnum;
+				$utility.setSuperType($field.getCustomEnumeration(),$field.getType().value())
+				$utility.addImport($field.getCustomEnumeration())
+			#elseif (!$utility.hasImport($utility.convertType($field.getType().value())))
 				import org.llrp.ltk.types.$utility.convertType($field.getType().value());
 				$utility.addImport($utility.convertType($field.getType().value()))
 			#end
@@ -119,13 +126,26 @@ $utility.clearImports()
 		#if ($utility.hasType($field,$choiceReference))
 			##check all subtypes
 			#foreach ($subtype in $utility.getSubTypes($field.getType()))
-				import org.llrp.ltk.generated.parameters.$subtype;
-				$utility.addImport($subtype)
+				#if (!$utility.hasImport($subtype) && $utility.isCustomParameter($subtype))
+					import org.llrp.ltk.generated.custom.parameters.$subtype;
+					$utility.addImport($subtype)
+				#elseif (!$utility.hasImport($subtype) && !$utility.isCustomParameter($subtype))
+					import org.llrp.ltk.generated.parameters.$subtype;
+					$utility.addImport($subtype)
+				#end
 			#end
-			import org.llrp.ltk.generated.interfaces.$field.getType();
-			$utility.addImport($field.getType())
+			#if ($utility.isCustomChoice($field.getType()))
+				import org.llrp.ltk.generated.custom.interfaces.$field.getType();
+				$utility.addImport($field.getType())
+			#else 
+				import org.llrp.ltk.generated.interfaces.$field.getType();
+				$utility.addImport($field.getType())
+			#end
 		#else
-			#if (!$utility.hasImport($field.getType()))
+			#if (!$utility.hasImport($field.getType()) && $utility.isCustomParameter($field.getType()))
+				import org.llrp.ltk.generated.custom.parameters.$field.getType();
+				$utility.addImport($field.getType())
+			#elseif (!$utility.hasImport($field.getType()) && !$utility.isCustomParameter($field.getType()))
 				import org.llrp.ltk.generated.parameters.$field.getType();
 				$utility.addImport($field.getType())
 			#end
@@ -134,8 +154,14 @@ $utility.clearImports()
 	
 	##import interfaces to implement
 	#foreach ($interface in $utility.getInterfaces($message.getName()))
-		import org.llrp.ltk.generated.interfaces.$interface;
-		$utility.addImport($interface)
+
+			#if ($utility.isCustomChoice($interface))
+				import org.llrp.ltk.generated.custom.interfaces.$interface;
+				$utility.addImport($interface)
+			#else 
+				import org.llrp.ltk.generated.interfaces.$interface;
+				$utility.addImport($interface)
+			#end
 	#end
 ##end imports
 
@@ -155,7 +181,12 @@ public class $message.getName() extends LLRPMessage{
 ##typeNum is always needed
 	public static final UTF8String vendor = new UTF8String("$message.getVendor()");
 	public static final UnsignedByte subtype = new UnsignedByte((new Integer($message.getSubtype())).byteValue());
-
+	private static final Logger logging = Logger.getLogger("$custom.getName()");
+	#if ($custom.getResponseType())
+		public static final String RESPONSETYPE = "$custom.getResponseType()";
+	#else 
+		public static final String RESPONSETYPE = "";
+	#end
 ## field or reserved
 #foreach($field in $message.getFieldOrReserved())
 	## reserved field
@@ -182,7 +213,7 @@ $utility.clearNumberOfReserved()
 		decodeBinary(list.toByteArray());
 	}
 
-	public $message.getName()(Byte[] byteArray){
+	public $message.getName()(byte[] byteArray){
 		decodeBinary(byteArray);
 	}
 		
@@ -254,7 +285,7 @@ $utility.clearNumberOfReserved()
 ##decode
   
   	@Override
-	public void decodeBinarySpecific(LLRPBitList bits){
+	public void decodeBinarySpecific(LLRPBitList binary){
 		int position = 0;
 		int tempByteLength;
 		int tempLength = 0;
@@ -263,7 +294,7 @@ $utility.clearNumberOfReserved()
 		SignedShort type;
 		
 
-		Short messageType = new SignedShort(bits.subList(RESERVEDLENGTH, 10)).toShort();
+		Short messageType = new SignedShort(binary.subList(RESERVEDLENGTH, 10)).toShort();
 
 		// skip first three bits as they are reserved
 		position=3;
@@ -271,7 +302,7 @@ $utility.clearNumberOfReserved()
 		// version is a BitList of length 3
 		for (int i =0;i<3;i++){
 			// read bits starting at 3 (position==3)
-			if (bits.get(position+i)){
+			if (binary.get(position+i)){
 				version.set(i);
 			} else {
 				version.clear(i);
@@ -279,9 +310,9 @@ $utility.clearNumberOfReserved()
 		}
 		//skip message type - length starts at position 16
 		position =RESERVEDLENGTH+TYPENUMBERLENGTH;
-		messageLength = new UnsignedInteger(bits.subList(position, UnsignedInteger.length()));
+		messageLength = new UnsignedInteger(binary.subList(position, UnsignedInteger.length()));
 		position+=UnsignedInteger.length();
-		messageID = new UnsignedInteger(bits.subList(position, UnsignedInteger.length()));
+		messageID = new UnsignedInteger(binary.subList(position, UnsignedInteger.length()));
 		position+=UnsignedInteger.length();
 		//call decodeSpecific which is implemented by the class subtyping this one. 
 		// pass only data bits, not header
@@ -306,15 +337,15 @@ $utility.clearNumberOfReserved()
 				#set ($curType = $utility.convertType($field.getType().value()))
 				#if ($utility.isArray($curType))
 					// array. first 16 bits indicate length of array
-					fieldCount = new UnsignedShort(bits.subList(position, UnsignedShort.length())).toShort();			
+					fieldCount = new UnsignedShort(binary.subList(position, UnsignedShort.length())).toShort();			
 					tempLength=$curType$length*fieldCount+UnsignedShort.length();
-					$curName = new $curType (bits.subList(position, tempLength));
+					$curName = new $curType (binary.subList(position, tempLength));
 					position += tempLength;
 				#elseif ($utility.isByteToEnd($curType))
-					$curName = new $curType (bits.subList(position, bits.length()-position));
-					position += bits.length()-position;
+					$curName = new $curType (binary.subList(position, binary.length()-position));
+					position += binary.length()-position;
 				#else
-					$curName = new $curType (bits.subList(position, $curType$length));
+					$curName = new $curType (binary.subList(position, $curType$length));
 					position += $curType$length;
 				#end
 			#else
@@ -335,10 +366,10 @@ $utility.clearNumberOfReserved()
 		## check if it is a list 	
 		#if ($field.getRepeat()==$listRepeat  || $field.getRepeat()== $optionalList)
 			$curName$list = new LinkedList<$field.getType()>();
-			while (position < bits.length()){
+			while (position < binary.length()){
 				// look ahead to see type
-				type = new SignedShort(bits.subList(position+RESERVEDLENGTH, TYPENUMBERLENGTH));
-				tempByteLength = new UnsignedShort(bits.subList(position+TYPENUMBERLENGTH+RESERVEDLENGTH, UnsignedShort.length())).toShort();			
+				type = new SignedShort(binary.subList(position+RESERVEDLENGTH, TYPENUMBERLENGTH));
+				tempByteLength = new UnsignedShort(binary.subList(position+TYPENUMBERLENGTH+RESERVEDLENGTH, UnsignedShort.length())).toShort();			
 				tempLength=8*tempByteLength;
 				##distinguish between choices and parameters. For choices, we must find the actual types
 				#if ($utility.hasType($field,$choiceReference))
@@ -346,7 +377,7 @@ $utility.clearNumberOfReserved()
 					##check all subtypes
 					#foreach ($subtype in $utility.getSubTypes($field.getType()))
 						if (type.equals($subtype$typeNum)){
-							$curName$list$add (new $subtype (bits.subList(position,tempLength)));
+							$curName$list$add (new $subtype (binary.subList(position,tempLength)));
 							position+=tempLength;
 							continue;
 						}
@@ -355,7 +386,7 @@ $utility.clearNumberOfReserved()
 					break;
 				#elseif ($utility.hasType($field,$parameterReference))
 					//paramRef
-					$curName$list$add (new $field.getType() (bits.subList(position,tempLength)));
+					$curName$list$add (new $field.getType() (binary.subList(position,tempLength)));
 					position+=tempLength;		
 				#else
 					//TODO template wrote this in decode > list- unexpected object $field in while
@@ -376,7 +407,7 @@ $utility.clearNumberOfReserved()
 					tempByteLength = new UnsignedShort(binary.subList(position+RESERVEDLENGTH+ TYPENUMBERLENGTH, UnsignedShort.length())).toShort();			
 					tempLength=8*tempByteLength;
 				}
-			tempByteLength = new UnsignedShort(bits.subList(position+TYPENUMBERLENGTH+RESERVEDLENGTH, UnsignedShort.length())).toShort();			
+			tempByteLength = new UnsignedShort(binary.subList(position+TYPENUMBERLENGTH+RESERVEDLENGTH, UnsignedShort.length())).toShort();			
 			tempLength=8*tempByteLength;
 			##distinguish between choices and parameters. For choices, we must find the actual types
 			#if ($utility.hasType($field,$choiceReference))
@@ -388,7 +419,7 @@ $utility.clearNumberOfReserved()
         				tempLength = $subtype$length;
 					} 
 					if (typeNum.equals($subtype$typeNum)){
-						$curName = new $subtype (bits.subList(position,tempLength));
+						$curName = new $subtype (binary.subList(position,tempLength));
 					}
 					position += tempLength;
 				#end
@@ -399,7 +430,7 @@ $utility.clearNumberOfReserved()
         			tempLength = $curName$length;
 				} 
 				if(type.equals($field.getType()$typeNum)){
-					$curName = new $field.getType() (bits.subList(position,tempLength));	
+					$curName = new $field.getType() (binary.subList(position,tempLength));	
 					position+=tempLength;
 				} else {
 				## if it is an optional parameter it is ok to come to here. Therefor only print an error message if it is not optional

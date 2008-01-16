@@ -1,32 +1,31 @@
 package org.llrp.ltkGenerator;
 
+import java.io.BufferedWriter;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Properties;
+
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
-
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
 import org.apache.velocity.exception.MethodInvocationException;
 import org.apache.velocity.exception.ParseErrorException;
 import org.apache.velocity.exception.ResourceNotFoundException;
-
 import org.llrp.ltkGenerator.generated.ChoiceDefinition;
+import org.llrp.ltkGenerator.generated.CustomChoiceDefinition;
+import org.llrp.ltkGenerator.generated.CustomEnumerationDefinition;
 import org.llrp.ltkGenerator.generated.CustomMessageDefinition;
 import org.llrp.ltkGenerator.generated.CustomParameterDefinition;
 import org.llrp.ltkGenerator.generated.EnumerationDefinition;
 import org.llrp.ltkGenerator.generated.LlrpDefinition;
 import org.llrp.ltkGenerator.generated.MessageDefinition;
 import org.llrp.ltkGenerator.generated.ParameterDefinition;
-
-import java.io.BufferedWriter;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
-
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Properties;
 
 /**
  * generates LLRP messages, parameters, enumeration from the definitions in
@@ -52,6 +51,8 @@ public class CodeGenerator {
     private List<ChoiceDefinition> choices;
     private List<CustomParameterDefinition> customParams;
     private List<CustomMessageDefinition> customMessages;
+    private List<CustomChoiceDefinition> customChoices;
+    private List<CustomEnumerationDefinition> customEnumerations;
     private Utility utility;
 
     /**
@@ -80,8 +81,11 @@ public class CodeGenerator {
         choices = new LinkedList<ChoiceDefinition>();
         customParams = new LinkedList<CustomParameterDefinition>();
         customMessages = new LinkedList<CustomMessageDefinition>();
+        customChoices = new LinkedList<CustomChoiceDefinition>();
+        customEnumerations = new LinkedList<CustomEnumerationDefinition>();
         utility = new Utility(properties);
         utility.setChoices(choices);
+        utility.setCustomChoices(customChoices);
     }
 
     /**
@@ -108,10 +112,10 @@ public class CodeGenerator {
         logger.debug("finished retrieving llrp definitions");
         logger.debug("start filling objects");
         fillObjects(llrp);
+        createLookupMaps();
         logger.debug("finished filling objects");
         // generateCustom must be before Parameters because it sets the allowed
         // in values
-        logger.debug("finished filling objects");
         logger.debug("start generating custom parameters");
         generateCustomParameters();
         logger.debug("finished generating custom parameters");
@@ -136,6 +140,12 @@ public class CodeGenerator {
         logger.debug("start generating custom messages");
         generateCustomMessages();
         logger.debug("finished generating custom messages");
+        logger.debug("start generating custom enumerations");
+        generateCustomEnumerations();
+        logger.debug("finished generating custom enumerations");
+        logger.debug("start generating custom choices");
+        generateCustomInterfaces();
+        logger.debug("finished generating custom choices");
         logger.debug("start generating constants");
         generateConstants();
         logger.debug("finished generatins constants");
@@ -315,6 +325,53 @@ public class CodeGenerator {
             }
         }
     }
+    
+    
+
+    
+    /**
+     * generates custom interfaces that represent the choice constructs in a vendor extension xml using the CustomInterfaceTemplate.
+     */
+    
+    private void generateCustomInterfaces() {
+        logger.debug(choices.size() + " interfaces to generate");
+        logger.debug("using template " +
+            properties.getProperty("customInterfaceTemplate"));
+        logger.debug("generating files into " +
+            properties.getProperty("generatedCustomInterfacePackage"));
+
+        for (CustomChoiceDefinition cd : customChoices) {
+            try {
+                VelocityContext context = new VelocityContext();
+                context.put("interface", cd);
+                context.put("utility", utility);
+
+                Template template = Velocity.getTemplate(properties.getProperty(
+                            "customInterfaceTemplate"));
+                BufferedWriter writer = new BufferedWriter(new FileWriter(properties.getProperty(
+                                "generatedCustomInterfacePackage") + cd.getName() +
+                            properties.getProperty("fileEnding")));
+                template.merge(context, writer);
+                writer.flush();
+                writer.close();
+            } catch (ResourceNotFoundException e) {
+                logger.error("Exception while generating code: " +
+                    e.getLocalizedMessage() + " caused by " + e.getCause());
+            } catch (ParseErrorException e) {
+                logger.error("Exception while generating code: " +
+                    e.getLocalizedMessage() + " caused by " + e.getCause());
+            } catch (MethodInvocationException e) {
+                logger.error("Exception while generating code: " +
+                    e.getLocalizedMessage() + " caused by " + e.getCause());
+            } catch (IOException e) {
+                logger.error("Exception while generating code: " +
+                    e.getLocalizedMessage() + " caused by " + e.getCause());
+            } catch (Exception e) {
+                logger.error("Exception while generating code: " +
+                    e.getLocalizedMessage() + " caused by " + e.getCause());
+            }
+        }
+    }
 
     /**
      * generates enumerations that represent the enumerations defined in llrpdef.xml using the EnumerationTemplate.
@@ -337,6 +394,70 @@ public class CodeGenerator {
                             "enumerationTemplate"));
                 BufferedWriter writer = new BufferedWriter(new FileWriter(properties.getProperty(
                                 "generatedEnumerationPackage") + enu.getName() +
+                            properties.getProperty("fileEnding")));
+                template.merge(context, writer);
+                writer.flush();
+                writer.close();
+            } catch (ResourceNotFoundException e) {
+                logger.error("Exception while generating code: " +
+                    e.getLocalizedMessage() + " caused by " + e.getCause());
+            } catch (ParseErrorException e) {
+                logger.error("Exception while generating code: " +
+                    e.getLocalizedMessage() + " caused by " + e.getCause());
+            } catch (MethodInvocationException e) {
+                logger.error("Exception while generating code: " +
+                    e.getLocalizedMessage() + " caused by " + e.getCause());
+            } catch (IOException e) {
+                logger.error("Exception while generating code: " +
+                    e.getLocalizedMessage() + " caused by " + e.getCause());
+            } catch (Exception e) {
+                logger.error("Exception while generating code: " +
+                    e.getLocalizedMessage() + " caused by " + e.getCause());
+            }
+        }
+    }
+    
+    /**
+     * create maps to look up if a enumeration or choice is a custom enumeration, choice respectively.
+     * Call before creating java files
+     */
+    private void createLookupMaps(){
+    	for (CustomEnumerationDefinition cust : customEnumerations){
+    		utility.addCustomEnumeration(cust.getName());
+    	}
+    	for (CustomChoiceDefinition cust : customChoices){
+    		utility.addCustomChoice(cust.getName());
+    	}
+    	for (CustomMessageDefinition cust : customMessages){
+    		utility.addCustomMessage(cust.getName());
+    	}
+    	for (CustomParameterDefinition cust : customParams){
+    		utility.addCustomParameter(cust.getName());
+    	}
+    }
+
+    /**
+     * generates custom enumerations that represent the custom enumerations defined in a vendor xml using the CustomEnumerationTemplate.
+     */
+    
+    private void generateCustomEnumerations() {
+        logger.debug(enumerations.size() + " custom enumerations to generate");
+        logger.debug("using template " +
+            properties.getProperty("customEnumerationTemplate"));
+        logger.debug("generating files into " +
+            properties.getProperty("generatedCustomEnumerationPackage"));
+
+        for (CustomEnumerationDefinition enu : customEnumerations) {
+            try {
+                VelocityContext context = new VelocityContext();
+                context.put("enum", enu);
+                
+                context.put("utility", utility);
+                
+                Template template = Velocity.getTemplate(properties.getProperty(
+                            "customEnumerationTemplate"));
+                BufferedWriter writer = new BufferedWriter(new FileWriter(properties.getProperty(
+                                "generatedCustomEnumerationPackage") + enu.getName() +
                             properties.getProperty("fileEnding")));
                 template.merge(context, writer);
                 writer.flush();
@@ -525,6 +646,10 @@ public class CodeGenerator {
                 customParams.add((CustomParameterDefinition) o);
             } else if (o instanceof CustomMessageDefinition) {
                 customMessages.add((CustomMessageDefinition) o);
+            } else if (o instanceof CustomEnumerationDefinition) {
+                customEnumerations.add((CustomEnumerationDefinition) o);
+            } else if (o instanceof CustomChoiceDefinition) {
+                customChoices.add((CustomChoiceDefinition) o);
             } else {
                 logger.warn("type not used: " + o.getClass() +
                     " in CodeGenerator.fillObjects");
@@ -545,4 +670,12 @@ public class CodeGenerator {
         CodeGenerator cg = new CodeGenerator(propertiesFile);
         cg.generate();
     }
+
+	public List<CustomChoiceDefinition> getCustomChoices() {
+		return customChoices;
+	}
+
+	public void setCustomChoices(List<CustomChoiceDefinition> customChoices) {
+		this.customChoices = customChoices;
+	}
 }

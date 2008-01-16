@@ -121,10 +121,18 @@ import org.llrp.ltk.generated.LLRPConstants;
 		#elseif ($utility.hasType($field,$fieldDefinition))
 			## its a field and therefore it might be also an enumeration
 			## only place where we can find super types of enumerations
-			#if ($field.getEnumeration() && !$utility.hasImport($field.getEnumeration()))
+			## distinguish between custom and normal enumerations
+			#if ($field.getEnumeration() && !$utility.hasImport($field.getEnumeration()) && !$utility.isCustomEnumeration($field.getEnumeration()))
+				// !$utility.isCustomEnumeration($field.getEnumeration())
 				import org.llrp.ltk.generated.enumerations.$field.getEnumeration();
 				$utility.setSuperType($field.getEnumeration(),$field.getType().value())
 				$utility.addImport($field.getEnumeration())
+			#elseif ($field.getEnumeration() && !$utility.hasImport($field.getEnumeration()) && $utility.isCustomEnumeration($field.getEnumeration()))
+				import org.llrp.ltk.generated.custom.enumerations.$field.getCustomEnumeration();
+				$utility.setSuperType($field.getCustomEnumeration(),$field.getType().value())
+				$utility.addImport($field.getCustomEnumeration())
+
+			
 		#elseif ($field.getFormat())
 			#set ($firstF = "$utility.convertType($field.getType().value())")
 			#set ($secondF = "_")
@@ -154,8 +162,13 @@ import org.llrp.ltk.generated.LLRPConstants;
 				import org.llrp.ltk.generated.parameters.$subtype;
 				$utility.addImport($subtype)
 			#end
-			import org.llrp.ltk.generated.interfaces.$field.getType();
-			$utility.addImport($field.getType())
+			#if ($utility.isCustomChoice($field.getType()))
+				import org.llrp.ltk.generated.custom.interfaces.$field.getType();
+				$utility.addImport($field.getType())
+			#else 
+				import org.llrp.ltk.generated.interfaces.$field.getType();
+				$utility.addImport($field.getType())
+			#end
 		#else
 			#if (!$utility.hasImport($field.getType()))
 				import org.llrp.ltk.generated.parameters.$field.getType();
@@ -166,8 +179,14 @@ import org.llrp.ltk.generated.LLRPConstants;
 	
 	##import interfaces to implement
 	#foreach ($interface in $utility.getInterfaces($parameter.getName()))
-		import org.llrp.ltk.generated.interfaces.$interface;
-		$utility.addImport($interface)
+	
+			#if ($utility.isCustomChoice($interface))
+				import org.llrp.ltk.generated.custom.interfaces.$interface;
+				$utility.addImport($interface)
+			#else 
+				import org.llrp.ltk.generated.interfaces.$interface;
+				$utility.addImport($interface)
+			#end
 	#end
 ##end imports
 	
@@ -197,7 +216,9 @@ import org.llrp.ltk.generated.LLRPConstants;
 #end
 
 
-
+/**
+ * $utility.getAnnotation($parameter).
+ */
 ## beginning of class
 public class $parameter.Name extends $superType $interfaces{						
 

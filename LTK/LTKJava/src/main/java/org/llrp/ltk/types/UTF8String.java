@@ -70,7 +70,7 @@ public class UTF8String extends LLRPType {
     public void decodeBinary(LLRPBitList list) {
         LLRPBitList subList = list.subList(UnsignedShort.length(),
                 list.length() - UnsignedShort.length());
-        Byte[] bigBytes = subList.toByteArray();
+        byte[] bigBytes = subList.toByteArray();
         byte[] bytes = new byte[bigBytes.length];
 
         for (int i = 0; i < bytes.length; i++) {
@@ -100,7 +100,7 @@ public class UTF8String extends LLRPType {
         result.append(new UnsignedShort(string.toCharArray().length).encodeBinary());
 
         byte[] bytes = string.getBytes();
-        Byte[] bigBytes = new Byte[bytes.length];
+        byte[] bigBytes = new byte[bytes.length];
 
         for (int i = 0; i < bytes.length; i++) {
             bigBytes[i] = bytes[i];

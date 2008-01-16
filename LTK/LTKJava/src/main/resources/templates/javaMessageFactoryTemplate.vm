@@ -56,7 +56,7 @@ import org.llrp.ltk.generated.messages.*;
  * LLRPMessage message = LLRPMessageFactory.createLLRPMessage(doc);
  * 
  * // output as a binary message
- * Byte[] output = message.encodeBinary();
+ * byte[] output = message.encodeBinary();
  * 
  *
  *
@@ -111,11 +111,11 @@ public class LLRPMessageFactory {
 	 * Generates a LLRPMessage out of the given Byte Array.
 	 * 
 	 * @param byteArray
-	 * 	Byte[] of a LLRPMessage
-	 * @return appropriate LLRPMessage out of the given Byte[]
+	 * 	byte[] of a LLRPMessage
+	 * @return appropriate LLRPMessage out of the given byte[]
 	 * 		   or null when Message couldn't be generated
 	 */
-	public static LLRPMessage createLLRPMessage(Byte[] byteArray) {
+	public static LLRPMessage createLLRPMessage(byte[] byteArray) {
 
 		LLRPBitList bits = new LLRPBitList(byteArray);
 

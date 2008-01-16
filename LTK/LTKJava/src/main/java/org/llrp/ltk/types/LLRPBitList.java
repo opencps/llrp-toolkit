@@ -43,7 +43,7 @@ public class LLRPBitList {
      *
      * @param bytes interpreted in order they appear in array
      */
-    public LLRPBitList(Byte[] bytes) {
+    public LLRPBitList(byte[] bytes) {
         bits = new BitSet(bytes.length * 8);
         length = bytes.length * 8;
 
@@ -283,9 +283,9 @@ public class LLRPBitList {
      *
      * @return byte Array
      */
-    public Byte[] toByteArray() {
+    public byte[] toByteArray() {
         Integer nOFb = (length / 8);
-        Byte[] result = new Byte[nOFb];
+        byte[] result = new byte[nOFb];
 
         for (Integer i = 0; i < nOFb; i++) {
             result[i] = new Byte(new LLRPInteger(subList(8 * i, 8)).toByte());

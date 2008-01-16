@@ -87,11 +87,11 @@ public class UnsignedByte extends LLRPNumberType {
     }
 
     /**
-     * to java Byte - might loose precision
+     * to java byte - might loose precision
      *
-     * @return Byte
+     * @return byte
      */
-    public Byte toByte() {
+    public byte toByte() {
         return value.byteValue();
     }
 
