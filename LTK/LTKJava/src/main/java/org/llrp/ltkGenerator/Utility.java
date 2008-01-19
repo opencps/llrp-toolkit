@@ -11,6 +11,7 @@ import java.util.Properties;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.llrp.ltk.exceptions.LLRPException;
 import org.llrp.ltkGenerator.generated.Annotation;
 import org.llrp.ltkGenerator.generated.ChoiceDefinition;
 import org.llrp.ltkGenerator.generated.ChoiceParameterReference;
@@ -35,6 +36,7 @@ public class Utility {
 	private Map<String, String> customChoicesMap;
 	private Map<String, String> customParameterMap;
 	private Map<String, String> customMessageMap;
+	private static final String NOTYPE = "NoType";
 
 	public Utility(Properties properties) {
 		numberOfReserved = 0;
@@ -194,7 +196,7 @@ public class Utility {
 
 		logger.debug("Utility.convertType: No type found for " + xmlType);
 
-		return "NoTypeFound";
+		return NOTYPE;
 	}
 
 	public String formatType(String baseType, String format) {
@@ -316,12 +318,20 @@ public class Utility {
 	public void setSuperType(String sub, String sup) {
 		// use the converted types
 		String s = convertType(sup, true);
-		logger.debug("Utility.setSupertype: set " + sup + " for " + sub.toLowerCase());
-
-		if (!s.equalsIgnoreCase("NoTypeFound")) {
+		
+		if (!s.equalsIgnoreCase(NOTYPE)) {
+			// if it already contains the key but a different value, something is not ok!
+			if (superTypes.containsKey(sub.toLowerCase()) && !superTypes.get(sub.toLowerCase()).equalsIgnoreCase(s)){
+				throw new LLRPException("trying to set "+ s+" as super type for "+ sub+ " but super type is already set to "+superTypes.get(sub.toLowerCase()));
+			}
 			superTypes.put(sub.toLowerCase(), s);
+			logger.debug("Utility.setSupertype: set " + s + " for " + sub.toLowerCase());
 		} else {
+			if (superTypes.containsKey(sub.toLowerCase()) && !superTypes.get(sub.toLowerCase()).equalsIgnoreCase(sup)){
+				throw new LLRPException("trying to set "+ sup+" as super type for "+ sub.toLowerCase()+ " but super type is already set to "+superTypes.get(sub.toLowerCase()));
+			}
 			superTypes.put(sub.toLowerCase(), sup);
+			logger.debug("Utility.setSupertype: set " + sup + " for " + sub.toLowerCase());
 		}
 	}
 

@@ -132,4 +132,8 @@ public class UnsignedByte extends LLRPNumberType {
 
         return element;
     }
+    
+    public String toHexString(){
+    	return Integer.toHexString(value);
+    }
 }

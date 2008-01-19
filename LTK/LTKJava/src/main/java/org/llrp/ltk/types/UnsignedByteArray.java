@@ -15,190 +15,237 @@
  */
 package org.llrp.ltk.types;
 
+import java.math.BigInteger;
+
 import org.jdom.Content;
 import org.jdom.Element;
 import org.jdom.Namespace;
 import org.jdom.Text;
 
-
 /**
  * UnsignedByteArray - length encoded as first 16 bits!
- *
+ * 
  * @author gasserb
  */
 public class UnsignedByteArray extends LLRPType {
-    protected UnsignedByte[] bytes;
-
-    /**
-         * Creates a new UnsignedByteArray object.
-         *
-         * @param bytes to create UnsignedByteArray
-         */
-    public UnsignedByteArray(UnsignedByte[] bytes) {
-        this.bytes = bytes.clone();
-    }
-
-    /**
-     * Creates a new UnsignedByteArray object from jdom element - used for xml decoding
-     *
-     * @param element to be decoded
-     */
-    public UnsignedByteArray(Element element) {
-        decodeXML(element);
-    }
-
-    /**
-         * all values initially set to 0
-         * @param length of array
-         */
-    public UnsignedByteArray(Integer length) {
-        bytes = new UnsignedByte[length];
-    }
+	protected UnsignedByte[] bytes;
+	// interpret this byte array as a single value
+	protected Integer value;
+	// if interpredet as a single value it is unsigned
+	protected boolean signed = false;
 
 	/**
-	 * Creates an empty UnsignedByteArray. Do not call methood 'set' on an empty array.
-	 * Add an UnsignedByte by calling the add method
+	 * Creates a new UnsignedByteArray object.
+	 * 
+	 * @param bytes
+	 *            to create UnsignedByteArray
 	 */
-    public UnsignedByteArray() {
-        bytes = new UnsignedByte[0];
-    }
+	public UnsignedByteArray(UnsignedByte[] bytes) {
+		this.bytes = bytes.clone();
+	}
 
-    /**
-         * create ByteArray from BitList. First 16 Bits must be length of ByteArray
-         * @param list to be decoded
-         */
-    public UnsignedByteArray(LLRPBitList list) {
-        decodeBinary(list);
-    }
+	/**
+	 * Creates a new UnsignedByteArray object from jdom element - used for xml
+	 * decoding
+	 * 
+	 * @param element
+	 *            to be decoded
+	 */
+	public UnsignedByteArray(Element element) {
+		decodeXML(element);
+	}
 
-    /**
-         * Creates a new UnsignedByteArray object.
-         *
-         * @param bytes to create UnsignedByteArray
-         */
-    public UnsignedByteArray(byte[] bytes) {
-        this.bytes = new UnsignedByte[bytes.length];
+	/**
+	 * all values initially set to 0
+	 * 
+	 * @param length
+	 *            of array
+	 */
+	public UnsignedByteArray(Integer length) {
+		bytes = new UnsignedByte[length];
+	}
 
-        for (Integer i = 0; i < bytes.length; i++) {
-            this.bytes[i] = new UnsignedByte(bytes[i]);
-        }
-    }
+	/**
+	 * Creates an empty UnsignedByteArray. Do not call methood 'set' on an empty
+	 * array. Add an UnsignedByte by calling the add method
+	 */
+	public UnsignedByteArray() {
+		bytes = new UnsignedByte[0];
+	}
 
-    /**
-     * encodes length before encoding containing values
-     *
-     * @return LLRPBitList
-     */
-    public LLRPBitList encodeBinary() {
-        LLRPBitList result = new LLRPBitList();
-        result.append(new UnsignedShort(bytes.length).encodeBinary());
+	/**
+	 * create ByteArray from BitList. First 16 Bits must be length of ByteArray
+	 * 
+	 * @param list
+	 *            to be decoded
+	 */
+	public UnsignedByteArray(LLRPBitList list) {
+		decodeBinary(list);
+	}
 
-        for (Integer i = 0; i < bytes.length; i++) {
-            result.append(bytes[i].encodeBinary());
-        }
+	/**
+	 * Creates a new UnsignedByteArray object.
+	 * 
+	 * @param bytes
+	 *            to create UnsignedByteArray
+	 */
+	public UnsignedByteArray(byte[] bytes) {
+		this.bytes = new UnsignedByte[bytes.length];
 
-        return result;
-    }
+		for (Integer i = 0; i < bytes.length; i++) {
+			this.bytes[i] = new UnsignedByte(bytes[i]);
+		}
+	}
 
-    /**
-     * number of bytes used to represent this type
-     *
-     * @return Integer
-     */
-    public Integer getByteLength() {
-        return bytes.length;
-    }
+	/**
+	 * create a new UnsignedByteArray from String. Each character is interpreded
+	 * as a hexadecimal digit and stored in one byte
+	 * 
+	 * @param byteString
+	 */
+	public UnsignedByteArray(String byteString) {
+		this.bytes = new UnsignedByte[byteString.length()];
+		for (int i = 0; i<byteString.length();i++){
+			this.bytes[i] = new UnsignedByte(byteString.substring(i,i+1));
+		}
+	}
 
-    /**
-     * length of BaseType - not of the array - for array length call size()
-     *
-     * @return
-     */
-    public static Integer length() {
-        return LLRPInteger.length();
-    }
+	/**
+	 * encodes length before encoding containing values
+	 * 
+	 * @return LLRPBitList
+	 */
+	public LLRPBitList encodeBinary() {
+		LLRPBitList result = new LLRPBitList();
+		result.append(new UnsignedShort(bytes.length).encodeBinary());
 
-    /**
-     * first 16 bits must be number of Bytes that follow
-     *
-     * @param list to be decoded
-     */
-    @Override
-    public void decodeBinary(LLRPBitList list) {
-        Integer length = new SignedShort(list.subList(0, SignedShort.length())).toInteger();
-        bytes = new UnsignedByte[length];
+		for (Integer i = 0; i < bytes.length; i++) {
+			result.append(bytes[i].encodeBinary());
+		}
 
-        for (Integer i = 1; i <= length; i++) {
-            bytes[i - 1] = new UnsignedByte(list.subList(
-                        i * UnsignedByte.length(), UnsignedByte.length()));
-        }
-    }
+		return result;
+	}
 
-    /**
-     * get UnsignedByte at specified position
-     *
-     * @param i position
-     *
-     * @return LLRPInteger
-     */
-    public UnsignedByte get(Integer i) {
-        return bytes[i];
-    }
+	/**
+	 * number of bytes used to represent this type
+	 * 
+	 * @return Integer
+	 */
+	public Integer getByteLength() {
+		return bytes.length;
+	}
 
-    /**
-     * set Byte at provided position to provided byte
-     *
-     * @param i position
-     * @param b byte to be set
-     */
-    public void set(Integer i, UnsignedByte b) {
-        if ((i < 0) || (i > bytes.length)) {
-            return;
-        } else {
-            bytes[i] = b;
-        }
-    }
+	/**
+	 * length of BaseType - not of the array - for array length call size()
+	 * 
+	 * @return
+	 */
+	public static Integer length() {
+		return LLRPInteger.length();
+	}
 
-    /**
-     * number of elements in array
-     *
-     * @return
-     */
-    public Integer size() {
-        return bytes.length;
-    }
+	/**
+	 * first 16 bits must be number of Bytes that follow
+	 * 
+	 * @param list
+	 *            to be decoded
+	 */
+	@Override
+	public void decodeBinary(LLRPBitList list) {
+		Integer length = new SignedShort(list.subList(0, SignedShort.length()))
+				.toInteger();
+		bytes = new UnsignedByte[length];
 
-    @Override
-    public Content encodeXML(String name, Namespace ns) {
-        String s = "";
+		for (Integer i = 1; i <= length; i++) {
+			bytes[i - 1] = new UnsignedByte(list.subList(i
+					* UnsignedByte.length(), UnsignedByte.length()));
+		}
+	}
 
-        for (UnsignedByte b : bytes) {
-            s += b.toInteger().toString();
-        }
+	/**
+	 * get UnsignedByte at specified position
+	 * 
+	 * @param i
+	 *            position
+	 * 
+	 * @return LLRPInteger
+	 */
+	public UnsignedByte get(Integer i) {
+		return bytes[i];
+	}
 
-        s = s.replaceFirst(" ", "");
+	/**
+	 * set Byte at provided position to provided byte
+	 * 
+	 * @param i
+	 *            position
+	 * @param b
+	 *            byte to be set
+	 */
+	public void set(Integer i, UnsignedByte b) {
+		if ((i < 0) || (i > bytes.length)) {
+			return;
+		} else {
+			bytes[i] = b;
+		}
+	}
 
-        Element element = new Element(name, ns);
-        element.setContent(new Text(s));
+	/**
+	 * number of elements in array
+	 * 
+	 * @return
+	 */
+	public Integer size() {
+		return bytes.length;
+	}
 
-        return element;
-    }
+	@Override
+	public Content encodeXML(String name, Namespace ns) {
+		String s = "";
 
-    @Override
-    public void decodeXML(Element element) {
-        String text = element.getText();
-        String[] strings = text.split(" ");
-        bytes = new UnsignedByte[strings.length];
+		for (UnsignedByte b : bytes) {
+			s += b.toInteger().toString();
+		}
 
-        for (int i = 0; i < strings.length; i++) {
-            bytes[i] = new UnsignedByte(strings[i]);
-        }
-    }
+		s = s.replaceFirst(" ", "");
 
-    public void add(UnsignedByte aByte) {
-        UnsignedByte[] newBytes = new UnsignedByte[bytes.length + 1];
-        System.arraycopy(bytes, 0, newBytes, 0, bytes.length);
-        newBytes[bytes.length] = aByte;
-        bytes = newBytes;
-    }
+		Element element = new Element(name, ns);
+		element.setContent(new Text(s));
+
+		return element;
+	}
+
+	@Override
+	public void decodeXML(Element element) {
+		String text = element.getText();
+		String[] strings = text.split(" ");
+		bytes = new UnsignedByte[strings.length];
+
+		for (int i = 0; i < strings.length; i++) {
+			bytes[i] = new UnsignedByte(strings[i]);
+		}
+	}
+
+	public void add(UnsignedByte aByte) {
+		UnsignedByte[] newBytes = new UnsignedByte[bytes.length + 1];
+		System.arraycopy(bytes, 0, newBytes, 0, bytes.length);
+		newBytes[bytes.length] = aByte;
+		bytes = newBytes;
+	}
+
+	/**
+	 * interpred this byte array as a single integer. Each byte is interpred as
+	 * a hexadecimal number, concatenated and the whole string is then
+	 * transformed to a Java Integer
+	 * 
+	 * @return Integer
+	 */
+	public Integer toInteger() {
+		String s = "";
+		for (UnsignedByte b : bytes) {
+			s += b.toHexString();
+		}
+		BigInteger big = new BigInteger(s);
+		return big.intValue();
+	}
 }

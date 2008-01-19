@@ -49,7 +49,7 @@ import java.math.BigInteger;
  * Use isValidValue to check if value to be set is allowed.
  */
 public class $enum.getName() extends $utility.getSuperType($enum.getName()) implements LLRPEnumeration{
-	#set($class = ".class");
+	#set($class = ".class")
 	Logger logger = Logger.getLogger($enum.getName()$class);
 	
 	/**
@@ -61,7 +61,14 @@ public class $enum.getName() extends $utility.getSuperType($enum.getName()) impl
 	 * with isValidValue it it is an allowed value
 	 */
 	public $enum.getName() (final Integer value){
-		super(value);
+		## arrays can not be created by calling the integer constructor as this would set the length of the array instead of
+		## interpreting it as a value
+		#if ($utility.isArray($utility.getSuperType($enum.getName())))
+			// Enumerations must use String constructor
+			super(value.toString());
+		#else
+			super(value);
+		#end
 		if (!isValidValue(value)){
 			throw new IllegalArgumentException("Value not allowed");
 		}

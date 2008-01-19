@@ -314,9 +314,8 @@ public abstract class LLRPMessage {
 
             // create a SchemaFactory capable of understanding WXS schemas
             SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-
             // load a WXS schema, represented by a Schema instance
-            Source schemaFile = new StreamSource(this.getClass().getResourceAsStream(schemaPath));
+            File schemaFile = new File(schemaPath);
             Schema schema = factory.newSchema(schemaFile);
 
             // create a Validator instance, which can be used to validate an instance document
