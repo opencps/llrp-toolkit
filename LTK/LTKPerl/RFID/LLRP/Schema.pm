@@ -43,7 +43,7 @@ need... only one object is created (and cached) per filename string.
 
 	use RFID::LLRP::Schema;
 	my ($llrp, $lookup_msg, $lookup_param, $lookup_enum) =
-		 read_schema ('./llrp.desc');
+		 read_schema ('./ReaderDef.xml');
 
 =cut
 
@@ -68,9 +68,12 @@ use Cwd;
 use Text::ParseWords qw(quotewords);
 use Date::Parse;
 use File::Spec;
+use Clone qw(clone);
 
 use XML::LibXSLT;
 use XML::LibXML;
+
+# use Data::Dumper;
 
 $schema_dir = $INC{"RFID/LLRP/Schema.pm"};
 ($schema_volume, $schema_dir) = File::Spec->splitpath ($schema_dir);
@@ -83,17 +86,20 @@ memoize ('read_schema',
 my %subparser_generator = (
 	'parameter'		=> \&parameter_compiler_gen,
 	'enumeration'		=> \&enumeration_compiler_gen,
+	'custom-enumeration'	=> \&custom_enum_compiler_gen,
 	'message'		=> \&message_compiler_gen,
 	'order'			=> \&order_compiler_gen,
-	'vendor'		=> \&vendor_compiler_gen,
+	'vendor'		=> \&vendor_compiler,
 	'custom-message'	=> \&custom_message_compiler_gen,
-	'custom-parameter'	=> \&custom_parameter_compiler_gen
+	'custom-parameter'	=> \&custom_parameter_compiler_gen,
+	'core-namespace'	=> \&core_namespace_compiler,
+	'namespace'		=> \&ext_namespace_compiler
 );
 
 my %llrp;
 my @tokens;
 my $compiler;
-my %namespaces;
+my %registry;
 
 =item read_schema($path)
 
@@ -115,44 +121,88 @@ C<read_schema> returns
 =item C<\%llrp>
 a reference to the LLRP schema
 
-=item C<\%lookup_msg>
-a reference to a hash for looking up LLRP Message descriptors by name
-
-=item C<\%lookup_param>
-a reference to a hash for looking up LLRP Parameter descriptors by name
-
-=item C<\%lookup_mid>
-a reference to a hash for looking up LLRP Message descriptors by Type ID
-
-=item C<\%lookup_pid>
-a reference to a hash for looking up LLRP Parameter descriptors by Type ID
+=item C<\%registry>
+A reference for looking up (mangled) LLRP types, including extensions
 
 =back
 
-Hint: the best way to understand the schema is to print it out with
-C<Data::Dumper>.
-
 =cut
 
-use Data::Dumper;
+
+sub fqp_type {
+	my @result = map {sprintf ("P.%s.%s", $_->{Namespace}, $_->{Type})} @_;
+	return wantarray ? @result : $result[0];
+}
+
+sub fq_type {
+	my @result = map {sprintf ("%s.%s.%s", $_->{Group}, $_->{Namespace}, $_->{Name})} @_;
+	return wantarray ? @result : $result[0];
+}
+
+sub fqp_name {
+	my @result = map {sprintf ("P.%s.%s", $_->{Namespace}, $_->{Name})} @_;
+	return wantarray ? @result : $result[0];
+}
+
+sub flatten {
+	# this routine creates a lookup hash for alternation match rule
+	# includes in hash any extensions permitted at the alternation point
+
+	my $head = shift;
+	return unless defined $head; # handle end-of-list
+
+	# lookup the type descriptor
+	my $type_name = fqp_type ($head);
+
+	my $param_desc = $registry{$type_name};
+
+	if (!defined $param_desc) {
+		die "Found an undef parameter type descriptor for $type_name";
+
+	} elsif ($head->{Extends}) {
+
+		my $allow_rules = $registry{$head->{Extends}}->{Extensions};
+
+		my %allowed;
+		foreach $allow_rule (@{$allow_rules}) {
+			$allowed{fqp_name ($allow_rule)} = $allow_rule;
+		}
+
+		# clone the current parameter descriptor to allow Custom blobs
+		# using clone to avoid circular reference
+		my $temp_head;
+		$allowed{fqp_type ($head)} = $temp_head = clone $head;
+		delete $temp_head->{Extends};
+
+		return %allowed, flatten (@_);
+
+	} elsif ($param_desc->{Concrete}) {
+		return $type_name, $head, flatten (@_)
+
+	} else { # it's a nested alternation point... squash it!
+		return flatten (@{$param_desc->{Parameter}}), flatten (@_);
+	}
+}
 
 sub read_schema {
 
 	my $fname = shift;
 
-	# create the descriptor file in memory
+	# create the (llrp1.desc format) descriptor file in memory
 	my $parser = XML::LibXML->new();
 	my $xslt = XML::LibXSLT->new();
 	my $schema_path = File::Spec->catpath ($schema_volume, $schema_dir, $fname);
 	my $xslt_path = File::Spec->catpath ($schema_volume, $schema_dir, './llrpdef2llrp1.xslt');
 	my $source = $parser->parse_file ($schema_path);
+	$parser->process_xincludes ($source);
 	my $style_doc = $parser->parse_file ($xslt_path);
 	my $stylesheet = $xslt->parse_stylesheet ($style_doc);
 	my $results = $stylesheet->transform ($source);
-	my $strfile = $stylesheet->output_string ($results);	
+	my $strfile = $stylesheet->output_string ($results);
 
 	# process the descriptor file
-	foreach $line (split(/^/, $strfile)) {
+	foreach $line (split (/^/, $strfile)) {
+
 		# split into tokens, filtering out whitespace, blanklines,
 		# comments, and notes
 		$line =~ s/^\s+//;
@@ -160,9 +210,10 @@ sub read_schema {
 		chomp ($line);
 		if ($line =~ /^#/ || $line =~ /^\s*$/) {
 			next;
-		}
+		}	
 		@tokens = &quotewords ('\s+', 0, $line);
 		splice (@tokens, $#tokens, 1) if ($tokens[$#tokens] =~ /^\*/);
+
 		# process
 		my $head = lc shift @tokens;
 		if (exists $subparser_generator{$head}) {
@@ -173,6 +224,35 @@ sub read_schema {
 	}
 	close (INFILE);
 
+	# build the name registry
+	my %category = (
+		Messages		=> { Abbrev => 'M', Fields => ['Namespace', 'TypeID'		] },
+		CustomMessages		=> { Abbrev => 'M', Fields => ['VendorName', 'MessageSubtype'	] },
+		Parameters		=> { Abbrev => 'P', Fields => ['Namespace', 'TypeID'		] },
+		CustomParameters	=> { Abbrev => 'P', Fields => ['VendorName', 'ParameterSubtype'	] }
+	);
+	while (($type, $conv) = each (%category)) {
+		foreach $desc (@{$llrp{$type}}) {
+			my ($abbr, $ns, $name) = ($conv->{Abbrev}, @{$desc}{'Namespace', 'Name'});
+
+			my $sym_key = "$abbr.$ns.$name";
+
+			$registry{$sym_key} = $desc;
+
+			next unless $desc->{Concrete} || $abbr eq 'M';
+
+			my ($ns_field, $id_field) = @{$conv->{Fields}};
+			if ($ns_field eq 'VendorName') {
+				$registry{join ('.', $abbr,
+					$llrp{Vendors}->{$desc->{VendorName}},
+					$desc->{$id_field})
+				} = $desc;
+			} else {
+				$registry{join ('.', $abbr, @{$desc}{$ns_field, $id_field})} = $desc;
+			}
+		}
+	}
+
 	# build a parameter name enumeration
 	my $param_names = {};
 	foreach $desc (@{$llrp{Parameters}}) {
@@ -181,50 +261,62 @@ sub read_schema {
 		$param_names->{Lookup}->{$name} = $type_id;
 	}
 	$llrp{Enumerations}->{'_ParamNames'} = $param_names;
-	
-	# build lookup table for messages
-	my %lookup_msg;
-	my %lookup_mid;
-	foreach $desc (@{$llrp{Messages}}) {
-		$lookup_msg{$desc->{Name}} = $desc;
-		$lookup_mid{$desc->{TypeID}} = $desc;
-	}
 
-	# build lookup table for parameters
-	my %lookup_param;
-	my %lookup_pid; 
-	foreach $desc (@{$llrp{Parameters}}) {
-		$lookup_param{$desc->{Name}} = $desc;
-		if ($desc->{Concrete}) {
-			$lookup_pid{$desc->{TypeID}} = $desc;
+
+	# annotate all extension and alternation points with alternatives
+	while (($type, $conv) = each (%category)) {
+		foreach $desc (@{$llrp{$type}}) {
+			foreach $rule (@{$desc->{Parameter}}) {
+
+				next if $rule->{Leaf};
+
+				# given the match rule, lookup the type definition
+				my $whole_name = fqp_type ($rule);
+				my $context = $registry{$whole_name};
+				ref $context or
+					die "Unable to locate $whole_name type defn";
+
+				next unless !$context->{Concrete}
+					or $whole_name eq
+						'P.' .
+						$llrp{CoreNamespace} .
+						'.Custom';
+
+				my %choices = flatten ($rule);
+
+				# add in all ID forms to alternatives
+				my %additions;
+				while (my ($key, $value) = each (%choices)) {
+					my $sp = $registry{$key};
+					my $idkey = join ('.', 'P',
+						((exists $sp->{Extension} && $sp->{Extension})
+						? ($llrp{Vendors}->{$sp->{VendorName}}, $sp->{ParameterSubtype})
+						: @{$sp}{qw/Namespace TypeID/}));
+					$additions{$idkey} = $value;
+				}
+				%choices = (%choices, %additions);
+				$rule->{Alternatives} = \%choices;
+			}
 		}
 	}
 
-	# build mini-lookup tables for each abstract parameter type
-	foreach $abstract (@{$llrp{Parameters}}) {
-		next if ($abstract->{Concrete});
-		my $flatten;
-		$flatten = sub {
+	# mark all parameters and messages whose last field is hoistable
+	foreach my $param (
+		@{$llrp{Parameters}},
+		@{$llrp{Messages}},
+		@{$llrp{CustomMessages}},
+		@{$llrp{CustomParameters}}
+	) {
+		$param->{Hoistable} = 0;
 
-			my $head = shift;
-			return unless defined $head;
-			my $param_desc = $lookup_param{$head->{Name}};
-			if (!defined $param_desc) {
-				return;
-			} elsif ($param_desc->{Concrete}) {
-				return $param_desc->{Name}, $param_desc, $flatten->(@_)
-			} else {
-				return $flatten->(@{$param_desc->{Parameter}}, @_);
-			}
-		};
-
-		my %choice_hash = $flatten->(@{$abstract->{Parameter}});
-		$abstract->{Choices} = \%choice_hash;
+		if (($param->{FieldCount} == 1 && $param->{ParamCount} == 0)
+		    || ($param->{FieldCount} == 0 && $param->{ParamCount} == 1)) {
+			$param->{Hoistable} = 1;
+		}
 	}
 
 	# calculate lengths of TV parameters
-PARAMETER:	
-	foreach $param (@{$llrp{Parameters}}) {
+	PARAMETER: foreach $param (@{$llrp{Parameters}}) {
 		$param->{Concrete} || next PARAMETER;
 		my $bits = 0;
 		foreach $desc (@{$param->{Parameter}}) {
@@ -241,7 +333,7 @@ PARAMETER:
 		$param->{FixedLength} = ($bits + 7) / 8;
 	}
 
-	return (\%llrp, \%lookup_msg, \%lookup_param, \%lookup_mid, \%lookup_pid);
+	return (\%llrp, \%registry);
 }
 
 # explodes the abbreviated type representation into nv pairs
@@ -254,6 +346,7 @@ sub insert_type {
 	my %sign_name = ('u' => "Unsigned", 's' => "Signed");
 	my %bit_name = (1 => 'Bit', 8 => 'Byte', 16 => 'Short', 64 => 'Long', 96 => 'EPC');
 	my $orig_name = $type_name;
+
 	if ($type_name =~ /(utf|[us])(\d+)(v|)\s*$/) {
 		my ($type, $bits, $vector) = ($1, $2, $3);
 		my $length_name;
@@ -315,6 +408,10 @@ sub insert_type {
 		my ($dname, $dvalue);
 		my $param = $subparams->[-1];
 		while (($dname, $dvalue) = each %nvpairs) {
+			$dname =~ s/ns/Namespace/i;
+			if ($dname eq 'Namespace') {
+				$dvalue = $llrp{Prefix2NS}->{$dvalue};
+			}
 			$param->{$dname} = $dvalue;
 		}
 
@@ -339,7 +436,14 @@ sub insert_type {
 # compiles a parameter descriptor list
 sub compile_params {
 
-	my ($subparams, $desc_name, $class) = splice (@_, 0, 3);
+	my ($body_ref, $subparams, $desc_name, $class) = splice (@_, 0, 4);
+	my ($prefix, $ns);
+
+#	# extract the namespace prefix if there's an 'allow' line
+#	if ($class eq 'allow') {
+#		($prefix) = splice (@_, 2, 1);
+#		$ns = $llrp{Prefix2NS}->{$prefix};
+#	}
 
 	# delete the compiler if this is the end of the block
 	if ($class eq 'end') {
@@ -368,10 +472,18 @@ sub compile_params {
 		# translate the type scribble to one or more binary descriptors
 		insert_type ($type, $name, $subparams, @nvpairs);
 
+		$body_ref->{FieldCount} += 1;
+		$body_ref->{ParamCount} = 0;
+
 	# parse a non-leaf node
-	} elsif ($class eq 'param') {
+	} elsif ($class eq 'param' || $class eq 'allow') {
 
 		my ($cardinality, $name, @named) = @_;
+
+		# extract the optional namespace qualifier if present
+		if (defined ($named[0]) && !($named[0] =~ /=/)) {
+			$ns = $llrp{Prefix2NS}->{shift (@named)};
+		}
 
 		# process named param def extensions
 		my %nvpairs;
@@ -382,18 +494,22 @@ sub compile_params {
 			
 		}
 
-		$cardinality = lc $cardinality;
 		my ($min_occurs, $max_occurs) = ($cardinality =~ /(\d+)-?(\d+|n|)/);
 		if (!defined $min_occurs) {$min_occurs = 1}
 		if (!defined $max_occurs) {$max_occurs = 1}
 
-		push @$subparams, {
+		my $dest = $class eq 'param' ? $subparams : $body_ref->{Extensions};
+
+		push @$dest, {
 			Type		=> $name,
 			Name		=> $nvpairs{'Name'} || $name,
 			Optional	=> (($min_occurs + 0) ? 0 : 1),
 			Array		=> (($max_occurs eq 'n') ? 1 : 0),
-			Leaf		=> 0
+			Leaf		=> 0,
+			Namespace	=> $ns || $llrp{CoreNamespace}
 		};
+
+		$body_ref->{ParamCount}++;
 		
 	} elsif ($class eq 'reserved') {
 		my $bits = shift;
@@ -410,7 +526,25 @@ sub compile_params {
 		
 	# incorporate references
 	} elsif ($class eq 'reference') {
-		$message_ref->{Reference} = shift; 
+		$body_ref->{Reference} = shift; 
+
+	} elsif ($class eq 'extension-point') {
+
+		# push a custom blob descriptor
+		#   - This is what will actually match each binary custom parameter.
+		#   - When serializing XML, we need to match this, or something in
+		#     the Extensions list on the parent.
+		push @$subparams, {
+			Type => 'Custom',
+			Name => 'Custom',
+			Namespace => $llrp{CoreNamespace},
+			Extends => fq_type ($body_ref),
+			Optional => 1,
+			Array => 1,
+			Leaf => 0
+		};
+		$body_ref->{Extensions} =[];
+		$body_ref->{ParamCount}++;
 
 	# error for unknown classes
 	} else { die "Unknown class $class in body of parameter $desc_name\n"; }
@@ -420,25 +554,28 @@ sub compile_params {
 sub parameter_compiler_gen {
 
 	my ($class, $id, $desc_name);
-	($head, $class, $id, $desc_name) = @_;
+	if ($_[1] ne 'union') {
+		($head, $class, $id, $desc_name) = @_;
+	} else {
+		($head, $class, $desc_name) = @_;
+	}
 
 	# construct the parameter definition
-	my $param_ref = {
+	my $body_ref = {
 		Name		=> $desc_name,
 		Concrete	=> ($class ne 'union') + 0,
 		Parameter	=> [],
-		TypeID		=> $id
+		Group		=> 'P',
+		TypeID		=> $id,
+		Namespace	=> $llrp{CoreNamespace}
 	};
-	push @{$llrp{Parameters}}, $param_ref;
-
-	# add to the list of namespaces
-	$namespaces{LLRP}->{$desc_name} = 1;
+	push @{$llrp{Parameters}}, $body_ref;
 
 	# construct a "concrete" set of default parameters (the common
 	# parameter header)
-	if ($param_ref->{Concrete}) {
+	if ($body_ref->{Concrete}) {
 		if ($class eq 'tv') {
-			$param_ref->{Parameter} = [ {
+			$body_ref->{Parameter} = [ {
 				Name		=> 'TVEncoding',
 				DefaultValue	=> 1,
 				Bits		=> 1,
@@ -459,7 +596,7 @@ sub parameter_compiler_gen {
 			}
 			];
 		} else {
-			$param_ref->{Parameter} = [ {
+			$body_ref->{Parameter} = [ {
 				Name		=> 'TVEncoding',
 				DefaultValue	=> 0,
 				Bits		=> 1,
@@ -499,22 +636,22 @@ sub parameter_compiler_gen {
 			];
 		}
 	} else {
-		$param_ref->{Parameter} = [];
+		$body_ref->{Parameter} = [];
 	}
 
-	my $subparams = $param_ref->{Parameter};
+	my $subparams = $body_ref->{Parameter};
 
 	# return a parser which can process the body of a parameter descriptor
-	return sub { compile_params ($subparams, $desc_name, @_); }
+	return sub { compile_params ($body_ref, $subparams, $desc_name, @_); }
 
 }
 
 sub compile_common_message_header {
 
-	my ($message_ref, $id) = @_;
+	my ($body_ref, $id) = @_;
 
 	# construct the header field descriptors
-	$message_ref->{Parameter} = [ {
+	$body_ref->{Parameter} = [ {
 		Name		=> 'Reserved',
 		DefaultValue	=> 0,
 		Bits		=> 3,
@@ -570,31 +707,33 @@ sub message_compiler_gen {
 	($head, $direction, $id, $desc_name) = @_;
 
 	# construct the parameter definition
-	my $message_ref = {
+	my $body_ref = {
 		Name		=> $desc_name,
 		ToReader	=> (($direction eq 'cmd') ? 1 : 0),
 		Parameter	=> [],
-		TypeID		=> $id
+		TypeID		=> $id,
+		Namespace	=> $llrp{CoreNamespace},
+		Group		=> 'M'
 	};
-	push @{$llrp{Messages}}, $message_ref;
-	$namespaces{LLRP}->{$desc_name} = 1;
+	push @{$llrp{Messages}}, $body_ref;
 
 	# construct the header field descriptors
-	compile_common_message_header ($message_ref, $id);
+	compile_common_message_header ($body_ref, $id);
 
-	my $subparams = $message_ref->{Parameter};
+	my $subparams = $body_ref->{Parameter};
 
 	# return a parser which can process the body of a message descriptor
-	return sub { compile_params ($subparams, $desc_name, @_); }
+	return sub { compile_params ($body_ref, $subparams, $desc_name, @_); }
 }
 
 sub enumeration_compiler_gen {
 
-	my ($enum_class, $id, $name) = @_;
+	my ($enum_class, $name) = @_;
 
 	# create the enumeration table
 	my $enum_ref = {};
-	$llrp{Enumerations}->{$name} = $enum_ref;
+	my $ns = $llrp{CoreNamespace};
+	$llrp{Enumerations}->{$ns . '_' . $name} = $enum_ref;
 	$enum_ref->{Definition} = [];
 
 	# return a subroutine to compile the enumeration
@@ -618,27 +757,78 @@ sub enumeration_compiler_gen {
 	}
 }
 
-sub vendor_compiler_gen {
-	my ($head, $pen, $name) = @_;
+sub custom_enum_compiler_gen {
+
+	my ($enum_class, $prefix, $name) = @_;
+	my $ns = $llrp{Prefix2NS}->{$prefix};
+
+
+	# create the enumeration table
+	my $enum_ref = {};
+	$llrp{Enumerations}->{$ns . '_' . $name} = $enum_ref;
+	$enum_ref->{Definition} = [];
+	$enum_ref->{Name} = $name;
+	$enum_ref->{Namespace} = $ns;
+
+	# return a subroutine to compile the enumeration
+	return sub {
+	
+		if ($_[0] eq 'reference') {
+			$enum_ref->{Reference} = $_[1];
+			return;
+		} elsif ($_[0] eq 'end') {
+			$compiler = undef;
+			return;
+		}
+
+		# fail if unknown type
+		if ($_[0] ne 'enum') { die "Unknown enum syntax $_[0]" }
+		
+		# handle enumeration name-value pair
+		my ($head, $ndx, $identifier) = @_;
+		$enum_ref->{Definition}->[$ndx] = $identifier;
+		$enum_ref->{Lookup}->{$identifier} = $ndx;
+	}
+}
+
+sub vendor_compiler {
+	my ($head, $name, $pen) = @_;
 	$llrp{Vendors}->{$name}	= $pen;
 	$llrp{Vendors}->{$pen}	= $name;
 	return sub { $compiler = undef }
 }
 
+sub core_namespace_compiler {
+	my ($class, $uri) = @_;
+	$llrp{CoreNamespace} = $uri;
+
+	return sub { $compiler = undef }
+}
+
+sub ext_namespace_compiler {
+	my ($class, $prefix, $uri) = @_;
+
+	$llrp{NS2Prefix}->{$uri} = $prefix;
+	$llrp{Prefix2NS}->{$prefix} = $uri;
+	return sub { $compiler = undef }
+}
+
 sub custom_message_compiler_gen {
-	my ($head, $vendor_name, $subtype, $name) = @_;
+	my ($head, $vendor_name, $subtype, $prefix, $name) = @_;
+	my $ns = $llrp{Prefix2NS}->{$prefix};
 
 	# construct the parameter definition
-	my $message_ref = {
-		Name			=> $desc_name,
+	my $body_ref = {
+		Name			=> $name,
 		Parameter		=> [],
-		MessageSubtype		=> $subtype,
-		VendorName		=> $vendor_name
+		MessageSubtype		=> $subtype + 0,
+		VendorName		=> $vendor_name,
+		Namespace		=> $ns,
+		Group			=> 'M'
 	};
-	compile_common_message_header ($message_ref, 1023);
-	$namespaces{$vendor_name}->{$desc_name} = 1;
-	push @{$llrp{CustomMessages}}, $message_ref;
-	push @{$message_ref->{Parameter}}, (
+	compile_common_message_header ($body_ref, 1023);
+	push @{$llrp{CustomMessages}}, $body_ref;
+	push @{$body_ref->{Parameter}}, (
 		{
 			Name		=> 'VendorIdentifier',
 			DefaultValue	=> $llrp{Vendors}->{$vendor_name},
@@ -650,7 +840,7 @@ sub custom_message_compiler_gen {
 			Optional	=> 0
 		}, {
 			Name		=> 'MessageSubtype',
-			DefaultValue	=> $subtype,
+			DefaultValue	=> $subtype + 0,
 			Bits		=> 8,
 			Leaf		=> 1,
 			Type		=> 'UnsignedInteger',
@@ -661,33 +851,36 @@ sub custom_message_compiler_gen {
 	);
 
 	# return a compiler for the remaining fields and params
-	my $subparams = $message_ref->{Parameter};
+	my $subparams = $body_ref->{Parameter};
 
 	# return a parser which can process the body of a message descriptor
-	return sub { compile_params ($subparams, $desc_name, @_); }
+	return sub { compile_params ($body_ref, $subparams, $desc_name, @_); }
 
 }
 
 sub custom_parameter_compiler_gen {
 
-	my ($vendor_name, $subtype, $desc_name);
-	($head, $vendor_name, $subtype, $desc_name) = @_;
+	my ($vendor_name, $subtype, $prefix, $desc_name);
+	($head, $vendor_name, $subtype, $prefix, $desc_name) = @_;
+	my $ns = $llrp{Prefix2NS}->{$prefix};
 
 	# construct the custom parameter definition
-	my $param_ref = {
+	my $body_ref = {
 		Name			=> $desc_name,
 		Concrete		=> 1,
 		Parameter		=> [],
 		TypeID			=> $id,
-		ParameterSubtype	=> $subtype,
-		VendorName		=> $vendor_name
+		ParameterSubtype	=> $subtype + 0,
+		VendorName		=> $vendor_name,
+		Group			=> 'P',
+		Namespace		=> $ns,
+		Extension		=> 1
 	};
-	push @{$llrp{CustomParameters}}, $param_ref;
-	$namespaces{$vendor_name}->{$desc_name} = 1;
+	push @{$llrp{CustomParameters}}, $body_ref;
 
 	# construct a "concrete" set of default parameters (the common
 	# parameter header)
-	$param_ref->{Parameter} = [ {
+	$body_ref->{Parameter} = [ {
 			Name		=> 'TVEncoding',
 			DefaultValue	=> 0,
 			Bits		=> 1,
@@ -734,7 +927,7 @@ sub custom_parameter_compiler_gen {
 			Optional	=> 0
 		}, {
 			Name		=> 'ParameterSubtype',
-			DefaultValue	=> $subtype,
+			DefaultValue	=> $subtype + 0,
 			Bits		=> 32,
 			Leaf		=> 1,
 			Type		=> 'UnsignedInteger',
@@ -744,10 +937,10 @@ sub custom_parameter_compiler_gen {
 		}
 	];
 
-	my $subparams = $param_ref->{Parameter};
+	my $subparams = $body_ref->{Parameter};
 
 	# return a parser which can process the body of a parameter descriptor
-	return sub { compile_params ($subparams, $desc_name, @_); }
+	return sub { compile_params ($body_ref, $subparams, $desc_name, @_); }
 
 }
 
@@ -766,12 +959,16 @@ sub order_compiler_gen {
 1;
 
 
+
+#gen_llrp_binary_schema;
+
+#format_xsd;
+
 =back
 
 =head1 AUTHOR
 
 John R. Hogerhuis
-
 Chris Delaney
 
 =head1 BUGS
@@ -797,6 +994,6 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
-                                                                           
+
 =cut
 

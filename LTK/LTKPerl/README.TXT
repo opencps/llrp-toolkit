@@ -39,7 +39,7 @@ a) Using W3C XML Schema aware editors, the text editor helps
 
 b) With a textual format for LLRP messages it becomes a
    lingua franca for discussing LLRP issues concretely: just
-   paste the XML dumped via Trace modeinto an email.
+   paste the XML dumped via Trace mode into an email.
 
 c) XML representations of useful messages can be committed to
    source control or stored on a server for reuse or
@@ -51,7 +51,8 @@ d) Judicious use of a text template engine can really
 e) Program code becomes completely transparent. There is very
    little noise code. With Perl you can embed the XML documents
    directly in your source if you wish.  I tend to do this while
-   using the text folding feature of Vim to hide it at will.
+   using the text folding feature of Vim to hide or reveal it at
+   will.
 
 
 XPath is the final piece that makes Perl LLRP-XML work.

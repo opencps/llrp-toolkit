@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<title>LLRP-XML/Perl Link</title>
+<title>LTK-Perl Link</title>
 <link rev="made" href="mailto:root@localhost" />
 </head>
 
@@ -75,6 +75,20 @@ returns the socket for the caller to handle.</p>
 </p>
 <hr />
 <h1><a name="api">API</a></h1>
+<p>require Exporter;
+@ISA		= qw(Exporter);
+@EXPORT_OK	= qw(
+			reader_connect
+			reader_accept
+			reader_disconnect
+			read_bytes
+			read_message
+			parse_envelope
+			transact
+			fasttran
+			monitor
+			ENVELOPE_LEN
+);</p>
 <dl>
 <dt><a name="item_reader_connect"><code>reader_connect ($name)</code></a></dt>
 <dd>

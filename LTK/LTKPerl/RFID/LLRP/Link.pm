@@ -73,6 +73,8 @@ returns the socket for the caller to handle.
 
 package RFID::LLRP::Link;
 
+=pod
+
 require Exporter;
 @ISA		= qw(Exporter);
 @EXPORT_OK	= qw(
@@ -88,14 +90,44 @@ require Exporter;
 			ENVELOPE_LEN
 );
 
+=cut
+
+use Sub::Exporter -setup => {
+	exports => [
+		qw(
+		reader_connect
+		reader_accept
+		reader_disconnect
+		read_bytes
+		read_message
+		parse_envelope
+		),
+		transact => \&subclass,
+		fasttran => \&subclass,
+		monitor => \&subclass
+	]
+};
+
+sub subclass {
+	my ($class, $name, $arg) = @_;
+	
+	return sub {
+		$name->(@_, %$arg);
+	}
+}
+
+
 use Socket qw(:all);
 use IO::Socket;
 use IO::Select;
 use Time::HiRes qw (time gettimeofday);
 use fields;
 use File::Spec;
+use bytes;
 use XML::LibXML;
 use RFID::LLRP::Builder qw{encode_message decode_message memoized_encode_message};
+use Data::HexDump;
+use Data::Dumper;
 
 # include TestRunner if it is there
 BEGIN {
@@ -106,6 +138,7 @@ BEGIN {
 		*windup_remove = sub {};
 	}
 }
+
 
 use constant ENVELOPE_LEN => 10;
 
@@ -143,10 +176,11 @@ sub reader_connect {
 	$sock->sockopt (SO_SNDBUF, 0);
 	
 	my $buf = read_message ($sock, 20);
-	my $doc = decode_message $buf;
+	my $doc = decode_message ($buf);
 	my $cleanup = !$params{NoCleanUp};
 
-	my @nodes = $doc->findnodes ("//ConnectionAttemptEvent[Status='Success']");
+	my @nodes = $doc->findnodes ("//*[local-name()='ConnectionAttemptEvent']/*[local-name()='Status' and node()='Success']", $doc);
+
 	if (@nodes == 1) {
 		if($cleanup) {
 			windup ($sock, \&reader_disconnect);
@@ -155,7 +189,8 @@ sub reader_connect {
 		reader_disconnect ($sock);
 		$sock = undef;
 	}
-	
+
+	eval { RunLog::StashDebug( "connectport" => $sock->sockport); };
 
 	if (wantarray) {
 		return ($sock, $doc, $buf);
@@ -197,13 +232,14 @@ sub reader_accept {
 	$listen_sock = undef;
 
 	# read and decode the ConnectionAttemptEvent
-	my $buf = read_message ($sock, 20);
+	my $buf = read_message ($sock, 30);
 	my $doc = decode_message $buf;
 
 	# return socket (and optional stuff) if connection is established
-	my @nodes = $doc->findnodes ("//ConnectionAttemptEvent[Status='Success']");
+	my @nodes = $doc->findnodes ('//*[local-name()="ConnectionAttemptEvent"]/*[local-name()="Status" and node()="Success"]');
 	if (@nodes == 1) {
 		windup ($sock, \&reader_disconnect);
+		return ($sock);
 		if (wantarray) {
 			return ($sock, $doc, $buf);
 		} else {
@@ -229,10 +265,8 @@ subsequent connections to the reader may fail.
 
 my $close_txt = <<'EOT';
 <?xml version="1.0" encoding="UTF-8"?>
-
 <CLOSE_CONNECTION MessageID="3233857728">
 </CLOSE_CONNECTION>
-
 EOT
 
 my ($close_msg) = encode_message ($close_txt);
@@ -407,7 +441,6 @@ sub read_message {
 	# read the header
 	die "Error: timed out3\n"
         unless (($timeout < 0) || (($cur_time = time ()) < $fence));
-
 	$envelope = read_bytes ($sock, ENVELOPE_LEN,
                             ($timeout < 0) ? $timeout : $fence - $cur_time);
 
@@ -499,15 +532,40 @@ be returned instead.
 
 sub monitor {
 	my ($sock, %options) = @_;
-	my $time_fence 	= (exists $options{TimeFence})	? $options{TimeFence}	: 0;
-	my $timeout 	= (exists $options{Timeout})	? $options{Timeout}	: 0;
-	my $dumphex 	= (exists $options{DumpHex})	? $options{DumpHex}	: 0;
+	my $time_fence;
+	my $trace;
+	my $timeout;
+	my $dumphex;
+	my $counters;
+	my $return_upon;
+	my $error_upon;
+	my $perl_queue;
 	my $remaining = 0;
+	my $qualify_core = 1;
 	my @ntf;
 
+	my %param_tbl = (
+		'TimeFence'	, \$time_fence	,
+		'Timeout'	, \$timeout	,
+		'Trace'		, \$trace	,
+		'DumpHex'	, \$dumphex	,
+		'ReturnUpon'	, \$return_upon	,
+		'ErrorUpon'	, \$error_upon	,
+		'PerlQueue'	, \$perl_queue	,
+		'QualifyCore'	, \$qualify_core,
+		'Count'		, \$counters
+	);
+
+	while (my ($key, $value) = each (%param_tbl)) {
+		if (defined $options{$key}) {
+			$$value = $options{$key} || 0;
+			delete $options{$key};
+		}
+	}
+
 	# initialize counters to zero
-	if (exists $options{'Count'}) {
-		while ((undef, $ctrp) = each %{$options{'Count'}}) {
+	if (ref $counters) {
+		while ((undef, $ctrp) = each %{$counters}) {
 			$$ctrp = 0;
 		}
 	}
@@ -523,7 +581,7 @@ sub monitor {
 				last MAIN_LOOP;
 			}
 			$remaining = $time_fence - $cur_time;
-			$tout = $remaining if ($tout > $remaining);
+			$tout = $remaining if (defined ($tout) && $tout > $remaining);
 		}
 
 		# read the message, handle timeout exceptions
@@ -532,9 +590,18 @@ sub monitor {
 			if ($dumphex) {
 				print HexDump $packet, "\n";
 			}
-			my $doc = decode_message $packet;
+			my @decode_opt;
+			my $tree;
+			if (ref ($perl_queue)) {
+				@decode_opt = ('HashParent' => $tree = {});
+			}
+			my $doc = decode_message ($packet, %options, @decode_opt, QualifyCore => $qualify_core);
 			push  @ntf, $doc;
-			$options{Trace} and print STDERR $doc->toString(1);
+			push @{$perl_queue}, $tree unless !ref ($perl_queue);
+
+			if ($trace) {
+				print STDERR $doc->toString(1), "\n";
+			}
 		};
 		if ($@) {
 			if ($@ =~ /timed out/) {
@@ -546,36 +613,36 @@ sub monitor {
 		}
 
 		# count occurances of XPath matches
-		if (exists $options{'Count'}) {
+		if (ref $counters) {
 			my ($xpath, $ctrp);
-			while (($xpath, $ctrp) = each %{$options{'Count'}}) {
-				my ($match) = ($ntf[$#ntf])->findnodes ($xpath);
+			while (($xpath, $ctrp) = each %{$counters}) {
+				my ($match) = $ntf[$#ntf]->findnodes ($xpath);
 				if (defined $match) {($$ctrp)++}
 			}
 		}
 
 		# match ReturnUpon list
-		if (exists $options{'ReturnUpon'}) {
-			foreach $query (@{$options{'ReturnUpon'}}) {
+		if (ref $return_upon) {
+			foreach $query (@{$return_upon}) {
 				my $last_ntf = $ntf[$#ntf];
 				if (ref $query eq 'CODE') {
 					last MAIN_LOOP if ($query->($last_ntf));
 				} else {
-					my ($match) = ($ntf[$#ntf])->findnodes ($query);
+					my ($match) = $ntf[$#ntf]->findnodes ($query);
 					last MAIN_LOOP if (defined $match);
 				}
 			}
 		}
 
 		# match ErrorUpon list
-		if (exists $options{'ErrorUpon'}) {
-			foreach $query (@{$options{'ErrorUpon'}}) {
+		if (ref $error_upon) {
+			foreach $query (@{$error_upon}) {
 				my $last_ntf = $ntf[$#ntf];
 				if (ref $query eq 'CODE') {
 					$query->($last_ntf) and
 						die 'ErrorUpon triggered by sub';
 				} else {
-					my ($match) = ($ntf[$#ntf])->findnodes ($query);
+					my ($match) = $ntf[$#ntf]->findnodes ($query);
 					defined $match and 
 						die 'ErrorUpon due to match of ' . $query;
 				}
@@ -652,7 +719,7 @@ between $req and $rsp
 
 #$$ this should be computed from the Schema.
 @mids_with_status = (
-	4, 11, 12, 13, 30, 31, 32, 33, 34, 35, 36, 50, 51, 52, 53, 54, 100
+	4, 11, 12, 13, 30, 31, 32, 33, 34, 35, 36, 50, 51, 52, 53, 54, 100, 1023
 );
 
 %lookup_mids_with_status = map {$_ => 1} @mids_with_status;
@@ -667,9 +734,12 @@ sub transact {
 	my $trace = 0;
 	my $bad_news_ok = 0;
 	my $first_time = 1;
+	my $perl_queue = undef;
 	my $nfy_queue = \@ntfs;
 	my $dump_string = 0;
 	my $memo = 0;
+	my $force_audit_yes = undef;
+	my $qualify_core = 1;
 
 	my %param_tbl = (
 		'Timeout'	, \$timeout	,
@@ -677,7 +747,10 @@ sub transact {
 		'BadNewsOK'	, \$bad_news_ok	,
 		'DumpString'	, \$dump_string	,
 		'Queue'		, \$nfy_queue	,
-		'MemoEncode'	, \$memo
+		'PerlQueue'	, \$perl_queue	,
+		'MemoEncode'	, \$memo,
+		'ForceAuditYes' , \$force_audit_yes,
+		'QualifyCore'	, \$qualify_core	
 	);
 
 	while (my ($key, $value) = each (%param_tbl)) {
@@ -687,16 +760,76 @@ sub transact {
 		}
 	}
 
+	my $token = $encode_params{AuditToken};
+
+	# add the encode callback so we an enforce tag access safety
+	my $safety = sub {
+
+		# determine the type of access implied by the request
+		my ($node) = @_;
+		$node->getName() =~ /C1G2(Write|Lock|BlockWrite|BlockErase|Kill)/;
+		my $access = $1;
+		$access = 'Write' if ($access eq 'BlockWrite' or $access eq 'BlockErase');
+
+		# fail if no token or token is invalid
+		ref $token || die "SKIPPED: $access access attempted, but no AuditToken provided";
+
+		($token->{Station}->{PeerHost} eq $sock->peerhost) || die "Wrong context for AuditToken";
+		($token->{TimeFence} > time()) || die "The provided AuditToken has expired";
+		my @antennas = ($node->findvalue ('//*[local-name()="AntennaID"]'));
+		if (defined $antennas[0] && ($antennas[0] eq '' || $antennas[0] == 0)) {
+			@antennas = (0..3);
+		} else {
+			$antennas[0]--;
+		}
+
+		ANTENNA: foreach $antenna_id (@antennas) {
+
+			# look up the rule
+			my $rule = $token->{Station}->op_rule_by_antenna ($access, $antenna_id);
+
+			# enforce the rule (return, or die)
+			next if ($rule eq 'always');
+			my $accessor = join ('_', 'Affirmed', $access, $antenna_id);
+			my $resp = $token->{$accessor} || '';
+			while ($rule eq 'prompt') {
+				if ($force_audit_yes) { $resp = 'yes' };
+				next ANTENNA if ($resp eq 'yes');
+				$resp eq 'no' and
+					die "SKIPPED: User request to enable a required feature was denied";
+				while ($resp ne 'yes' && $resp ne 'no') {
+					print "\n" . '='x75 . "\n";
+					print "Do you agree to allow $access access on Ant" .
+						($antenna_id + 1) . " (yes or no)?\n";
+					$resp = <STDIN>;
+					chomp $resp;
+				}
+				$token->{$accessor} = $resp;
+				print '='x75 . "\n";
+			}
+			$rule eq 'never' and
+				die "SKIPPED: the required $access access is never allowed on Ant" .
+					($antenna_id + 1) . "\n";
+
+			die "SKIPPED: unknown rule $access ($rule)";
+		}
+		return;
+	};
+	$encode_params{EncodeCallback} = { 
+		qr/C1G2(Write|Kill|Lock|BlockErase|BlockWrite)/ => $safety
+	};
+
 	# print the document in string form if requested
 	print "$doc\n" if $dump_string;
 
-	# make the request
+	# format the request
         my ($msg, $req_doc);
 	if ($memo) {
 		($msg, $req_doc) = memoized_encode_message ($doc, %encode_params);
 	} else {
 		($msg, $req_doc) = encode_message ($doc, %encode_params);
 	}
+
 	if ($trace && $first_time) {
 		my ($tdoc) = decode_message ($msg, %encode_params);
 		print STDERR $tdoc->toString(1), "\n";
@@ -710,7 +843,14 @@ sub transact {
 
 		my $envelope;
 		my $rsp_bin = read_message ($sock, $timeout, 'EnvelopeOut' => \$envelope);
-		$rsp = decode_message ($rsp_bin);
+
+		my $tree = {};
+		my @decode_opt = ();
+		if (ref ($perl_queue)) {
+			@decode_opt = ('HashParent' => $tree);
+		}
+		$rsp = decode_message ($rsp_bin, @decode_opt, QualifyCore => $qualify_core);
+		push (@$perl_queue, $tree) unless !ref ($perl_queue);
 		if ($trace) {
 			print STDERR $rsp->toString(1), "\n";
 		}
@@ -719,11 +859,11 @@ sub transact {
 		my ($ver, $msg_type, $msg_len, $msg_id) = @$envelope;
 		if ($msg_type == 63) {
 			my @node = $rsp->findnodes (
-				'/READER_EVENT_NOTIFICATION/' .
-				'ReaderEventNotificationData/ReaderExceptionEvent');
+				'/*[local-name()="READER_EVENT_NOTIFICATION"]/' .
+				'*[local-name()="ReaderEventNotificationData"]/*[local-name()="ReaderExceptionEvent"]');
 			if (@node) {
 				print STDERR "ReaderExceptionEvent: ", $node[0]->toString(1);
-				die "FAILED: ReaderExceptionEvent, " . $node[0]->findvalue ('Message');
+				die "FAILED: ReaderExceptionEvent, " . $node[0]>findvalue ('Message');
 			}
 		}
 		
@@ -738,7 +878,7 @@ sub transact {
 			
 			my $dump_err = 0;
 
-			my @status_tnodes = $rsp->findnodes ('//StatusCode/node()');
+			my @status_tnodes = $rsp->findnodes ('//*[local-name()="StatusCode"]/node()');
 
 			if (!@status_tnodes) {
 				push @{$nfy_queue}, $rsp;

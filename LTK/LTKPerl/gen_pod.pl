@@ -7,10 +7,10 @@ my @llrp_src_files = qw{ Builder Schema Link Helper };
 foreach $fname (@llrp_src_files) {
 
 	pod2html (
-		"--htmlroot=./documentation",
+		"--htmlroot=./Documentation",
 		"--infile=./RFID/LLRP/$fname.pm",
-		"--title=LLRP-XML/Perl $fname",
-		"--outfile=./documentation/$fname.html"
+		"--title=LTK-Perl $fname",
+		"--outfile=./Documentation/$fname.html"
 	);
 }
 

@@ -42,7 +42,7 @@ can then be transmitted to an LLRP Reader.
 
 	use RFID::LLRP::Builder qw(encode_message decode_message);
 	use RFID::LLRP::Link qw(reader_connect reader_disconnect read_message);
-	
+
 	my $doc = <<'EOT';
 	<?xml version="1.0" encoding="UTF-8"?>
 
@@ -69,9 +69,29 @@ can then be transmitted to an LLRP Reader.
 
 package RFID::LLRP::Builder;
 
-require Exporter;
-our @ISA	= qw(Exporter);
-our @EXPORT_OK	= qw(encode_message decode_message memoized_encode_message);
+use Sub::Exporter -setup => {
+	exports => [
+		qw(
+		encode_message
+		memoized_encode_message
+		),
+		decode_message => \&subclass
+	]
+};
+
+sub subclass {
+	my ($class, $name, $arg) = @_;
+	
+	return sub {
+		$name->(@_, %$arg);
+	}
+}
+
+#require Exporter;
+#our @ISA	= qw(Exporter);
+#our @EXPORT_OK	= qw(encode_message decode_message memoized_encode_message);
+
+use strict;
 
 use RFID::LLRP::Schema;
 use XML::LibXML;
@@ -84,13 +104,17 @@ use Data::HexDump;
 
 use Clone qw(clone);
 
+use threads;
+use Thread::Semaphore;
+
 use Memoize;
 use bytes;
 #memoize ('is_power_of_two');
 
 # read schema
-our ($llrp, $msg, $lookup_param, $lookup_mid, $lookup_pid) =
-	RFID::LLRP::Schema::read_schema ("./llrpdef.xml");
+our ($llrp, $registry) = 
+		RFID::LLRP::Schema::read_schema ("./ReaderDef.xml");
+my $vendor_lookup = $llrp->{Vendors};
 
 # determine next xml element	
 sub next_element {
@@ -125,7 +149,7 @@ my %pack_fmts = (
 	'96_U'	=> "CCCCCCCCCCCC",
 );
 
-use constant MSG_HEADER_LEN => 5;
+use constant MSG_HEADER_FIELDS => 5;
 
 sub is_numeric {
 	use warnings FATAL => 'numeric';
@@ -174,8 +198,13 @@ sub gen_format_leaf {
 			@raw_values = ($desc->{DefaultValue});
 		} else {
 			@raw_values = split (/\s+/, trim ($xml_node->textContent));
-			if (scalar (@raw_values) && !$desc->{Array}) {
-				@raw_values = ($raw_values[0]);
+
+			if (!$desc->{Array}) {
+				if (@raw_values) {
+					@raw_values = ($raw_values[0]);
+				} else {
+					die "Unexpected blank value for field " . $desc->{Name};
+				}
 			}
 		}
 
@@ -199,11 +228,12 @@ sub gen_format_leaf {
 					return ($_[0] + 0);
 				}
 				my $etype = $desc->{Enum};
-				my $enum = $llrp->{Enumerations}->{$etype};
+				my $ns = $desc->{Namespace} || $llrp->{CoreNamespace};
+				my $enum = $llrp->{Enumerations}->{$ns . '_' . $etype};
 				defined $enum || die "Unknown enumeration type $etype";
 				my $ident = shift;
 				my $value = $enum->{Lookup}->{$ident};
-				defined $value || die "Unknown enumeration value $etype ($ident)";
+				defined $value || die "Unknown enumeration value $ident ($etype)";
 				return ($value);
 			}
 		);
@@ -285,6 +315,67 @@ sub gen_elem_iter {
 		}
 	}
 }
+# match_xml()
+#
+# This pivotal routine performs the match logic for both encoding LLRP messages.
+# It expects
+# 	a) the current LLRP parameter matching rule descriptor
+#	b) an element name
+#	c) a namespace identifier string
+#	
+# It returns
+# 	a) best-match parameter type descriptor
+# 	b) exact-match flag
+# 	c) the rule that matched if alternative match
+#
+# Note that for now, XML namespace prefixes are assumed to be identical
+# to the Vendor name for each extension. This will probably change.
+
+sub fq {
+	my $group = shift;
+	my $entry = shift;
+
+	my @result = map {sprintf ("%s.%s.%s", $group, $_->{Namespace}, $_->{$entry})} @_;
+	return wantarray ? @result : $result[0];
+}
+
+sub match_xml {
+
+	my ($match_rule, $act_name) = @_;
+	my $act_subdesc;
+	my $exp_subdesc;
+	my $allow_desc;
+
+	# compute names
+	my $exp_name		= fq (qw/P Name/, $match_rule);
+	my $exp_type_name	= fq (qw/P Type/, $match_rule);
+
+	# lookup predicted subdescriptor
+	$exp_subdesc = $registry->{$exp_type_name};
+	ref $exp_subdesc
+		or die "Schema problem: couldn't locate predicted parameter type";
+
+	# check for a direct match, and return if does match.
+	if ($exp_name eq $act_name) {
+		$exp_subdesc->{Concrete}
+			|| die "Invalid XML: alternation type used as element";
+		return ($exp_subdesc, 1, undef);
+	}
+
+	# return now if no alternatives
+	my $alt = $match_rule->{Alternatives};
+	defined $alt or return ($registry->{$act_name}, 0, undef);
+
+	# lookup alternative
+	my $alt_match_rule = $alt->{$act_name};
+	if (!defined $alt_match_rule) {
+		return ($registry->{$act_name}, 0, undef);
+	}
+
+	# lookup the subdescriptor
+	$act_subdesc = $registry->{fq (qw/P Type/, $alt_match_rule)};
+	return ($act_subdesc, 1, $alt_match_rule);
+}
 
 # formats all fields and parameters for the given LLRP message or parameter
 sub format_node {
@@ -296,23 +387,21 @@ sub format_node {
 	my $elem_next	= gen_elem_iter	 ($xml_node);
 
 	# process all nodes
-	my $desc = $param_next->();
-	%hattrs = map {$_->getName => $_->getValue}
+	my $rule = $param_next->();
+	my %hattrs = map {$_->getName => $_->getValue}
 		(grep {ref ($_) ne 'XML::LibXML::Namespace'} $xml_node->attributes());
 	my $attrs = \%hattrs;
 
 	($xml_node) = $elem_next->();
 	my $xml_name;
+	my $prefix;
 	my $format_leaf = gen_format_leaf;
 
 	# process leaves (they are all at the beginning)
-	while ($desc && $desc->{Leaf} && ((defined $xml_node) || defined $desc->{DefaultValue})) {
+	while ($rule && $rule->{Leaf} && ((defined $xml_node) || defined $rule->{DefaultValue})) {
 
 		if (defined $xml_node) {
-			$xml_name = $xml_node->getName;
-
-#turn this on to trace walk through fields
-#print "xml: $xml_name  schema: ", $desc->{Name}, "::", $desc->{Type}, "\n";
+			$xml_name = $xml_node->localname;
 
 			# allow inserting raw bytes into the packet
 			if ($aux{Force} && $xml_name eq 'RawData') {
@@ -324,11 +413,11 @@ sub format_node {
 		
 			# demand matching XML node for all unfixed-value leaves
 			if (   !$aux{Force}
-			    && !defined ($desc->{DefaultValue})
-			    && ($xml_name ne $desc->{Name})
-			    && ($xml_name ne $desc->{Type})
+			    && !defined ($rule->{DefaultValue})
+			    && ($xml_name ne $rule->{Name})
+			    && ($xml_name ne $rule->{Type})
 			) {
-				my $err_msg = "Field descriptor name " . $desc->{Name} .
+				my $err_msg = "Field descriptor name " . $rule->{Name} .
 					" does not match XML element name " . $xml_node->getName;
 				die $err_msg;
 			}
@@ -336,75 +425,102 @@ sub format_node {
 		}
 
 		# handle default value overrides
-		if (   defined $desc->{DefaultValue}
-		    && defined $attrs->{$desc->{Name}}) {
-			my $tdesc = clone ($desc);
+		if (   defined $rule->{DefaultValue}
+		    && defined $attrs->{$rule->{Name}}) {
+			my $tdesc = clone ($rule);
 			$tdesc->{DefaultValue} = $attrs->{$tdesc->{Name}} + 0;
-			$desc = $tdesc;
+			$rule = $tdesc;
 		}
 
-		my ($leaf_data, $cells) = $format_leaf->($desc, $xml_node);
-		if ($desc->{Array} && $desc->{Counted}) {
+		# callback if matching node
+		if (defined ($xml_node) && exists $aux{EncodeCallback}) {
+			while (my ($re, $cb) = each %{$aux{EncodeCallback}}) {
+				if ($xml_node->localname =~ $re) {
+					$cb->($xml_node);
+				}
+			}
+		}
+
+		my ($leaf_data, $cells) = $format_leaf->($rule, $xml_node);
+		if ($rule->{Array} && $rule->{Counted}) {
 			# fixup length
 			substr ($bin, -2, 2, pack ("n", $cells));
 		}
 		$bin .= $leaf_data;
-		($xml_node, $attrs) = $elem_next->() unless defined $desc->{DefaultValue};
-		$desc = $param_next->();
+		($xml_node, $attrs) = $elem_next->() unless defined $rule->{DefaultValue};
+		$rule = $param_next->();
 	}
 
 	# recursively format the parameters
 	my $rep_count = 0;
-	while (($aux{Force} || defined $desc)
-		&& ((defined ($desc) && exists $desc->{Optional}) || defined $xml_node)) {
+	my %custom_seen;
+	while (($aux{Force} || ref $rule) && (ref ($rule) || ref ($xml_node))) {
 
 		# next descriptor if no xml node and optional
-		if ((!defined $xml_node) && ($desc->{Optional} || $aux{Force})) {
-			$desc = $param_next->();
+		if ((!ref $xml_node) && ($rule->{Optional} || $aux{Force})) {
+			$rule = $param_next->();
 			next;
 		}
 
-		# reference the nested parameter descriptor
-		$xml_name = $xml_node->getName;
-		
-		# determine match between schema and xml
-		my $matched = 0;
-		my $subdesc = $lookup_param->{$desc->{Type}};
-		if ($xml_name eq $desc->{Name}) {
-			$matched = 1;
-		} elsif (!$subdesc->{Concrete}) {
-			# nb: relies on Name == Type for all alternation points
-			
-			if (exists $subdesc->{Choices}->{$xml_name}) {
-				$subdesc = $subdesc->{Choices}->{$xml_name};
-				$matched = 1;
-			}
+		# handle missing XML node
+		if (!ref $xml_node && $rule && !$rule->{Optional}) {
+			my $ns = $rule->{Namespace};
+			my $name = $rule->{Name};
+			die "Missing required parameter $ns:$name";
 		}
 
-		# process
-		if ($subdesc && ($matched || $aux{Force})) { # Match
+		# determine namespace and name
+		my $fqn = join ('.', 'P',
+			$xml_node->namespaceURI || $llrp->{CoreNamespace},
+			$xml_node->localname) ;
 
+		# match XML against the current rule
+		my ($subdesc, $matched, $allow_rule) = match_xml ($rule, $fqn);
+
+		# process
+		if ($subdesc && ($matched || $aux{Force})) {
 			$bin .= format_node ($subdesc->{Parameter}, $xml_node, %aux);
+
+			# callback if matching node
+			if (exists $aux{EncodeCallback}) {
+				while (my ($re, $cb) = each %{$aux{EncodeCallback}}) {
+					if ($xml_node->localname =~ $re) {
+						$cb->($xml_node);
+					}
+				}
+			}
 
 			# consume XML node
 			$rep_count++;
+			$custom_seen{$fqn}++ if ($allow_rule && $allow_rule->{Extends});
 			($xml_node, $attrs) = $elem_next->();
+
+			# detect excess repetitions of parameter at extpt
+			if (exists $custom_seen{$fqn} && $custom_seen{$fqn} > 1 && !$allow_rule->{Array} && !$aux{Force}) {
+				die "Exceeded allowed repetitions at extension point";
+			}
+
+			# detect excess repetitions of parameter according to rule
+			if ($rep_count > 1 && !$rule->{Array} && !$aux{Force}) {
+				die "Exceeded allowed repetitions";
+			}
 
 			# next descriptor if it's not an array or there are no
 			# more xml nodes to format at this level
-			if (!$desc->{Array} || !defined ($xml_node)) {
+			if (!$rule->{Array} || !defined ($xml_node)) {
 				$rep_count = 0;
-				$desc = $param_next->();
+				%custom_seen = ();
+				$rule = $param_next->();
 			}
 		} else {	# No match
-			if ($desc->{Optional} || $rep_count) {
+			if ($rule->{Optional} || $rep_count) {
 				$rep_count = 0;
-				$desc = $param_next->();
+				$rule = $param_next->();
 				next;
 			}
-			my $type = $desc->{Type};
-			my $name = $desc->{Name};
-			die "Missing required parameter $name:$type (found $xml_name instead)";
+			my $type = $rule->{Type};
+			my $name = $rule->{Name};
+			die "Missing required parameter $name:$type (found $fqn instead)";
 		}
 	}
 
@@ -412,8 +528,8 @@ sub format_node {
 	if ($xml_node && !$aux{Force})	{
 		die "Invalid content at the end of infoset starting with: name=" . $xml_node->getName();
 	}
-	if (defined $desc && !$aux{Force})	{
-		my $msg = "Invalid LLRP XML... missing " . $desc->{Name};
+	if (defined $rule && !$aux{Force})	{
+		my $msg = "Invalid LLRP XML... missing " . $rule->{Name};
 		die $msg;
 	}
 
@@ -465,10 +581,6 @@ sub encode_message {
 	my $parser = XML::LibXML->new();
 	$parser->keep_blanks(0);
 	my $tree;
-	my %aux;
-	if (exists $options{Force}) {
-		%aux = (Force => $options{Force});
-	}
 
 	# parse the file
 	if ($options{File}) {
@@ -485,10 +597,29 @@ sub encode_message {
 
 	# get the tree root	
 	my $root = $tree->getDocumentElement;
+	if ((!defined $root->namespaceURI) || $root->namespaceURI eq 'Core') {
+		$root->setNamespace ($llrp->{CoreNamespace}, '', 1);
+		$root->setNamespaceDeclURI ('', $llrp->{CoreNamespace});
+	}
+
+	# fixup any version-generic namespaces
+	my @namespaces = $root->getNamespaces;
+	foreach my $attrib ($root->attributes) {
+		next unless (ref ($attrib) eq 'XML::LibXML::Namespace');
+		my $uri = $attrib->getData;
+		my $prefix = $attrib->getLocalName;
+		if (exists $llrp->{Vendors}->{$uri}) {
+			$root->setNamespaceDeclURI(
+				$prefix,
+				$llrp->{Prefix2NS}->{$prefix}
+			);
+		}
+	}
 
 	# get the message descriptor
-	my $msg_name = $root->getName;
-	my $msg_desc = $msg->{$msg_name};
+	my $msg_desc;
+	my $msg_name = join ('.', 'M', $root->namespaceURI, $root->localname);
+	$msg_desc = $registry->{$msg_name};
 	defined $msg_desc || die "No format descriptor for $msg_name";
 
 	# compile the XML file to binary format
@@ -544,7 +675,8 @@ sub format_text {
 	} elsif ($format eq 'boolean') {
 		return join (' ', (map (($_ ? 'true' : 'false'), @{$values})));
 	} elsif ($format eq 'enum') {
-		my $lkp = $llrp->{Enumerations}->{$desc->{Enum}}->{Definition};
+		my $ns = $desc->{Namespace} || $llrp->{CoreNamespace};
+		my $lkp = $llrp->{Enumerations}->{$ns . '_' . $desc->{Enum}}->{Definition};
 		return join (' ', (map ((defined ($lkp->[$_]) ? $lkp->[$_] : $_), @$values)));
 	} elsif ($format eq 'datetime') {
 		my $usecs = (($values->[0] * 1.0) * (2.0**32) + ($values->[1] * 1.0));
@@ -615,21 +747,19 @@ sub gen_unpack_fields {
 
 sub parse_msg_head {
 
-	my ($buf) = @_;
+	my $ndx;
 
+	my ($header, @raw) = unpack ('nNNNC', $_[0]);
 
-	my $next_desc = gen_array_iter ($llrp->{Messages}->[0]->{Parameter});
-	my ($desc, %msg_hdr);
-	my $n_fields = MSG_HEADER_LEN;
-	my $unpack_field = gen_unpack_fields ($buf);
-	while (($desc = $next_desc->()) && $n_fields) {
-		my $values;
-		($values, $ndx) = $unpack_field->($desc, 1);
-		$msg_hdr{$desc->{Name}} = $values->[0];	
-		$n_fields--;
+	my %msg_hdr;
+	@msg_hdr{qw/Reserved Version Type/} = 
+		(($header >> 13), (($header >> 10) & 7), ($header & 1023));
+	@msg_hdr{qw/MessageLength MessageID/} = splice (@raw, 0, 2);
+	if ($msg_hdr{Type} == 1023) {
+		@msg_hdr{qw/VendorIdentifier MessageSubtype/} = @raw;
 	}
 
-	return \%msg_hdr, $ndx;
+	return (\%msg_hdr, 10);
 }
 
 sub parse_param_head {
@@ -649,57 +779,17 @@ sub parse_param_head {
 		$param_hdr{Type} &= 0x3ff;
 		$ndx = 4;
 		$header_fields = 4;
+
+		# peek ahead to the VendorIdentifier and ParameterSubtype
+		if ($param_hdr{Type} == 1023) {
+			length ($buf) >= 12 
+				|| die "short packet... missing PEN and/or Subtype";
+			@param_hdr{qw/VendorIdentifier ParameterSubtype/} =
+				unpack ('NN', substr ($buf, 4, 8));
+		}
 	}
 
 	return \%param_hdr, $ndx, $header_fields;
-}
-
-sub parse_param_head_old {
-
-	my ($buf) = @_;
-	my %param_hdr;
-
-	my ($tpl_tvplist, $tpl_tlvplist);
-	$tpl_tvplist	= $lookup_param->{'AccessSpecID'}->{Parameter};
-	$tpl_tlvplist	= $lookup_param->{'Uptime'}->{Parameter};
-	my $unpack_field = gen_unpack_fields ($buf);
-
-	my $desc = $tpl_tvplist->[0];
-	my $tvencode = $param_hdr{$desc->{Name}} = $unpack_field->($desc, 1);
-	my ($n_fields, $plist) = $tvencode ? (3, $tpl_tlvplist): (1, $tpl_tvplist);
-	my $header_fields = $n_fields + 1;
-	my $next_desc = gen_array_iter ($plist, 1);
-	while (($desc = $next_desc->()) && $n_fields) {
-		my $values;
-		($values, $ndx) = $unpack_field->($desc, 1);
-		$param_hdr{$desc->{Name}} = $values->[0];	
-		$n_fields--;
-	}
-
-	return \%param_hdr, $ndx, $header_fields;
-}
-
-sub match_parameter {
-
-	# !! should compare ID's instead of names for efficiency
-	# !! requires caching the ID somewhere besides the field
-	# !! list
-	
-	# match expected descriptor against actual
-	# $expected and $actual must be parameter descriptors
-	# (they must NOT be field descriptors)
-	
-	my ($expected, $actual) = @_;
-
-	if ($expected->{Concrete}) {
-		if ($actual->{TypeID} == $expected->{TypeID}) {return $actual;}
-	} else {
-		my ($desc) = $expected->{Choices}->{$actual->{Name}};
-		if (ref $desc) {return $desc}
-	}
-
-	return;
-
 }
 
 sub max {
@@ -720,10 +810,48 @@ sub min {
 	return $best;
 }
 
+sub match_binary {
+	my ($match_rule, $act_type_name) = @_;
+	my $act_subdesc;
+	my $exp_subdesc;
+	my $allow_desc;
+
+	# compute names
+	my $exp_type_name = fq (qw/P Type/, $match_rule);
+
+	# lookup predicted subdescriptor
+	$exp_subdesc = $registry->{$exp_type_name};
+	$exp_type_name = $exp_subdesc->{Concrete} ? fq ('P', 'TypeID', $exp_subdesc) : '';
+	ref $exp_subdesc
+		or die "Schema problem: couldn't locate predicted parameter type";
+
+	# check for a direct match, and return if does match.
+	if ($exp_type_name eq $act_type_name) {
+		$exp_subdesc->{Concrete}
+			|| die "Invalid XML: alternation type used as element";
+		return ($exp_subdesc, 1, undef);
+	}
+
+	# return now if no alternatives
+	my $alt = $match_rule->{Alternatives};
+	defined $alt or return ($registry->{$act_type_name}, 0, undef);
+
+	# lookup alternative
+	my $alt_match_rule = $alt->{$act_type_name};
+	if (!defined $alt_match_rule) {
+		return ($registry->{$act_type_name}, 0, undef);
+	}
+
+	# lookup the subdescriptor
+	$act_subdesc = $registry->{fq (qw/P Type/, $alt_match_rule)};
+	defined $act_subdesc || die "Schema issue: unregistered type in match rule.";
+	return ($act_subdesc, 1, $alt_match_rule);
+}
+
 sub decode_body {
 
-	my ($tree, $root, $next_desc, $buf, %aux) = @_;
-	my $desc;
+	my ($tree, $root, $parent_ns, $parent_prefix, $next_rule, $buf, %aux) = @_;
+	my $rule;
 	my ($unpack_field) = gen_unpack_fields ($buf);
 	my $cells = 1;
 	my $ndx = 0;
@@ -731,22 +859,26 @@ sub decode_body {
 	my $matches;
 	my $remainder = length ($buf);
 
+	my $hash_gp_key	= $aux{HashGPKey};
+	my $hash_gp 	= $aux{HashGP};
+	my $hash_parent	= $aux{HashParent};
+
 	# note: 'bytesToEnd' algorithm only works if there are no params
 
 	# decode the fields
-	$desc = $next_desc->();
+	$rule = $next_rule->();
 
-	while (ref $desc && $desc->{Leaf}) {
+	while (ref $rule && $rule->{Leaf}) {
 
 		# compute 'cells' if bytesToEnd
-		if (ref $desc && $desc->{Array} && !$desc->{Counted}) {
+		if (ref $rule && $rule->{Array} && !$rule->{Counted}) {
 			$cells = $remainder;
 		}
 
 		# unpack
 		eval {
 			my $old_ndx = $ndx;
-			($values, $ndx) = $unpack_field->($desc, $cells);
+			($values, $ndx) = $unpack_field->($rule, $cells);
 
 			# adjust remainder for bytesToEnd contingency
 			$remainder -= ($ndx - $old_ndx);
@@ -757,11 +889,47 @@ sub decode_body {
 		}
 
 		# format the field data as XML
-		if (!$desc->{BinaryOnly}) {
-			my $node = $tree->createElement ($desc->{Name});
-			my $text = format_text ($desc, $values);
+		if (!$rule->{BinaryOnly}) {
+
+			my $node;
+			if ($aux{QualifyCore}) {
+				$node = $tree->createElement ($parent_prefix . ':' . $rule->{Name});
+			} else {
+				$node = $tree->createElement ($rule->{Name});
+			}
+			my $text = format_text ($rule, $values);
+
+			# store data in perl data structure
+			if (ref $hash_parent) {
+				my $leaf;
+
+				if ($rule->{Array}) {
+					if ($rule->{Format} eq 'Utf8') {
+						$leaf = pack ('C*', @{$values});
+					} else {
+						my @da = @{$values};
+						$leaf = \@da;
+					}
+
+				} else {
+
+					if ($rule->{Type} eq 'EPC96') {
+						$leaf = pack ('C*', @{$values});
+					} elsif ($rule->{Bits} == 64) {
+						$leaf = sprintf ("%.0f", $values->[0] * (2.0**32) + $values->[1]);
+					} else {
+						$leaf = $values->[0];
+					}
+				}
+				if ((ref $hash_gp) && $aux{Hoistable}) {
+					$hash_gp->{$hash_gp_key} = $leaf;
+				} else {
+					$hash_parent->{$rule->{Name}} = $leaf; 
+				}
+			}
+
 			my $text_node = XML::LibXML::Text->new ($text);
-			if (($cells % 8) && $desc->{Format} eq 'Hex' && $desc->{Bits} == 1) {
+			if (($cells % 8) && $rule->{Format} eq 'Hex' && $rule->{Bits} == 1) {
 				$node->setAttribute ('Count', $cells);
 			}
 			$node->addChild ($text_node);
@@ -769,88 +937,205 @@ sub decode_body {
 		}
 
 		# set #cells for the _next_ field
-		if ($desc->{BinaryOnly} && $desc->{Name} eq 'Length') {
+		if ($rule->{BinaryOnly} && $rule->{Name} eq 'Length') {
 			$cells = $values->[0];
 		} else {
 			$cells = 1;
 		}
 		
-		$desc = $next_desc->();
+		$rule = $next_rule->();
 	}
 
 	# decode the parameters
 	my $old_ndx = $ndx + 1;
-	my ($param_hdr, $ofs, $header_fields);
-	while ($ndx < length ($buf) && (ref ($desc) || $aux{Force})) {
+	my %custom_seen;
+	my ($param_hdr, $ofs, $header_fields, $fqt);
+	my ($best_match, $matched, $rule_used);
+	while ($ndx < length ($buf) && (ref ($rule) || $aux{Force})) {
 
 		# parse the next parameter header if the index has advanced
 		if ($old_ndx != $ndx) {
+			$fqt = undef;
+
 			($param_hdr, $ofs, $header_fields) = parse_param_head (substr ($buf, $ndx));
+
+			# calculate fully qualified type name; prefer structured form
+			if ($param_hdr->{Type} == 1023) {
+				my ($vendor_id, $type) = (@{$param_hdr}{
+					'VendorIdentifier', 'ParameterSubtype'});
+				if (ref ($registry->{"P.$vendor_id.$type"})) {
+					
+					# ensure header fields are skipped
+					$fqt = "P.$vendor_id.$type";
+					$ofs += 8; 
+					$header_fields += 2;
+				}
+			} 
+			$fqt = 'P.' . $llrp->{CoreNamespace} . '.' .
+				$param_hdr->{Type} unless defined $fqt;
+
 			$old_ndx = $ndx;
+
 		}
 
-		# next descriptor if doesn't match and optional
-		my $name = $desc->{Name};
-		my $type = $desc->{Type};
+		# match
+		($best_match, $matched, $rule_used) = match_binary ($rule, $fqt);
 
-		my $expected = $lookup_param->{$type};
+		if (($matched || $aux{Force}) && ref $best_match) { # match, or forcing...
 
-		die "Unknown expected parameter $name:$type"
-			unless (ref ($expected) || $aux{Force});
-		
-		my $actual = $lookup_pid->{$param_hdr->{Type}};
-		my $id = $param_hdr->{Type};
-		die "Unknown actual parameter with ID $id" unless ref $actual;
-		my ($child_desc) = match_parameter ($expected, $actual);
-		my $matched = (ref $child_desc) ? 1 : 0;
-		if ($matched || $aux{Force}) { # match, or forcing...
-
-			# handle force an expected not defined
-			if (!defined $expected) {
-				$expected = $actual;
-			}
-
-			# consume the parameter header, read the next one
+			# consume the parameter header
 			$ndx += $ofs; # matched, so move past the actual parameter header
 
-			# create the node
-			my $node = $tree->createElement (
-				(exists ($expected->{Concrete}) && !$expected->{Concrete})
-					? $actual->{Name}
-					: (defined ($name) ? $name : $actual->{Name}));
+			my $ns = $best_match->{Namespace};
+			my $prefix = ($ns eq $llrp->{CoreNamespace}) ? 'llrp':
+				$llrp->{NS2Prefix}->{$ns};
+
+			# add the extension namespace
+			if ($prefix) {
+				$tree->getDocumentElement->setNamespace ($ns, $prefix || '', 0);
+			}
+
+			# create, add the node
+			my $lname = ref ($rule_used) ?  $rule_used->{Name} : $rule->{Name};
+			my $node = $tree->createElement ($lname);
 			$root->addChild ($node);
-			my $next_param = gen_array_iter ($actual->{Parameter}, $header_fields);
+			if (($ns ne $llrp->{CoreNamespace}) || $aux{QualifyCore}) {
+				$node->setNamespace ($ns, $prefix || '', 1);
+			}
+
+#			my $elem_name = $node->nodeName;
+			my $elem_name = $node->localname;
+
+			my $next_param = gen_array_iter (
+				$best_match->{Parameter}, $header_fields);
+
 			my $sublen = defined ($param_hdr->{Length})
 				? $param_hdr->{Length}
-				: $actual->{FixedLength};
-			$ndx += decode_body ($tree, $node, $next_param,
+				: $best_match->{FixedLength};
+
+			# insert node into hash
+			if (ref $hash_parent && !(($rule_used || $rule)->{Array})) {
+
+				$hash_parent->{$elem_name} = $aux{HashParent} = {};
+				$aux{Hoistable} = 1 if ($best_match->{Hoistable});
+				$aux{HashGP} = $hash_parent;
+				$aux{HashGPKey} = $elem_name;
+
+			} elsif (ref $hash_parent) { # handle array of subnodes
+
+				my ($ary, $subhash);
+				$hash_parent->{$elem_name} = $ary = [] unless ref ($ary = $hash_parent->{$elem_name});
+				$aux{HashParent} = $subhash = {};
+				push @{$ary}, $subhash;
+				$aux{Hoistable} = 0;
+				$aux{HashGP} = undef;
+			}
+
+			# recursively decode nested portion
+			$ndx += decode_body ($tree, $node, $ns, $prefix, $next_param,
 				substr ($buf, min ($ndx, length ($buf)), max ($sublen - $ofs, 0)),
 				%aux);
+
+			# restore to current level of hash
+			if (ref $hash_parent) {
+				delete $aux{Hoistable};
+				$aux{HashParent} = $hash_parent;
+				$aux{HashGP} = $hash_gp;
+				$aux{HashGPKey} = $hash_gp_key;
+			}
+
+			# increment repetition counters
 			$matches++ if ($matched);
+			$custom_seen{$fqt}++ if ($matched && ref $rule_used && $rule->{Extends});
+
+			# enforce global caps on params at ep's
+			if (	ref ($rule_used)
+				&& !$rule_used->{Array}
+				&& !$aux{Force}
+				&& exists $custom_seen{$fqt}
+				&& $custom_seen{$fqt} > 1) {
+				die "Exceeded cap on $fqt occurance at extension point";
+			}
 
 			# match against the expected descriptor again if 'array'
-			next if ($desc->{Array});
+			next if ($rule->{Array});
 
-			# next descriptor if current descriptor got used up
-			if ($matched) {
-				$desc = $next_desc->();
+			# next expected match rule if current match rule got used up
+			if ($matched && !($rule->{Array})) {
+				$rule = $next_rule->();
 				$matches = 0;
+				%custom_seen = ();
 			}
 		} else { # no match
 
+			if (!ref ($best_match)) {
+
+				die "Unknown parameter $fqt" unless $aux{Force};
+
+				# put hexdump for the unrecognized parameter
+				my $parser = XML::LibXML->new();
+				my $fragtxt = 
+					"<UnknownParameter " .
+					"type_id='" .  $param_hdr->{Type} . "'";
+				if ($param_hdr->{Type} == 1023) { $fragtxt .= ' ' .
+					"vendor='" . $param_hdr->{VendorIdentifier} . "' " .
+					"subtype='" . $param_hdr->{ParameterSubtype} . "'";
+				}
+				$fragtxt .= ">" .
+					join (' ', (map { sprintf ("%02X", $_) } unpack ('C*', $buf))) .
+					"</UnknownParameter>";
+				my $node = $parser->parse_balanced_chunk ($fragtxt);
+				$root->addChild ($node);
+
+				$ndx += $ofs;
+				next;
+	
+			}
+
 			# raise an exception if expected is required but
 			# missing
-			if (!$matches && !$desc->{Optional}) {
-				die "Missing non-optional parameter $name:$type";
+			if (!$matches && !$rule->{Optional} && !$aux{Force}) {
+				die "Missing non-optional parameter " . fq (qw/P Name/, $rule);
 			}
 
 			# (now match current actual against next expected... )
-			($desc, $matches) = ($next_desc->(), 0);
+			($rule, $matches) = ($next_rule->(), 0);
+			%custom_seen = ();
 		}
+	}
 
+	if ($ndx < length ($buf)) {
+		if (ref $best_match) {
+			die $best_match->{Namespace}. '.' . $best_match->{Name} . " never matched a rule";
+		} else {
+			die "Some of the binary message never matched a rule";
+		}
 	}
 
 	return $ndx;
+}
+
+sub raw_hex_bytes {
+
+	my $buf = shift;	
+	my $level = shift or 0;
+
+	my @buf = unpack ('C*', $buf);
+	my $doctxt = ' ' x $level;
+	while (@buf) {
+		for (my $i = 0; @buf && $i < 16; $i++) {
+			
+			# space line, newlines at end
+			$doctxt .= sprintf ("%02X%s", shift (@buf),
+				(($i == 15 || !(@buf)) ? "\n" : ' '));
+
+			# indent
+			$doctxt .= ' ' x $level if $i == 15 && @buf;
+		}
+	}
+
+	return $doctxt;
+
 }
 
 =item C<decode_message ($str)>
@@ -875,27 +1160,94 @@ sub decode_message {
 	# lookup the message
 	my ($msg_hdr, $ndx);
 	($msg_hdr, $ndx) = parse_msg_head ($buf);
+
+	my $ns = $llrp->{CoreNamespace};
 	my $msg_type = $msg_hdr->{Type};
-	die "No MID lookup table" unless ref $lookup_mid;
-	my $msg_desc = $lookup_mid->{$msg_type};
-	ref $msg_desc or die "Unknown message ID $msg_type";
+
+	# lookup best matching message type in registry
+	my $msg_desc;
+	my $msg_name;
+	my $hidden_fields = 0;
+	my $fqt;
+	$msg_desc = $registry->{"M.$ns.$msg_type"};
+	if ($msg_type != 1023) {
+		ref ($msg_desc) or $aux{Force} or die "Unknown message ID $msg_type";
+	} else {{
+
+		my ($ns_id, $msg_subtype) = @{$msg_hdr}{
+			'VendorIdentifier',
+			'MessageSubtype'
+		};
+		last unless (exists $vendor_lookup->{$ns_id});
+		my $ns_temp = $vendor_lookup->{$ns_id};
+		$fqt = "M.$ns_id.$msg_subtype";
+
+		my $msg_desc_temp = $registry->{$fqt};
+		if (ref $msg_desc_temp) {
+			$msg_desc	= $msg_desc_temp;
+			$ns		= $msg_desc_temp->{Namespace};
+
+			# treat the vendor/subtype as header bytes: skip them
+			$ndx += 5;
+			$hidden_fields = 2;
+
+		}
+	}}
+
+	if (!ref ($msg_desc)) {
+
+		my $parser = XML::LibXML->new();
+		$tree = $parser->parse_string (
+			"<UnknownMessage type_id='" .
+			$msg_hdr->{Type} . "'>\n" .
+			raw_hex_bytes ($buf, 2) .
+			"</UnknownMessage>\n"
+		);
+		return ($tree);
+	}
+
+	$msg_name = $msg_desc->{Name};
+
+	# lookup the prefix
+	my $prefix = ($ns eq $llrp->{CoreNamespace}) ? 'llrp' : $llrp->{NS2Prefix}->{$ns};
 
 	# add the message header
-	my $root = $tree->createElement ($msg_desc->{Name});
-	$tree->setDocumentElement ($root);
+	# create the node
+	my $fqn = "$prefix:$msg_name";
+	my $elem;
+	if ($aux{QualifyCore} || ($ns ne $llrp->{CoreNamespace})) {
+		$elem = $tree->createElementNS ($ns, $fqn);
+	} else {
+		$elem = $tree->createElementNS ('', $msg_name);
+	}
+	$tree->setDocumentElement ($elem);
+	my $root = $tree->getDocumentElement;
+
+	my $hash_parent = $aux{HashParent};
+	if (ref $hash_parent) {
+		$hash_parent->{$msg_name} = $aux{HashParent} = {};
+	}
 
 	# decode the body of the message
-	decode_body ($tree, $root, gen_array_iter ($msg_desc->{Parameter}, MSG_HEADER_LEN),
+	decode_body ($tree, $root, $ns, $prefix, gen_array_iter ($msg_desc->{Parameter}, MSG_HEADER_FIELDS + $hidden_fields),
 		substr ($buf, $ndx, $msg_hdr->{MessageLength} - $ndx), %aux);
 
 	# set the version and message ID attributes
 	$root->setAttribute ('Version'	,	$msg_hdr->{'Version'}	);
 	$root->setAttribute ('MessageID',	$msg_hdr->{'MessageID'}	);
 
+	# workaround for prefix / xpath issue
+	my $parser = XML::LibXML->new();
+	$tree = $parser->parse_string($tree->toString(1));
+
 	return ($tree);
 }
 
+
+
 1;
+
+=pod
 
 =back
 
@@ -914,7 +1266,6 @@ None
 EPCGlobal LLRP Specification
 
 =head1 COPYRIGHT
-                                                                           
 Copyright 2007 Impinj, Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License");

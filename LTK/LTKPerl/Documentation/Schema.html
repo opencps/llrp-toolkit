@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<title>LLRP-XML/Perl Schema</title>
+<title>LTK-Perl Schema</title>
 <link rev="made" href="mailto:root@localhost" />
 </head>
 
@@ -48,7 +48,7 @@ need... only one object is created (and cached) per filename string.</p>
 <pre>
         use RFID::LLRP::Schema;
         my ($llrp, $lookup_msg, $lookup_param, $lookup_enum) =
-                 read_schema ('./llrp.desc');</pre>
+                 read_schema ('./ReaderDef.xml');</pre>
 <p>
 </p>
 <hr />
@@ -78,24 +78,16 @@ suit your needs, build additional indexing data structures.</p>
 <dl>
 <dt><a name="item__5c_25llrp_a_reference_to_the_llrp_schema"><code>\%llrp</code>
 a reference to the LLRP schema</a></dt>
-<dt><a name="item__5c_25lookup_msg_a_reference_to_a_hash_for_looking"><code>\%lookup_msg</code>
-a reference to a hash for looking up LLRP Message descriptors by name</a></dt>
-<dt><a name="item__5c_25lookup_param_a_reference_to_a_hash_for_looki"><code>\%lookup_param</code>
-a reference to a hash for looking up LLRP Parameter descriptors by name</a></dt>
-<dt><a name="item__5c_25lookup_mid_a_reference_to_a_hash_for_looking"><code>\%lookup_mid</code>
-a reference to a hash for looking up LLRP Message descriptors by Type ID</a></dt>
-<dt><a name="item__5c_25lookup_pid_a_reference_to_a_hash_for_looking"><code>\%lookup_pid</code>
-a reference to a hash for looking up LLRP Parameter descriptors by Type ID</a></dt>
+<dt><a name="item_up"><code>\%registry</code>
+A reference for looking up (mangled) LLRP types, including extensions</a></dt>
 </dl>
-<p>Hint: the best way to understand the schema is to print it out with
-<code>Data::Dumper</code>.</p>
 </dl>
 <p>
 </p>
 <hr />
 <h1><a name="author">AUTHOR</a></h1>
-<p>John R. Hogerhuis</p>
-<p>Chris Delaney</p>
+<p>John R. Hogerhuis
+Chris Delaney</p>
 <p>
 </p>
 <hr />
@@ -120,11 +112,7 @@ You may obtain a copy of the License at</p>
 distributed under the License is distributed on an ``AS IS'' BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
-limitations under the License.
-</p>
-<pre>
-
-=cut</pre>
+limitations under the License.</p>
 
 </body>
 

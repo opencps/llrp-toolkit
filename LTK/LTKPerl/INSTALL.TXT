@@ -1,7 +1,7 @@
 Install the LLRP binary schema
 ------------------------------
 
-To use LLRP-XML/Perl, checkout the Perl project from llrp-toolkit.
+To use LTK-Perl, checkout the LTK-Perl project and Definitions from llrp-toolkit.
 
 From Linux or Cygwin (under Windows) the following command works:
 
@@ -11,9 +11,16 @@ From Linux or Cygwin (under Windows) the following command works:
  
    cvs -z3 -d:pserver:anonymous@llrp-toolkit.cvs.sourceforge.net:/cvsroot/llrp-toolkit co -P LTK
 
-Copy Definitions/Core/llrp-1x0-def.xml to LTKPerl/RFID/LLRP/llrpdef.xml .
+Copy Definitions/Core/llrp-1x0-def.xml to LTKPerl/RFID/LLRP/ReaderDef.xml .
 
-MAKE SURE TO MAKE THE FILENAME MATCH llrpdef.xml EXACTLY.
+MAKE SURE TO MAKE THE FILENAME MATCH ReaderDef.xml EXACTLY.
+
+Note, you need to define any extensions you intend to
+use in ReaderDef.xml.
+
+LTK-Perl will expand any XIncludes, so that might help you.
+As a quick hack, you can cut/paste your extension definitions
+into ReaderDef.xml.
 
 RFID::LLRP::Schema needs to be able to find the binary schema
 somewhere, and RFID/LLRP seemed like the best place.
@@ -22,8 +29,9 @@ somewhere, and RFID/LLRP seemed like the best place.
 Install LibXML and CPAN modules on Linux
 ----------------------------------------
 
-The LLRP-XML/Perl document-oriented API is heavily dependent
-upon the Gnome project's LibXML.
+The LTK-Perl document-oriented API is heavily dependent
+upon the Gnome project's libxml2, and the related Perl
+bindings.
 
 For Linux, use your favorite package manager and/or CPAN to
 install it and any necessary Perl modules. I will show here
@@ -37,6 +45,8 @@ Ubuntu Feisty Desktop):
 		sudo apt-get install libtimedate-perl
 	Data::HexDump
 		cpan -i Data::HexDump
+	Sub::Exporter
+		cpan -i Sub::Exporter
 	XML::LibXML
 		sudo apt-get install libxml-libxml-perl
 	XML::LibXSLT
@@ -62,10 +72,11 @@ Also available is
 
 For Windows, the following worked for me; your mileage may vary.
 
-Windows Install Notes for LLRP-XML/Perl
+Windows Install Notes for LTK-Perl
 ---------------------------------------
 
-I tried the Windows setup and was able to install LibXML.
+At some point, I tried the Windows setup and was able to
+install LibXML.
 
 I expanded the contents of bin directory from .zip files for
 the different LibXML libraries to c:\tools\libxml
@@ -112,18 +123,24 @@ ActiveState Perl. In these tests, I ran 5.8.8 build 820.
 Install the Perl LibXML bindings by typing the following
 at Windows cmd prompt:
 
-ppm install http://theoryx5.uwinnipeg.ca/ppms/XML-LibXML-Common.ppd
-ppm install http://theoryx5.uwinnipeg.ca/ppms/XML-LibXML.ppd
-ppm install http://theoryx5.uwinnipeg.ca/ppms/XML-LibXSLT.ppd
+ ppm install http://theoryx5.uwinnipeg.ca/ppms/XML-LibXML-Common.ppd
+ ppm install http://theoryx5.uwinnipeg.ca/ppms/XML-LibXML.ppd
+ ppm install http://theoryx5.uwinnipeg.ca/ppms/XML-LibXSLT.ppd
 
-Install other necessary packages:
+Install other necessary packages from the ActiveState repository:
 
-ppm install TimeDate
-ppm install Data-HexDump
-ppm install Clone
-ppm install Text-Template
+ ppm install TimeDate
+ ppm install Data-HexDump
+ ppm install Clone
+ ppm install Text-Template
 
-cd to Perl\examples directory
+Install Sub::Exporter and its dependencies from CPAN repository:
+perl -MCPAN -e 'install Params::Util'
+perl -MCPAN -e 'install Data::OptList'
+perl -MCPAN -e 'install Sub::Install'
+perl -MCPAN -e 'install Sub::Exporter'
+
+cd to LTKPerl\Examples directory
 
 perl inventory_example.pl -n=reader-xx-yy-zz
 perl simple_encode_decode.pl
@@ -133,9 +150,9 @@ reader or reader simulator
 
 NOTE: If you get an error about llrpdef.xml you probably missed the step:
 
-' Copy Definitions/Core/llrp-1x0-def.xml to LTKPerl/RFID/LLRP/llrpdef.xml '
+' Copy Definitions/Core/llrp-1x0-def.xml to LTKPerl/RFID/LLRP/ReaderDef.xml '
 
 Thanks in advance for letting me know about success or
-failures with LLRP-XML/Perl under Windows.
+failures with LTK-Perl under Windows.
 
 John R. Hogerhuis  jhoger@pobox.com

@@ -61,11 +61,14 @@ our @EXPORT_OK	= qw(
 	compare_subtrees
 	factory_default
 	cleanup_all
+	max min uniq
+	get_values
+	enable_impinj_extensions
+	get_msg_name
 );
 
 use RFID::LLRP::Builder qw(encode_message decode_message);
 use RFID::LLRP::Link qw(reader_connect reader_disconnect read_message transact);
-
 
 =item C<decode_gpi_state ($node)>
 
@@ -78,9 +81,9 @@ equivalent (gpi1 = lsb, gpi4=msb)
 
 sub decode_gpi_state {
 	my $root = shift;
-        foreach my $g ($root->findnodes('//GPIPortCurrentState')) {
-                $gpi[$g->findvalue('./GPIPortNum')-1] 
-			= $g->findvalue('./State') eq 'High' ? 1 : 0;
+        foreach my $g ($root->findnodes('//*[local-name() = "GPIPortCurrentState"]')) {
+                $gpi[$g->findvalue('./*[local-name() = "GPIPortNum"')-1] 
+			= $g->findvalue('./*[local-name() = "State"') eq 'High' ? 1 : 0;
         }
 	return wantarray? @gpi : 
 		unpack("C",pack("b8",join('',@gpi). "0"x8));
@@ -112,7 +115,8 @@ sub delete_rospecs {
 		my $spec = "<ROSpecID>$_</ROSpecID>";
 		transact ($sock, qq{
 			<DELETE_ROSPEC $mid>$spec</DELETE_ROSPEC>
-		}, Trace => $params{Trace});
+		}, Timeout => $params{Timeout}, 
+		Trace => $params{Trace});
 	}
 }
 
@@ -163,11 +167,13 @@ sub are_identical {
 		s/ *> *< */></sg;	# tighten up bracketing
 		s/^\s+//s;		# remove leading spaces
 		s/\s+$//s;		# removed trailing spaces
+		s/>\s+/>/s;		# remove whitespace around enums
+		s/\s+</</s;		# remove whitespace around enums
 
 		# tighten empty element close
 		s/<(\w+)(\s+.*|)>\s*<\/\1>/<$1$2\/>/g;
 
-		#print "\n$_\n";
+#		print "\n$_\n";
 
 		if (defined $last && $last ne $_) {
 			return 0;
@@ -203,6 +209,7 @@ sub compare_subtrees {
 
 	return 1;
 }
+
 
 =item C<factory_default ($sock)>
 
@@ -244,6 +251,46 @@ sub cleanup_all {
 	}
 }
 
+
+
+sub max {
+	scalar (@_) || die "No list provided";
+	my $best = shift;
+	foreach (@_) {
+		$best = $_ unless $best >= $_;
+	}
+	return $best;
+}
+
+sub min {
+	scalar (@_) || die "No list provided";
+	my $best = shift;
+	foreach (@_) {
+		$best = $_ unless $best <= $_;
+	}
+	return $best;
+}
+
+sub get_values {
+	my ($doc, $xpath) = @_;
+	$xpath .= '/node()';
+	return map { $_->getData } ($doc->findnodes ($xpath));
+}
+
+sub get_msg_name {
+    return $_[0]->getDocumentElement->nodeName;
+}
+
+sub uniq {
+	my %seen;
+	foreach (@_) {
+		$seen{$_}++;
+	}
+	return keys %seen;
+}
+
+
+
 1;
 
 =back
@@ -251,9 +298,7 @@ sub cleanup_all {
 =head1 AUTHOR
 
 John R. Hogerhuis
-
 Kunal Singh
-
 Joel Peshkin
 
 =head1 BUGS
@@ -265,7 +310,7 @@ None
 EPCGlobal LLRP Specification
 
 =head1 COPYRIGHT
-                                                                           
+
 Copyright 2007 Impinj, Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License");

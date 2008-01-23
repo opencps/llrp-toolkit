@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!--
  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
- -  Copyright 2007 Impinj, Inc.                                              -
+ -  Copyright 2008 Impinj, Inc.                                              -
  -                                                                           -
  -  Licensed under the Apache License, Version 2.0 (the "License");          -
  -  you may not use this file except in compliance with the License.         -
@@ -20,10 +20,19 @@
  -                                                                           -
  - This script converts the standard llrpdef.xml to the legacy llrp1.desc    -
  - format so that Schema.pm uses the LTK standard binary schema.             -
+ -                                                                           -
+ - Note: because of a design error in llrpdef.xsd in which it does not       -
+ -       implement the namespace concept properly, this script has to assume -
+ -       that all identifiers of extension names and parameters are unique   -
+ -       among all vendors.                                                  -
+ -                                                                           -
+ - Note: custom unions are not supported since there aren't any yet.         -
+ -                                                                           -
  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  - AUTHOR                                                                    -
  -                                                                           -
  - John R. Hogerhuis                                                         -
+ -                                                                           -
  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  - TODO                                                                      -
  -                                                                           -
@@ -37,7 +46,7 @@
 <xsl:stylesheet version="1.0"
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   xmlns:xs="http://www.w3.org/2001/XMLSchema"
-  xmlns:llb="http://www.llrp.org/ltk/schema/core/encoding/binary/0.8"
+  xmlns:llb="http://www.llrp.org/ltk/schema/core/encoding/binary/1.0"
 >
 
 <!--
@@ -48,14 +57,50 @@
 <xsl:output method="text" indent="no" encoding="utf-8" omit-xml-declaration="yes"/>
 
 <xsl:template match="/">
+
+  <xsl:apply-templates mode="CORE_NS_DEF"/>
+  <xsl:apply-templates mode="EXT_NS_DEF"/>
+
+  <xsl:apply-templates mode="EXT_VENDOR_DEF"/>
+
   <xsl:apply-templates mode="MSG_DEF"/>
   <xsl:apply-templates mode="PARAM_DEF"/>
   <xsl:apply-templates mode="CHOICE_DEF"/>
   <xsl:apply-templates mode="ENUM_DEF"/>
 </xsl:template>
 
+<xsl:template match="llb:namespaceDefinition[@prefix='llrp']" mode="CORE_NS_DEF">
+  <xsl:text>core-namespace "</xsl:text>
+  <xsl:value-of select="@URI"/>
+  <xsl:text>"&#10;&#10;</xsl:text>
+</xsl:template>
+
+<xsl:template match="llb:namespaceDefinition[@prefix!='llrp']" mode="EXT_NS_DEF">
+  <xsl:text>namespace&#32;</xsl:text>
+  <xsl:value-of select="@prefix"/><xsl:text>&#32;"</xsl:text>
+  <xsl:value-of select="@URI"/>
+  <xsl:text>"&#10;&#10;</xsl:text>
+</xsl:template>
+
+<xsl:template match="llb:vendorDefinition" mode="EXT_VENDOR_DEF">
+  <xsl:text>vendor&#32;</xsl:text>
+  <xsl:value-of select="@name"/><xsl:text>&#32;</xsl:text>
+  <xsl:value-of select="@vendorID"/>
+  <xsl:text>&#10;&#10;</xsl:text>
+</xsl:template>
+
 <xsl:template match="llb:enumerationDefinition" mode="ENUM_DEF">
-  <xsl:text>enumeration +&#32;</xsl:text>
+  <xsl:text>enumeration&#32;</xsl:text>
+  <xsl:value-of select="@name"/>
+  <xsl:text>&#10;</xsl:text>
+  <xsl:apply-templates mode="ENUM_DEF"/>
+  <xsl:text>end&#10;&#10;</xsl:text>
+</xsl:template>
+
+<xsl:template match="llb:customEnumerationDefinition" mode="ENUM_DEF">
+  <xsl:text>custom-enumeration&#32;</xsl:text>
+  <xsl:value-of select="@namespace"/>
+  <xsl:text>&#32;</xsl:text>
   <xsl:value-of select="@name"/>
   <xsl:text>&#10;</xsl:text>
   <xsl:apply-templates mode="ENUM_DEF"/>
@@ -71,9 +116,47 @@
 </xsl:template>
 
 <xsl:template match="llb:messageDefinition" mode="MSG_DEF">
-  <xsl:text>message cmd&#32;</xsl:text>
+  <xsl:text>message&#32;</xsl:text>
+  <xsl:choose>
+    <xsl:when test="@responseType">
+      <xsl:text>cmd&#32;</xsl:text>
+    </xsl:when>
+    <xsl:when test="@name='CUSTOM_MESSAGE'">
+      <xsl:text>cmd&#32;</xsl:text>
+    </xsl:when>
+    <xsl:when test="@name='ERROR_MESSAGE'">
+      <xsl:text>rsp&#32;</xsl:text>
+    </xsl:when>
+    <xsl:when test="//llb:messageDefinition[@responseType = current()/@name]">
+      <xsl:text>rsp&#32;</xsl:text>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:text>ntf&#32;</xsl:text>
+    </xsl:otherwise>
+  </xsl:choose>
   <xsl:value-of select="@typeNum"/>
   <xsl:text>&#32;</xsl:text>
+  <xsl:value-of select="@name"/>
+  <xsl:text>&#10;</xsl:text>
+  <xsl:apply-templates mode="FIELDPARMS_BODY"/>
+  <xsl:text>end&#10;&#10;</xsl:text>
+</xsl:template>
+
+<xsl:template match="llb:customMessageDefinition" mode="MSG_DEF">
+  <xsl:text>custom-message&#32;</xsl:text>
+  <xsl:value-of select="@vendor"/><xsl:text>&#32;</xsl:text>
+  <xsl:value-of select="@subtype"/><xsl:text>&#32;</xsl:text>
+  <xsl:value-of select="@namespace"/><xsl:text>&#32;</xsl:text>
+  <xsl:value-of select="@name"/><xsl:text>&#10;</xsl:text>
+  <xsl:apply-templates mode="FIELDPARMS_BODY"/>
+  <xsl:text>end&#10;&#10;</xsl:text>
+</xsl:template>
+
+<xsl:template match="llb:customParameterDefinition" mode="PARAM_DEF">
+  <xsl:text>custom-parameter&#32;</xsl:text>
+  <xsl:value-of select="@vendor"/><xsl:text>&#32;</xsl:text>
+  <xsl:value-of select="@subtype"/><xsl:text>&#32;</xsl:text>
+  <xsl:value-of select="@namespace"/><xsl:text>&#32;</xsl:text>
   <xsl:value-of select="@name"/>
   <xsl:text>&#10;</xsl:text>
   <xsl:apply-templates mode="FIELDPARMS_BODY"/>
@@ -116,6 +199,11 @@
     <xsl:value-of select="@format"/>
   </xsl:if>
   <xsl:if test="@enumeration">
+    <xsl:variable name="ns" select="//llb:customEnumerationDefinition[@name = current()/@enumeration]/@namespace"/>
+    <xsl:if test="$ns">
+      <xsl:text>&#32;ns=</xsl:text>
+      <xsl:value-of select="$ns"/>
+    </xsl:if>
     <xsl:text>&#32;</xsl:text>
     <xsl:text>enum=</xsl:text>
     <xsl:value-of select="@enumeration"/>
@@ -124,15 +212,45 @@
 </xsl:template>
 
 <xsl:template name="formatParam">
-  <xsl:text>&#32;&#32;param </xsl:text>
-  <xsl:value-of select="@repeat"/>
+  <xsl:choose>
+    <xsl:when test="@type='Custom'">
+       <xsl:text>extension-point&#10;</xsl:text>
+       <xsl:apply-templates select="//llb:allowedIn[@type = current()/../@name]" mode="EXTENSION_POINT"/>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:text>&#32;&#32;param </xsl:text>
+      <xsl:value-of select="translate(@repeat, 'N', 'n')"/>
+      <xsl:text>&#32;</xsl:text>
+      <xsl:value-of select="@type"/>
+      <xsl:variable name="ns" select="//llb:customParameterDefinition[@name = current()/@type]/@namespace"/>
+      <xsl:if test="$ns">
+        <xsl:text>&#32;</xsl:text>
+        <xsl:value-of select="$ns"/>
+      </xsl:if>
+      <xsl:if test="@name">
+        <xsl:text>&#32;name=</xsl:text>
+        <xsl:value-of select="@name"/>
+      </xsl:if>
+      <xsl:text>&#10;</xsl:text>
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:template>
+
+<xsl:template name="formatAllow" match="llb:allowedIn" mode="EXTENSION_POINT">
+  <xsl:text>&#32;&#32;allow </xsl:text>
+  <xsl:value-of select="translate(@repeat, 'N', 'n')"/>
   <xsl:text>&#32;</xsl:text>
-  <xsl:value-of select="@type"/>
+  <xsl:value-of select="../@name"/>
+  <xsl:variable name="ns" select="//llb:customParameterDefinition[@name = current()/../@name]/@namespace"/>
+  <xsl:if test="$ns">
+    <xsl:text>&#32;</xsl:text>
+    <xsl:value-of select="$ns"/>
+  </xsl:if>
   <xsl:if test="@name">
     <xsl:text>&#32;name=</xsl:text>
     <xsl:value-of select="@name"/>
   </xsl:if>
-  <xsl:text>&#10;</xsl:text>
+   <xsl:text>&#10;</xsl:text>
 </xsl:template>
 
 <xsl:template match="llb:parameter" mode="FIELDPARMS_BODY">
@@ -150,7 +268,7 @@
 </xsl:template>
 
 <xsl:template match="llb:choiceDefinition" mode="CHOICE_DEF">
-  <xsl:text>parameter union +&#32;</xsl:text>
+  <xsl:text>parameter union&#32;</xsl:text>
   <xsl:value-of select="@name"/>
   <xsl:text>&#10;</xsl:text>
   <xsl:apply-templates mode="CHOICE_DEF"/>
@@ -163,10 +281,17 @@
   <xsl:text>&#10;</xsl:text>
 </xsl:template>
 
+<xsl:template match="//text()" mode="CORE_NS_DEF"/>
+<xsl:template match="//text()" mode="EXT_NS_DEF"/>
+
+<xsl:template match="//text()" mode="EXT_VENDOR_DEF"/>
+
 <xsl:template match="//text()" mode="MSG_DEF"></xsl:template>
 <xsl:template match="//text()" mode="PARAM_DEF"></xsl:template>
 <xsl:template match="//text()" mode="FIELDPARMS_BODY"></xsl:template>
 <xsl:template match="//text()" mode="CHOICE_DEF"></xsl:template>
 <xsl:template match="//text()" mode="ENUM_DEF"></xsl:template>
+
+<xsl:template match="//text()" mode="EXTENSION_POINT"></xsl:template>
 
 </xsl:stylesheet>

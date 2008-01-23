@@ -3,7 +3,7 @@
 
 #############################################################################
 #                                                                           #
-#  Copyright 2007 Impinj, Inc.                                              #
+#  Copyright 2008 Impinj, Inc.                                              #
 #                                                                           #
 #  Licensed under the Apache License, Version 2.0 (the "License");          #
 #  you may not use this file except in compliance with the License.         #
@@ -41,9 +41,9 @@ use RFID::LLRP::Builder qw(encode_message decode_message);
 use RFID::LLRP::Link qw(
 	reader_connect
 	reader_disconnect
-        transact
-	monitor
-);
+	),
+        transact => {QualifyCore => 0},
+	monitor => {QualifyCore => 0};
 
 use RFID::LLRP::Helper qw(delete_rospecs are_identical delete_access_specs
               factory_default cleanup_all compare_subtrees);
