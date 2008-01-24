@@ -63,7 +63,6 @@ our @EXPORT_OK	= qw(
 	cleanup_all
 	max min uniq
 	get_values
-	enable_impinj_extensions
 	get_msg_name
 );
 
