@@ -401,6 +401,7 @@ sub format_node {
 	while ($rule && $rule->{Leaf} && ((defined $xml_node) || defined $rule->{DefaultValue})) {
 
 		if (defined $xml_node) {
+
 			$xml_name = $xml_node->localname;
 
 			# allow inserting raw bytes into the packet
@@ -420,6 +421,15 @@ sub format_node {
 				my $err_msg = "Field descriptor name " . $rule->{Name} .
 					" does not match XML element name " . $xml_node->getName;
 				die $err_msg;
+			}
+
+			# correct any "version independent" namespace URIs.
+			my $ver_indep_ns = $xml_node->namespaceURI;
+			if (defined $ver_indep_ns && exists $llrp->{Vendors}->{$ver_indep_ns}) {
+				$xml_node->setNamespaceDeclURI (
+					$xml_node->prefix,
+					$llrp->{Prefix2NS}->{$xml_node->prefix}
+				);
 			}
 
 		}
@@ -467,6 +477,15 @@ sub format_node {
 			my $ns = $rule->{Namespace};
 			my $name = $rule->{Name};
 			die "Missing required parameter $ns:$name";
+		}
+
+		# correct a "version independent" namespace URI
+		my $ver_indep_ns = $xml_node->namespaceURI;
+		if (defined ($ver_indep_ns) && exists $llrp->{Vendors}->{$ver_indep_ns}) {
+			$xml_node->setNamespaceDeclURI (
+				$xml_node->prefix,
+				$llrp->{Prefix2NS}->{$xml_node->prefix}
+			);
 		}
 
 		# determine namespace and name
@@ -811,6 +830,7 @@ sub min {
 }
 
 sub match_binary {
+
 	my ($match_rule, $act_type_name) = @_;
 	my $act_subdesc;
 	my $exp_subdesc;
@@ -892,7 +912,7 @@ sub decode_body {
 		if (!$rule->{BinaryOnly}) {
 
 			my $node;
-			if ($aux{QualifyCore}) {
+			if ($aux{QualifyCore} || $parent_ns ne $llrp->{CoreNamespace}) {
 				$node = $tree->createElement ($parent_prefix . ':' . $rule->{Name});
 			} else {
 				$node = $tree->createElement ($rule->{Name});
@@ -1003,7 +1023,6 @@ sub decode_body {
 				$node->setNamespace ($ns, $prefix || '', 1);
 			}
 
-#			my $elem_name = $node->nodeName;
 			my $elem_name = $node->localname;
 
 			my $next_param = gen_array_iter (
