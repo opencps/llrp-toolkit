@@ -70,8 +70,13 @@
 </xsl:template>
 
 <xsl:template name="FORCE_CORE_NS">
+
+  <xsl:variable name="core-ns" select="//llb:namespaceDefinition[@prefix='llrp']"/>
+
   <xsl:choose>
-    <xsl:when test="llb:namespaceDefinition[@prefix='llrp']">
+
+    <!-- put whatever URI user requests, if they ask -->
+    <xsl:when test="$core-ns">
       <xsl:apply-templates mode="CORE_NS_DEF"/>
     </xsl:when>
 
@@ -81,7 +86,9 @@
       <xsl:value-of select="namespace-uri(//llb:llrpdef)"/>
       <xsl:text>"&#10;&#10;</xsl:text>
     </xsl:otherwise>
+
   </xsl:choose>
+
 </xsl:template>
 
 <xsl:template match="llb:namespaceDefinition[@prefix='llrp']" mode="CORE_NS_DEF">
