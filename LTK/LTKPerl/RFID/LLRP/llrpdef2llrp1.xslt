@@ -80,10 +80,18 @@
       <xsl:apply-templates mode="CORE_NS_DEF"/>
     </xsl:when>
 
-    <!-- derive core namespace from llb:llrpdef node if not explict -->
+    <!-- attempt to derive core namespace from llb:llrpdef node if not explict -->
     <xsl:otherwise>
       <xsl:text>core-namespace "</xsl:text>
-      <xsl:value-of select="namespace-uri(//llb:llrpdef)"/>
+      <xsl:variable name="binary-encode-ns" select="namespace-uri(//llb:llrpdef)"/>
+      <xsl:variable name="derived-xml-encode-ns">
+        <xsl:call-template name="replace-string">
+            <xsl:with-param name="text" select="$binary-encode-ns"/>
+            <xsl:with-param name="replace" select="'encoding/binary'"/>
+            <xsl:with-param name="with" select="'encoding/xml'"/>
+        </xsl:call-template>
+      </xsl:variable>
+      <xsl:value-of select="$derived-xml-encode-ns"/>
       <xsl:text>"&#10;&#10;</xsl:text>
     </xsl:otherwise>
 
@@ -301,6 +309,27 @@
   <xsl:text>&#32;&#32;param 1&#32;</xsl:text>
   <xsl:value-of select="@type"/>
   <xsl:text>&#10;</xsl:text>
+</xsl:template>
+
+<!-- utility functions -->
+<xsl:template name="replace-string">
+  <xsl:param name="text"/>
+  <xsl:param name="replace"/>
+  <xsl:param name="with"/>
+  <xsl:choose>
+    <xsl:when test="contains($text,$replace)">
+      <xsl:value-of select="substring-before($text,$replace)"/>
+      <xsl:value-of select="$with"/>
+      <xsl:call-template name="replace-string">
+        <xsl:with-param name="text" select="substring-after($text,$replace)"/>
+        <xsl:with-param name="replace" select="$replace"/>
+        <xsl:with-param name="with" select="$with"/>
+      </xsl:call-template>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:value-of select="$text"/>
+    </xsl:otherwise>
+  </xsl:choose>
 </xsl:template>
 
 <xsl:template match="//text()" mode="CORE_NS_DEF"/>
