@@ -46,7 +46,7 @@
 <xsl:stylesheet version="1.0"
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   xmlns:xs="http://www.w3.org/2001/XMLSchema"
-  xmlns:llb="http://www.llrp.org/ltk/schema/core/encoding/binary/1.0"
+  xmlns:llb="http://www.llrp.org/ltk/schema/core/encoding/binary/0.8"
 >
 
 <!--
@@ -58,7 +58,7 @@
 
 <xsl:template match="/">
 
-  <xsl:apply-templates mode="CORE_NS_DEF"/>
+  <xsl:call-template name="FORCE_CORE_NS"/>
   <xsl:apply-templates mode="EXT_NS_DEF"/>
 
   <xsl:apply-templates mode="EXT_VENDOR_DEF"/>
@@ -67,6 +67,21 @@
   <xsl:apply-templates mode="PARAM_DEF"/>
   <xsl:apply-templates mode="CHOICE_DEF"/>
   <xsl:apply-templates mode="ENUM_DEF"/>
+</xsl:template>
+
+<xsl:template name="FORCE_CORE_NS">
+  <xsl:choose>
+    <xsl:when test="llb:namespaceDefinition[@prefix='llrp']">
+      <xsl:apply-templates mode="CORE_NS_DEF"/>
+    </xsl:when>
+
+    <!-- derive core namespace from llb:llrpdef node if not explict -->
+    <xsl:otherwise>
+      <xsl:text>core-namespace "</xsl:text>
+      <xsl:value-of select="namespace-uri(//llb:llrpdef)"/>
+      <xsl:text>"&#10;&#10;</xsl:text>
+    </xsl:otherwise>
+  </xsl:choose>
 </xsl:template>
 
 <xsl:template match="llb:namespaceDefinition[@prefix='llrp']" mode="CORE_NS_DEF">
