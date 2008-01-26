@@ -73,25 +73,6 @@ returns the socket for the caller to handle.
 
 package RFID::LLRP::Link;
 
-=pod
-
-require Exporter;
-@ISA		= qw(Exporter);
-@EXPORT_OK	= qw(
-			reader_connect
-			reader_accept
-			reader_disconnect
-			read_bytes
-			read_message
-			parse_envelope
-			transact
-			fasttran
-			monitor
-			ENVELOPE_LEN
-);
-
-=cut
-
 use Sub::Exporter -setup => {
 	exports => [
 		qw(
@@ -110,7 +91,7 @@ use Sub::Exporter -setup => {
 
 sub subclass {
 	my ($class, $name, $arg) = @_;
-	
+
 	return sub {
 		$name->(@_, %$arg);
 	}
@@ -991,14 +972,11 @@ sub fasttran {
 		next unless $msg_type == 63 || $lookup_mids_with_status{$msg_type};
 
 		# grab the status code
-		my $error_code;
+		my $error_code = 0;
 		if ($msg_type == 63) {
 
 			# --- optimized search for ReaderExceptionEvent
-			
-			# ignore this message if "BadNewsOK"
-			next MESSAGE if $params{BadNewsOK};
-			
+				
 			# skip the message header, reader event nfy header, Timestamp
 			my $remainder = substr ($rsp, 10 + 4 + 12);
 
@@ -1018,11 +996,16 @@ sub fasttran {
 				}
 				
 				# otherwise throw an exception
-				die "Encountered missing or unexpected status:\n" .
-					decode_message ($rsp)->toString(1);
+				if(!$params{BadNewsOK}) {								
+					die "Encountered missing or unexpected status:\n" .
+						decode_message ($rsp)->toString(1);
+				}
+				# the status error code is 16 bits, shifting the parameter type id 16 bits to distinguish the two
+				$error_code = $ptype << 16;
+				last SUBPARAM;
 			}
 
-			next MESSAGE;
+			next MESSAGE if ($error_code == 0);
 
 		} else {
 

@@ -61,6 +61,7 @@ our @EXPORT_OK	= qw(
 	compare_subtrees
 	factory_default
 	cleanup_all
+	cleanup_and_die
 	max min uniq
 	get_values
 	get_msg_name
@@ -199,7 +200,7 @@ sub compare_subtrees {
 	my ($xpath, @docs) = @_;
 	my $last = undef;
 	foreach $doc (@docs) {
-		my ($node) = $doc->findnodes ('//' . $xpath);
+		my ($node) = $doc->findnodes ('//*[local-name() = "' . $xpath . '"]');
 		if (defined $last) {
 			return 0 unless are_identical ($last, $node);
 		}
@@ -250,7 +251,21 @@ sub cleanup_all {
 	}
 }
 
+=item C<cleanup_and_die ($sock, $msg, %params)>
 
+This routine restores the reader to factory default state, deletes
+any C<ROSpec>s and/or C<AccessSpec>s, disconnects and dies with $msg.
+
+=cut
+
+sub cleanup_and_die {
+	my ($sock, $msg, %params) = @_;
+	foreach (qw{factory_default delete_rospecs delete_access_specs}) {
+		$_->($sock, Trace => $params{Trace});
+	}
+	reader_disconnect ($sock);
+	die $msg;
+}
 
 sub max {
 	scalar (@_) || die "No list provided";

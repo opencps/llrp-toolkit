@@ -1173,6 +1173,10 @@ sub decode_message {
 
 	my ($buf, %aux) = @_;
 
+	if (!exists $aux{QualifyCore}) {
+		$aux{QualifyCore} = 1;
+	}
+
 	# create the XML document
 	my $tree = XML::LibXML::Document->new();
 
