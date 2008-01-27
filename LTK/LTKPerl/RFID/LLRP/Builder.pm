@@ -112,8 +112,7 @@ use bytes;
 #memoize ('is_power_of_two');
 
 # read schema
-our ($llrp, $registry) = 
-		RFID::LLRP::Schema::read_schema ("./ReaderDef.xml");
+our ($llrp, $registry) = RFID::LLRP::Schema::read_schema ("./ReaderDef.xml");
 my $vendor_lookup = $llrp->{Vendors};
 
 # determine next xml element	
@@ -841,9 +840,19 @@ sub match_binary {
 
 	# lookup predicted subdescriptor
 	$exp_subdesc = $registry->{$exp_type_name};
-	$exp_type_name = $exp_subdesc->{Concrete} ? fq ('P', 'TypeID', $exp_subdesc) : '';
 	ref $exp_subdesc
 		or die "Schema problem: couldn't locate predicted parameter type";
+
+	# construct "expected" type name in ID form
+	if (exists $exp_subdesc->{TypeID}) {
+		$exp_type_name = $exp_subdesc->{Concrete} ? fq ('P', 'TypeID', $exp_subdesc) : '';
+	} else {
+		$exp_type_name = join ('.', 
+			'P',
+			$llrp->{Vendors}->{$exp_subdesc->{VendorName}},
+			$exp_subdesc->{ParameterSubtype}
+		);
+	}
 
 	# check for a direct match, and return if does match.
 	if ($exp_type_name eq $act_type_name) {
@@ -1289,7 +1298,7 @@ None
 EPCGlobal LLRP Specification
 
 =head1 COPYRIGHT
-Copyright 2007, 2008 Impinj, Inc.
+Copyright 2008, 2008 Impinj, Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

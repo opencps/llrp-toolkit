@@ -260,8 +260,7 @@ sub read_schema {
 		$param_names->{Definition}->[$type_id] = $name;
 		$param_names->{Lookup}->{$name} = $type_id;
 	}
-	$llrp{Enumerations}->{'_ParamNames'} = $param_names;
-
+	$llrp{Enumerations}->{$llrp{CoreNamespace}. '_' . '_ParamNames'} = $param_names;
 
 	# annotate all extension and alternation points with alternatives
 	while (($type, $conv) = each (%category)) {
@@ -438,12 +437,6 @@ sub compile_params {
 
 	my ($body_ref, $subparams, $desc_name, $class) = splice (@_, 0, 4);
 	my ($prefix, $ns);
-
-#	# extract the namespace prefix if there's an 'allow' line
-#	if ($class eq 'allow') {
-#		($prefix) = splice (@_, 2, 1);
-#		$ns = $llrp{Prefix2NS}->{$prefix};
-#	}
 
 	# delete the compiler if this is the end of the block
 	if ($class eq 'end') {
@@ -869,7 +862,6 @@ sub custom_parameter_compiler_gen {
 		Name			=> $desc_name,
 		Concrete		=> 1,
 		Parameter		=> [],
-		TypeID			=> $id,
 		ParameterSubtype	=> $subtype + 0,
 		VendorName		=> $vendor_name,
 		Group			=> 'P',

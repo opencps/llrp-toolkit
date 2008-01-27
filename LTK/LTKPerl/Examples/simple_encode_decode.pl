@@ -113,7 +113,7 @@ sub test_encode_decode {
 
 	# check the binary message against the canned one
 	if ($bmsg = $bexmsg) {
-		print "The canned message and the encoded message are indentical\n"
+		print "The canned message and the encoded message are identical\n"
 	} else {
 		die "Error: the canned binary message and the encode message do not match"
 	}
