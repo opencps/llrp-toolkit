@@ -687,7 +687,11 @@ sub format_text {
 		my $sep = ($bits == 8) ? '' : ' ';
 		return uc(join ($sep, (map (sprintf ($fmt, $_), @$values))));
 	} elsif ($format eq 'decimal') {
-		return join (' ', (map (sprintf ("%d", $_), @$values)));
+		if ($bits != 64) {
+			return join (' ', (map (sprintf ("%d", $_), @$values)));
+		} else {
+			return sprintf ("%.0f", $values->[0] * (2.0**32) + $values->[1]);
+		}
 	} elsif ($format eq 'utf8') {
 		return pack ("C*", @$values);
 	} elsif ($format eq 'boolean') {
