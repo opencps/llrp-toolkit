@@ -82,8 +82,8 @@ equivalent (gpi1 = lsb, gpi4=msb)
 sub decode_gpi_state {
 	my $root = shift;
         foreach my $g ($root->findnodes('//*[local-name() = "GPIPortCurrentState"]')) {
-                $gpi[$g->findvalue('./*[local-name() = "GPIPortNum"')-1] 
-			= $g->findvalue('./*[local-name() = "State"') eq 'High' ? 1 : 0;
+                $gpi[$g->findvalue('./*[local-name() = "GPIPortNum"]')-1] 
+			= $g->findvalue('./*[local-name() = "State"]') eq 'High' ? 1 : 0;
         }
 	return wantarray? @gpi : 
 		unpack("C",pack("b8",join('',@gpi). "0"x8));
@@ -292,7 +292,7 @@ sub get_values {
 }
 
 sub get_msg_name {
-    return $_[0]->getDocumentElement->nodeName;
+    return $_[0]->getDocumentElement->localname;
 }
 
 sub uniq {

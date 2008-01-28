@@ -790,12 +790,18 @@ sub parse_param_head {
 	my %param_hdr;
 	my $first = ord ($buf);
 	my ($ndx, $header_fields);
+	if (length ($buf) < 1) {
+		die "Insufficient bytes in subparam to determine encoding type";
+	}
 	if ($first & 0x80) {
 		$param_hdr{TVEncoding} = 1;
 		$param_hdr{Type} = $first & 0x7F;
 		$ndx = 1;
 		$header_fields = 2;
 	} else {
+		if (length ($buf) < 4) {
+			die "Insufficient bytes in subparam to determine type and length";
+		}
 		$param_hdr{TVEncoding} = 0;
 		($param_hdr{Type}, $param_hdr{Length}) = unpack ("nn", $buf);
 		$param_hdr{Type} &= 0x3ff;
@@ -1196,6 +1202,12 @@ sub decode_message {
 	# lookup the message
 	my ($msg_hdr, $ndx);
 	($msg_hdr, $ndx) = parse_msg_head ($buf);
+
+	# fail if length is shorter than minimal LLRP message header
+	$msg_hdr->{MessageLength} >= 6
+		|| die "Message Length (" .
+			$msg_hdr->{MessageLength} .
+			") is shorter than the minimal LLRP message header";
 
 	my $ns = $llrp->{CoreNamespace};
 	my $msg_type = $msg_hdr->{Type};

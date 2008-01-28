@@ -25,6 +25,21 @@ into ReaderDef.xml.
 RFID::LLRP::Schema needs to be able to find the binary schema
 somewhere, and RFID/LLRP seemed like the best place.
 
+Further note, that the line
+
+xmlns:llb="http://www.llrp.org/ltk/schema/core/encoding/binary/0.8"
+
+within:
+
+LTKPerl/RFID/LLRP/llrpdef2llrp1.xslt
+
+*must* match the
+schema that defines the binary encoding (ReaderDef.xml).
+
+If you are using a diffent version of the binary encoding,
+change that line in llrpdef2llrp1.xslt to match.
+
+
 
 Install LibXML and CPAN modules on Linux
 ----------------------------------------
