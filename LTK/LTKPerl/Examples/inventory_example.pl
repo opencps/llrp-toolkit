@@ -50,7 +50,6 @@ use RFID::LLRP::Helper qw(delete_rospecs are_identical delete_access_specs
 
 use diagnostics;
 
-use RFID::LLRP::Builder qw(encode_message decode_message);
 use Text::Template qw(fill_in_file fill_in_string);
 
 while (@ARGV and $ARGV[0] =~ /^-/) {
