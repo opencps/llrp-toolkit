@@ -1186,6 +1186,11 @@ modification using the full power of XML::LibXML and XPath, validated against
 the LLRP W3C XML Schema (LLRP.xsd), or serialized to a text file for version
 control or archival purposes.
 
+C<QualifyCore>
+
+This routine accepts the C<QualifyCore> parameter. Its use and purpose is described
+in the POD for C<RFID::LLRP::Link> C<transact>.
+
 =cut
 
 sub decode_message {

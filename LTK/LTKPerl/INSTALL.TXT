@@ -11,19 +11,25 @@ From Linux or Cygwin (under Windows) the following command works:
  
    cvs -z3 -d:pserver:anonymous@llrp-toolkit.cvs.sourceforge.net:/cvsroot/llrp-toolkit co -P LTK
 
+Assuming you aren't using an vendor extensions, simply
+
 Copy Definitions/Core/llrp-1x0-def.xml to LTKPerl/RFID/LLRP/ReaderDef.xml .
 
 MAKE SURE TO MAKE THE FILENAME MATCH ReaderDef.xml EXACTLY.
 
-Note, you need to define any extensions you intend to
-use in ReaderDef.xml.
+If you do wish to process some set of vendor extensions, a good way to do this
+is to copy all of the *def.xml files of interest into LTKPerl/RFID/LLRP and use
+XInclude to make a composite file.
 
-LTK-Perl will expand any XIncludes, so that might help you.
-As a quick hack, you can cut/paste your extension definitions
-into ReaderDef.xml.
+Here is an example ReaderDef.xml that implements Impinj extensions:
 
-RFID::LLRP::Schema needs to be able to find the binary schema
-somewhere, and RFID/LLRP seemed like the best place.
+<?xml version="1.0" encoding="UTF-8"?>
+<llrpdef
+        xmlns="http://www.llrp.org/ltk/schema/core/encoding/binary/1.0"
+        xmlns:xi="http://www.w3.org/2001/XInclude"> 
+  <xi:include href="llrp-1x0-def.xml" parse="xml" xpointer="xpointer(/*/*)"/>
+  <xi:include href="Impinjdef.xml"    parse="xml" xpointer="xpointer(/*/*)"/>
+</llrpdef>
 
 Further note, that the line
 
@@ -33,26 +39,22 @@ within:
 
 LTKPerl/RFID/LLRP/llrpdef2llrp1.xslt
 
-*must* match the
-schema that defines the binary encoding (ReaderDef.xml).
+*must* match the schema that defines the binary encoding (ReaderDef.xml).
 
-If you are using a diffent version of the binary encoding,
-change that line in llrpdef2llrp1.xslt to match.
-
+If you are using a different version of the binary encoding, change the URI in
+llrpdef2llrp1.xslt to match.
 
 
 Install LibXML and CPAN modules on Linux
 ----------------------------------------
 
-The LTK-Perl document-oriented API is heavily dependent
-upon the Gnome project's libxml2, and the related Perl
-bindings.
+The LTK-Perl document-oriented API is heavily dependent upon the Gnome
+project's libxml2, and the related Perl bindings.
 
-For Linux, use your favorite package manager and/or CPAN to
-install it and any necessary Perl modules. I will show here
-instructions for the Linux variant I use, but you will need
-to massage these for the distribution you use (additional
-instructions are welcome contributions).
+For Linux, use your favorite package manager and/or CPAN to install it and any
+necessary Perl modules. I will show here instructions for the Linux variant I
+use, but you will need to massage these for the distribution you use
+(additional instructions are welcome contributions).
 
 The necessary Perl modules are (and command to install on
 Ubuntu Feisty Desktop):
@@ -120,23 +122,21 @@ Then I added c:\tools\libxml to my path in the System panel
 
 Rebooted.
 
-Verified that c:\tools\libxml is in the path by opening a
-DOS box and echo %PATH%
+Verified that c:\tools\libxml is in the path by opening a DOS box and
+echo %PATH%
 
-You should be able to verify XML install at the cmd prompt
-by typing xmllint --version<ENTER>
+You should be able to verify XML install at the cmd prompt by typing
+  xmllint --version<ENTER>
 
-nb: If xmllint doesn't work, you probably didn't download
-and unzip all the necessary binaries, or you didn't set
-the path in System panel, or you didn't reboot after setting
-the path in System panel. Do not proceed with the rest of
+nb: If xmllint doesn't work, you probably didn't download and unzip all the
+necessary binaries, or you didn't set the path in System panel, or you didn't
+reboot after setting the path in System panel. Do not proceed with the rest of
 the instructions until you can get xmllint to run.
 
-Next, you should make sure you have a recent vintage of
-ActiveState Perl. In these tests, I ran 5.8.8 build 820.
+Next, you should make sure you have a recent vintage of ActiveState Perl. In
+these tests, I ran 5.8.8 build 820.
 
-Install the Perl LibXML bindings by typing the following
-at Windows cmd prompt:
+Install the Perl LibXML bindings by typing the following at Windows cmd prompt:
 
  ppm install http://theoryx5.uwinnipeg.ca/ppms/XML-LibXML-Common.ppd
  ppm install http://theoryx5.uwinnipeg.ca/ppms/XML-LibXML.ppd
@@ -167,7 +167,7 @@ NOTE: If you get an error about llrpdef.xml you probably missed the step:
 
 ' Copy Definitions/Core/llrp-1x0-def.xml to LTKPerl/RFID/LLRP/ReaderDef.xml '
 
-Thanks in advance for letting me know about success or
-failures with LTK-Perl under Windows.
+Thanks in advance for letting me know about success or failures with LTK-Perl
+under Windows.
 
 John R. Hogerhuis  jhoger@pobox.com

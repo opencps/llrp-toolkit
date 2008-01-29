@@ -485,6 +485,10 @@ zero.
 
 Counts are always performed before the ReturnUpon and ErrorUpon handlers.
 
+QualifyCore => 0 or 1
+
+See the description of QualifyCore given for C<transact()>.
+
 Monitor returns:
 
 =over 8
@@ -677,6 +681,25 @@ C<Tree =E<gt> C<1>> (DOM object is provided) or C<undef> (string or file is prov
 
 =item 6.
 C<File =E<gt> C<1>> (String represents a file path) or C<undef> (XML document provided in string form)
+
+=item 7.
+C<QualifyCore =E<gt> C<0 or 1>>
+
+C<QualifyCore> allows you to control whether XML returned to you
+puts LLRP parameters and fields into the LTK-XML namespace.
+
+This is important for XPath 1.0 queries, which is the only kind
+XML::LibXML supports. Elements that are in "no-namespace" do not
+need to be qualified with a prefix. This tends to make XPath
+query strings much easier to read and type.
+
+0 => Core parameters and fields are to be placed in "no-namespace",
+
+1 => Core parameters and fields are to be placed in LLRP core namespace
+
+Note that since we use Sub::Exporter, you can specialize the C<monitor()>
+and C<transact()> routines at import time, and never have to pass
+QualifyCore again.
 
 =back
 

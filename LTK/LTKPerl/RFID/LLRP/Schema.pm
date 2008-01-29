@@ -234,13 +234,9 @@ sub read_schema {
 	while (($type, $conv) = each (%category)) {
 		foreach $desc (@{$llrp{$type}}) {
 			my ($abbr, $ns, $name) = ($conv->{Abbrev}, @{$desc}{'Namespace', 'Name'});
-
 			my $sym_key = "$abbr.$ns.$name";
-
 			$registry{$sym_key} = $desc;
-
 			next unless $desc->{Concrete} || $abbr eq 'M';
-
 			my ($ns_field, $id_field) = @{$conv->{Fields}};
 			if ($ns_field eq 'VendorName') {
 				$registry{join ('.', $abbr,
