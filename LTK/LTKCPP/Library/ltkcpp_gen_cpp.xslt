@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
  -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
- -  Copyright 2007 Impinj, Inc.
+ -  Copyright 2007,2008 Impinj, Inc.
  -
  -  Licensed under the Apache License, Version 2.0 (the "License");
  -  you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@
 
 <xsl:stylesheet
         version='1.0'
-        xmlns:LL="http://www.llrp.org/ltk/schema/core/encoding/binary/0.8"
+        xmlns:LL="http://www.llrp.org/ltk/schema/core/encoding/binary/1.0"
         xmlns:xsl='http://www.w3.org/1999/XSL/Transform'>
 <xsl:output omit-xml-declaration='yes' method='text' encoding='iso-8859-1'/>
 
@@ -36,11 +36,13 @@
 
 <xsl:template match='/LL:llrpdef'>
 <xsl:call-template name='FileHeader'/>
+<xsl:call-template name='VendorDescriptors'/>
+<xsl:call-template name='NamespaceDescriptors'/>
 <xsl:call-template name='EnumerationStringTablesFields'/>
-<xsl:call-template name='IsMemberTestFunctionDefinitions'/>
 <xsl:call-template name='ClassDefinitionsMessages'/>
 <xsl:call-template name='ClassDefinitionsParameters'/>
-<xsl:call-template name='GenerateGetTheTypeRegistryFunction'/>
+<xsl:call-template name='ClassDefinitionsChoices'/>
+<xsl:call-template name='GenerateEnrollIntoTypeRegistryFunction'/>
 </xsl:template>
 
 
@@ -76,6 +78,78 @@
 
 <!--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  -
+ - @brief VendorDescriptors template
+ -
+ - Invoked by top level template.
+ -
+ - Current node
+ -      <llrpdef>
+ -
+ - Generates the vendor descriptor for each <vendorDefinition>.
+ - Such are at the top level and referenced by custom messages
+ - and parameters. The primary purpose of the <vendorDefinition>
+ - is to establish a short, programming name and the PEN (private
+ - enterprise number).
+ -
+ -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ -->
+
+<xsl:template name='VendorDescriptors'>
+/*
+ * Vendor descriptors
+ */
+
+  <xsl:for-each select='LL:vendorDefinition'>
+const CVendorDescriptor
+g_vdesc<xsl:value-of select='@name'/> =
+{
+  "<xsl:value-of select='@name'/>",	// m_pName
+  <xsl:value-of select='@vendorID'/>,	// m_VendorID
+};
+
+</xsl:for-each>
+</xsl:template>
+
+
+<!--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ -
+ - @brief NamespaceDescriptors template
+ -
+ - Invoked by top level template.
+ -
+ - Current node
+ -      <llrpdef>
+ -
+ - Generates the namespace descriptor for each <namespaceDefinition>.
+ - Such are at the top level and referenced by custom messages
+ - and parameters. The primary purpose of the <namespaceDefinition>
+ - is to establish the XML namespace used for custom elements.
+ - Some LTK implementations use the namespace in a way consistent
+ - with their methods. This C++ implementation does not.
+ -
+ -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ -->
+
+<xsl:template name='NamespaceDescriptors'>
+/*
+ * Namespace descriptors
+ */
+
+  <xsl:for-each select='LL:namespaceDefinition'>
+const CNamespaceDescriptor
+g_nsdesc<xsl:value-of select='@prefix'/> =
+{
+  "<xsl:value-of select='@prefix'/>",	// m_pPrefix
+  "<xsl:value-of select='@URI'/>",	// m_pURI
+  "<xsl:value-of select='@schemaLocation'/>",	// m_pSchemaLocation
+};
+
+</xsl:for-each>
+</xsl:template>
+
+
+<!--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ -
  - @brief EnumerationStringTablesFields template
  -
  - Invoked by top level template.
@@ -96,7 +170,7 @@
  * Enumeration string tables
  */
 
-  <xsl:for-each select='LL:enumerationDefinition'>
+  <xsl:for-each select='LL:enumerationDefinition|LL:customEnumerationDefinition'>
     <xsl:variable name='enumBaseName' select='@name'/>
 const SEnumTableEntry
 g_est<xsl:value-of select='$enumBaseName'/>[] =
@@ -110,44 +184,6 @@ g_est<xsl:value-of select='$enumBaseName'/>[] =
 };
 
 </xsl:for-each>
-</xsl:template>
-
-
-<!--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
- -
- - @brief IsMemberTestFunctionDefinitions template
- -
- - Invoked by top level template.
- -
- - Current node
- -      <llrpdef>
- -
- - Generates definitions of the functions that test whether
- - an LLRP parameter is the member of a choice (union)
- -
- -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
- -->
-
-<xsl:template name='IsMemberTestFunctionDefinitions'>
-
-/*
- * Choice (union) membership test functions.
- */
-<xsl:for-each select='LL:choiceDefinition'>
-extern llrp_bool_t
-isMemberOf<xsl:value-of select='@name'/> (
-  CParameter *                  pParam)
-{
-  <xsl:for-each select='LL:parameter'>
-    if(pParam->m_pType == &amp;C<xsl:value-of select='@type'/>::s_typeDescriptor)
-    {
-        return TRUE;
-    }
-</xsl:for-each>
-    return FALSE;
-}
-</xsl:for-each>
-
 </xsl:template>
 
 
@@ -186,10 +222,46 @@ isMemberOf<xsl:value-of select='@name'/> (
   <xsl:call-template name='ClassDefinitionCommon'>
     <xsl:with-param name='ClassBase'>CMessage</xsl:with-param>
     <xsl:with-param name='ClassName'>C<xsl:value-of select='@name'/></xsl:with-param>
-    <xsl:with-param name='BaseName'><xsl:value-of select='@name'/></xsl:with-param>
+    <xsl:with-param name='LLRPName'><xsl:value-of select='@name'/></xsl:with-param>
     <xsl:with-param name='IsMessage'>TRUE</xsl:with-param>
-    <xsl:with-param name='TypeNum'>MT_<xsl:value-of select='@name'/></xsl:with-param>
-    <xsl:with-param name='VendorID'>0</xsl:with-param>
+    <xsl:with-param name='TypeNum'><xsl:value-of select='@typeNum'/></xsl:with-param>
+    <xsl:with-param name='pVendorDescriptor'>NULL</xsl:with-param>
+    <xsl:with-param name='pNamespaceDescriptor'>&amp;g_nsdescllrp</xsl:with-param>
+    <xsl:with-param name='pResponseType'>
+      <xsl:choose>
+        <xsl:when test='@responseType'>&amp;C<xsl:value-of select='@responseType'/>::s_typeDescriptor</xsl:when>
+        <xsl:otherwise>NULL</xsl:otherwise>
+      </xsl:choose>
+    </xsl:with-param>
+    <xsl:with-param name='IsCustomParameter'>false</xsl:with-param>
+  </xsl:call-template>
+</xsl:for-each>
+
+<xsl:for-each select='LL:customMessageDefinition'>
+
+
+/*
+*****************************************************************
+**
+** Custom message <xsl:value-of select='@name'/>
+**
+*****************************************************************
+*/ 
+  <xsl:call-template name='ClassDefinitionCommon'>
+    <xsl:with-param name='ClassBase'>CMessage</xsl:with-param>
+    <xsl:with-param name='ClassName'>C<xsl:value-of select='@name'/></xsl:with-param>
+    <xsl:with-param name='LLRPName'><xsl:value-of select='@name'/></xsl:with-param>
+    <xsl:with-param name='IsMessage'>TRUE</xsl:with-param>
+    <xsl:with-param name='TypeNum'><xsl:value-of select='@subtype'/></xsl:with-param>
+    <xsl:with-param name='pVendorDescriptor'>&amp;g_vdesc<xsl:value-of select='@vendor'/></xsl:with-param>
+    <xsl:with-param name='pNamespaceDescriptor'>&amp;g_nsdesc<xsl:value-of select='@namespace'/></xsl:with-param>
+    <xsl:with-param name='pResponseType'>
+      <xsl:choose>
+        <xsl:when test='@responseType'>&amp;C<xsl:value-of select='@responseType'/>::s_typeDescriptor</xsl:when>
+        <xsl:otherwise>NULL</xsl:otherwise>
+      </xsl:choose>
+    </xsl:with-param>
+    <xsl:with-param name='IsCustomParameter'>false</xsl:with-param>
   </xsl:call-template>
 </xsl:for-each>
 
@@ -230,11 +302,51 @@ isMemberOf<xsl:value-of select='@name'/> (
   <xsl:call-template name='ClassDefinitionCommon'>
     <xsl:with-param name='ClassBase'>CParameter</xsl:with-param>
     <xsl:with-param name='ClassName'>C<xsl:value-of select='@name'/></xsl:with-param>
-    <xsl:with-param name='BaseName'><xsl:value-of select='@name'/></xsl:with-param>
+    <xsl:with-param name='LLRPName'><xsl:value-of select='@name'/></xsl:with-param>
     <xsl:with-param name='IsMessage'>FALSE</xsl:with-param>
-    <xsl:with-param name='TypeNum'>PT_<xsl:value-of select='@name'/></xsl:with-param>
-    <xsl:with-param name='VendorID'>0</xsl:with-param>
+    <xsl:with-param name='TypeNum'><xsl:value-of select='@typeNum'/></xsl:with-param>
+    <xsl:with-param name='pVendorDescriptor'>NULL</xsl:with-param>
+    <xsl:with-param name='pNamespaceDescriptor'>&amp;g_nsdescllrp</xsl:with-param>
+    <xsl:with-param name='pResponseType'>NULL</xsl:with-param>
+    <xsl:with-param name='IsCustomParameter'>false</xsl:with-param>
   </xsl:call-template>
+</xsl:for-each>
+
+<xsl:for-each select='LL:customParameterDefinition'>
+
+
+/*
+*****************************************************************
+**
+** Custom parameter <xsl:value-of select='@name'/>
+**
+*****************************************************************
+*/ 
+  <xsl:call-template name='ClassDefinitionCommon'>
+    <xsl:with-param name='ClassBase'>CParameter</xsl:with-param>
+    <xsl:with-param name='ClassName'>C<xsl:value-of select='@name'/></xsl:with-param>
+    <xsl:with-param name='LLRPName'><xsl:value-of select='@name'/></xsl:with-param>
+    <xsl:with-param name='IsMessage'>FALSE</xsl:with-param>
+    <xsl:with-param name='TypeNum'><xsl:value-of select='@subtype'/></xsl:with-param>
+    <xsl:with-param name='pVendorDescriptor'>&amp;g_vdesc<xsl:value-of select='@vendor'/></xsl:with-param>
+    <xsl:with-param name='pNamespaceDescriptor'>&amp;g_nsdesc<xsl:value-of select='@namespace'/></xsl:with-param>
+    <xsl:with-param name='pResponseType'>NULL</xsl:with-param>
+    <xsl:with-param name='IsCustomParameter'>true</xsl:with-param>
+  </xsl:call-template>
+
+llrp_bool_t
+C<xsl:value-of select='@name'/>::isAllowedIn (
+  const CTypeDescriptor *       pEnclosingElementType) const
+{
+  <xsl:for-each select='LL:allowedIn'>
+    if(pEnclosingElementType == &amp;C<xsl:value-of select='@type'/>::s_typeDescriptor)
+    {
+        return TRUE;
+    }
+  </xsl:for-each>
+    return FALSE;
+}
+
 </xsl:for-each>
 
 </xsl:template>
@@ -256,11 +368,20 @@ isMemberOf<xsl:value-of select='@name'/> (
  -                          or CParameter usually
  - @param   ClassName       Name of generated class. This already has
  -                          "C" prefixed to the LLRP name.
- - @param   BaseName        The original, LLRP name for the class
+ - @param   LLRPName        The original, LLRP name for the class
  - @param   IsMessage       Either TRUE or FALSE
  - @param   TypeNum         Prefix to BaseName to pair with the
  -                          generated enum of message/param types
- - @param   VendorID        The vendor name from the enum
+ - @param   pVendorDescriptor The pointer expression for this parameters
+ -                          vendor descriptor and, thereby, PEN for
+ -                          custom elements (messages/parameters).
+ -                          Usually NULL for standard LLRP elements.
+ - @param   pNamespaceDescriptor The pointer expression for this parameters
+ -                          namespace descriptor. Usually LLRP_nsdescllrp
+ -                          for standard parameters and messages.
+ - @param   pResponseType   The pointer expression for this messages
+ -                          response counterpart.
+ - @param   IsCustomParameter Either "true" or "false".
  -
  -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  -->
@@ -268,18 +389,24 @@ isMemberOf<xsl:value-of select='@name'/> (
 <xsl:template name='ClassDefinitionCommon'>
   <xsl:param name='ClassBase'/>
   <xsl:param name='ClassName'/>
-  <xsl:param name='BaseName'/>
+  <xsl:param name='LLRPName'/>
   <xsl:param name='IsMessage'/>
   <xsl:param name='TypeNum'/>
-  <xsl:param name='VendorID'/>
+  <xsl:param name='pVendorDescriptor'/>
+  <xsl:param name='pNamespaceDescriptor'/>
+  <xsl:param name='pResponseType'/>
+  <xsl:param name='IsCustomParameter'/>
 
   <xsl:call-template name='ClassDefnTypeDescriptor'>
     <xsl:with-param name='ClassBase'><xsl:value-of select='$ClassBase'/></xsl:with-param>
     <xsl:with-param name='ClassName'><xsl:value-of select='$ClassName'/></xsl:with-param>
-    <xsl:with-param name='BaseName'><xsl:value-of select='$BaseName'/></xsl:with-param>
+    <xsl:with-param name='LLRPName'><xsl:value-of select='$LLRPName'/></xsl:with-param>
     <xsl:with-param name='IsMessage'><xsl:value-of select='$IsMessage'/></xsl:with-param>
     <xsl:with-param name='TypeNum'><xsl:value-of select='$TypeNum'/></xsl:with-param>
-    <xsl:with-param name='VendorID'><xsl:value-of select='$VendorID'/></xsl:with-param>
+    <xsl:with-param name='pVendorDescriptor'><xsl:value-of select='$pVendorDescriptor'/></xsl:with-param>
+    <xsl:with-param name='pNamespaceDescriptor'><xsl:value-of select='$pNamespaceDescriptor'/></xsl:with-param>
+    <xsl:with-param name='pResponseType'><xsl:value-of select='$pResponseType'/></xsl:with-param>
+    <xsl:with-param name='IsCustomParameter'><xsl:value-of select='$IsCustomParameter'/></xsl:with-param>
   </xsl:call-template>
 
   <xsl:call-template name='ClassDefnFieldDescriptorTable'>
@@ -327,6 +454,112 @@ isMemberOf<xsl:value-of select='@name'/> (
 
 <!--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  -
+ - @brief ClassDefinitionsChoices template
+ -
+ - Invoked by top level template.
+ - Current node
+ -      <llrpdef>
+ -
+ - Generates definitions of the choice elements: isMember,
+ - type descriptor, etc.
+ -
+ - This loops through the choice definitions, selects
+ - important values, and invokes the ClassDefinitionCommon
+ - template with the right <xsl:with-param>s.
+ -
+ -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ -->
+
+<xsl:template name='ClassDefinitionsChoices'>
+
+<xsl:for-each select='LL:choiceDefinition|LL:customChoiceDefinition'>
+
+
+/*
+*****************************************************************
+**
+** Choice <xsl:value-of select='@name'/>
+**
+*****************************************************************
+*/ 
+  <xsl:call-template name='ClassDefinitionOneChoice'>
+    <xsl:with-param name='LLRPName'><xsl:value-of select='@name'/></xsl:with-param>
+    <xsl:with-param name='pVendorDescriptor'>NULL</xsl:with-param>
+  </xsl:call-template>
+</xsl:for-each>
+
+</xsl:template>
+
+
+<!--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ -
+ - @brief ClassDefinitionOneChoice template
+ -
+ - Invoked by templates
+ -      ClassDefinitionsChoices
+ -
+ - Current node
+ -      <llrpdef><choiceDefinition>
+ -
+ - @param   LLRPName        The original, LLRP name for the element
+ - @param   pVendorDescriptor The pointer expression for this parameters
+ -                          vendor descriptor and, thereby, PEN for
+ -                          custom elements (messages/parameters).
+ -                          Usually NULL for stanrd LLRP elements.
+ -
+ -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ -->
+
+<xsl:template name='ClassDefinitionOneChoice'>
+  <xsl:param name='LLRPName'/>
+  <xsl:param name='pVendorDescriptor'/>
+
+const CTypeDescriptor
+C<xsl:value-of select='$LLRPName'/>::s_typeDescriptor =
+{
+    FALSE,		// m_bIsMessage
+    "<xsl:value-of select='$LLRPName'/>",	// m_pName
+    <xsl:value-of select='$pVendorDescriptor'/>,	// m_pVendorDescriptor
+    NULL,	// m_pNamespaceDescriptor
+    (llrp_u32_t)(-1),	// m_TypeNum
+    NULL,   // m_ppFieldDescriptorTable
+    NULL,                // m_pfConstruct
+    NULL,             // m_pfDecodeFields
+};
+
+llrp_bool_t
+C<xsl:value-of select='$LLRPName'/>::isMember (
+  CParameter *                  pParameter)
+{
+    const CTypeDescriptor *     pType;
+
+    pType = pParameter-&gt;m_pType;
+
+  <xsl:for-each select='LL:parameter'>
+    <xsl:choose>
+      <xsl:when test='@type = "Custom"'>
+    if(pParameter->isAllowedIn(&amp;s_typeDescriptor))
+    {
+        return TRUE;
+    }
+      </xsl:when>
+      <xsl:otherwise>
+    if(&amp;C<xsl:value-of select='@type'/>::s_typeDescriptor == pType)
+    {
+        return TRUE;
+    }
+      </xsl:otherwise>
+    </xsl:choose>
+</xsl:for-each>
+
+    return FALSE;
+}
+
+</xsl:template>
+
+
+<!--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ -
  - @brief ClassDefnTypeDescriptor template
  -
  - Invoked by templates
@@ -340,11 +573,20 @@ isMemberOf<xsl:value-of select='@name'/> (
  -                          or CParameter usually
  - @param   ClassName       Name of generated class. This already has
  -                          "C" prefixed to the LLRP name.
- - @param   BaseName        The original, LLRP name for the class
+ - @param   LLRPName        The original, LLRP name for the class
  - @param   IsMessage       Either TRUE or FALSE
  - @param   TypeNum         Prefix to BaseName to pair with the
  -                          generated enum of message/param types
- - @param   VendorID        The vendor name from the enum
+ - @param   pVendorDescriptor The pointer expression for this parameters
+ -                          vendor descriptor and, thereby, PEN for
+ -                          custom elements (messages/parameters).
+ -                          Usually NULL for standard LLRP elements.
+ - @param   pNamespaceDescriptor The pointer expression for this parameters
+ -                          namespace descriptor. Usually g_nsdescllrp
+ -                          for standard parameters and messages.
+ - @param   pResponseType   The pointer expression for this messages
+ -                          response counterpart.
+ - @param   IsCustomParameter Either "true" or "false".
  -
  -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  -->
@@ -352,18 +594,23 @@ isMemberOf<xsl:value-of select='@name'/> (
 <xsl:template name='ClassDefnTypeDescriptor'>
   <xsl:param name='ClassBase'/>
   <xsl:param name='ClassName'/>
-  <xsl:param name='BaseName'/>
+  <xsl:param name='LLRPName'/>
   <xsl:param name='IsMessage'/>
   <xsl:param name='TypeNum'/>
-  <xsl:param name='VendorID'/>
+  <xsl:param name='pVendorDescriptor'/>
+  <xsl:param name='pNamespaceDescriptor'/>
+  <xsl:param name='IsCustomParameter'/>
 
 const CTypeDescriptor
 <xsl:value-of select='$ClassName'/>::s_typeDescriptor =
 {
     <xsl:value-of select='$IsMessage'/>,		// m_bIsMessage
-    "<xsl:value-of select='$BaseName'/>",	// m_pName
-    <xsl:value-of select='$VendorID'/>,		// m_VendorID,
+    "<xsl:value-of select='$LLRPName'/>",	// m_pName
+    <xsl:value-of select='$pVendorDescriptor'/>,	// m_pVendorDescriptor
+    <xsl:value-of select='$pNamespaceDescriptor'/>,	// m_pNamespaceDescriptor
     <xsl:value-of select='$TypeNum'/>,	// m_TypeNum
+    <xsl:value-of select='$pResponseType'/>,    // m_pResponseType
+
     s_apFieldDescriptorTable,   // m_ppFieldDescriptorTable
     s_construct,                // m_pfConstruct
     s_decodeFields,             // m_pfDecodeFields
@@ -437,6 +684,14 @@ const CFieldDescriptor * const
           <xsl:with-param name='ClassName'><xsl:value-of select='$ClassName'/></xsl:with-param>
           <xsl:with-param name='FieldBaseName'><xsl:value-of select='@name'/></xsl:with-param>
           <xsl:with-param name='FieldBaseType'><xsl:value-of select='@type'/></xsl:with-param>
+          <xsl:with-param name='FieldFormat'>
+            <xsl:choose>
+              <xsl:when test='@format'>
+                <xsl:value-of select='@format'/>
+              </xsl:when>
+              <xsl:otherwise>Normal</xsl:otherwise>
+            </xsl:choose>
+          </xsl:with-param>
         </xsl:call-template>
       </xsl:otherwise>
     </xsl:choose>
@@ -488,6 +743,7 @@ const CFieldDescriptor * const
       <xsl:when test='$FieldBaseType="u8"'  >FT_E8</xsl:when>
       <xsl:when test='$FieldBaseType="u16"' >FT_E16</xsl:when>
       <xsl:when test='$FieldBaseType="u32"' >FT_E32</xsl:when>
+      <xsl:when test='$FieldBaseType="u8v"' >FT_E8V</xsl:when>
       <xsl:otherwise>FT_EBOGOSITY</xsl:otherwise>
     </xsl:choose>
   </xsl:variable>
@@ -496,6 +752,7 @@ const CFieldDescriptor * const
     <xsl:with-param name='MemberName'>m_e<xsl:value-of select='$FieldBaseName'/></xsl:with-param>
     <xsl:with-param name='FieldBaseName'><xsl:value-of select='$FieldBaseName'/></xsl:with-param>
     <xsl:with-param name='FieldEnumType'><xsl:value-of select='$FieldEnumType'/></xsl:with-param>
+    <xsl:with-param name='FieldEnumFormat'>FMT_NORMAL</xsl:with-param>
     <xsl:with-param name='EnumStrTable'>g_est<xsl:value-of select='$Enumeration'/></xsl:with-param>
   </xsl:call-template>
 </xsl:template>
@@ -524,6 +781,7 @@ const CFieldDescriptor * const
  -                          "C" prefixed to the LLRP name.
  - @param   FieldBaseName   The original, LLRP name for the field
  - @param   FieldBaseType   The type, something like {u,s}{8,16,32,64}[v]
+ - @param   FieldFormat     The format, something like Normal, Hex, Datetime
  -
  -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  -->
@@ -532,6 +790,7 @@ const CFieldDescriptor * const
   <xsl:param name='ClassName'/>
   <xsl:param name='FieldBaseName'/>
   <xsl:param name='FieldBaseType'/>
+  <xsl:param name='FieldFormat'/>
   <xsl:variable name='FieldEnumType'>
     <xsl:choose>
       <xsl:when test='$FieldBaseType="u8"'  >FT_U8</xsl:when>
@@ -559,11 +818,22 @@ const CFieldDescriptor * const
       <xsl:otherwise>FT_BOGOSITY</xsl:otherwise>
     </xsl:choose>
   </xsl:variable>
+  <xsl:variable name='FieldEnumFormat'>
+    <xsl:choose>
+      <xsl:when test='$FieldFormat="Normal"'  >FMT_NORMAL</xsl:when>
+      <xsl:when test='$FieldFormat="Dec"'     >FMT_DEC</xsl:when>
+      <xsl:when test='$FieldFormat="Hex"'     >FMT_HEX</xsl:when>
+      <xsl:when test='$FieldFormat="Datetime"'>FMT_DATETIME</xsl:when>
+      <xsl:when test='$FieldFormat="UTF8"'    >FMT_UTF8</xsl:when>
+      <xsl:otherwise>FMT_BOGOSITY</xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
   <xsl:call-template name='ClassDefnFieldDescCommon'>
     <xsl:with-param name='ClassName'><xsl:value-of select='$ClassName'/></xsl:with-param>
     <xsl:with-param name='MemberName'>m_<xsl:value-of select='$FieldBaseName'/></xsl:with-param>
     <xsl:with-param name='FieldBaseName'><xsl:value-of select='$FieldBaseName'/></xsl:with-param>
     <xsl:with-param name='FieldEnumType'><xsl:value-of select='$FieldEnumType'/></xsl:with-param>
+    <xsl:with-param name='FieldEnumFormat'><xsl:value-of select='$FieldEnumFormat'/></xsl:with-param>
     <xsl:with-param name='EnumStrTable'>NULL</xsl:with-param>
   </xsl:call-template>
 </xsl:template>
@@ -599,12 +869,14 @@ const CFieldDescriptor * const
   <xsl:param name='MemberName'/>
   <xsl:param name='FieldBaseName'/>
   <xsl:param name='FieldEnumType'/>
+  <xsl:param name='FieldEnumFormat'/>
   <xsl:param name='EnumStrTable'/>
 
 const CFieldDescriptor
 <xsl:value-of select='$ClassName'/>::s_fd<xsl:value-of select='$FieldBaseName'/> =
 {
     CFieldDescriptor::<xsl:value-of select='$FieldEnumType'/>,	// m_eFieldType
+    CFieldDescriptor::<xsl:value-of select='$FieldEnumFormat'/>,	// m_eFieldFormat
     "<xsl:value-of select='$FieldBaseName'/>",	// m_pName
     <xsl:value-of select='$EnumStrTable'/>	// m_pEnumTable
 };
@@ -668,10 +940,11 @@ const CFieldDescriptor
 <xsl:template name='DefaultConsFields'>
   <xsl:for-each select='LL:field'>
     <xsl:choose>
-      <xsl:when test='@enumeration'>
+      <xsl:when test='@enumeration and @type != "u8v"'>
     m_e<xsl:value-of select='@name'/> = (E<xsl:value-of select='@enumeration'/>) 0;</xsl:when>
-      <xsl:when test='@type="u1" or @type="u2" or @type="u8"
-                      or @type="u16" or @type="u32" or @type="u64"'>
+      <xsl:when test='@type="u1" or @type="u2"
+            or @type="u8" or @type="u16" or @type="u32" or @type="u64"
+            or @type="s8" or @type="s16" or @type="s32" or @type="s64"'>
     m_<xsl:value-of select='@name'/> = 0;</xsl:when>
     </xsl:choose>
   </xsl:for-each>
@@ -838,6 +1111,16 @@ void
 
 <xsl:template name='DecodeOneField'>
   <xsl:choose>
+    <xsl:when test='@enumeration and @type = "u8v"'>
+    if(NULL != pTarget)
+    {
+        pTarget->m_<xsl:value-of select='@name'/> = pDecoderStream->get_e8v(&amp;s_fd<xsl:value-of select='@name'/>);
+    }
+    else
+    {
+        pDecoderStream->get_e8v(&amp;s_fd<xsl:value-of select='@name'/>);
+    }
+    </xsl:when>
     <xsl:when test='@enumeration'>
       <xsl:call-template name='DecodeOneFieldEnum'/>
     </xsl:when>
@@ -877,6 +1160,7 @@ void
       <xsl:when test='@type="u8"'>e8</xsl:when>
       <xsl:when test='@type="u16"'>e16</xsl:when>
       <xsl:when test='@type="u32"'>e32</xsl:when>
+      <xsl:when test='@type="u8v"'>e8v</xsl:when>
       <xsl:otherwise>bogus</xsl:otherwise>
     </xsl:choose>
   </xsl:variable>
@@ -971,6 +1255,9 @@ void
 
   <xsl:for-each select='LL:parameter|LL:choice'>
     <xsl:choose>
+      <xsl:when test='self::LL:parameter and @type = "Custom"'>
+        <xsl:call-template name='AssimSubParamExtension'/>
+      </xsl:when>
       <xsl:when test='self::LL:parameter'>
         <xsl:call-template name='AssimSubParamParameter'/>
       </xsl:when>
@@ -1082,7 +1369,7 @@ void
       <xsl:otherwise><xsl:value-of select='@type'/></xsl:otherwise>
     </xsl:choose>
   </xsl:variable>
-  <xsl:variable name='isMember'>isMemberOf<xsl:value-of select='@type'/>(*Cur)</xsl:variable>
+  <xsl:variable name='isMember'>C<xsl:value-of select='@type'/>::isMember(*Cur)</xsl:variable>
 
     // <xsl:value-of select='@repeat'/> of choice <xsl:value-of select='$MemberBaseName'/>
     pType = NULL;
@@ -1128,162 +1415,66 @@ void
 
 <!--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  -
- - @brief SubParameterAccessorFunctions template
+ - @brief AssimSubParamExtension template
  -
  - Invoked by templates
- -      ClassDefinitionCommon
+ -      AssimilateSubParametersFunction
  -
  - Current node
- -      <llrpdef><messageDefinition>
- -      <llrpdef><parameterDefinition>
- -
- - @param   ClassName       Name of generated class. This already has
- -                          "C" prefixed to the LLRP name.
+ -      <llrpdef><messageDefinition><parameter type='Custom'>
+ -      <llrpdef><parameterDefinition><parameter type='Custom'>
  -
  -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  -->
 
-<xsl:template name='SubParameterAccessorFunctions'>
-  <xsl:param name='ClassName'/>
-  <xsl:for-each select='LL:parameter|LL:choice'>
-    <xsl:choose>
-      <xsl:when test='self::LL:parameter'>
-        <xsl:call-template name='SubParamAccessorParam'>
-          <xsl:with-param name='ClassName'><xsl:value-of select='$ClassName'/></xsl:with-param>
-        </xsl:call-template>
-      </xsl:when>
-      <xsl:when test='self::LL:choice'>
-        <xsl:call-template name='SubParamAccessorChoice'>
-          <xsl:with-param name='ClassName'><xsl:value-of select='$ClassName'/></xsl:with-param>
-        </xsl:call-template>
-      </xsl:when>
-      <xsl:otherwise>
-    HELP -- SubParameterAccessorFunctions <xsl:value-of select='@type'/>
-      </xsl:otherwise>
-    </xsl:choose>
-  </xsl:for-each>
-</xsl:template>
-
-
-<!--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
- -
- - @brief SubParamAccessorParam template
- -
- - Invoked by templates
- -      ClassDefinitionCommon
- -
- - Current node
- -      <llrpdef><messageDefinition><parameter>
- -      <llrpdef><parameterDefinition><parameter>
- -
- - @param   ClassName       Name of generated class. This already has
- -                          "C" prefixed to the LLRP name.
- -
- -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
- -->
-
-<xsl:template name='SubParamAccessorParam'>
-  <xsl:param name='ClassName'/>
+<xsl:template name='AssimSubParamExtension'>
   <xsl:variable name='MemberBaseName'>
     <xsl:choose>
       <xsl:when test='@name'><xsl:value-of select='@name'/></xsl:when>
       <xsl:otherwise><xsl:value-of select='@type'/></xsl:otherwise>
     </xsl:choose>
   </xsl:variable>
-  <xsl:variable name='ParamType'>C<xsl:value-of select='@type'/></xsl:variable>
+  <xsl:variable name='isAllowed'>(*Cur)-&gt;isAllowedExtension(&amp;s_typeDescriptor)</xsl:variable>
+
+    // <xsl:value-of select='@repeat'/> of choice <xsl:value-of select='$MemberBaseName'/>
+    pType = NULL;
   <xsl:choose>
-    <xsl:when test='@repeat="1" or @repeat="0-1"'>
-EResultCode
-<xsl:value-of select='$ClassName'/>::set<xsl:value-of select='$MemberBaseName'/> (
-  <xsl:value-of select='$ParamType'/> *     pValue)
-{
-    removeSubParameterFromAllList(m_p<xsl:value-of select='$MemberBaseName'/>);
-    delete m_p<xsl:value-of select='$MemberBaseName'/>;
-    m_p<xsl:value-of select='$MemberBaseName'/> = pValue;
-    addSubParameterToAllList(pValue);
-    return RC_OK;
-}
-</xsl:when>
-    <xsl:when test='@repeat="0-N" or @repeat="1-N"'>
-EResultCode
-<xsl:value-of select='$ClassName'/>::add<xsl:value-of select='$MemberBaseName'/> (
-  <xsl:value-of select='$ParamType'/> *     pValue)
-{
-    m_list<xsl:value-of select='$MemberBaseName'/>.push_back(pValue);
-    addSubParameterToAllList(pValue);
-    return RC_OK;
-}
-</xsl:when>
+    <xsl:when test='@repeat="1"'>
+    if(Cur == End || !<xsl:value-of select='$isAllowed'/>)
+    {
+        goto missing;
+    }
+    m_p<xsl:value-of select='$MemberBaseName'/> = *Cur++;
+    </xsl:when>
+    <xsl:when test='@repeat="0-1"'>
+    if(Cur != End &amp;&amp; <xsl:value-of select='$isAllowed'/>)
+    {
+        m_p<xsl:value-of select='$MemberBaseName'/> = *Cur++;
+    }
+    </xsl:when>
+    <xsl:when test='@repeat="0-N"'>
+    while(Cur != End &amp;&amp; <xsl:value-of select='$isAllowed'/>)
+    {
+        m_list<xsl:value-of select='$MemberBaseName'/>.push_back(*Cur);
+        Cur++;
+    }
+    </xsl:when>
+    <xsl:when test='@repeat="1-N"'>
+    if(Cur == End || !<xsl:value-of select='$isAllowed'/>)
+    {
+        goto missing;
+    }
+    while(Cur != End &amp;&amp; <xsl:value-of select='$isAllowed'/>)
+    {
+        m_list<xsl:value-of select='$MemberBaseName'/>.push_back(*Cur);
+        Cur++;
+    }
+    </xsl:when>
     <xsl:otherwise>
-    HELP -- SubParamAccessorParam <xsl:value-of select='$MemberBaseName'/>
+    HELP -- parameter/choice <xsl:value-of select='@type'/> <xsl:value-of select='@repeat'/>
     </xsl:otherwise>
   </xsl:choose>
-</xsl:template>
 
-
-<!--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
- -
- - @brief SubParamAccessorChoice template
- -
- - Invoked by templates
- -      ClassDefinitionCommon
- -
- - Current node
- -      <llrpdef><messageDefinition><choice>
- -      <llrpdef><parameterDefinition><choice>
- -
- - @param   ClassName       Name of generated class. This already has
- -                          "C" prefixed to the LLRP name.
- -
- -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
- -->
-
-<xsl:template name='SubParamAccessorChoice'>
-  <xsl:param name='ClassName'/>
-  <xsl:variable name='MemberBaseName'>
-    <xsl:choose>
-      <xsl:when test='@name'><xsl:value-of select='@name'/></xsl:when>
-      <xsl:otherwise><xsl:value-of select='@type'/></xsl:otherwise>
-    </xsl:choose>
-  </xsl:variable>
-  <xsl:variable name='isMember'>isMemberOf<xsl:value-of select='@type'/>(pValue)</xsl:variable>
-  <xsl:choose>
-    <xsl:when test='@repeat="1" or @repeat="0-1"'>
-EResultCode
-<xsl:value-of select='$ClassName'/>::set<xsl:value-of select='$MemberBaseName'/> (
-  CParameter *                  pValue)
-{
-    if(!<xsl:value-of select='$isMember'/>)
-    {
-        return RC_InvalidChoiceMember;
-    }
-
-    removeSubParameterFromAllList(m_p<xsl:value-of select='$MemberBaseName'/>);
-    delete m_p<xsl:value-of select='$MemberBaseName'/>;
-    m_p<xsl:value-of select='$MemberBaseName'/> = pValue;
-    addSubParameterToAllList(pValue);
-    return RC_OK;
-}
-</xsl:when>
-    <xsl:when test='@repeat="0-N" or @repeat="1-N"'>
-EResultCode
-<xsl:value-of select='$ClassName'/>::add<xsl:value-of select='$MemberBaseName'/> (
-  CParameter *                  pValue)
-{
-    if(!<xsl:value-of select='$isMember'/>)
-    {
-        return RC_InvalidChoiceMember;
-    }
-
-    m_list<xsl:value-of select='$MemberBaseName'/>.push_back(pValue);
-    addSubParameterToAllList(pValue);
-    return RC_OK;
-}
-</xsl:when>
-    <xsl:otherwise>
-    HELP -- SubParamAccessorChoice <xsl:value-of select='$MemberBaseName'/>
-    </xsl:otherwise>
-  </xsl:choose>
 </xsl:template>
 
 
@@ -1366,6 +1557,9 @@ void
 
 <xsl:template name='EncodeOneField'>
   <xsl:choose>
+    <xsl:when test='@enumeration and @type = "u8v"'>
+    pEncoderStream->put_e8v(m_<xsl:value-of select='@name'/>, &amp;s_fd<xsl:value-of select='@name'/>);
+    </xsl:when>
     <xsl:when test='@enumeration'>
       <xsl:call-template name='EncodeOneFieldEnum'/>
     </xsl:when>
@@ -1496,7 +1690,221 @@ void
 
 <!--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  -
- - @brief GenerateGetTheTypeRegistryFunction template
+ - @brief SubParameterAccessorFunctions template
+ -
+ - Invoked by templates
+ -      ClassDefinitionCommon
+ -
+ - Current node
+ -      <llrpdef><messageDefinition>
+ -      <llrpdef><parameterDefinition>
+ -
+ - @param   ClassName       Name of generated class. This already has
+ -                          "C" prefixed to the LLRP name.
+ -
+ -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ -->
+
+<xsl:template name='SubParameterAccessorFunctions'>
+  <xsl:param name='ClassName'/>
+  <xsl:for-each select='LL:parameter|LL:choice'>
+    <xsl:choose>
+      <xsl:when test='self::LL:parameter and @type = "Custom"'>
+        <xsl:call-template name='SubParamAccessorsExtensionPoint'>
+          <xsl:with-param name='ClassName'><xsl:value-of select='$ClassName'/></xsl:with-param>
+        </xsl:call-template>
+      </xsl:when>
+      <xsl:when test='self::LL:parameter'>
+        <xsl:call-template name='SubParamAccessorsParam'>
+          <xsl:with-param name='ClassName'><xsl:value-of select='$ClassName'/></xsl:with-param>
+        </xsl:call-template>
+      </xsl:when>
+      <xsl:when test='self::LL:choice'>
+        <xsl:call-template name='SubParamAccessorsChoice'>
+          <xsl:with-param name='ClassName'><xsl:value-of select='$ClassName'/></xsl:with-param>
+        </xsl:call-template>
+      </xsl:when>
+      <xsl:otherwise>
+    HELP -- SubParameterAccessorFunctions <xsl:value-of select='@type'/>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:for-each>
+</xsl:template>
+
+
+<!--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ -
+ - @brief SubParamAccessorsParam template
+ -
+ - Invoked by templates
+ -      ClassDefinitionCommon
+ -
+ - Current node
+ -      <llrpdef><messageDefinition><parameter>
+ -      <llrpdef><parameterDefinition><parameter>
+ -
+ - @param   ClassName       Name of generated class. This already has
+ -                          "C" prefixed to the LLRP name.
+ -
+ -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ -->
+
+<xsl:template name='SubParamAccessorsParam'>
+  <xsl:param name='ClassName'/>
+  <xsl:variable name='MemberBaseName'>
+    <xsl:choose>
+      <xsl:when test='@name'><xsl:value-of select='@name'/></xsl:when>
+      <xsl:otherwise><xsl:value-of select='@type'/></xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+  <xsl:variable name='ParamType'>C<xsl:value-of select='@type'/></xsl:variable>
+  <xsl:choose>
+    <xsl:when test='@repeat="1" or @repeat="0-1"'>
+EResultCode
+<xsl:value-of select='$ClassName'/>::set<xsl:value-of select='$MemberBaseName'/> (
+  <xsl:value-of select='$ParamType'/> *     pValue)
+{
+    removeSubParameterFromAllList(m_p<xsl:value-of select='$MemberBaseName'/>);
+    delete m_p<xsl:value-of select='$MemberBaseName'/>;
+    m_p<xsl:value-of select='$MemberBaseName'/> = pValue;
+    addSubParameterToAllList(pValue);
+    return RC_OK;
+}
+</xsl:when>
+    <xsl:when test='@repeat="0-N" or @repeat="1-N"'>
+EResultCode
+<xsl:value-of select='$ClassName'/>::add<xsl:value-of select='$MemberBaseName'/> (
+  <xsl:value-of select='$ParamType'/> *     pValue)
+{
+    m_list<xsl:value-of select='$MemberBaseName'/>.push_back(pValue);
+    addSubParameterToAllList(pValue);
+    return RC_OK;
+}
+</xsl:when>
+    <xsl:otherwise>
+    HELP -- SubParamAccessorsParam <xsl:value-of select='$MemberBaseName'/>
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:template>
+
+
+<!--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ -
+ - @brief SubParamAccessorsChoice template
+ -
+ - Invoked by templates
+ -      ClassDefinitionCommon
+ -
+ - Current node
+ -      <llrpdef><messageDefinition><choice>
+ -      <llrpdef><parameterDefinition><choice>
+ -
+ - @param   ClassName       Name of generated class. This already has
+ -                          "C" prefixed to the LLRP name.
+ -
+ -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ -->
+
+<xsl:template name='SubParamAccessorsChoice'>
+  <xsl:param name='ClassName'/>
+  <xsl:variable name='MemberBaseName'>
+    <xsl:choose>
+      <xsl:when test='@name'><xsl:value-of select='@name'/></xsl:when>
+      <xsl:otherwise><xsl:value-of select='@type'/></xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+  <xsl:variable name='isMember'>C<xsl:value-of select='@type'/>::isMember(pValue)</xsl:variable>
+  <xsl:choose>
+    <xsl:when test='@repeat="1" or @repeat="0-1"'>
+EResultCode
+<xsl:value-of select='$ClassName'/>::set<xsl:value-of select='$MemberBaseName'/> (
+  CParameter *                  pValue)
+{
+    if(!<xsl:value-of select='$isMember'/>)
+    {
+        return RC_InvalidChoiceMember;
+    }
+
+    removeSubParameterFromAllList(m_p<xsl:value-of select='$MemberBaseName'/>);
+    delete m_p<xsl:value-of select='$MemberBaseName'/>;
+    m_p<xsl:value-of select='$MemberBaseName'/> = pValue;
+    addSubParameterToAllList(pValue);
+    return RC_OK;
+}
+</xsl:when>
+    <xsl:when test='@repeat="0-N" or @repeat="1-N"'>
+EResultCode
+<xsl:value-of select='$ClassName'/>::add<xsl:value-of select='$MemberBaseName'/> (
+  CParameter *                  pValue)
+{
+    if(!<xsl:value-of select='$isMember'/>)
+    {
+        return RC_InvalidChoiceMember;
+    }
+
+    m_list<xsl:value-of select='$MemberBaseName'/>.push_back(pValue);
+    addSubParameterToAllList(pValue);
+    return RC_OK;
+}
+</xsl:when>
+    <xsl:otherwise>
+    HELP -- SubParamAccessorsChoice <xsl:value-of select='$MemberBaseName'/>
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:template>
+
+
+<!--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ -
+ - @brief SubParamAccessorsExtensionPoint template
+ -
+ - Invoked by templates
+ -      ClassDefinitionCommon
+ -
+ - Current node
+ -      <llrpdef><messageDefinition><parameter type='Custom'>
+ -      <llrpdef><parameterDefinition><parameter type='Custom'>
+ -
+ - @param   ClassName       Name of generated class. This already has
+ -                          "C" prefixed to the LLRP name.
+ -
+ -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ -->
+
+<xsl:template name='SubParamAccessorsExtensionPoint'>
+  <xsl:param name='ClassName'/>
+  <xsl:variable name='MemberBaseName'>
+    <xsl:choose>
+      <xsl:when test='@name'><xsl:value-of select='@name'/></xsl:when>
+      <xsl:otherwise><xsl:value-of select='@type'/></xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+  <xsl:choose>
+    <xsl:when test='@repeat="0-N" or @repeat="1-N"'>
+EResultCode
+<xsl:value-of select='$ClassName'/>::add<xsl:value-of select='$MemberBaseName'/> (
+  CParameter *                  pValue)
+{
+    if(!pValue->isAllowedIn(&amp;s_typeDescriptor))
+    {
+        return RC_NotAllowedAtExtensionPoint;
+    }
+
+    m_list<xsl:value-of select='$MemberBaseName'/>.push_back(pValue);
+    addSubParameterToAllList(pValue);
+    return RC_OK;
+}
+</xsl:when>
+    <xsl:otherwise>
+    HELP -- SubParamAccessorsExtensionPoint <xsl:value-of select='$MemberBaseName'/>
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:template>
+
+
+<!--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ -
+ - @brief GenerateEnrollIntoTypeRegistryFunction template
  -
  - Invoked by top level template.
  -
@@ -1509,17 +1917,14 @@ void
  -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  -->
 
-<xsl:template name='GenerateGetTheTypeRegistryFunction'>
-CTypeRegistry *
-getTheTypeRegistry(void)
+<xsl:template name='GenerateEnrollIntoTypeRegistryFunction'>
+void
+enroll<xsl:value-of select='$RegistryName'/>TypesIntoRegistry (
+  CTypeRegistry *               pTypeRegistry)
 {
-    CTypeRegistry *         pTypeRegistry = new CTypeRegistry();
-
-  <xsl:for-each select='LL:parameterDefinition|LL:messageDefinition'>
+  <xsl:for-each select='LL:parameterDefinition|LL:messageDefinition|LL:customParameterDefinition|LL:customMessageDefinition'>
     pTypeRegistry->enroll(&amp;C<xsl:value-of select='@name'/>::s_typeDescriptor);
   </xsl:for-each>
-
-    return pTypeRegistry;
 }
 </xsl:template>
 

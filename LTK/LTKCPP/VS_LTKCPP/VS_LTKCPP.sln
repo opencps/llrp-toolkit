@@ -1,17 +1,24 @@
 Microsoft Visual Studio Solution File, Format Version 8.00
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Library", "Library\Library.vcproj", "{22C47EC2-0B79-47B8-9E70-53A6322C0F57}"
-	ProjectSection(ProjectDependencies) = postProject
-	EndProjectSection
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "dx101", "dx101\dx101.vcproj", "{40742925-63FD-40F0-A86B-63C8B63460C9}"
 	ProjectSection(ProjectDependencies) = postProject
+		{B40AD31F-F896-4F59-BDAE-F086C9FDBC70} = {B40AD31F-F896-4F59-BDAE-F086C9FDBC70}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "dx201", "dx201\dx201.vcproj", "{BB481EDE-7093-4E43-8561-C25C2A65DC34}"
 	ProjectSection(ProjectDependencies) = postProject
+		{B40AD31F-F896-4F59-BDAE-F086C9FDBC70} = {B40AD31F-F896-4F59-BDAE-F086C9FDBC70}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "example1", "example1\example1.vcproj", "{41D5AA2C-9F45-4E8D-8B8A-F6E6A981AAB9}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B40AD31F-F896-4F59-BDAE-F086C9FDBC70} = {B40AD31F-F896-4F59-BDAE-F086C9FDBC70}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libltkcpp", "libltkcpp\libltkcpp.vcproj", "{B40AD31F-F896-4F59-BDAE-F086C9FDBC70}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libltkcppllrporg", "libltkcppllrporg\libltkcppllrporg.vcproj", "{4E89CB57-DFEB-4D17-8DCD-158FB22BD1E6}"
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
@@ -23,10 +30,6 @@ Global
 	GlobalSection(ProjectDependencies) = postSolution
 	EndGlobalSection
 	GlobalSection(ProjectConfiguration) = postSolution
-		{22C47EC2-0B79-47B8-9E70-53A6322C0F57}.Debug.ActiveCfg = Debug|Win32
-		{22C47EC2-0B79-47B8-9E70-53A6322C0F57}.Debug.Build.0 = Debug|Win32
-		{22C47EC2-0B79-47B8-9E70-53A6322C0F57}.Release.ActiveCfg = Release|Win32
-		{22C47EC2-0B79-47B8-9E70-53A6322C0F57}.Release.Build.0 = Release|Win32
 		{40742925-63FD-40F0-A86B-63C8B63460C9}.Debug.ActiveCfg = Debug|Win32
 		{40742925-63FD-40F0-A86B-63C8B63460C9}.Debug.Build.0 = Debug|Win32
 		{40742925-63FD-40F0-A86B-63C8B63460C9}.Release.ActiveCfg = Release|Win32
@@ -39,6 +42,14 @@ Global
 		{41D5AA2C-9F45-4E8D-8B8A-F6E6A981AAB9}.Debug.Build.0 = Debug|Win32
 		{41D5AA2C-9F45-4E8D-8B8A-F6E6A981AAB9}.Release.ActiveCfg = Release|Win32
 		{41D5AA2C-9F45-4E8D-8B8A-F6E6A981AAB9}.Release.Build.0 = Release|Win32
+		{B40AD31F-F896-4F59-BDAE-F086C9FDBC70}.Debug.ActiveCfg = Debug|Win32
+		{B40AD31F-F896-4F59-BDAE-F086C9FDBC70}.Debug.Build.0 = Debug|Win32
+		{B40AD31F-F896-4F59-BDAE-F086C9FDBC70}.Release.ActiveCfg = Release|Win32
+		{B40AD31F-F896-4F59-BDAE-F086C9FDBC70}.Release.Build.0 = Release|Win32
+		{4E89CB57-DFEB-4D17-8DCD-158FB22BD1E6}.Debug.ActiveCfg = Debug|Win32
+		{4E89CB57-DFEB-4D17-8DCD-158FB22BD1E6}.Debug.Build.0 = Debug|Win32
+		{4E89CB57-DFEB-4D17-8DCD-158FB22BD1E6}.Release.ActiveCfg = Release|Win32
+		{4E89CB57-DFEB-4D17-8DCD-158FB22BD1E6}.Release.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 	EndGlobalSection

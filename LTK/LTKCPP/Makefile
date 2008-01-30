@@ -1,5 +1,5 @@
 ############################################################################
-#   Copyright 2007 Impinj, Inc.
+#   Copyright 2007,2008 Impinj, Inc.
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -17,12 +17,23 @@
 
 
 all:
-	cd Library;  make all
-	cd Tests;    make all
-	cd Examples; make all
+	cd Library;     make all
+	cd Tests;       make all
+	cd Examples;    make all
+
+everything:
+	cd Library;     make everything
+	cd Tests;       make everything
+	cd Examples;    make everything
+
+release:
+	make everything
+	cd Release;     make all
 
 clean:
-	cd Library;  make clean
-	cd Tests;    make clean
-	cd Examples; make clean
+	cd Library;     make clean
+	cd Tests;       make clean
+	cd Examples;    make clean
+	cd Release;     make clean
+	cd VS_LTKCPP;   make clean
 	rm -f *.o *.core core.[0-9]*

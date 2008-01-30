@@ -1,7 +1,7 @@
 
 /*
  ***************************************************************************
- *  Copyright 2007 Impinj, Inc.
+ *  Copyright 2007,2008 Impinj, Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@
 
 
 #include <assert.h>
-
 
 #include "ltkc_platform.h"
 #include "ltkc_base.h"
@@ -252,6 +251,12 @@ put_e32 (
   const LLRP_tSFieldDescriptor *pFieldDescriptor);
 
 static void
+put_e8v (
+  LLRP_tSEncoderStream *        pBaseEncoderStream,
+  const llrp_u8v_t              Value,
+  const LLRP_tSFieldDescriptor *pFieldDescriptor);
+
+static void
 put_reserved (
   LLRP_tSEncoderStream *        pBaseEncoderStream,
   unsigned int                  nBits);
@@ -334,6 +339,7 @@ s_FrameEncoderStreamOps =
     .pfPut_u2                       = put_u2,
     .pfPut_u96                      = put_u96,
     .pfPut_utf8v                    = put_utf8v,
+
     .pfPut_bytesToEnd               = put_bytesToEnd,
 
     .pfPut_e1                       = put_e1,
@@ -341,6 +347,7 @@ s_FrameEncoderStreamOps =
     .pfPut_e8                       = put_e8,
     .pfPut_e16                      = put_e16,
     .pfPut_e32                      = put_e32,
+    .pfPut_e8v                      = put_e8v,
 
     .pfPut_reserved                 = put_reserved,
 };
@@ -464,7 +471,10 @@ putRequiredSubParameter (
 
     if(NULL == pParameter)
     {
-        /* Set error */
+        LLRP_tSFrameEncoder *   pEncoder = pEncoderStream->pEncoder;
+        LLRP_tSErrorDetails *   pError = &pEncoder->encoderHdr.ErrorDetails;
+
+        LLRP_Error_missingParameter(pError, pRefType);
         return;
     }
 
@@ -495,7 +505,10 @@ putRequiredSubParameterList (
 
     if(NULL == pParameterList)
     {
-        /* Set error */
+        LLRP_tSFrameEncoder *   pEncoder = pEncoderStream->pEncoder;
+        LLRP_tSErrorDetails *   pError = &pEncoder->encoderHdr.ErrorDetails;
+
+        LLRP_Error_missingParameter(pError, pRefType);
         return;
     }
 
@@ -1020,6 +1033,15 @@ put_e32 (
 }
 
 static void
+put_e8v (
+  LLRP_tSEncoderStream *        pBaseEncoderStream,
+  const llrp_u8v_t              Value,
+  const LLRP_tSFieldDescriptor *pFieldDescriptor)
+{
+    put_u8v(pBaseEncoderStream, Value, pFieldDescriptor);
+}
+
+static void
 put_reserved (
   LLRP_tSEncoderStream *        pBaseEncoderStream,
   unsigned int                  nBits)
@@ -1141,9 +1163,9 @@ putElement (
 
     if(pRefType->bIsMessage)
     {
-        eFormat = (0 == pRefType->VendorID) ? MSG : CUST_MSG;
+        eFormat = (NULL == pRefType->pVendorDescriptor) ? MSG : CUST_MSG;
     }
-    else if(0 == pRefType->VendorID && 128 > pRefType->TypeNum)
+    else if(NULL == pRefType->pVendorDescriptor && 128 > pRefType->TypeNum)
     {
         /* TV parameter, never custom, no length */
         eFormat = TV;
@@ -1151,7 +1173,7 @@ putElement (
     else
     {
         /* TLV parameter */
-        eFormat = (0 == pRefType->VendorID) ? TLV : CUST_TLV;
+        eFormat = (NULL == pRefType->pVendorDescriptor) ? TLV : CUST_TLV;
     }
 
     /*
@@ -1193,7 +1215,8 @@ putElement (
             put_u32(pBaseEncoderStream,
                 ((const LLRP_tSMessage *)pElement)->MessageID,
                 &LLRP_g_fdMessageHeader_MessageID);
-            put_u32(pBaseEncoderStream, pRefType->VendorID,
+            put_u32(pBaseEncoderStream,
+                pRefType->pVendorDescriptor->VendorID,
                 &LLRP_g_fdMessageHeader_VendorPEN);
             put_u8(pBaseEncoderStream, pRefType->TypeNum,
                 &LLRP_g_fdMessageHeader_Subtype);
@@ -1219,7 +1242,8 @@ putElement (
             &LLRP_g_fdParameterHeader_TLVType);
         put_u16(pBaseEncoderStream, 0,
             &LLRP_g_fdParameterHeader_TLVLength);
-        put_u32(pBaseEncoderStream, pRefType->VendorID,
+        put_u32(pBaseEncoderStream,
+                pRefType->pVendorDescriptor->VendorID,
             &LLRP_g_fdParameterHeader_VendorPEN);
         put_u32(pBaseEncoderStream, pRefType->TypeNum,
             &LLRP_g_fdParameterHeader_Subtype);

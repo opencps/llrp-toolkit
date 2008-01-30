@@ -1,7 +1,7 @@
 
 /*
  ***************************************************************************
- *  Copyright 2007 Impinj, Inc.
+ *  Copyright 2007,2008 Impinj, Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@
 
 #include "ltkcpp_platform.h"
 #include "ltkcpp_base.h"
+
 
 namespace LLRP
 {
@@ -80,5 +81,75 @@ CElement::clearSubParameterList (
 
     pParameterList->clear();
 }
+
+int
+CElement::walk (
+  int                           (*pFunc)(
+                                  const CElement *  pElement,
+                                  void *            pArg),
+  void *                        pArg,
+  int                           iDepth,
+  int                           nMaxDepth) const
+{
+    int                         rc;
+
+    rc = (*pFunc)(this, pArg);
+    if(0 != rc)
+    {
+        return rc;
+    }
+
+    if(iDepth >= nMaxDepth)
+    {
+        return 0;
+    }
+
+    for (
+        tListOfParameters::const_iterator elem =
+                                    m_listAllSubParameters.begin();
+        elem != m_listAllSubParameters.end();
+        elem++)
+    {
+        (*elem)->walk(pFunc, pArg, iDepth+1, nMaxDepth);
+    }
+
+    return 0;
+}
+
+llrp_bool_t
+CParameter::isAllowedIn (
+  const CTypeDescriptor *       pEnclosingTypeDescriptor) const
+{
+    return FALSE;
+}
+
+llrp_bool_t
+CParameter::isAllowedExtension (
+  const CTypeDescriptor *       pEnclosingTypeDescriptor)
+{
+    /*
+     * If it is a generic Custom parameter allow it.
+     */
+    if(!m_pType->m_bIsMessage && NULL == m_pType->m_pVendorDescriptor &&
+       1023u == m_pType->m_TypeNum)
+    {
+        return TRUE;
+    }
+
+    /*
+     * If it is some kind of custom parameter allow it.
+     */
+    if(!m_pType->m_bIsMessage && NULL != m_pType->m_pVendorDescriptor)
+    {
+        return TRUE;
+    }
+
+    /*
+     * At this point checking specifically if it is allowed
+     * is perfunctory.
+     */
+    return isAllowedIn(pEnclosingTypeDescriptor);
+}
+
 
 }; /* namespace LLRP */

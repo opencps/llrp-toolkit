@@ -1,7 +1,7 @@
 
 
 OVERVIEW OF THE LLRP Tool Kit Definitions Files
-Last updated 2 Aug 2007
+Last updated 9 Jan 2008
 
 
 
@@ -47,6 +47,11 @@ Core/llrp-1x0.xsd
 llrpdef.xsd
     An XML Schema that describes the valid contents
     of the */*-def.xml files.
+
+LLRP.org/LLRPOrgExampleDef.xml
+    Describes example extensions. It is used by
+    implementors of LTK code generators as an example.
+    This file MUST and DOES conform to ../llrpdef.xsd
 
 README.TXT
     This file that you are reading.

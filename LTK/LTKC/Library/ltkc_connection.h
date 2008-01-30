@@ -1,7 +1,7 @@
 
 /*
  ***************************************************************************
- *  Copyright 2007 Impinj, Inc.
+ *  Copyright 2007,2008 Impinj, Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -146,8 +146,7 @@ extern LLRP_tSMessage *
 LLRP_Conn_transact (
   LLRP_tSConnection *           pConn,
   LLRP_tSMessage *              pSendMessage,
-  int                           nMaxMS,
-  const LLRP_tSTypeDescriptor * pResponseType);
+  int                           nMaxMS);
 
 extern const LLRP_tSErrorDetails *
 LLRP_Conn_getTransactError (

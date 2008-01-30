@@ -1,7 +1,7 @@
 
 /*
  ***************************************************************************
- *  Copyright 2007 Impinj, Inc.
+ *  Copyright 2007,2008 Impinj, Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -19,13 +19,11 @@
  */
 
 
-
 #include <assert.h>
 
 #include "ltkcpp_platform.h"
 #include "ltkcpp_base.h"
 #include "ltkcpp_frame.h"
-
 
 
 namespace LLRP
@@ -596,6 +594,14 @@ CFrameEncoderStream::put_e32 (
     put_u32((llrp_u32_t)eValue, pFieldDescriptor);
 }
 
+void
+CFrameEncoderStream::put_e8v (
+  llrp_u8v_t                    Value,
+  const CFieldDescriptor *      pFieldDescriptor)
+{
+    put_u8v(Value, pFieldDescriptor);
+}
+
 /*
  * Reserved types are some number of bits
  */
@@ -694,9 +700,10 @@ CFrameEncoderStream::putElement (
 
     if(m_pRefType->m_bIsMessage)
     {
-        eFormat = (0 == m_pRefType->m_VendorID) ? MSG : CUST_MSG;
+        eFormat = (NULL == m_pRefType->m_pVendorDescriptor) ? MSG : CUST_MSG;
     }
-    else if(0 == m_pRefType->m_VendorID && 128 > m_pRefType->m_TypeNum)
+    else if(NULL == m_pRefType->m_pVendorDescriptor &&
+            128 > m_pRefType->m_TypeNum)
     {
         /* TV parameter, never custom, no length */
         eFormat = TV;
@@ -704,7 +711,7 @@ CFrameEncoderStream::putElement (
     else
     {
         /* TLV parameter */
-        eFormat = (0 == m_pRefType->m_VendorID) ? TLV : CUST_TLV;
+        eFormat = (NULL == m_pRefType->m_pVendorDescriptor) ? TLV : CUST_TLV;
     }
 
     /*
@@ -741,7 +748,9 @@ CFrameEncoderStream::putElement (
             put_u32(0, &g_fdMessageHeader_Length);
             put_u32(((const CMessage *)pElement)->getMessageID(),
                 &g_fdMessageHeader_MessageID);
-            put_u32(m_pRefType->m_VendorID, &g_fdMessageHeader_VendorPEN);
+            put_u32(
+                m_pRefType->m_pVendorDescriptor->m_VendorID,
+                &g_fdMessageHeader_VendorPEN);
             put_u8(m_pRefType->m_TypeNum, &g_fdMessageHeader_Subtype);
         }
         break;
@@ -760,7 +769,9 @@ CFrameEncoderStream::putElement (
         /* Custom parameter */
         put_u16(1023u, &g_fdParameterHeader_TLVType);
         put_u16(0, &g_fdParameterHeader_TLVLength);
-        put_u32(m_pRefType->m_VendorID, &g_fdParameterHeader_VendorPEN);
+        put_u32(
+            m_pRefType->m_pVendorDescriptor->m_VendorID,
+            &g_fdParameterHeader_VendorPEN);
         put_u32(m_pRefType->m_TypeNum, &g_fdParameterHeader_Subtype);
         break;
     }

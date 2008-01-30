@@ -1,7 +1,7 @@
 
 /*
  ***************************************************************************
- *  Copyright 2007 Impinj, Inc.
+ *  Copyright 2007,2008 Impinj, Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -284,11 +284,20 @@ main (int ac, char *av[])
          * Print as XML text the LLRP message to stdout.
          */
         {
-            LLRP_tSPrXMLEncoder *   pEncoder;
+            char                    aBuf[100*1024];
+            LLRP_tSXMLTextEncoder * pEncoder;
 
-            pEncoder = LLRP_PrXMLEncoder_construct(stdout);
+            pEncoder = LLRP_XMLTextEncoder_construct(aBuf, sizeof aBuf);
             LLRP_Encoder_encodeElement(&pEncoder->encoderHdr,
                     &pMessage->elementHdr);
+            if(!pEncoder->bOverflow)
+            {
+                printf("%s", aBuf);
+            }
+            else
+            {
+                printf("<!-- Buffer overflow -->\n");
+            }
             LLRP_Encoder_destruct(&pEncoder->encoderHdr);
         }
 

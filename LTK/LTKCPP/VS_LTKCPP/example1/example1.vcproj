@@ -23,7 +23,7 @@
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="3"
-				RuntimeLibrary="5"
+				RuntimeLibrary="3"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="TRUE"
@@ -32,7 +32,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="Ws2_32.lib"
+				AdditionalDependencies="Ws2_32.lib ..\libltkcpp\Debug\libltkcpp_d.lib"
 				OutputFile="$(OutDir)/example1.exe"
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
@@ -70,7 +70,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalIncludeDirectories="..\..\Library"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
-				RuntimeLibrary="4"
+				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="TRUE"
@@ -79,7 +79,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="Ws2_32.lib"
+				AdditionalDependencies="Ws2_32.lib ..\libltkcpp\Release\libltkcpp_r.lib"
 				OutputFile="$(OutDir)/example1.exe"
 				LinkIncremental="1"
 				GenerateDebugInformation="TRUE"
@@ -110,9 +110,6 @@
 		</Configuration>
 	</Configurations>
 	<References>
-		<ProjectReference
-			ReferencedProjectIdentifier="{22C47EC2-0B79-47B8-9E70-53A6322C0F57}"
-			Name="Library"/>
 	</References>
 	<Files>
 		<Filter

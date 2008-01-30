@@ -1,7 +1,7 @@
 
 /*
  ***************************************************************************
- *  Copyright 2007 Impinj, Inc.
+ *  Copyright 2007,2008 Impinj, Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -18,13 +18,20 @@
  ***************************************************************************
  */
 
-
-
+/*
+ * Version is four each 8-bit numbers:
+ * major, minor, maintenance, progress number
+ */
+#define LTKC_VERSION        0x01000000
+#define LTKC_VERSION_STR    "1.0.0.0"
 
 enum LLRP_ResultCode;
 struct LLRP_SErrorDetails;
+struct LLRP_SVendorDescriptor;
+struct LLRP_SNamespaceDescriptor;
 struct LLRP_STypeDescriptor;
 enum LLRP_EFieldType;
+enum LLRP_EFieldFormat;
 struct LLRP_SFieldDescriptor;
 struct LLRP_SEnumTableEntry;
 struct LLRP_STypeRegistry;
@@ -43,8 +50,11 @@ struct LLRP_SEncoderStreamOps;
 
 typedef enum LLRP_ResultCode            LLRP_tResultCode;
 typedef struct LLRP_SErrorDetails       LLRP_tSErrorDetails;
+typedef struct LLRP_SVendorDescriptor   LLRP_tSVendorDescriptor;
+typedef struct LLRP_SNamespaceDescriptor LLRP_tSNamespaceDescriptor;
 typedef struct LLRP_STypeDescriptor     LLRP_tSTypeDescriptor;
 typedef enum LLRP_EFieldType            LLRP_tEFieldType;
+typedef enum LLRP_EFieldFormat          LLRP_tEFieldFormat;
 typedef struct LLRP_SFieldDescriptor    LLRP_tSFieldDescriptor;
 typedef struct LLRP_SEnumTableEntry     LLRP_tSEnumTableEntry;
 typedef struct LLRP_STypeRegistry       LLRP_tSTypeRegistry;
@@ -199,6 +209,7 @@ enum LLRP_ResultCode
     LLRP_RC_RecvTimeout,
     LLRP_RC_RecvFramingError,
     LLRP_RC_BadVersion,
+    LLRP_RC_MissingResponseType,
     LLRP_RC_UnknownMessageType,
     LLRP_RC_UnknownParameterType,
     LLRP_RC_ExcessiveLength,
@@ -217,6 +228,7 @@ enum LLRP_ResultCode
     LLRP_RC_UnexpectedParameter,
     LLRP_RC_InvalidChoiceMember,
     LLRP_RC_EnrollBadTypeNumber,
+    LLRP_RC_NotAllowedAtExtensionPoint,
 };
 
 struct LLRP_SErrorDetails
@@ -249,6 +261,29 @@ LLRP_Error_resultCodeAndWhatStr (
   const char *                  pWhatStr);
 
 
+
+
+struct LLRP_SVendorDescriptor
+{
+    /* Short name for the vendor, e.g. "Acme" */
+    char *                      pName;
+
+    /* Vendor PEN of a custom message or parameter */
+    llrp_u32_t                  VendorID;
+};
+
+struct LLRP_SNamespaceDescriptor
+{
+    /* Short name for the namespace, e.g. "acmeNS" */
+    char *                      pPrefix;
+
+    /* URI for the namespace, this is the true namespace name */
+    char *                      pURI;
+
+    /* URI for the XSD (schema) for custom parameters and messages
+     * defined within the namespace */
+    char *                      pSchemaLocation;
+};
 
 
 /*
@@ -297,12 +332,23 @@ struct LLRP_STypeDescriptor
 {
     /* TRUE for a message type, FALSE for a parameter type */
     llrp_bool_t                 bIsMessage;
+
     /* String name of parameter/message type (e.g. "ROSpec") */
     char *                      pName;
-    /* 0=>standard LLRP, !0=>Vendor PEN of custom message or parameter */
-    llrp_u32_t                  VendorID;
+
+    /* NULL=>standard LLRP, !NULL=>Vendor (PEN) of custom
+     * message or parameter */
+    const LLRP_tSVendorDescriptor *   pVendorDescriptor;
+
+    /* Namespace of message or parameter, for XML */
+    const LLRP_tSNamespaceDescriptor *pNamespaceDescriptor;
+
     /* Type number or, for custom, subtype number */
     llrp_u32_t                  TypeNum;
+
+    /* For messages (bIsMessage==TRUE), this is the type descriptor for
+     * the corresponding response. NULL for a request or notification. */
+    const LLRP_tSTypeDescriptor *   pResponseType;
 
     /* Table of pointers to the field descriptors */
     const LLRP_tSFieldDescriptor * const * const ppFieldDescriptorTable;
@@ -345,6 +391,12 @@ struct LLRP_STypeDescriptor
     (*pfEncode) (
       const LLRP_tSElement *    pElement,
       LLRP_tSEncoderStream *    pEncoderStream);
+
+    /* For extension parameters, ask if they are allowed in
+     * an enclosing parameter or message */
+    llrp_bool_t
+    (*pfIsAllowedIn) (
+      const LLRP_tSTypeDescriptor *pEnclosingElementType);
 };
 
 enum LLRP_EFieldType {
@@ -357,7 +409,18 @@ enum LLRP_EFieldType {
     LLRP_FT_UTF8V,
 
     LLRP_FT_E1,  LLRP_FT_E2,  LLRP_FT_E8,   LLRP_FT_E16,   LLRP_FT_E32,
+    LLRP_FT_E8V,
+
     LLRP_FT_BYTESTOEND,
+};
+
+
+enum LLRP_EFieldFormat {
+    LLRP_FMT_NORMAL,
+    LLRP_FMT_DEC,
+    LLRP_FMT_HEX,
+    LLRP_FMT_UTF8,
+    LLRP_FMT_DATETIME,
 };
 
 
@@ -370,6 +433,8 @@ struct LLRP_SFieldDescriptor
 {
     /* A code for the field type */
     LLRP_tEFieldType            eFieldType;
+    /* A code for how the field should be formatted */
+    LLRP_tEFieldType            eFieldFormat;
     /* String name of field (e.g. "ROSpecID") */
     char *                      pName;
     /* NULL or ptr to table base for enumerated fields */
@@ -409,6 +474,8 @@ struct LLRP_SEnumTableEntry
  * During decode operations types can be looked up
  * by code (vendor and typenum) or by name.
  */
+#define LTKC_MAX_CUSTOM_MESSAGE     10u
+#define LTKC_MAX_CUSTOM_PARAMETER   30u
 struct LLRP_STypeRegistry
 {
     /* Standard messages subscripted by type number */
@@ -416,7 +483,14 @@ struct LLRP_STypeRegistry
     /* Standard parameters subscripted by type number */
     const LLRP_tSTypeDescriptor * apStdParameterTypeDescriptors[1024u];
 
-    /* TODO: custom messages and parameters */
+    /* Custom messages, sequential search */
+    const LLRP_tSTypeDescriptor *
+                apCustMessageTypeDescriptors[LTKC_MAX_CUSTOM_MESSAGE];
+    unsigned int                nCustMessageTypeDescriptors;
+    /* Custom parameters, sequential search */
+    const LLRP_tSTypeDescriptor *
+                apCustParameterTypeDescriptors[LTKC_MAX_CUSTOM_PARAMETER];
+    unsigned int                nCustParameterTypeDescriptors;
 };
 
 /* Create a new TypeRegistry */
@@ -567,6 +641,30 @@ LLRP_Element_attachToSubParameterList (
   LLRP_tSParameter **           ppListHead,
   LLRP_tSParameter *            pValue);
 
+extern int
+LLRP_Element_walk (
+  const LLRP_tSElement *        pElement,
+  int                           (*pFunc)(
+                                  const LLRP_tSElement *    pElement,
+                                  void *                    pArg),
+  void *                        pArg,
+  int                           iDepth,
+  int                           nMaxDepth);
+
+extern void
+LLRP_Message_setMessageID (
+  LLRP_tSMessage *              pMessage,
+  llrp_u32_t                    MessageID);
+
+extern llrp_bool_t
+LLRP_Parameter_isAllowedIn (
+  LLRP_tSParameter *            pParameter,
+  const LLRP_tSTypeDescriptor * pEnclosingTypeDescriptor);
+
+extern llrp_bool_t
+LLRP_Parameter_isAllowedExtension (
+  LLRP_tSParameter *            pParameter,
+  const LLRP_tSTypeDescriptor * pEnclosingTypeDescriptor);
 
 
 /*
@@ -808,6 +906,11 @@ struct LLRP_SDecoderStreamOps
     (*pfGet_e32) (
        LLRP_tSDecoderStream *   pDecoderStream,
        const LLRP_tSFieldDescriptor *pFieldDescriptor);
+
+    llrp_u8v_t
+    (*pfGet_e8v) (
+      LLRP_tSDecoderStream *    pDecoderStream,
+      const LLRP_tSFieldDescriptor *pFieldDescriptor);
 
     /*
      * Reserved means some number of bits
@@ -1057,6 +1160,12 @@ struct LLRP_SEncoderStreamOps
       const int                 Value,
       const LLRP_tSFieldDescriptor *pFieldDescriptor);
 
+    void
+    (*pfPut_e8v) (
+      LLRP_tSEncoderStream *    pEncoderStream,
+      const llrp_u8v_t          Value,
+      const LLRP_tSFieldDescriptor *pFieldDescriptor);
+
 
     /*
      * Reserved means some number of bits
@@ -1087,3 +1196,14 @@ extern void
 LLRP_Encoder_encodeElement (
   LLRP_tSEncoder *              pEncoder,
   const LLRP_tSElement *        pElement);
+
+
+/*
+ * ltkc_xmltextencode.c
+ */
+
+extern LLRP_tResultCode
+LLRP_toXMLString (
+  const LLRP_tSElement *        pElement,
+  char *                        pBuffer,
+  int                           nBuffer);

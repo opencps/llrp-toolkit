@@ -1,7 +1,7 @@
 
 /*
  ***************************************************************************
- *  Copyright 2007 Impinj, Inc.
+ *  Copyright 2007,2008 Impinj, Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -21,8 +21,33 @@
 
 #include "ltkcpp.h"
 
+
 namespace LLRP
 {
-#include "out_ltkcpp_cpp.inc"
+#include "out_ltkcpp.inc"
+
+
+static char     ident[] = {
+    "$" "Id: libltkcpp "
+    LTKC_VERSION_STR
+    "  Built: "
+    __DATE__
+    " "
+    __TIME__
+    " $"
+};
+
+
+CTypeRegistry *
+getTheTypeRegistry (void)
+{
+    CTypeRegistry *         pTypeRegistry = new CTypeRegistry();
+
+    enrollCoreTypesIntoRegistry (pTypeRegistry);
+
+    return pTypeRegistry;
+}
+
+
 }; /* namespace LLRP */
 

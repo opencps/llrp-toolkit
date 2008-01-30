@@ -1,7 +1,7 @@
 
 /*
  ***************************************************************************
- *  Copyright 2007 Impinj, Inc.
+ *  Copyright 2007,2008 Impinj, Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -88,7 +88,7 @@ dump (
 int
 main (int ac, char *av[])
 {
-    const CTypeRegistry *       pTypeRegistry;
+    CTypeRegistry *             pTypeRegistry;
     FILE *                      infp;
 
     /*
@@ -286,8 +286,18 @@ main (int ac, char *av[])
          * Print as XML text the LLRP message to stdout.
          */
         {
-            CPrXMLEncoder   MyXMLEncoder;
+            char                aBuf[100*1024];
+            CXMLTextEncoder     MyXMLEncoder(aBuf, sizeof aBuf);
+
             MyXMLEncoder.encodeElement(pMessage);
+            if(!MyXMLEncoder.m_bOverflow)
+            {
+                printf("%s", aBuf);
+            }
+            else
+            {
+                printf("<!-- Buffer overflow -->\n");
+            }
         }
 
         /*

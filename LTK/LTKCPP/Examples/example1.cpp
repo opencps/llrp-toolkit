@@ -1,7 +1,7 @@
 
 /*
  ***************************************************************************
- *  Copyright 2007 Impinj, Inc.
+ *  Copyright 2007,2008 Impinj, Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -105,6 +105,18 @@ class CMyApplication
     printOneTagReportData (
       CTagReportData *          pTagReportData);
 
+    void
+    handleReaderEventNotification (
+      CReaderEventNotificationData *pNtfData);
+
+    void
+    handleAntennaEvent (
+      CAntennaEvent *           pAntennaEvent);
+
+    void
+    handleReaderExceptionEvent (
+      CReaderExceptionEvent *   pReaderExceptionEvent);
+
     int
     checkLLRPStatus (
       CLLRPStatus *             pLLRPStatus,
@@ -112,8 +124,7 @@ class CMyApplication
 
     CMessage *
     transact (
-      CMessage *                pSendMsg,
-      const CTypeDescriptor *   pResponseType);
+      CMessage *                pSendMsg);
 
     CMessage *
     recvMessage (
@@ -323,7 +334,7 @@ CMyApplication::run (
      */
     if(m_Verbose)
     {
-        printf ("INFO: Connecting to %s....\n", pReaderHostName);
+        printf("INFO: Connecting to %s....\n", pReaderHostName);
     }
 
     rc = pConn->openConnectionToReader(pReaderHostName);
@@ -342,7 +353,7 @@ CMyApplication::run (
 
     if(m_Verbose)
     {
-        printf ("INFO: Connected, checking status....\n");
+        printf("INFO: Connected, checking status....\n");
     }
 
     /*
@@ -381,7 +392,7 @@ CMyApplication::run (
                         }
                     }
 
-                    if (i == 5)
+                    if(5 == i)
                     {
                         rc = 0;
                     }
@@ -403,7 +414,7 @@ CMyApplication::run (
 
     if(m_Verbose)
     {
-        printf ("INFO: Finished\n");
+        printf("INFO: Finished\n");
     }
 
     /*
@@ -612,7 +623,7 @@ CMyApplication::resetConfigurationToFactoryDefaults (void)
     /*
      * Send the message, expect the response of certain type
      */
-    pRspMsg = transact(pCmd, &CSET_READER_CONFIG_RESPONSE::s_typeDescriptor);
+    pRspMsg = transact(pCmd);
 
     /*
      * Done with the command message
@@ -700,7 +711,7 @@ CMyApplication::deleteAllROSpecs (void)
     /*
      * Send the message, expect the response of certain type
      */
-    pRspMsg = transact(pCmd, &CDELETE_ROSPEC_RESPONSE::s_typeDescriptor);
+    pRspMsg = transact(pCmd);
 
     /*
      * Done with the command message
@@ -901,7 +912,7 @@ CMyApplication::addROSpec (void)
     /*
      * Send the message, expect the response of certain type
      */
-    pRspMsg = transact(pCmd, &CADD_ROSPEC_RESPONSE::s_typeDescriptor);
+    pRspMsg = transact(pCmd);
 
     /*
      * Done with the command message.
@@ -987,7 +998,7 @@ CMyApplication::enableROSpec (void)
     /*
      * Send the message, expect the response of certain type
      */
-    pRspMsg = transact(pCmd, &CENABLE_ROSPEC_RESPONSE::s_typeDescriptor);
+    pRspMsg = transact(pCmd);
 
     /*
      * Done with the command message
@@ -1072,7 +1083,7 @@ CMyApplication::startROSpec (void)
     /*
      * Send the message, expect the response of certain type
      */
-    pRspMsg = transact(pCmd, &CSTART_ROSPEC_RESPONSE::s_typeDescriptor);
+    pRspMsg = transact(pCmd);
 
     /*
      * Done with the command message
@@ -1191,6 +1202,32 @@ CMyApplication::awaitAndPrintReport (void)
         }
 
         /*
+         * Is it a reader event? This example only recognizes
+         * AntennaEvents.
+         */
+        else if(&CREADER_EVENT_NOTIFICATION::s_typeDescriptor == pType)
+        {
+            CREADER_EVENT_NOTIFICATION *pNtf;
+            CReaderEventNotificationData *pNtfData;
+
+            pNtf = (CREADER_EVENT_NOTIFICATION *) pMessage;
+
+            pNtfData = pNtf->getReaderEventNotificationData();
+            if(NULL != pNtfData)
+            {
+                handleReaderEventNotification(pNtfData);
+            }
+            else
+            {
+                /*
+                 * This should never happen. Using continue
+                 * to keep indent depth down.
+                 */
+                printf("WARNING: READER_EVENT_NOTIFICATION without data\n");
+            }
+        }
+
+        /*
          * Hmmm. Something unexpected. Just tattle and keep going.
          */
         else
@@ -1233,7 +1270,7 @@ CMyApplication::printTagReportData (
     /*
      * Loop through and count the number of entries
      */
-    for (
+    for(
         Cur = pRO_ACCESS_REPORT->beginTagReportData();
         Cur != pRO_ACCESS_REPORT->endTagReportData();
         Cur++)
@@ -1246,12 +1283,12 @@ CMyApplication::printTagReportData (
     /*
      * Loop through again and print each entry.
      */
-    for (
+    for(
         Cur = pRO_ACCESS_REPORT->beginTagReportData();
         Cur != pRO_ACCESS_REPORT->endTagReportData();
         Cur++)
     {
-        printOneTagReportData (*Cur);
+        printOneTagReportData(*Cur);
     }
 }
 
@@ -1335,6 +1372,135 @@ CMyApplication::printOneTagReportData (
      * End of line
      */
     printf("\n");
+}
+
+
+/**
+ *****************************************************************************
+ **
+ ** @brief  Handle a ReaderEventNotification
+ **
+ ** Handle the payload of a READER_EVENT_NOTIFICATION message.
+ ** This routine simply dispatches to handlers of specific
+ ** event types.
+ **
+ ** @return     void
+ **
+ *****************************************************************************/
+
+void
+CMyApplication::handleReaderEventNotification (
+  CReaderEventNotificationData *pNtfData)
+{
+    CAntennaEvent *             pAntennaEvent;
+    CReaderExceptionEvent *     pReaderExceptionEvent;
+    int                         nReported = 0;
+
+    pAntennaEvent = pNtfData->getAntennaEvent();
+    if(NULL != pAntennaEvent)
+    {
+        handleAntennaEvent(pAntennaEvent);
+        nReported++;
+    }
+
+    pReaderExceptionEvent = pNtfData->getReaderExceptionEvent();
+    if(NULL != pReaderExceptionEvent)
+    {
+        handleReaderExceptionEvent(pReaderExceptionEvent);
+        nReported++;
+    }
+
+    /*
+     * Similarly handle other events here:
+     *      HoppingEvent
+     *      GPIEvent
+     *      ROSpecEvent
+     *      ReportBufferLevelWarningEvent
+     *      ReportBufferOverflowErrorEvent
+     *      RFSurveyEvent
+     *      AISpecEvent
+     *      ConnectionAttemptEvent
+     *      ConnectionCloseEvent
+     *      Custom
+     */
+
+    if(0 == nReported)
+    {
+        printf("NOTICE: Unexpected (unhandled) ReaderEvent\n");
+    }
+}
+
+
+/**
+ *****************************************************************************
+ **
+ ** @brief  Handle an AntennaEvent
+ **
+ ** An antenna was disconnected or (re)connected. Tattle.
+ **
+ ** @return     void
+ **
+ *****************************************************************************/
+
+void
+CMyApplication::handleAntennaEvent (
+  CAntennaEvent *               pAntennaEvent)
+{
+    EAntennaEventType           eEventType;
+    llrp_u16_t                  AntennaID;
+    char *                      pStateStr;
+
+    eEventType = pAntennaEvent->getEventType();
+    AntennaID = pAntennaEvent->getAntennaID();
+
+    switch(eEventType)
+    {
+    case AntennaEventType_Antenna_Disconnected:
+        pStateStr = "disconnected";
+        break;
+
+    case AntennaEventType_Antenna_Connected:
+        pStateStr = "connected";
+        break;
+
+    default:
+        pStateStr = "?unknown-event?";
+        break;
+    }
+
+    printf("NOTICE: Antenna %d is %s\n", AntennaID, pStateStr);
+}
+
+
+/**
+ *****************************************************************************
+ **
+ ** @brief  Handle a ReaderExceptionEvent
+ **
+ ** Something has gone wrong. There are lots of details but
+ ** all this does is print the message, if one.
+ **
+ ** @return     void
+ **
+ *****************************************************************************/
+
+void
+CMyApplication::handleReaderExceptionEvent (
+  CReaderExceptionEvent *       pReaderExceptionEvent)
+{
+    llrp_utf8v_t                Message;
+
+    Message = pReaderExceptionEvent->getMessage();
+
+    if(0 < Message.m_nValue && NULL != Message.m_pValue)
+    {
+        printf("NOTICE: ReaderException '%.*s'\n",
+             Message.m_nValue, Message.m_pValue);
+    }
+    else
+    {
+        printf("NOTICE: ReaderException but no message\n");
+    }
 }
 
 
@@ -1431,8 +1597,7 @@ CMyApplication::checkLLRPStatus (
 
 CMessage *
 CMyApplication::transact (
-  CMessage *                    pSendMsg,
-  const CTypeDescriptor *       pResponseType)
+  CMessage *                    pSendMsg)
 {
     CConnection *               pConn = m_pConnectionToReader;
     CMessage *                  pRspMsg;
@@ -1453,7 +1618,7 @@ CMyApplication::transact (
      * If LLRP::CConnection::transact() returns NULL then there was
      * an error. In that case we try to print the error details.
      */
-    pRspMsg = pConn->transact(pSendMsg, 5000, pResponseType);
+    pRspMsg = pConn->transact(pSendMsg, 5000);
 
     if(NULL == pRspMsg)
     {
@@ -1496,6 +1661,10 @@ CMyApplication::transact (
      */
     if(&CERROR_MESSAGE::s_typeDescriptor == pRspMsg->m_pType)
     {
+        const CTypeDescriptor * pResponseType;
+
+        pResponseType = pSendMsg->m_pType->m_pResponseType;
+
         printf("ERROR: Received ERROR_MESSAGE instead of %s\n",
             pResponseType->m_pName);
         delete pRspMsg;
@@ -1658,9 +1827,6 @@ CMyApplication::sendMessage (
  ** @brief  Helper to print a message as XML text
  **
  ** Print a LLRP message as XML text
- **     - Construct an XML encoder that prints to stdout
- **     - Encode the message through the XML encoder
- **     - Destruct the XML encoder
  **
  ** @param[in]  pMessage        Pointer to message to print
  **
@@ -1672,34 +1838,19 @@ void
 CMyApplication::printXMLMessage (
   CMessage *                    pMessage)
 {
-    CPrXMLEncoder *             pXMLEncoder;
+    char                        aBuf[100*1024];
 
     /*
-     * Make sure the message is not NULL.
+     * Convert the message to an XML string.
+     * This fills the buffer with either the XML string
+     * or an error message. The return value could
+     * be checked.
      */
-    if(NULL == pMessage)
-    {
-        printf("ERROR: NULL pMessage to printXMLMessage\n");
-        return;
-    }
+
+    pMessage->toXMLString(aBuf, sizeof aBuf);
 
     /*
-     * Construct an XML encoder
+     * Print the XML Text to the standard output.
      */
-    pXMLEncoder = new CPrXMLEncoder();
-    if(NULL == pXMLEncoder)
-    {
-        printf("ERROR: PrXMLEncoder_construct failed\n");
-        return;
-    }
-
-    /*
-     * Now let the encoding mechanism do its thing.
-     */
-    pXMLEncoder->encodeElement(pMessage);
-
-    /*
-     * Done with the XML encoder.
-     */
-    delete pXMLEncoder;
+    printf("%s", aBuf);
 }

@@ -1,7 +1,7 @@
 
 /*
  ***************************************************************************
- *  Copyright 2007 Impinj, Inc.
+ *  Copyright 2007,2008 Impinj, Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -19,31 +19,23 @@
  */
 
 
+#include "ltkcpp.h"
+#include "llrporg_ltkcpp.h"
 
-
-struct LLRP_SPrXMLEncoder;
-struct LLRP_SPrXMLEncoderStream;
-
-typedef struct LLRP_SPrXMLEncoder           LLRP_tSPrXMLEncoder;
-typedef struct LLRP_SPrXMLEncoderStream     LLRP_tSPrXMLEncoderStream;
-
-struct LLRP_SPrXMLEncoder
+namespace LLRP
 {
-    LLRP_tSEncoder              encoderHdr;
-    FILE *                      outfp;
+#include "out_llrporg_ltkcpp.inc"
+
+
+static char     ident[] = {
+    "$" "Id: libltkcppllrporg "
+    LLRPORG_LTKCPP_VERSION_STR
+    "  Built: "
+    __DATE__
+    " "
+    __TIME__
+    " $"
 };
 
-struct LLRP_SPrXMLEncoderStream
-{
-    LLRP_tSEncoderStream        encoderStreamHdr;
+}; /* namespace LLRP */
 
-    LLRP_tSPrXMLEncoder *       pEncoder;
-    LLRP_tSPrXMLEncoderStream * pEnclosingEncoderStream;
-    const LLRP_tSTypeDescriptor *pRefType;
-    unsigned int                nDepth;
-};
-
-
-extern LLRP_tSPrXMLEncoder *
-LLRP_PrXMLEncoder_construct (
-  FILE *                        outfp);

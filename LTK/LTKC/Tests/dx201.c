@@ -1,7 +1,7 @@
 
 /*
  ***************************************************************************
- *  Copyright 2007 Impinj, Inc.
+ *  Copyright 2007,2008 Impinj, Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -28,12 +28,12 @@
  ** This is diagnostic 201 for the LLRP Tool Kit for C (LTKC).
  **
  ** DX201 controls an LLRP reader to do a very simple operation.
- **      - Uses mostly the default settings of the reader
- **      - Simple inventory operation
- **      - Uses all antennas
- **      - Stops when there are no new tags for 3.5 seconds
- **      - Stops after 12.5 seconds no matter what
- **      - Reports after operation stops
+ **     - Uses mostly the default settings of the reader
+ **     - Simple inventory operation
+ **     - Uses all antennas
+ **     - Stops when there are no new tags for 3.5 seconds
+ **     - Stops after 12.5 seconds no matter what
+ **     - Reports after operation stops
  **
  ** It is best to be sure DX10x tests work properly before trying
  ** this test. The one facility DX201 uses that the DX10x tests
@@ -43,9 +43,9 @@
  ** see http://en.wikipedia.org/wiki/Valgrind) that detect memory leaks.
  **
  ** This program can be run with zero, one, or two verbose options (-v).
- **      no -v -- Only prints the tag report and errors
- **      -v    -- Also prints one line progress messages
- **      -vv   -- Also prints all LLRP messages as XML text
+ **     no -v -- Only prints the tag report and errors
+ **     -v    -- Also prints one line progress messages
+ **     -vv   -- Also prints all LLRP messages as XML text
  **
  ** This is a test of LTKC and also a reasonable example to
  ** help people get started with LTKC.
@@ -54,6 +54,9 @@
 
 
 #include <stdio.h>
+#ifdef linux
+#include <unistd.h>
+#endif
 
 #include "ltkc.h"
 
@@ -125,8 +128,7 @@ checkLLRPStatus (
 
 LLRP_tSMessage *
 transact (
-  LLRP_tSMessage *              pSendMsg,
-  const LLRP_tSTypeDescriptor * pResponseType);
+  LLRP_tSMessage *              pSendMsg);
 
 LLRP_tSMessage *
 recvMessage (
@@ -154,6 +156,12 @@ printXMLMessage (
  */
 /** Verbose level, incremented by each -v on command line */
 int                             g_Verbose;
+/** ModeIndex requested [012345], -1 means no mode given and use the default */
+int                             g_ModeIndex = -1;
+/** Quiet flag -q, don't print the tag reports */
+int                             g_Quiet;
+/** Count of tag reports (RO_ACCESS_REPORT) */
+int                             g_nTagReport;
 /** Connection to the LLRP reader */
 LLRP_tSConnection *             g_pConnectionToReader;
 
@@ -166,7 +174,12 @@ LLRP_tSConnection *             g_pConnectionToReader;
  **
  ** Command synopsis:
  **
- **     dx201 [-v[v]] READERHOSTNAME
+ **     dx201 [-vvq012345] READERHOSTNAME
+ **
+ ** Options:
+ **     -v      Verbose, each -v increments verbosity
+ **     -q      Quiet, don't print tag reports (used for characterization)
+ **     -012345 Select mode, if not given the default mode is used
  **
  ** @exitcode   0               Everything *seemed* to work.
  **             1               Bad usage
@@ -181,6 +194,9 @@ main (
 {
     char *                      pReaderHostName;
     int                         rc;
+#ifdef linux
+    char *                      pMemHiwatAtStart = (char*)sbrk(0);
+#endif
 
     /*
      * Process comand arguments, determine reader name
@@ -207,6 +223,15 @@ main (
                 g_Verbose++;
                 break;
 
+            case 'q':
+            case 'Q':
+                g_Quiet++;
+                break;
+
+            case '0': case '1': case '2': case '3': case '4': case '5':
+                g_ModeIndex = p[-1] - '0';
+                break;
+
             default:
                 usage(av[0]);
                 /* no return */
@@ -228,6 +253,15 @@ main (
     rc = run(pReaderHostName);
 
     printf("INFO: Done\n");
+
+#ifdef linux
+    {
+        char *              pMemHiwatAtEnd = (char*)sbrk(0);
+
+        printf("INFO: Needed %d bytes of heap\n",
+            pMemHiwatAtEnd - pMemHiwatAtStart);
+    }
+#endif
 
     /*
      * Exit with the right status.
@@ -403,6 +437,17 @@ run (
      * Done with the registry.
      */
     LLRP_TypeRegistry_destruct(pTypeRegistry);
+
+    /*
+     * Maybe tattle on the number of tags. Normally tags are reported.
+     * The -q command option prevents that and instead asks for just a
+     * total. With the -v command option we're probably reporting tags
+     * and a final count.
+     */
+    if(g_Verbose || g_Quiet)
+    {
+        printf("INFO: %d Tag reports\n", g_nTagReport);
+    }
 
     /*
      * When we get here all allocated memory should have been deallocated.
@@ -609,7 +654,7 @@ resetConfigurationToFactoryDefaults (void)
     /*
      * Send the message, expect the response of certain type
      */
-    pRspMsg = transact(&Cmd.hdr, &LLRP_tdSET_READER_CONFIG_RESPONSE);
+    pRspMsg = transact(&Cmd.hdr);
     if(NULL == pRspMsg)
     {
         /* transact already tattled */
@@ -686,7 +731,7 @@ deleteAllROSpecs (void)
     /*
      * Send the message, expect the response of certain type
      */
-    pRspMsg = transact(&Cmd.hdr, &LLRP_tdDELETE_ROSPEC_RESPONSE);
+    pRspMsg = transact(&Cmd.hdr);
     if(NULL == pRspMsg)
     {
         /* transact already tattled */
@@ -762,7 +807,7 @@ deleteAllAccessSpecs (void)
     /*
      * Send the message, expect the response of certain type
      */
-    pRspMsg = transact(&Cmd.hdr, &LLRP_tdDELETE_ACCESSSPEC_RESPONSE);
+    pRspMsg = transact(&Cmd.hdr);
     if(NULL == pRspMsg)
     {
         /* transact already tattled */
@@ -906,7 +951,7 @@ getAllCapabilities (void)
     /*
      * Send the message, expect the response of certain type
      */
-    pRspMsg = transact(&Cmd.hdr, &LLRP_tdGET_READER_CAPABILITIES_RESPONSE);
+    pRspMsg = transact(&Cmd.hdr);
     if(NULL == pRspMsg)
     {
         /* transact already tattled */
@@ -985,7 +1030,7 @@ getAllConfiguration (void)
     /*
      * Send the message, expect the response of certain type
      */
-    pRspMsg = transact(&Cmd.hdr, &LLRP_tdGET_READER_CONFIG_RESPONSE);
+    pRspMsg = transact(&Cmd.hdr);
     if(NULL == pRspMsg)
     {
         /* transact already tattled */
@@ -1186,7 +1231,7 @@ configureNotificationStates (void)
     /*
      * Send the message, expect the response of certain type
      */
-    pRspMsg = transact(&Cmd.hdr, &LLRP_tdSET_READER_CONFIG_RESPONSE);
+    pRspMsg = transact(&Cmd.hdr);
     if(NULL == pRspMsg)
     {
         /* transact already tattled */
@@ -1268,19 +1313,29 @@ configureNotificationStates (void)
  **         <AISpec>
  **           <AntennaIDs>0</AntennaIDs>
  **           <AISpecStopTrigger>
- **             <AISpecStopTriggerType>Tag_Observation</AISpecStopTriggerType>
- **             <DurationTrigger>0</DurationTrigger>
- **             <TagObservationTrigger>
- **               <TriggerType>Upon_Seeing_No_More_New_Tags_For_Tms_Or_Timeout</TriggerType>
- **               <NumberOfTags>0</NumberOfTags>
- **               <NumberOfAttempts>0</NumberOfAttempts>
- **               <T>3500</T>
- **               <Timeout>12500</Timeout>
- **             </TagObservationTrigger>
+ **             <AISpecStopTriggerType>Duration</AISpecStopTriggerType>
+ **             <DurationTrigger>30000</DurationTrigger>
  **           </AISpecStopTrigger>
  **           <InventoryParameterSpec>
  **             <InventoryParameterSpecID>1234</InventoryParameterSpecID>
  **             <ProtocolID>EPCGlobalClass1Gen2</ProtocolID>
+ **             <AntennaConfiguration>
+ **               <AntennaID>0</AntennaID>
+ **               <C1G2InventoryCommand>
+ **                 <TagInventoryStateAware>false</TagInventoryStateAware>
+ ** BEGIN C1G2RFControl only if mode specified on command line
+ **                  <C1G2RFControl>
+ **                   <ModeIndex>$MODE</ModeIndex>
+ **                   <Tari>0</Tari>
+ **                 </C1G2RFControl>
+ ** END   C1G2RFControl only if mode specified on command line
+ **                 <C1G2SingulationControl>
+ **                   <Session>2</Session>
+ **                   <TagPopulation>32</TagPopulation>
+ **                   <TagTransitTime>0</TagTransitTime>
+ **                 </C1G2SingulationControl>
+ **               </C1G2InventoryCommand>
+ **             </AntennaConfiguration>
  **           </InventoryParameterSpec>
  **         </AISpec>
  **         <ROReportSpec>
@@ -1328,6 +1383,14 @@ addROSpec (void)
         .pROSpecStopTrigger     = &ROSpecStopTrigger,
     };
     llrp_u16_t                  AntennaIDs[1] = { 0 };  /* All */
+#if 1
+    LLRP_tSAISpecStopTrigger    AISpecStopTrigger = {
+        .hdr.elementHdr.pType   = &LLRP_tdAISpecStopTrigger,
+
+        .eAISpecStopTriggerType = LLRP_AISpecStopTriggerType_Duration,
+        .DurationTrigger        = 30000,
+    };
+#else
     LLRP_tSTagObservationTrigger TagObservationTrigger = {
         .hdr.elementHdr.pType   = &LLRP_tdTagObservationTrigger,
 
@@ -1345,11 +1408,41 @@ addROSpec (void)
         .DurationTrigger        = 0,
         .pTagObservationTrigger = &TagObservationTrigger,
     };
+#endif
+    LLRP_tSC1G2RFControl        C1G2RFControl = {
+        .hdr.elementHdr.pType   = &LLRP_tdC1G2RFControl,
+
+        .ModeIndex              = g_ModeIndex,
+    };
+    LLRP_tSC1G2SingulationControl C1G2SingulationControl = {
+        .hdr.elementHdr.pType   = &LLRP_tdC1G2SingulationControl,
+
+        .Session                = 2,
+        .TagPopulation          = 32,
+        .TagTransitTime         = 0,
+    };
+    LLRP_tSC1G2InventoryCommand C1G2InventoryCommand = {
+        .hdr.elementHdr.pType   = &LLRP_tdC1G2InventoryCommand,
+
+        /*
+         * .pC1G2RFControl might be set below if
+         * a g_ModeIndex was given on the command line.
+         */
+        .pC1G2SingulationControl = &C1G2SingulationControl,
+    };
+    LLRP_tSAntennaConfiguration AntennaConfiguration = {
+        .hdr.elementHdr.pType   = &LLRP_tdAntennaConfiguration,
+
+        .listAirProtocolInventoryCommandSettings =
+                                  &C1G2InventoryCommand.hdr,
+    };
     LLRP_tSInventoryParameterSpec InventoryParameterSpec = {
         .hdr.elementHdr.pType   = &LLRP_tdInventoryParameterSpec,
 
         .InventoryParameterSpecID = 1234,
         .eProtocolID            = LLRP_AirProtocols_EPCGlobalClass1Gen2,
+
+        .listAntennaConfiguration = &AntennaConfiguration,
     };
     LLRP_tSAISpec               AISpec = {
         .hdr.elementHdr.pType   = &LLRP_tdAISpec,
@@ -1380,7 +1473,7 @@ addROSpec (void)
 
         .eROReportTrigger       =
                       LLRP_ROReportTriggerType_Upon_N_Tags_Or_End_Of_ROSpec,
-        .N                      = 0,
+        .N                      = 1,
         .pTagReportContentSelector = &TagReportContentSelector,
     };
     LLRP_tSROSpec               ROSpec = {
@@ -1403,9 +1496,19 @@ addROSpec (void)
     LLRP_tSADD_ROSPEC_RESPONSE *pRsp;
 
     /*
+     * If the mode was specified link in the AntennaConfiguration
+     * that was prepared, above. The absence of the AntennaConfiguration
+     * tells the reader to use the default mode.
+     */
+    if(0 <= g_ModeIndex)
+    {
+        C1G2InventoryCommand.pC1G2RFControl = &C1G2RFControl;
+    }
+
+    /*
      * Send the message, expect the response of certain type
      */
-    pRspMsg = transact(&Cmd.hdr, &LLRP_tdADD_ROSPEC_RESPONSE);
+    pRspMsg = transact(&Cmd.hdr);
     if(NULL == pRspMsg)
     {
         /* transact already tattled */
@@ -1479,7 +1582,7 @@ enableROSpec (void)
     /*
      * Send the message, expect the response of certain type
      */
-    pRspMsg = transact(&Cmd.hdr, &LLRP_tdENABLE_ROSPEC_RESPONSE);
+    pRspMsg = transact(&Cmd.hdr);
     if(NULL == pRspMsg)
     {
         /* transact already tattled */
@@ -1778,6 +1881,19 @@ printTagReportData (
     unsigned int                nEntry = 0;
 
     /*
+     * Count the number of tag reports.
+     */
+    g_nTagReport++;
+
+    /*
+     * If individual tag reports are not wanted, just return.
+     */
+    if(g_Quiet)
+    {
+        return;
+    }
+
+    /*
      * Loop through and count the number of entries
      */
     for(
@@ -2013,8 +2129,7 @@ checkLLRPStatus (
 
 LLRP_tSMessage *
 transact (
-  LLRP_tSMessage *              pSendMsg,
-  const LLRP_tSTypeDescriptor * pResponseType)
+  LLRP_tSMessage *              pSendMsg)
 {
     LLRP_tSConnection *         pConn = g_pConnectionToReader;
     LLRP_tSMessage *            pRspMsg;
@@ -2025,8 +2140,12 @@ transact (
      */
     if(1 < g_Verbose)
     {
-        printf("\n===================================\n");
-        printf("INFO: Transact sending\n");
+        /* If -qq command option, do XML encode but don't actually print */
+        if(2 > g_Quiet)
+        {
+            printf("\n===================================\n");
+            printf("INFO: Transact sending\n");
+        }
         printXMLMessage(pSendMsg);
     }
 
@@ -2035,7 +2154,7 @@ transact (
      * If LLRP_Conn_transact() returns NULL then there was
      * an error. In that case we try to print the error details.
      */
-    pRspMsg = LLRP_Conn_transact(pConn, pSendMsg, 5000, pResponseType);
+    pRspMsg = LLRP_Conn_transact(pConn, pSendMsg, 5000);
     if(NULL == pRspMsg)
     {
         const LLRP_tSErrorDetails *pError = LLRP_Conn_getTransactError(pConn);
@@ -2065,8 +2184,12 @@ transact (
      */
     if(1 < g_Verbose)
     {
-        printf("\n- - - - - - - - - - - - - - - - - -\n");
-        printf("INFO: Transact received response\n");
+        /* If -qq command option, do XML encode but don't actually print */
+        if(2 > g_Quiet)
+        {
+            printf("\n- - - - - - - - - - - - - - - - - -\n");
+            printf("INFO: Transact received response\n");
+        }
         printXMLMessage(pRspMsg);
     }
 
@@ -2078,7 +2201,7 @@ transact (
     if(&LLRP_tdERROR_MESSAGE == pRspMsg->elementHdr.pType)
     {
         printf("ERROR: Received ERROR_MESSAGE instead of %s\n",
-            pResponseType->pName);
+            pSendMsg->elementHdr.pType->pResponseType->pName);
         freeMessage(pRspMsg);
         pRspMsg = NULL;
     }
@@ -2155,8 +2278,12 @@ recvMessage (
      */
     if(1 < g_Verbose)
     {
-        printf("\n===================================\n");
-        printf("INFO: Message received\n");
+        /* If -qq command option, do XML encode but don't actually print */
+        if(2 > g_Quiet)
+        {
+            printf("\n===================================\n");
+            printf("INFO: Message received\n");
+        }
         printXMLMessage(pMessage);
     }
 
@@ -2193,8 +2320,12 @@ sendMessage (
      */
     if(1 < g_Verbose)
     {
-        printf("\n===================================\n");
-        printf("INFO: Sending\n");
+        /* If -qq command option, do XML encode but don't actually print */
+        if(2 > g_Quiet)
+        {
+            printf("\n===================================\n");
+            printf("INFO: Sending\n");
+        }
         printXMLMessage(pSendMsg);
     }
 
@@ -2261,9 +2392,6 @@ freeMessage (
  ** @brief  Helper to print a message as XML text
  **
  ** Print a LLRP message as XML text
- **     - Construct an XML encoder that prints to stdout
- **     - Encode the message through the XML encoder
- **     - Destruct the XML encoder
  **
  ** @param[in]  pMessage        Pointer to message to print
  **
@@ -2275,40 +2403,26 @@ void
 printXMLMessage (
   LLRP_tSMessage *              pMessage)
 {
-    LLRP_tSPrXMLEncoder *       pXMLEncoder;
-    LLRP_tSEncoder *            pEncoder;
+    char                        aBuf[100*1024];
 
     /*
-     * Make sure the message is not NULL.
+     * Convert the message to an XML string.
+     * This fills the buffer with either the XML string
+     * or an error message. The return value could
+     * be checked.
      */
-    if(NULL == pMessage)
+
+    LLRP_toXMLString(&pMessage->elementHdr, aBuf, sizeof aBuf);
+
+    /*
+     * Print the XML Text to the standard output.
+     * For characterization, command line option -qq
+     * prevents the XML text actually being printed and
+     * so the CPU utilization of XMLTextEncoder can be measured
+     * without the noise.
+     */
+    if(2 > g_Quiet)
     {
-        printf("ERROR: NULL pMessage to printXMLMessage\n");
-        return;
+        printf("%s", aBuf);
     }
-
-    /*
-     * Construct an XML encoder
-     */
-    pXMLEncoder = LLRP_PrXMLEncoder_construct(stdout);
-    if(NULL == pXMLEncoder)
-    {
-        printf("ERROR: PrXMLEncoder_construct failed\n");
-        return;
-    }
-
-    /*
-     * Essentially cast the XMLEncoder as a generic encoder.
-     */
-    pEncoder = &pXMLEncoder->encoderHdr;
-
-    /*
-     * Now let the encoding mechanism do its thing.
-     */
-    LLRP_Encoder_encodeElement(pEncoder, &pMessage->elementHdr);
-
-    /*
-     * Done with the XML encoder.
-     */
-    LLRP_Encoder_destruct(pEncoder);
 }

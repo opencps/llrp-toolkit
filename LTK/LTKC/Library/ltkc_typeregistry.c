@@ -1,7 +1,7 @@
 
 /*
  ***************************************************************************
- *  Copyright 2007 Impinj, Inc.
+ *  Copyright 2007,2008 Impinj, Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -57,7 +57,7 @@ LLRP_TypeRegistry_enroll (
   LLRP_tSTypeRegistry *         pTypeRegistry,
   const LLRP_tSTypeDescriptor * pTypeDescriptor)
 {
-    if(0 == pTypeDescriptor->VendorID)
+    if(NULL == pTypeDescriptor->pVendorDescriptor)
     {
         if(1023u < pTypeDescriptor->TypeNum)
         {
@@ -80,8 +80,25 @@ LLRP_TypeRegistry_enroll (
     }
     else
     {
-        /* TODO: Custom messages and parameter */
-        return LLRP_RC_Botch;
+        /*
+         * Custom message or parameter
+         */
+        if(pTypeDescriptor->bIsMessage)
+        {
+            unsigned int        ix;
+
+            ix = pTypeRegistry->nCustMessageTypeDescriptors++;
+            pTypeRegistry->apCustMessageTypeDescriptors[ix] =
+                        pTypeDescriptor;
+        }
+        else
+        {
+            unsigned int        ix;
+
+            ix = pTypeRegistry->nCustParameterTypeDescriptors++;
+            pTypeRegistry->apCustParameterTypeDescriptors[ix] =
+                        pTypeDescriptor;
+        }
     }
     
     return LLRP_RC_OK;
@@ -122,7 +139,19 @@ LLRP_TypeRegistry_lookupCustomMessage (
   unsigned int                  VendorID,
   unsigned int                  MessageSubTypeNum)
 {
-    /* TODO: custom messages */
+    const LLRP_tSTypeDescriptor *pTypeDescriptor;
+    unsigned int                ix;
+
+    for(ix = 0; ix < pTypeRegistry->nCustMessageTypeDescriptors; ix++)
+    {
+        pTypeDescriptor = pTypeRegistry->apCustMessageTypeDescriptors[ix];
+        if(VendorID == pTypeDescriptor->pVendorDescriptor->VendorID &&
+           MessageSubTypeNum == pTypeDescriptor->TypeNum)
+        {
+            return pTypeDescriptor;
+        }
+    }
+
     return NULL;
 }
 
@@ -133,6 +162,62 @@ LLRP_TypeRegistry_lookupCustomParameter (
   unsigned int                  VendorID,
   unsigned int                  ParameterSubTypeNum)
 {
-    /* TODO: custom parameters */
+    const LLRP_tSTypeDescriptor *pTypeDescriptor;
+    unsigned int                ix;
+
+    for(ix = 0; ix < pTypeRegistry->nCustParameterTypeDescriptors; ix++)
+    {
+        pTypeDescriptor = pTypeRegistry->apCustParameterTypeDescriptors[ix];
+        if(VendorID == pTypeDescriptor->pVendorDescriptor->VendorID &&
+           ParameterSubTypeNum == pTypeDescriptor->TypeNum)
+        {
+            return pTypeDescriptor;
+        }
+    }
+
     return NULL;
 }
+
+/* Lookup a type descriptor by name. NULL=>not found */
+const LLRP_tSTypeDescriptor *
+LLRP_TypeRegistry_lookupByName (
+  const LLRP_tSTypeRegistry *   pTypeRegistry,
+  const char *                  pElementName)
+{
+    unsigned int                i;
+    const LLRP_tSTypeDescriptor *pTypeDescriptor;
+
+    for(i = 0; i < 1024u; i++)
+    {
+        pTypeDescriptor = pTypeRegistry->apStdMessageTypeDescriptors[i];
+        if(NULL == pTypeDescriptor)
+        {
+            continue;
+        }
+
+        if(0 == strcmp(pTypeDescriptor->pName, pElementName))
+        {
+            return pTypeDescriptor;
+        }
+    }
+
+    for(i = 0; i < 1024u; i++)
+    {
+        pTypeDescriptor = pTypeRegistry->apStdParameterTypeDescriptors[i];
+        if(NULL == pTypeDescriptor)
+        {
+            continue;
+        }
+
+        if(0 == strcmp(pTypeDescriptor->pName, pElementName))
+        {
+            return pTypeDescriptor;
+        }
+    }
+
+    /* TODO: custom messages */
+    /* TODO: custom parameters */
+
+    return NULL;
+}
+

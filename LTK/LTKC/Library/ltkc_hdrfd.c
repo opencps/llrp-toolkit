@@ -1,7 +1,7 @@
 
 /*
  ***************************************************************************
- *  Copyright 2007 Impinj, Inc.
+ *  Copyright 2007,2008 Impinj, Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ LLRP_tSFieldDescriptor
 LLRP_g_fdMessageHeader_Type =
 {
     .eFieldType     = LLRP_FT_U16,
+    .eFieldFormat   = LLRP_FMT_NORMAL,
     .pName          = "MessageHeader.Type",
     .pEnumTable     = NULL
 };
@@ -37,6 +38,7 @@ LLRP_tSFieldDescriptor
 LLRP_g_fdMessageHeader_Length =
 {
     .eFieldType     = LLRP_FT_U32,
+    .eFieldFormat   = LLRP_FMT_NORMAL,
     .pName          = "MessageHeader.Length",
     .pEnumTable     = NULL
 };
@@ -45,6 +47,7 @@ LLRP_tSFieldDescriptor
 LLRP_g_fdMessageHeader_MessageID =
 {
     .eFieldType     = LLRP_FT_U32,
+    .eFieldFormat   = LLRP_FMT_NORMAL,
     .pName          = "MessageHeader.MessageID",
     .pEnumTable     = NULL
 };
@@ -53,6 +56,7 @@ LLRP_tSFieldDescriptor
 LLRP_g_fdMessageHeader_VendorPEN =
 {
     .eFieldType     = LLRP_FT_U32,
+    .eFieldFormat   = LLRP_FMT_NORMAL,
     .pName          = "MessageHeader.CustomVendorPEN",
     .pEnumTable     = NULL
 };
@@ -61,6 +65,7 @@ LLRP_tSFieldDescriptor
 LLRP_g_fdMessageHeader_Subtype =
 {
     .eFieldType     = LLRP_FT_U8,
+    .eFieldFormat   = LLRP_FMT_NORMAL,
     .pName          = "MessageHeader.CustomSubtype",
     .pEnumTable     = NULL
 };
@@ -69,6 +74,7 @@ LLRP_tSFieldDescriptor
 LLRP_g_fdParameterHeader_TVType =
 {
     .eFieldType     = LLRP_FT_U8,
+    .eFieldFormat   = LLRP_FMT_NORMAL,
     .pName          = "ParameterHeader.TVType",
     .pEnumTable     = NULL
 };
@@ -77,6 +83,7 @@ LLRP_tSFieldDescriptor
 LLRP_g_fdParameterHeader_TLVType =
 {
     .eFieldType     = LLRP_FT_U16,
+    .eFieldFormat   = LLRP_FMT_NORMAL,
     .pName          = "ParameterHeader.TLVType",
     .pEnumTable     = NULL
 };
@@ -85,6 +92,7 @@ LLRP_tSFieldDescriptor
 LLRP_g_fdParameterHeader_TLVLength =
 {
     .eFieldType     = LLRP_FT_U16,
+    .eFieldFormat   = LLRP_FMT_NORMAL,
     .pName          = "ParameterHeader.TLVLength",
     .pEnumTable     = NULL
 };
@@ -93,6 +101,7 @@ LLRP_tSFieldDescriptor
 LLRP_g_fdParameterHeader_VendorPEN =
 {
     .eFieldType     = LLRP_FT_U32,
+    .eFieldFormat   = LLRP_FMT_NORMAL,
     .pName          = "ParameterHeader.CustomVendorPEN",
     .pEnumTable     = NULL
 };
@@ -101,6 +110,7 @@ LLRP_tSFieldDescriptor
 LLRP_g_fdParameterHeader_Subtype =
 {
     .eFieldType     = LLRP_FT_U32,
+    .eFieldFormat   = LLRP_FMT_NORMAL,
     .pName          = "ParameterHeader.CustomSubtype",
     .pEnumTable     = NULL
 };

@@ -1,7 +1,7 @@
 
 /*
  ***************************************************************************
- *  Copyright 2007 Impinj, Inc.
+ *  Copyright 2007,2008 Impinj, Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -18,6 +18,12 @@
  ***************************************************************************
  */
 
+/*
+ * Version is four each 8-bit numbers:
+ * major, minor, maintenance, progress number
+ */
+#define LTKC_VERSION        0x01000000
+#define LTKC_VERSION_STR    "1.0.0.0"
 
 
 #define BOOL int
@@ -29,10 +35,14 @@ namespace LLRP
  * Forward declarations of structs and classes
  */
 
+//enum EResultCode;
 class CErrorDetails;
-struct SEnumTableEntry;
-class CFieldDescriptor;
+class CVendorDescriptor;
+class CNamespaceDescriptor;
 class CTypeDescriptor;
+class CFieldDescriptor;
+struct SEnumTableEntry;
+class CTypeRegistry;
 class CElement;
 class CMessage;
 class CParameter;
@@ -404,6 +414,7 @@ enum EResultCode
     RC_RecvTimeout,
     RC_RecvFramingError,
     RC_BadVersion,
+    RC_MissingResponseType,
     RC_UnknownMessageType,
     RC_UnknownParameterType,
     RC_ExcessiveLength,
@@ -422,6 +433,7 @@ enum EResultCode
     RC_UnexpectedParameter,
     RC_InvalidChoiceMember,
     RC_EnrollBadTypeNumber,
+    RC_NotAllowedAtExtensionPoint,
 };
 
 class CErrorDetails
@@ -452,6 +464,29 @@ class CErrorDetails
       const char *              pWhatStr);
 };
 
+class CVendorDescriptor
+{
+  public:
+    /* Short name for the vendor, e.g. "Acme" */
+    const char *                m_pName;
+
+    /* Vendor PEN of a custom message or parameter */
+    llrp_u32_t                  m_VendorID;
+};
+
+class CNamespaceDescriptor
+{
+  public:
+    /* Short name for the namespace, e.g. "acmeNS" */
+    const char *                m_pPrefix;
+
+    /* URI for the namespace, this is the true namespace name */
+    const char *                m_pURI;
+
+    /* URI for the XSD (schema) for custom parameters and messages
+     * defined within the namespace */
+    const char *                m_pSchemaLocation;
+};
 
 /*
  *
@@ -500,12 +535,23 @@ class CTypeDescriptor
   public:
     /* TRUE for a message type, FALSE for a parameter type */
     llrp_bool_t                 m_bIsMessage;
+
     /* String name of parameter/message type (e.g. "ROSpec") */
     char *                      m_pName;
-    /* 0=>standard LLRP, !0=>Vendor PEN of custom message or parameter */
-    llrp_u32_t                  m_VendorID;
+
+    /* NULL=>standard LLRP, !NULL=>Vendor (PEN) of custom
+     * message or parameter */
+    const CVendorDescriptor *   m_pVendorDescriptor;
+
+    /* Namespace of message or parameter, for XML */
+    const CNamespaceDescriptor *m_pNamespaceDescriptor;
+
     /* Type number or, for custom, subtype number */
     llrp_u32_t                  m_TypeNum;
+
+    /* For messages (bIsMessage==TRUE), this is the type descriptor for
+     * the corresponding response. NULL for a request or notification. */
+    const CTypeDescriptor *     m_pResponseType;
 
     /* Table of pointers to the field descriptors */
     const CFieldDescriptor * const * const m_ppFieldDescriptorTable;
@@ -547,11 +593,23 @@ class CFieldDescriptor
         FT_UTF8V,
 
         FT_E1, FT_E2, FT_E8, FT_E16, FT_E32,
+        FT_E8V,
+
         FT_BYTESTOEND,
+    };
+
+    enum FieldFormat {
+        FMT_NORMAL,
+        FMT_DEC,
+        FMT_HEX,
+        FMT_UTF8,
+        FMT_DATETIME,
     };
 
     /* A code for the field type */
     FieldType                   m_eFieldType;
+    /* A code for how the field should be formatted */
+    FieldFormat                 m_eFieldFormat;
     /* String name of field (e.g. "ROSpecID") */
     char *                      m_pName;
     /* NULL or ptr to table base for enumerated fields */
@@ -703,6 +761,24 @@ class CElement
     clearSubParameterList (
       tListOfParameters *       pParameterList);
 
+    /* Recursive tree walk. The callback is invoked for each element. */
+    int
+    walk (
+      int                       (*pFunc)(
+                                  const CElement *  pElement,
+                                  void *            pArg),
+      void *                    pArg,
+      int                       iDepth,
+      int                       nMaxDepth) const;
+
+
+    /* Just a wrapper around LLRP::toXMLString() */
+    EResultCode
+    toXMLString (
+      char *                    pBuffer,
+      int                       nBuffer);
+
+
     /* Virtual function provided by each specific element type
      * to decode fields (simple values). Leaves pDecoderStream
      * at first subparameter. */
@@ -749,6 +825,14 @@ class CMessage : public CElement
 
 class CParameter : public CElement
 {
+  public:
+    virtual llrp_bool_t
+    isAllowedIn (
+      const CTypeDescriptor *   pEnclosingTypeDescriptor) const;
+
+    llrp_bool_t
+    isAllowedExtension (
+      const CTypeDescriptor *   pEnclosingTypeDescriptor);
 };
 
 /*
@@ -790,7 +874,7 @@ class CParameter : public CElement
  *  |                   Binary Frame Buffer                         |
  *  +---------------------------------------------------------------+
  *
- *                            \_________________/          Nestec TLVs
+ *                            \_________________/          Nested TLVs
  *        \________________/\___________________________/  Nested TLVs
  *    \_________________________________________________/  Message
  *
@@ -958,6 +1042,10 @@ class CDecoderStream
 
     virtual int
     get_e32 (
+      const CFieldDescriptor *  pFieldDesc) = 0;
+
+    virtual llrp_u8v_t
+    get_e8v (
       const CFieldDescriptor *  pFieldDesc) = 0;
 
     /*
@@ -1170,6 +1258,11 @@ class CEncoderStream
       int                       eValue,
       const CFieldDescriptor *  pFieldDesc) = 0;
 
+    virtual void
+    put_e8v (
+      llrp_u8v_t                Value,
+      const CFieldDescriptor *  pFieldDesc) = 0;
+
     /*
      * Reserved types are some number of bits
      */
@@ -1179,5 +1272,15 @@ class CEncoderStream
       unsigned int              nBits) = 0;
 };
 
+
+/*
+ * ltkcpp_xmltextencode.c
+ */
+
+extern EResultCode
+toXMLString (
+  const CElement *              pElement,
+  char *                        pBuffer,
+  int                           nBuffer);
 
 }; /* namespace LLRP */

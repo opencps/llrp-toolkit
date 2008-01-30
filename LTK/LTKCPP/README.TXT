@@ -1,7 +1,23 @@
+############################################################################
+#   Copyright 2007,2008 Impinj, Inc.
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+#
+############################################################################
 
 
 OVERVIEW OF THE LLRP Tool Kit for C++
-Last updated 2 Aug 2007
+Last updated 28 Jan 2008
 
 
 
@@ -32,14 +48,14 @@ WHAT IT IS
 From the application C++ programmer's view:
     - There is a C++ class definition for each LLRP
       message and parameter type
-    - An application constructs messages as "object trees"
+    - An application constructs messages as "element trees"
       of these structures.
-    - Using a transaction layer, an object tree is encoded into
+    - Using a transaction layer, an element tree is encoded into
       a "binary frame" and sent to the LLRP compatible RFID reader.
-    - Messages from the reader are decoded into object trees.
-    - Applications traverse the object trees to retrieve
+    - Messages from the reader are decoded into element trees.
+    - Applications traverse the element trees to retrieve
       results and tag data
-    - Applications are responsible to be sure object trees
+    - Applications are responsible to be sure element trees
       are properly deallocated
 
 
@@ -73,13 +89,13 @@ at first:
     - Look in a type registry to find the type descriptor.
     - Call the generated decodeFields() function.
     - The remainder of the message or parameter is considered
-      a string of subparameters. Each are decoded
+      a sequence of subparameters. Each are decoded
       by the method described here.
     - As each subparameter is decoded it is appended to
-      a master list.
+      an all-list.
     - Once all subparameters have been decoded, a generated
       assimilateSubParameters() function is called to
-      walk the master list and update the individual
+      walk the all-list and update the individual
       struct members.
 
 Errors during encode/decode are generally handled by
@@ -109,6 +125,12 @@ Examples/example1.cpp
     Requires a LLRP reader.
     Runs from the command line (not a GUI).
 
+Examples/Example-Makefile
+    The Makefile that is copied to the example directory
+    of each binary distribution. The copy is named
+    "Makefile" and gets include files and libraries
+    from directory .. (dot-dot, the parent dir).
+
 Examples/Makefile
     Makefile for the examples.
 
@@ -127,6 +149,21 @@ Library/gencode.bat
     Microsoft.com. There are instructions within
     this gencode.bat file.
 
+Library/LLRP.org/
+    Directory that contains the LLRP.org extension C++ files.
+    It is combined with ../Definitions/LLRP.org/LLRPOrgExampleDef.xml
+    These extensions don't really do anything, they are
+    just used for testing and to demonstrate how the LTK
+    implementations build extensions.
+
+Library/LLRP.org/llrporg_ltkcpp_genout.cpp
+Library/LLRP.org/llrporg_ltkcpp.h
+    Wrappers that combine and condition the generated C++
+    source and header files for LLRP.org extensions.
+
+Library/LLRP.org/Makefile
+    Makefile for LLRP.org extensions.
+
 Library/ltkcpp_array.cpp
     Helper functions for array types, like utf8v "strings"
 
@@ -137,8 +174,10 @@ Library/ltkcpp_base.h
         Parameters -- base class for LLRP parameters
         TypeDescriptors -- info about element types, eg name, typenum
         FieldDescriptors -- info about fields within elements
-        Decoders -- abstract interface for decoders: external->objects
-        Encoders -- abstract interface for decoders: objects->external
+        NamespaceDescriptors -- info about an XML namespace, eg prefix, URI
+        VendorDescriptors -- info about a vendor, eg name, PEN
+        Decoders -- abstract interface for decoders: external->elements
+        Encoders -- abstract interface for decoders: elements->external
         TypeRegistry -- used to help look up the right TypeDescriptor
         ErrorDetails -- helps explain what went wrong
 
@@ -151,7 +190,7 @@ Library/ltkcpp_connection.h
     transaction layers.
 
 Library/ltkcpp_element.cpp
-    Subroutines for elements
+    Subroutines for elements (parameters and messages)
 
 Library/ltkcpp_encdec.cpp
     Subroutines for encoders and decoders
@@ -160,11 +199,11 @@ Library/ltkcpp_error.cpp
     Subroutines for ErrorDetails
 
 Library/ltkcpp_framedecode.cpp
-    Frame decoder, translates "LLRP Binary" into object trees.
+    Frame decoder, translates "LLRP Binary" into element trees.
     Conforms, of course, the Decoder abstract definition (see ltkcpp_base.h)
 
 Library/ltkcpp_frameencode.cpp
-    Frame encoder, translates  object trees into "LLRP Binary".
+    Frame encoder, translates  element trees into "LLRP Binary".
     Conforms, of course, the Encoder abstract definition (see ltkcpp_base.h)
 
 Library/ltkcpp_frameextract.cpp
@@ -180,24 +219,26 @@ Library/ltkcpp_gen_cpp.xslt
     XSLT code generator for C++ definitions.
     This is where the generated encode/decode/etc functions are.
     Used to process ../../Definition/Core/llrp-1x0-def.xml
-    into a transient file named out_ltkcpp_cpp.inc.
+    into a transient file named out_ltkcpp.inc.
+    Similarly used to process extension definitions.
     Requires Linux xsltproc(1) or MSXSL.EXE (see gencode.bat)
 
 Library/ltkcpp_gen_h.xslt
     XSLT code generator for C++ declarations (class declarations).
     This is where the structs are defined for each message and parameter.
     Used to process ../../Definition/Core/llrp-1x0-def.xml
-    into a transient file named out_ltkcpp_h.inc.
+    into a transient file named out_ltkcpp.h.
+    Similarly used to process extension definitions.
     Requires Linux xsltproc(1) or MSXSL.EXE (see gencode.bat)
 
 Library/ltkcpp_genout.cpp
     Wrapper that combines platform headers, LTKCPP base headers,
-    and the generated out_ltkcpp_cpp.inc. After the code generation
+    and the generated out_ltkcpp.inc. After the code generation
     this file is ready to compile.
 
 Library/ltkcpp.h
     API C header file. This is the one applications #include.
-    It #includes out_ltkcpp_h.inc along with platform and
+    It #includes out_ltkcpp.h along with platform and
     LTKCPP header files.
 
 Library/ltkcpp_hdrfd.cpp
@@ -209,21 +250,21 @@ Library/ltkcpp_platform.h
     for the current platform. It uses #ifdef linux, etc.
     This is where basic typedefs, like llrp_u32_t, are done.
 
-Library/ltkcpp_prxmlencode.cpp
-    XML text encoder, translates  object trees into XML text.
-    It is essentially a pretty-printer.
-    Conforms, of course, the Encoder abstract definition (see ltkcpp_base.h)
-    Unfortunately, it always prints to stdout.
-    It is mostly a trouble-shooting aid.
-
-Library/ltkcpp_prxml.h
-    Declarations for ltkcpp_prxml*.cpp
-
 Library/ltkcpp_typeregistry.cpp
     A type registry is a collection of pointers to
     type descriptors. During decode, a decoder might
     ask a type registry to find the type descriptor
     for message type number 123.
+
+Library/ltkc_xmltextencode.c
+    XML text encoder, translates element trees into XML text.
+    It is essentially a pretty-printer.
+    Conforms, of course, the Encoder abstract definition (see ltkc_base.h)
+    The output is a string saved to a caller supplied buffer.
+    It is mostly a trouble-shooting aid.
+
+Library/ltkc_xmltext.h
+    Declarations for ltkc_xmltext*.c
 
 Library/Makefile
     Makefile for the library.
@@ -234,6 +275,16 @@ Makefile
 README.TXT
     This file that you are reading.
 
+Release/
+    Directory where binary distributions are built
+
+Release/Makefile
+    Makefile to build binary distributions
+
+Release/std/        generated
+    This directory is created and populated with the
+    standard LLRP library and headers.
+
 Tests/
     Directory of test programs.
 
@@ -243,11 +294,11 @@ Tests/dx10?.cpp
 
 Tests/dx101.cpp
     Reads a file containing LLRP binary frames. For each frame:
-        - Decode it into an object tree
+        - Decode it into an element tree
         - Encode it into XML text
         - Encode it into an LLRP frame
         - Compare the original input frame to the one produced by the encoder
-        - Destruct the object tree.
+        - Destruct the element tree.
     It is used as a regression to make sure things work consistently
     and to verify there are no memory leaks.
     Runs from the command line (not a GUI).
@@ -266,38 +317,58 @@ Tests/dx201.cpp
 Tests/Makefile
     Makefile for the test programs.
 
+Tests/RUN101
+    A shell script that runs dx101 with certain
+    inputs and validation tools. Reports PASS/FAIL.
+
+Tests/RUN201
+    A shell script that runs dx201 with certain
+    validation and measurement tools. Used to
+    characterize CPU and memory utilization.
+
 VS_LTKCPP/
     Visual Studio directory. The projects here
     reference the source files above.
-    Precompiled headers are turned off.
-    Warning level reduced to 2 for ltkcpp_genout.cpp.
-    For the three console applications, ..\..\Library added as include dir
-    For dx201 and example1, added Ws2_32.lib to linker input
+    General options for all projects:
+    - Precompiled headers are turned off.
+    - Code generation uses Multi-threaded DLL
+      and Multi-threaded Debug DLL
+    - For the three console applications,
+      ..\..\Library added as include dir
+    - For dx201 and example1, added Ws2_32.lib to linker input
 
 VS_LTKCPP/dx101/
 VS_LTKCPP/dx101/dx101.vcproj
-    To build dx101 (see above)
-    Precompiled headers are turned off.
-    Added ..\..\Library as include dir
+    Builds dx101 (see above)
 
 VS_LTKCPP/dx201/
 VS_LTKCPP/dx201/dx201.vcproj
-    To build dx201 (see above)
-    Precompiled headers are turned off.
-    Added ..\..\Library as include dir
-    Added Ws2_32.lib to linker input
+    Builds dx201 (see above)
 
 VS_LTKCPP/example1/
 VS_LTKCPP/example1/example1.vcproj
-    To build example1 (see above)
-    Precompiled headers are turned off.
-    Added ..\..\Library as include dir
-    Added Ws2_32.lib to linker input
+    Builds example1 (see above)
 
-VS_LTKCPP/Library/
-VS_LTKCPP/Library/Library.vcproj
-    Precompiled headers are turned off.
+VS_LTKCPP/libltkcpp/
+VS_LTKCPP/litltkcpp/libltkcpp.vcproj
+    Builds libraries for base LTKCPP library including
+    the core protocol support. The libraries are
+    Debug/libltkcpp_d.lib and Release/libltkcpp_r.lib.
     Warning level reduced to 2 for ltkcpp_genout.cpp.
+
+VS_LTKCPP/libltkcppllrporg
+VS_LTKCPP/libltkcppllrporg/libltkcppllrporg.vcproj
+    Builds libraries for the LLRP.org example extension.
+    The libraries are Debug/libltkcppllrporg_d.lib and
+    Release/libltkcppllrporg_r.lib.
+    Warning level reduced to 2 for llrporg_ltkcpp_genout.cpp.
+    This is an example and doesn't really do anything
+    nor is it used by anything.
+
+VS_LTKCPP/Makefile
+    Makefile to support the top-level Makefile 'clean' target.
+    Also has target 'fugazi' that create (touch(1)) the
+    library files so that Release/Makefile can be tested.
 
 VS_LTKCPP/VS_LTKCPP.ncb
 VS_LTKCPP/VS_LTKCPP.sln
@@ -310,18 +381,11 @@ VS_LTKCPP/VS_LTKCPP.suo
 TODO LIST
 =========
 
-- Need to obey the format= directives in llrp-1x0-def.xml
-    - Currently XML printer does not conform for UTC Timestamp,
-      u1 (boolean), and tag read/write data should be hex not decimal.
-- Need to settle question of whether u1 fields are implictly boolean or not
-- Handle CUSTOM extensions
-- It would be nice to have an XML encoder that produces a string
-  rather than printing to stdout
-- It would be nice if ltkcpp_prxmlencode.cpp used
-  <iostream> instead of <stdio>
+- Need to settle question of formatting whether u1 fields are
+  implictly boolean or not
 - Need to finish comments, especially ltkcpp_base.h
-- Need a decoder for XML text (XML text -> object tree)
-- Need encoder and decoder for XML DOM trees
+- Need a decoder for XML text (XML text -> element tree)
+- MAYBE: Need encoder and decoder for XML DOM trees
 - Need a test for accessors (dx102)
 - Need a test for XML encode/decode (dx103) (needs XML encode/decode first)
 - On Windows, need a way to compare the dx101 output to the golden file

@@ -1,7 +1,7 @@
 
 /*
  ***************************************************************************
- *  Copyright 2007 Impinj, Inc.
+ *  Copyright 2007,2008 Impinj, Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -38,8 +38,6 @@
 
 #include <assert.h>
 
-
-
 #include <poll.h>
 #include <unistd.h>
 #include <errno.h>
@@ -52,7 +50,6 @@
 #include <netdb.h>
 #include <fcntl.h>
 #include <time.h>
-
 
 #include "ltkc_platform.h"
 #include "ltkc_base.h"
@@ -405,6 +402,8 @@ LLRP_Conn_closeConnectionToReader (
  ** This is a combination of LLRP_Conn_sendMessage() and
  ** LLRP_Conn_recvResponse(). The MessageID is taken from
  ** the outgoing messages. It's best to not use MessageID 0.
+ ** The expected response type is also taken from the outgoing
+ ** message. ERROR_MESSAGE is also deemed a response;
  **
  ** @param[in]  pConn           Pointer to the connection instance.
  ** @param[in]  pSendMessage    Pointer to the LLRP message to send.
@@ -413,10 +412,6 @@ LLRP_Conn_closeConnectionToReader (
  **                                   socket queue, return immediately
  **                                   no matter what
  **                             >0 => ms to await complete frame
- ** @param[in]  pResponseType   The type descriptor of the sought
- **                             or NULL to match all messages.
- **                             If not NULL, ERROR_MESSAGE will
- **                             also match.
  **
  ** @return     ==NULL          Something failed. Use
  **                             LLRP_Conn_getTransactError() for best
@@ -429,11 +424,30 @@ LLRP_tSMessage *
 LLRP_Conn_transact (
   LLRP_tSConnection *           pConn,
   LLRP_tSMessage *              pSendMessage,
-  int                           nMaxMS,
-  const LLRP_tSTypeDescriptor * pResponseType)
+  int                           nMaxMS)
 {
+    const LLRP_tSTypeDescriptor * pResponseType;
     LLRP_tResultCode            lrc;
     LLRP_tSMessage *            pResponseMessage;
+
+    /*
+     * Determine the response type. The type descriptor
+     * of the outgoing request message points to the
+     * type descriptor of the response. Since we are
+     * totally dependent upon it, fail if there
+     * is no response type pointer value.
+     */
+    pResponseType = pSendMessage->elementHdr.pType->pResponseType;
+    if(NULL == pResponseType)
+    {
+        LLRP_tSErrorDetails *   pError = &pConn->Send.ErrorDetails;
+
+        LLRP_Error_clear(pError);
+        LLRP_Error_resultCodeAndWhatStr(pError,
+                LLRP_RC_MissingResponseType,
+                "send message has no response type");
+        return NULL;
+    }
 
     /*
      * Send the request

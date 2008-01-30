@@ -1,7 +1,7 @@
 
 /*
  ***************************************************************************
- *  Copyright 2007 Impinj, Inc.
+ *  Copyright 2007,2008 Impinj, Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -60,7 +60,6 @@
 #include <ws2tcpip.h>
 #include <time.h>
 #endif
-
 
 #include "ltkcpp_platform.h"
 #include "ltkcpp_base.h"
@@ -340,7 +339,7 @@ CConnection::openConnectionToReader (
     if(0 > rc)
     {
         /* Connect failed */
-        m_pConnectErrorStr = "connect() failed";
+        m_pConnectErrorStr = "connection failed";
 #ifdef linux
         close(Sock);
 #endif
@@ -455,11 +454,29 @@ CConnection::closeConnectionToReader (void)
 CMessage *
 CConnection::transact (
   CMessage *                    pSendMessage,
-  int                           nMaxMS,
-  const CTypeDescriptor *       pResponseType)
+  int                           nMaxMS)
 {
+    const CTypeDescriptor *     pResponseType;
     EResultCode                 lrc;
     CMessage *                  pResponseMessage;
+
+    /*
+     * Determine the response type. The type descriptor
+     * of the outgoing request message points to the
+     * type descriptor of the response. Since we are
+     * totally dependent upon it, fail if there
+     * is no response type pointer value.
+     */
+    pResponseType = pSendMessage->m_pType->m_pResponseType;
+    if(NULL == pResponseType)
+    {
+        CErrorDetails *         pError = &m_Send.ErrorDetails;
+
+        pError->clear();
+        pError->resultCodeAndWhatStr(RC_MissingResponseType,
+            "send message has no response type");
+        return NULL;
+    }
 
     /*
      * Send the request

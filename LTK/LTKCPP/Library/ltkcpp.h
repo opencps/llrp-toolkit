@@ -1,7 +1,7 @@
 
 /*
  ***************************************************************************
- *  Copyright 2007 Impinj, Inc.
+ *  Copyright 2007,2008 Impinj, Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -19,14 +19,23 @@
  */
 
 
+#ifndef _LTKCPP_H
+#define _LTKCPP_H
+
 #include "ltkcpp_platform.h"
 #include "ltkcpp_base.h"
 #include "ltkcpp_frame.h"
-#include "ltkcpp_prxml.h"
+#include "ltkcpp_xmltext.h"
 #include "ltkcpp_connection.h"
 
 namespace LLRP
 {
-#include "out_ltkcpp_h.inc"
+#include "out_ltkcpp.h"
+
+extern CTypeRegistry *
+getTheTypeRegistry (void);
+
 }; /* namespace LLRP */
+
+#endif /* !_LTKCPP_H */
 

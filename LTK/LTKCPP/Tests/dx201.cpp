@@ -1,7 +1,7 @@
 
 /*
  ***************************************************************************
- *  Copyright 2007 Impinj, Inc.
+ *  Copyright 2007,2008 Impinj, Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -54,6 +54,9 @@
 
 
 #include <stdio.h>
+#ifdef linux
+#include <unistd.h>
+#endif
 
 #include "ltkcpp.h"
 
@@ -66,12 +69,21 @@ class CMyApplication
     /** Verbose level, incremented by each -v on command line */
     int                         m_Verbose;
 
+    /** ModeIndex requested [012345], -1 means no mode given
+     ** and use the default */
+    int                         m_ModeIndex;
+    /** Quiet flag -q, don't print the tag reports */
+    int                         m_Quiet;
+    /** Count of tag reports (RO_ACCESS_REPORT) */
+    int                         m_nTagReport;
+
     /** Connection to the LLRP reader */
     CConnection *               m_pConnectionToReader;
 
     inline
     CMyApplication (void)
-     : m_Verbose(0), m_pConnectionToReader(NULL)
+     : m_Verbose(0), m_ModeIndex(-1), m_Quiet(0),
+       m_nTagReport(0), m_pConnectionToReader(NULL)
     {}
 
     int
@@ -129,8 +141,7 @@ class CMyApplication
 
     CMessage *
     transact (
-      CMessage *                pSendMsg,
-      const CTypeDescriptor *   pResponseType);
+      CMessage *                pSendMsg);
 
     CMessage *
     recvMessage (
@@ -167,6 +178,12 @@ usage (
  **
  **     dx201 [-v[v]] READERHOSTNAME
  **
+ **
+ ** Options:
+ **     -v      Verbose, each -v increments verbosity
+ **     -q      Quiet, don't print tag reports (used for characterization)
+ **     -012345 Select mode, if not given the default mode is used
+ **
  ** @exitcode   0               Everything *seemed* to work.
  **             1               Bad usage
  **             2               Run failed
@@ -181,6 +198,9 @@ main (
     CMyApplication              myApp;
     char *                      pReaderHostName;
     int                         rc;
+#ifdef linux
+    char *                      pMemHiwatAtStart = (char*)sbrk(0);
+#endif
 
     /*
      * Process comand arguments, determine reader name
@@ -207,6 +227,15 @@ main (
                 myApp.m_Verbose++;
                 break;
 
+            case 'q':
+            case 'Q':
+                myApp.m_Quiet++;
+                break;
+
+            case '0': case '1': case '2': case '3': case '4': case '5':
+                myApp.m_ModeIndex = p[-1] - '0';
+                break;
+
             default:
                 usage(av[0]);
                 /* no return */
@@ -228,6 +257,15 @@ main (
     rc = myApp.run(pReaderHostName);
 
     printf("INFO: Done\n");
+
+#ifdef linux
+    {
+        char *              pMemHiwatAtEnd = (char*)sbrk(0);
+
+        printf("INFO: Needed %d bytes of heap\n",
+            pMemHiwatAtEnd - pMemHiwatAtStart);
+    }
+#endif
 
     /*
      * Exit with the right status.
@@ -410,6 +448,17 @@ CMyApplication::run (
      * Done with the registry.
      */
     delete pTypeRegistry;
+
+    /*
+     * Maybe tattle on the number of tags. Normally tags are reported.
+     * The -q command option prevents that and instead asks for just a
+     * total. With the -v command option we're probably reporting tags
+     * and a final count.
+     */
+    if(m_Verbose || m_Quiet)
+    {
+        printf("INFO: %d Tag reports\n", m_nTagReport);
+    }
 
     /*
      * When we get here all allocated memory should have been deallocated.
@@ -618,7 +667,7 @@ CMyApplication::resetConfigurationToFactoryDefaults (void)
     /*
      * Send the message, expect the response of certain type
      */
-    pRspMsg = transact(pCmd, &CSET_READER_CONFIG_RESPONSE::s_typeDescriptor);
+    pRspMsg = transact(pCmd);
 
     /*
      * Done with the command message
@@ -706,7 +755,7 @@ CMyApplication::deleteAllROSpecs (void)
     /*
      * Send the message, expect the response of certain type
      */
-    pRspMsg = transact(pCmd, &CDELETE_ROSPEC_RESPONSE::s_typeDescriptor);
+    pRspMsg = transact(pCmd);
 
     /*
      * Done with the command message
@@ -793,7 +842,7 @@ CMyApplication::deleteAllAccessSpecs (void)
     /*
      * Send the message, expect the response of certain type
      */
-    pRspMsg = transact(pCmd, &CDELETE_ACCESSSPEC_RESPONSE::s_typeDescriptor);
+    pRspMsg = transact(pCmd);
 
     /*
      * Done with the command message
@@ -948,8 +997,7 @@ CMyApplication::getAllCapabilities (void)
     /*
      * Send the message, expect the response of certain type
      */
-    pRspMsg = transact(pCmd,
-        &CGET_READER_CAPABILITIES_RESPONSE::s_typeDescriptor);
+    pRspMsg = transact(pCmd);
 
     /*
      * Done with the command message
@@ -1039,7 +1087,7 @@ CMyApplication::getAllConfiguration (void)
     /*
      * Send the message, expect the response of certain type
      */
-    pRspMsg = transact(pCmd, &CGET_READER_CONFIG_RESPONSE::s_typeDescriptor);
+    pRspMsg = transact(pCmd);
 
     /*
      * Done with the command message
@@ -1228,7 +1276,7 @@ CMyApplication::configureNotificationStates (void)
     /*
      * Send the message, expect the response of certain type
      */
-    pRspMsg = transact(pCmd, &CSET_READER_CONFIG_RESPONSE::s_typeDescriptor);
+    pRspMsg = transact(pCmd);
 
     /*
      * Done with the command message.
@@ -1321,19 +1369,29 @@ CMyApplication::configureNotificationStates (void)
  **         <AISpec>
  **           <AntennaIDs>0</AntennaIDs>
  **           <AISpecStopTrigger>
- **             <AISpecStopTriggerType>Tag_Observation</AISpecStopTriggerType>
- **             <DurationTrigger>0</DurationTrigger>
- **             <TagObservationTrigger>
- **               <TriggerType>Upon_Seeing_No_More_New_Tags_For_Tms_Or_Timeout</TriggerType>
- **               <NumberOfTags>0</NumberOfTags>
- **               <NumberOfAttempts>0</NumberOfAttempts>
- **               <T>3500</T>
- **               <Timeout>12500</Timeout>
- **             </TagObservationTrigger>
+ **             <AISpecStopTriggerType>Duration</AISpecStopTriggerType>
+ **             <DurationTrigger>30000</DurationTrigger>
  **           </AISpecStopTrigger>
  **           <InventoryParameterSpec>
  **             <InventoryParameterSpecID>1234</InventoryParameterSpecID>
  **             <ProtocolID>EPCGlobalClass1Gen2</ProtocolID>
+ **             <AntennaConfiguration>
+ **               <AntennaID>0</AntennaID>
+ **               <C1G2InventoryCommand>
+ **                 <TagInventoryStateAware>false</TagInventoryStateAware>
+ ** BEGIN C1G2RFControl only if mode specified on command line
+ **                  <C1G2RFControl>
+ **                   <ModeIndex>$MODE</ModeIndex>
+ **                   <Tari>0</Tari>
+ **                 </C1G2RFControl>
+ ** END   C1G2RFControl only if mode specified on command line
+ **                 <C1G2SingulationControl>
+ **                   <Session>2</Session>
+ **                   <TagPopulation>32</TagPopulation>
+ **                   <TagTransitTime>0</TagTransitTime>
+ **                 </C1G2SingulationControl>
+ **               </C1G2InventoryCommand>
+ **             </AntennaConfiguration>
  **           </InventoryParameterSpec>
  **         </AISpec>
  **         <ROReportSpec>
@@ -1376,6 +1434,12 @@ CMyApplication::addROSpec (void)
     pROBoundarySpec->setROSpecStartTrigger(pROSpecStartTrigger);
     pROBoundarySpec->setROSpecStopTrigger(pROSpecStopTrigger);
 
+#if 1
+    CAISpecStopTrigger *        pAISpecStopTrigger = new CAISpecStopTrigger();
+    pAISpecStopTrigger->setAISpecStopTriggerType(
+                            AISpecStopTriggerType_Duration);
+    pAISpecStopTrigger->setDurationTrigger(30000);
+#else
     CTagObservationTrigger *    pTagObservationTrigger =
                                     new CTagObservationTrigger();
     pTagObservationTrigger->setTriggerType (
@@ -1390,11 +1454,32 @@ CMyApplication::addROSpec (void)
                             AISpecStopTriggerType_Tag_Observation);
     pAISpecStopTrigger->setDurationTrigger(0);
     pAISpecStopTrigger->setTagObservationTrigger(pTagObservationTrigger);
+#endif
+
+    CC1G2SingulationControl *   pC1G2SingulationControl =
+                                    new CC1G2SingulationControl();
+    pC1G2SingulationControl->setSession(2);
+    pC1G2SingulationControl->setTagPopulation(32);
+
+    CC1G2InventoryCommand *     pC1G2InventoryCommand =
+                                    new CC1G2InventoryCommand();
+    pC1G2InventoryCommand->setC1G2SingulationControl(
+                                        pC1G2SingulationControl);
+    /*
+     * C1G2RFControl might be set below if a m_ModeIndex was
+     * given on the command line.
+     */
+    CAntennaConfiguration *     pAntennaConfiguration =
+                                    new CAntennaConfiguration();
+    pAntennaConfiguration->addAirProtocolInventoryCommandSettings (
+                                        pC1G2InventoryCommand);
 
     CInventoryParameterSpec *   pInventoryParameterSpec =
                                     new CInventoryParameterSpec();
     pInventoryParameterSpec->setInventoryParameterSpecID(1234);
     pInventoryParameterSpec->setProtocolID(AirProtocols_EPCGlobalClass1Gen2);
+    pInventoryParameterSpec->addAntennaConfiguration (
+                                        pAntennaConfiguration);
 
     llrp_u16v_t                 AntennaIDs = llrp_u16v_t(1);
     AntennaIDs.m_pValue[0] = 0;         /* All */
@@ -1420,7 +1505,7 @@ CMyApplication::addROSpec (void)
     CROReportSpec *             pROReportSpec = new CROReportSpec();
     pROReportSpec->setROReportTrigger(
             ROReportTriggerType_Upon_N_Tags_Or_End_Of_ROSpec);
-    pROReportSpec->setN(0);         /* Unlimited */
+    pROReportSpec->setN(1);         /* Report every singulation */
     pROReportSpec->setTagReportContentSelector(pTagReportContentSelector);
 
     CROSpec *                   pROSpec = new CROSpec();
@@ -1447,9 +1532,23 @@ CMyApplication::addROSpec (void)
     pCmd->setROSpec(pROSpec);
 
     /*
+     * If the mode was specified link in the AntennaConfiguration
+     * that was prepared, above. The absence of the AntennaConfiguration
+     * tells the reader to use the default mode.
+     */
+    if(0 <= m_ModeIndex)
+    {
+        CC1G2RFControl *        pC1G2RFControl =
+                                    new CC1G2RFControl();
+
+        pC1G2RFControl->setModeIndex(m_ModeIndex);
+        pC1G2InventoryCommand->setC1G2RFControl(pC1G2RFControl);
+    }
+
+    /*
      * Send the message, expect the response of certain type
      */
-    pRspMsg = transact(pCmd, &CADD_ROSPEC_RESPONSE::s_typeDescriptor);
+    pRspMsg = transact(pCmd);
 
     /*
      * Done with the command message.
@@ -1535,7 +1634,7 @@ CMyApplication::enableROSpec (void)
     /*
      * Send the message, expect the response of certain type
      */
-    pRspMsg = transact(pCmd, &CENABLE_ROSPEC_RESPONSE::s_typeDescriptor);
+    pRspMsg = transact(pCmd);
 
     /*
      * Done with the command message
@@ -1850,6 +1949,19 @@ CMyApplication::printTagReportData (
     unsigned int                nEntry = 0;
 
     /*
+     * Count the number of tag reports.
+     */
+    m_nTagReport++;
+
+    /*
+     * If individual tag reports are not wanted, just return.
+     */
+    if(m_Quiet)
+    {
+        return;
+    }
+
+    /*
      * Loop through and count the number of entries
      */
     for (
@@ -2096,8 +2208,7 @@ CMyApplication::checkLLRPStatus (
 
 CMessage *
 CMyApplication::transact (
-  CMessage *                    pSendMsg,
-  const CTypeDescriptor *       pResponseType)
+  CMessage *                    pSendMsg)
 {
     CConnection *               pConn = m_pConnectionToReader;
     CMessage *                  pRspMsg;
@@ -2108,8 +2219,12 @@ CMyApplication::transact (
      */
     if(1 < m_Verbose)
     {
-        printf("\n===================================\n");
-        printf("INFO: Transact sending\n");
+        /* If -qq command option, do XML encode but don't actually print */
+        if(2 > m_Quiet)
+        {
+            printf("\n===================================\n");
+            printf("INFO: Transact sending\n");
+        }
         printXMLMessage(pSendMsg);
     }
 
@@ -2118,7 +2233,7 @@ CMyApplication::transact (
      * If LLRP::CConnection::transact() returns NULL then there was
      * an error. In that case we try to print the error details.
      */
-    pRspMsg = pConn->transact(pSendMsg, 5000, pResponseType);
+    pRspMsg = pConn->transact(pSendMsg, 5000);
 
     if(NULL == pRspMsg)
     {
@@ -2149,8 +2264,12 @@ CMyApplication::transact (
      */
     if(1 < m_Verbose)
     {
-        printf("\n- - - - - - - - - - - - - - - - - -\n");
-        printf("INFO: Transact received response\n");
+        /* If -qq command option, do XML encode but don't actually print */
+        if(2 > m_Quiet)
+        {
+            printf("\n- - - - - - - - - - - - - - - - - -\n");
+            printf("INFO: Transact received response\n");
+        }
         printXMLMessage(pRspMsg);
     }
 
@@ -2161,6 +2280,10 @@ CMyApplication::transact (
      */
     if(&CERROR_MESSAGE::s_typeDescriptor == pRspMsg->m_pType)
     {
+        const CTypeDescriptor * pResponseType;
+
+        pResponseType = pSendMsg->m_pType->m_pResponseType;
+
         printf("ERROR: Received ERROR_MESSAGE instead of %s\n",
             pResponseType->m_pName);
         delete pRspMsg;
@@ -2239,8 +2362,12 @@ CMyApplication::recvMessage (
      */
     if(1 < m_Verbose)
     {
-        printf("\n===================================\n");
-        printf("INFO: Message received\n");
+        /* If -qq command option, do XML encode but don't actually print */
+        if(2 > m_Quiet)
+        {
+            printf("\n===================================\n");
+            printf("INFO: Message received\n");
+        }
         printXMLMessage(pMessage);
     }
 
@@ -2277,8 +2404,12 @@ CMyApplication::sendMessage (
      */
     if(1 < m_Verbose)
     {
-        printf("\n===================================\n");
-        printf("INFO: Sending\n");
+        /* If -qq command option, do XML encode but don't actually print */
+        if(2 > m_Quiet)
+        {
+            printf("\n===================================\n");
+            printf("INFO: Sending\n");
+        }
         printXMLMessage(pSendMsg);
     }
 
@@ -2323,9 +2454,6 @@ CMyApplication::sendMessage (
  ** @brief  Helper to print a message as XML text
  **
  ** Print a LLRP message as XML text
- **     - Construct an XML encoder that prints to stdout
- **     - Encode the message through the XML encoder
- **     - Destruct the XML encoder
  **
  ** @param[in]  pMessage        Pointer to message to print
  **
@@ -2337,34 +2465,26 @@ void
 CMyApplication::printXMLMessage (
   CMessage *                    pMessage)
 {
-    CPrXMLEncoder *             pXMLEncoder;
+    char                        aBuf[100*1024];
 
     /*
-     * Make sure the message is not NULL.
+     * Convert the message to an XML string.
+     * This fills the buffer with either the XML string
+     * or an error message. The return value could
+     * be checked.
      */
-    if(NULL == pMessage)
+
+    pMessage->toXMLString(aBuf, sizeof aBuf);
+
+    /*
+     * Print the XML Text to the standard output.
+     * For characterization, command line option -qq
+     * prevents the XML text actually being printed and
+     * so the CPU utilization of XMLTextEncoder can be measured
+     * without the noise.
+     */
+    if(2 > m_Quiet)
     {
-        printf("ERROR: NULL pMessage to printXMLMessage\n");
-        return;
+        printf("%s", aBuf);
     }
-
-    /*
-     * Construct an XML encoder
-     */
-    pXMLEncoder = new CPrXMLEncoder();
-    if(NULL == pXMLEncoder)
-    {
-        printf("ERROR: PrXMLEncoder_construct failed\n");
-        return;
-    }
-
-    /*
-     * Now let the encoding mechanism do its thing.
-     */
-    pXMLEncoder->encodeElement(pMessage);
-
-    /*
-     * Done with the XML encoder.
-     */
-    delete pXMLEncoder;
 }

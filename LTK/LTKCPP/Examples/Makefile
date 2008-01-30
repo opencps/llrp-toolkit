@@ -1,5 +1,5 @@
 ############################################################################
-#   Copyright 2007 Impinj, Inc.
+#   Copyright 2007,2008 Impinj, Inc.
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -16,19 +16,34 @@
 ############################################################################
 
 LIBDIR=../Library
-
 INCL = -I$(LIBDIR)
-#CPPFLAGS = -O -Wall
-CPPFLAGS = -g -Wall $(INCL)
 
-LTKCPP_LIB = $(LIBDIR)/ltkcpp.a
+#CPPFLAGS = -O -Wall $(INCL)
+AR              = ar
+CXX             = g++
+CPPFLAGS        = -g -Wall $(INCL)
+
+LTKCPP_LIB = $(LIBDIR)/libltkcpp.a
+LTKCPP_HDRS = \
+	$(LIBDIR)/ltkcpp.h		\
+	$(LIBDIR)/ltkcpp_base.h		\
+	$(LIBDIR)/ltkcpp_connection.h	\
+	$(LIBDIR)/ltkcpp_frame.h	\
+	$(LIBDIR)/ltkcpp_platform.h	\
+	$(LIBDIR)/ltkcpp_xmltext.h	\
+	$(LIBDIR)/out_ltkcpp.h
 
 all: example1
 
+everything:
+	make all
+
 example1 : example1.o $(LTKCPP_LIB)
-	g++ $(CPPFLAGS) -o example1 example1.o $(LTKCPP_LIB)
+	$(CXX) $(CPPFLAGS) -o example1 example1.o $(LTKCPP_LIB)
+
+example1.o : example1.cpp $(LTKCPP_HDRS)
+	$(CXX) -c $(CPPFLAGS) example1.cpp -o example1.o
 
 clean:
 	rm -f *.o *.core core.[0-9]*
-	rm -f *.tmp
 	rm -f example1

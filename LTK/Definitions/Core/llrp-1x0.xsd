@@ -45,9 +45,9 @@
 
 <xs:schema
 	xmlns:xs="http://www.w3.org/2001/XMLSchema"
-	targetNamespace="http://www.llrp.org/ltk/schema/core/encoding/xml/0.9"
-	xmlns="http://www.llrp.org/ltk/schema/core/encoding/xml/0.9"
-	xmlns:rp="http://www.llrp.org/ltk/schema/core/encoding/xml/0.9"
+	targetNamespace="http://www.llrp.org/ltk/schema/core/encoding/xml/1.0"
+	xmlns="http://www.llrp.org/ltk/schema/core/encoding/xml/1.0"
+	xmlns:llrp="http://www.llrp.org/ltk/schema/core/encoding/xml/1.0"
 	elementFormDefault="qualified"
 >
 
@@ -115,125 +115,129 @@
 		<xs:list itemType="hexWord"/>
 	</xs:simpleType>
 	
+	<xs:simpleType name="listOfAirProtocols">
+		<xs:list itemType="llrp:AirProtocols"/>
+	</xs:simpleType>
+
 	<!-- Message top-level elements -->
-	<xs:element name="KEEPALIVE" type="rp:KEEPALIVE"/>
-	<xs:element name="CLOSE_CONNECTION" type="rp:CLOSE_CONNECTION"/>
-	<xs:element name="GET_READER_CONFIG" type="rp:GET_READER_CONFIG"/>
-	<xs:element name="DISABLE_ACCESSSPEC" type="rp:DISABLE_ACCESSSPEC"/>
-	<xs:element name="SET_READER_CONFIG" type="rp:SET_READER_CONFIG"/>
-	<xs:element name="ERROR_MESSAGE" type="rp:ERROR_MESSAGE"/>
-	<xs:element name="GET_READER_CAPABILITIES" type="rp:GET_READER_CAPABILITIES"/>
-	<xs:element name="CLOSE_CONNECTION_RESPONSE" type="rp:CLOSE_CONNECTION_RESPONSE"/>
-	<xs:element name="CUSTOM_MESSAGE" type="rp:CUSTOM_MESSAGE"/>
-	<xs:element name="ENABLE_ACCESSSPEC_RESPONSE" type="rp:ENABLE_ACCESSSPEC_RESPONSE"/>
-	<xs:element name="DELETE_ROSPEC" type="rp:DELETE_ROSPEC"/>
-	<xs:element name="RO_ACCESS_REPORT" type="rp:RO_ACCESS_REPORT"/>
-	<xs:element name="GET_ROSPECS_RESPONSE" type="rp:GET_ROSPECS_RESPONSE"/>
-	<xs:element name="DELETE_ACCESSSPEC" type="rp:DELETE_ACCESSSPEC"/>
-	<xs:element name="DELETE_ACCESSSPEC_RESPONSE" type="rp:DELETE_ACCESSSPEC_RESPONSE"/>
-	<xs:element name="GET_READER_CAPABILITIES_RESPONSE" type="rp:GET_READER_CAPABILITIES_RESPONSE"/>
-	<xs:element name="SET_READER_CONFIG_RESPONSE" type="rp:SET_READER_CONFIG_RESPONSE"/>
-	<xs:element name="ADD_ACCESSSPEC_RESPONSE" type="rp:ADD_ACCESSSPEC_RESPONSE"/>
-	<xs:element name="DISABLE_ACCESSSPEC_RESPONSE" type="rp:DISABLE_ACCESSSPEC_RESPONSE"/>
-	<xs:element name="GET_ACCESSSPECS_RESPONSE" type="rp:GET_ACCESSSPECS_RESPONSE"/>
-	<xs:element name="ADD_ACCESSSPEC" type="rp:ADD_ACCESSSPEC"/>
-	<xs:element name="READER_EVENT_NOTIFICATION" type="rp:READER_EVENT_NOTIFICATION"/>
-	<xs:element name="ADD_ROSPEC" type="rp:ADD_ROSPEC"/>
-	<xs:element name="DELETE_ROSPEC_RESPONSE" type="rp:DELETE_ROSPEC_RESPONSE"/>
-	<xs:element name="STOP_ROSPEC_RESPONSE" type="rp:STOP_ROSPEC_RESPONSE"/>
-	<xs:element name="ENABLE_ROSPEC_RESPONSE" type="rp:ENABLE_ROSPEC_RESPONSE"/>
-	<xs:element name="START_ROSPEC" type="rp:START_ROSPEC"/>
-	<xs:element name="ENABLE_ACCESSSPEC" type="rp:ENABLE_ACCESSSPEC"/>
-	<xs:element name="DISABLE_ROSPEC_RESPONSE" type="rp:DISABLE_ROSPEC_RESPONSE"/>
-	<xs:element name="KEEPALIVE_ACK" type="rp:KEEPALIVE_ACK"/>
-	<xs:element name="ENABLE_EVENTS_AND_REPORTS" type="rp:ENABLE_EVENTS_AND_REPORTS"/>
-	<xs:element name="GET_ROSPECS" type="rp:GET_ROSPECS"/>
-	<xs:element name="ADD_ROSPEC_RESPONSE" type="rp:ADD_ROSPEC_RESPONSE"/>
-	<xs:element name="GET_READER_CONFIG_RESPONSE" type="rp:GET_READER_CONFIG_RESPONSE"/>
-	<xs:element name="STOP_ROSPEC" type="rp:STOP_ROSPEC"/>
-	<xs:element name="ENABLE_ROSPEC" type="rp:ENABLE_ROSPEC"/>
-	<xs:element name="START_ROSPEC_RESPONSE" type="rp:START_ROSPEC_RESPONSE"/>
-	<xs:element name="GET_REPORT" type="rp:GET_REPORT"/>
-	<xs:element name="DISABLE_ROSPEC" type="rp:DISABLE_ROSPEC"/>
-	<xs:element name="GET_ACCESSSPECS" type="rp:GET_ACCESSSPECS"/>
+	<xs:element name="KEEPALIVE" type="llrp:KEEPALIVE"/>
+	<xs:element name="CLOSE_CONNECTION" type="llrp:CLOSE_CONNECTION"/>
+	<xs:element name="GET_READER_CONFIG" type="llrp:GET_READER_CONFIG"/>
+	<xs:element name="DISABLE_ACCESSSPEC" type="llrp:DISABLE_ACCESSSPEC"/>
+	<xs:element name="SET_READER_CONFIG" type="llrp:SET_READER_CONFIG"/>
+	<xs:element name="ERROR_MESSAGE" type="llrp:ERROR_MESSAGE"/>
+	<xs:element name="GET_READER_CAPABILITIES" type="llrp:GET_READER_CAPABILITIES"/>
+	<xs:element name="CLOSE_CONNECTION_RESPONSE" type="llrp:CLOSE_CONNECTION_RESPONSE"/>
+	<xs:element name="CUSTOM_MESSAGE" type="llrp:CUSTOM_MESSAGE"/>
+	<xs:element name="ENABLE_ACCESSSPEC_RESPONSE" type="llrp:ENABLE_ACCESSSPEC_RESPONSE"/>
+	<xs:element name="DELETE_ROSPEC" type="llrp:DELETE_ROSPEC"/>
+	<xs:element name="RO_ACCESS_REPORT" type="llrp:RO_ACCESS_REPORT"/>
+	<xs:element name="GET_ROSPECS_RESPONSE" type="llrp:GET_ROSPECS_RESPONSE"/>
+	<xs:element name="DELETE_ACCESSSPEC" type="llrp:DELETE_ACCESSSPEC"/>
+	<xs:element name="DELETE_ACCESSSPEC_RESPONSE" type="llrp:DELETE_ACCESSSPEC_RESPONSE"/>
+	<xs:element name="GET_READER_CAPABILITIES_RESPONSE" type="llrp:GET_READER_CAPABILITIES_RESPONSE"/>
+	<xs:element name="SET_READER_CONFIG_RESPONSE" type="llrp:SET_READER_CONFIG_RESPONSE"/>
+	<xs:element name="ADD_ACCESSSPEC_RESPONSE" type="llrp:ADD_ACCESSSPEC_RESPONSE"/>
+	<xs:element name="DISABLE_ACCESSSPEC_RESPONSE" type="llrp:DISABLE_ACCESSSPEC_RESPONSE"/>
+	<xs:element name="GET_ACCESSSPECS_RESPONSE" type="llrp:GET_ACCESSSPECS_RESPONSE"/>
+	<xs:element name="ADD_ACCESSSPEC" type="llrp:ADD_ACCESSSPEC"/>
+	<xs:element name="READER_EVENT_NOTIFICATION" type="llrp:READER_EVENT_NOTIFICATION"/>
+	<xs:element name="ADD_ROSPEC" type="llrp:ADD_ROSPEC"/>
+	<xs:element name="DELETE_ROSPEC_RESPONSE" type="llrp:DELETE_ROSPEC_RESPONSE"/>
+	<xs:element name="STOP_ROSPEC_RESPONSE" type="llrp:STOP_ROSPEC_RESPONSE"/>
+	<xs:element name="ENABLE_ROSPEC_RESPONSE" type="llrp:ENABLE_ROSPEC_RESPONSE"/>
+	<xs:element name="START_ROSPEC" type="llrp:START_ROSPEC"/>
+	<xs:element name="ENABLE_ACCESSSPEC" type="llrp:ENABLE_ACCESSSPEC"/>
+	<xs:element name="DISABLE_ROSPEC_RESPONSE" type="llrp:DISABLE_ROSPEC_RESPONSE"/>
+	<xs:element name="KEEPALIVE_ACK" type="llrp:KEEPALIVE_ACK"/>
+	<xs:element name="ENABLE_EVENTS_AND_REPORTS" type="llrp:ENABLE_EVENTS_AND_REPORTS"/>
+	<xs:element name="GET_ROSPECS" type="llrp:GET_ROSPECS"/>
+	<xs:element name="ADD_ROSPEC_RESPONSE" type="llrp:ADD_ROSPEC_RESPONSE"/>
+	<xs:element name="GET_READER_CONFIG_RESPONSE" type="llrp:GET_READER_CONFIG_RESPONSE"/>
+	<xs:element name="STOP_ROSPEC" type="llrp:STOP_ROSPEC"/>
+	<xs:element name="ENABLE_ROSPEC" type="llrp:ENABLE_ROSPEC"/>
+	<xs:element name="START_ROSPEC_RESPONSE" type="llrp:START_ROSPEC_RESPONSE"/>
+	<xs:element name="GET_REPORT" type="llrp:GET_REPORT"/>
+	<xs:element name="DISABLE_ROSPEC" type="llrp:DISABLE_ROSPEC"/>
+	<xs:element name="GET_ACCESSSPECS" type="llrp:GET_ACCESSSPECS"/>
 
 	<!-- Generate parameter lists -->
 
 	<xs:group name="extensionPoint">
 		<xs:choice>
-			<xs:element name="Custom" type="rp:Custom" minOccurs="0" maxOccurs="unbounded" />
+			<xs:element name="Custom" type="llrp:Custom" minOccurs="0" maxOccurs="unbounded" />
 			<xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
 		</xs:choice>
 	</xs:group>
 
 	<xs:complexType name="KEEPALIVE">
-		<xs:attributeGroup ref="rp:headerAttrs"/>
+		<xs:attributeGroup ref="llrp:headerAttrs"/>
 	</xs:complexType>
 
 
 	<xs:complexType name="CLOSE_CONNECTION">
-		<xs:attributeGroup ref="rp:headerAttrs"/>
+		<xs:attributeGroup ref="llrp:headerAttrs"/>
 	</xs:complexType>
 
 	<xs:complexType name="GET_READER_CONFIG">
 		<xs:sequence>
 			<xs:element name="AntennaID" type="xs:unsignedShort" />
-			<xs:element name="RequestedData" type="rp:GetReaderConfigRequestedData" />
+			<xs:element name="RequestedData" type="llrp:GetReaderConfigRequestedData" />
 			<xs:element name="GPIPortNum" type="xs:unsignedShort" />
 			<xs:element name="GPOPortNum" type="xs:unsignedShort" />
-			<xs:group ref="rp:extensionPoint" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:group ref="llrp:extensionPoint" minOccurs="0" maxOccurs="unbounded"/>
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:headerAttrs"/>
+		<xs:attributeGroup ref="llrp:headerAttrs"/>
 	</xs:complexType>
 
 	<xs:complexType name="DISABLE_ACCESSSPEC">
 		<xs:sequence>
 			<xs:element name="AccessSpecID" type="xs:unsignedInt" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:headerAttrs"/>
+		<xs:attributeGroup ref="llrp:headerAttrs"/>
 	</xs:complexType>
 
 
 	<xs:complexType name="SET_READER_CONFIG">
 		<xs:sequence>
 			<xs:element name="ResetToFactoryDefault" type="xs:boolean" />
-			<xs:element name="ReaderEventNotificationSpec" type="rp:ReaderEventNotificationSpec" minOccurs="0" />
-			<xs:element name="AntennaProperties" type="rp:AntennaProperties" minOccurs="0" maxOccurs="unbounded" />
-			<xs:element name="AntennaConfiguration" type="rp:AntennaConfiguration" minOccurs="0" maxOccurs="unbounded" />
-			<xs:element name="ROReportSpec" type="rp:ROReportSpec" minOccurs="0" />
-			<xs:element name="AccessReportSpec" type="rp:AccessReportSpec" minOccurs="0" />
-			<xs:element name="KeepaliveSpec" type="rp:KeepaliveSpec" minOccurs="0" />
-			<xs:element name="GPOWriteData" type="rp:GPOWriteData" minOccurs="0" maxOccurs="unbounded" />
-			<xs:element name="GPIPortCurrentState" type="rp:GPIPortCurrentState" minOccurs="0" maxOccurs="unbounded" />
-			<xs:element name="EventsAndReports" type="rp:EventsAndReports" minOccurs="0" />
-			<xs:group ref="rp:extensionPoint" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="ReaderEventNotificationSpec" type="llrp:ReaderEventNotificationSpec" minOccurs="0" />
+			<xs:element name="AntennaProperties" type="llrp:AntennaProperties" minOccurs="0" maxOccurs="unbounded" />
+			<xs:element name="AntennaConfiguration" type="llrp:AntennaConfiguration" minOccurs="0" maxOccurs="unbounded" />
+			<xs:element name="ROReportSpec" type="llrp:ROReportSpec" minOccurs="0" />
+			<xs:element name="AccessReportSpec" type="llrp:AccessReportSpec" minOccurs="0" />
+			<xs:element name="KeepaliveSpec" type="llrp:KeepaliveSpec" minOccurs="0" />
+			<xs:element name="GPOWriteData" type="llrp:GPOWriteData" minOccurs="0" maxOccurs="unbounded" />
+			<xs:element name="GPIPortCurrentState" type="llrp:GPIPortCurrentState" minOccurs="0" maxOccurs="unbounded" />
+			<xs:element name="EventsAndReports" type="llrp:EventsAndReports" minOccurs="0" />
+			<xs:group ref="llrp:extensionPoint" minOccurs="0" maxOccurs="unbounded"/>
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:headerAttrs"/>
+		<xs:attributeGroup ref="llrp:headerAttrs"/>
 	</xs:complexType>
 
 
 	<xs:complexType name="ERROR_MESSAGE">
 		<xs:sequence>
-			<xs:element name="LLRPStatus" type="rp:LLRPStatus" />
+			<xs:element name="LLRPStatus" type="llrp:LLRPStatus" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:headerAttrs"/>
+		<xs:attributeGroup ref="llrp:headerAttrs"/>
 	</xs:complexType>
 
 
 	<xs:complexType name="GET_READER_CAPABILITIES">
 		<xs:sequence>
-			<xs:element name="RequestedData" type="rp:GetReaderCapabilitiesRequestedData" />
-			<xs:group ref="rp:extensionPoint" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="RequestedData" type="llrp:GetReaderCapabilitiesRequestedData" />
+			<xs:group ref="llrp:extensionPoint" minOccurs="0" maxOccurs="unbounded"/>
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:headerAttrs"/>
+		<xs:attributeGroup ref="llrp:headerAttrs"/>
 	</xs:complexType>
 
 
 	<xs:complexType name="CLOSE_CONNECTION_RESPONSE">
 		<xs:sequence>
-			<xs:element name="LLRPStatus" type="rp:LLRPStatus" />
+			<xs:element name="LLRPStatus" type="llrp:LLRPStatus" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:headerAttrs"/>
+		<xs:attributeGroup ref="llrp:headerAttrs"/>
 	</xs:complexType>
 
 
@@ -243,15 +247,15 @@
 			<xs:element name="MessageSubtype" type="xs:unsignedByte" />
 			<xs:element name="Data" type="xs:hexBinary" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:headerAttrs"/>
+		<xs:attributeGroup ref="llrp:headerAttrs"/>
 	</xs:complexType>
 
 
 	<xs:complexType name="ENABLE_ACCESSSPEC_RESPONSE">
 		<xs:sequence>
-			<xs:element name="LLRPStatus" type="rp:LLRPStatus" />
+			<xs:element name="LLRPStatus" type="llrp:LLRPStatus" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:headerAttrs"/>
+		<xs:attributeGroup ref="llrp:headerAttrs"/>
 	</xs:complexType>
 
 
@@ -259,26 +263,26 @@
 		<xs:sequence>
 			<xs:element name="ROSpecID" type="xs:unsignedInt" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:headerAttrs"/>
+		<xs:attributeGroup ref="llrp:headerAttrs"/>
 	</xs:complexType>
 
 
 	<xs:complexType name="RO_ACCESS_REPORT">
 		<xs:sequence>
-			<xs:element name="TagReportData" type="rp:TagReportData" minOccurs="0" maxOccurs="unbounded" />
-			<xs:element name="RFSurveyReportData" type="rp:RFSurveyReportData" minOccurs="0" maxOccurs="unbounded" />
-			<xs:group ref="rp:extensionPoint" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="TagReportData" type="llrp:TagReportData" minOccurs="0" maxOccurs="unbounded" />
+			<xs:element name="RFSurveyReportData" type="llrp:RFSurveyReportData" minOccurs="0" maxOccurs="unbounded" />
+			<xs:group ref="llrp:extensionPoint" minOccurs="0" maxOccurs="unbounded"/>
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:headerAttrs"/>
+		<xs:attributeGroup ref="llrp:headerAttrs"/>
 	</xs:complexType>
 
 
 	<xs:complexType name="GET_ROSPECS_RESPONSE">
 		<xs:sequence>
-			<xs:element name="LLRPStatus" type="rp:LLRPStatus" />
-			<xs:element name="ROSpec" type="rp:ROSpec" minOccurs="0" maxOccurs="unbounded" />
+			<xs:element name="LLRPStatus" type="llrp:LLRPStatus" />
+			<xs:element name="ROSpec" type="llrp:ROSpec" minOccurs="0" maxOccurs="unbounded" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:headerAttrs"/>
+		<xs:attributeGroup ref="llrp:headerAttrs"/>
 	</xs:complexType>
 
 
@@ -286,111 +290,111 @@
 		<xs:sequence>
 			<xs:element name="AccessSpecID" type="xs:unsignedInt" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:headerAttrs"/>
+		<xs:attributeGroup ref="llrp:headerAttrs"/>
 	</xs:complexType>
 
 
 	<xs:complexType name="DELETE_ACCESSSPEC_RESPONSE">
 		<xs:sequence>
-			<xs:element name="LLRPStatus" type="rp:LLRPStatus" />
+			<xs:element name="LLRPStatus" type="llrp:LLRPStatus" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:headerAttrs"/>
+		<xs:attributeGroup ref="llrp:headerAttrs"/>
 	</xs:complexType>
 
 
 	<xs:complexType name="GET_READER_CAPABILITIES_RESPONSE">
 		<xs:sequence>
-			<xs:element name="LLRPStatus" type="rp:LLRPStatus" />
-			<xs:element name="GeneralDeviceCapabilities" type="rp:GeneralDeviceCapabilities" minOccurs="0" />
-			<xs:element name="LLRPCapabilities" type="rp:LLRPCapabilities" minOccurs="0" />
-			<xs:element name="RegulatoryCapabilities" type="rp:RegulatoryCapabilities" minOccurs="0" />
+			<xs:element name="LLRPStatus" type="llrp:LLRPStatus" />
+			<xs:element name="GeneralDeviceCapabilities" type="llrp:GeneralDeviceCapabilities" minOccurs="0" />
+			<xs:element name="LLRPCapabilities" type="llrp:LLRPCapabilities" minOccurs="0" />
+			<xs:element name="RegulatoryCapabilities" type="llrp:RegulatoryCapabilities" minOccurs="0" />
 			<xs:choice minOccurs="0" >
-				<xs:element name="C1G2LLRPCapabilities" type="rp:C1G2LLRPCapabilities"/>
+				<xs:element name="C1G2LLRPCapabilities" type="llrp:C1G2LLRPCapabilities"/>
 			</xs:choice>
-			<xs:group ref="rp:extensionPoint" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:group ref="llrp:extensionPoint" minOccurs="0" maxOccurs="unbounded"/>
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:headerAttrs"/>
+		<xs:attributeGroup ref="llrp:headerAttrs"/>
 	</xs:complexType>
 
 
 	<xs:complexType name="SET_READER_CONFIG_RESPONSE">
 		<xs:sequence>
-			<xs:element name="LLRPStatus" type="rp:LLRPStatus" />
+			<xs:element name="LLRPStatus" type="llrp:LLRPStatus" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:headerAttrs"/>
+		<xs:attributeGroup ref="llrp:headerAttrs"/>
 	</xs:complexType>
 
 
 	<xs:complexType name="ADD_ACCESSSPEC_RESPONSE">
 		<xs:sequence>
-			<xs:element name="LLRPStatus" type="rp:LLRPStatus" />
+			<xs:element name="LLRPStatus" type="llrp:LLRPStatus" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:headerAttrs"/>
+		<xs:attributeGroup ref="llrp:headerAttrs"/>
 	</xs:complexType>
 
 
 	<xs:complexType name="DISABLE_ACCESSSPEC_RESPONSE">
 		<xs:sequence>
-			<xs:element name="LLRPStatus" type="rp:LLRPStatus" />
+			<xs:element name="LLRPStatus" type="llrp:LLRPStatus" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:headerAttrs"/>
+		<xs:attributeGroup ref="llrp:headerAttrs"/>
 	</xs:complexType>
 
 
 	<xs:complexType name="GET_ACCESSSPECS_RESPONSE">
 		<xs:sequence>
-			<xs:element name="LLRPStatus" type="rp:LLRPStatus" />
-			<xs:element name="AccessSpec" type="rp:AccessSpec" minOccurs="0" maxOccurs="unbounded" />
+			<xs:element name="LLRPStatus" type="llrp:LLRPStatus" />
+			<xs:element name="AccessSpec" type="llrp:AccessSpec" minOccurs="0" maxOccurs="unbounded" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:headerAttrs"/>
+		<xs:attributeGroup ref="llrp:headerAttrs"/>
 	</xs:complexType>
 
 
 	<xs:complexType name="ADD_ACCESSSPEC">
 		<xs:sequence>
-			<xs:element name="AccessSpec" type="rp:AccessSpec" />
+			<xs:element name="AccessSpec" type="llrp:AccessSpec" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:headerAttrs"/>
+		<xs:attributeGroup ref="llrp:headerAttrs"/>
 	</xs:complexType>
 
 
 	<xs:complexType name="READER_EVENT_NOTIFICATION">
 		<xs:sequence>
-			<xs:element name="ReaderEventNotificationData" type="rp:ReaderEventNotificationData" />
+			<xs:element name="ReaderEventNotificationData" type="llrp:ReaderEventNotificationData" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:headerAttrs"/>
+		<xs:attributeGroup ref="llrp:headerAttrs"/>
 	</xs:complexType>
 
 
 	<xs:complexType name="ADD_ROSPEC">
 		<xs:sequence>
-			<xs:element name="ROSpec" type="rp:ROSpec" />
+			<xs:element name="ROSpec" type="llrp:ROSpec" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:headerAttrs"/>
+		<xs:attributeGroup ref="llrp:headerAttrs"/>
 	</xs:complexType>
 
 
 	<xs:complexType name="DELETE_ROSPEC_RESPONSE">
 		<xs:sequence>
-			<xs:element name="LLRPStatus" type="rp:LLRPStatus" />
+			<xs:element name="LLRPStatus" type="llrp:LLRPStatus" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:headerAttrs"/>
+		<xs:attributeGroup ref="llrp:headerAttrs"/>
 	</xs:complexType>
 
 
 	<xs:complexType name="STOP_ROSPEC_RESPONSE">
 		<xs:sequence>
-			<xs:element name="LLRPStatus" type="rp:LLRPStatus" />
+			<xs:element name="LLRPStatus" type="llrp:LLRPStatus" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:headerAttrs"/>
+		<xs:attributeGroup ref="llrp:headerAttrs"/>
 	</xs:complexType>
 
 
 	<xs:complexType name="ENABLE_ROSPEC_RESPONSE">
 		<xs:sequence>
-			<xs:element name="LLRPStatus" type="rp:LLRPStatus" />
+			<xs:element name="LLRPStatus" type="llrp:LLRPStatus" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:headerAttrs"/>
+		<xs:attributeGroup ref="llrp:headerAttrs"/>
 	</xs:complexType>
 
 
@@ -398,7 +402,7 @@
 		<xs:sequence>
 			<xs:element name="ROSpecID" type="xs:unsignedInt" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:headerAttrs"/>
+		<xs:attributeGroup ref="llrp:headerAttrs"/>
 	</xs:complexType>
 
 
@@ -406,58 +410,58 @@
 		<xs:sequence>
 			<xs:element name="AccessSpecID" type="xs:unsignedInt" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:headerAttrs"/>
+		<xs:attributeGroup ref="llrp:headerAttrs"/>
 	</xs:complexType>
 
 
 	<xs:complexType name="DISABLE_ROSPEC_RESPONSE">
 		<xs:sequence>
-			<xs:element name="LLRPStatus" type="rp:LLRPStatus" />
+			<xs:element name="LLRPStatus" type="llrp:LLRPStatus" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:headerAttrs"/>
+		<xs:attributeGroup ref="llrp:headerAttrs"/>
 	</xs:complexType>
 
 
 	<xs:complexType name="KEEPALIVE_ACK">
-		<xs:attributeGroup ref="rp:headerAttrs"/>
+		<xs:attributeGroup ref="llrp:headerAttrs"/>
 	</xs:complexType>
 
 
 	<xs:complexType name="ENABLE_EVENTS_AND_REPORTS">
-		<xs:attributeGroup ref="rp:headerAttrs"/>
+		<xs:attributeGroup ref="llrp:headerAttrs"/>
 	</xs:complexType>
 
 
 	<xs:complexType name="GET_ROSPECS">
-		<xs:attributeGroup ref="rp:headerAttrs"/>
+		<xs:attributeGroup ref="llrp:headerAttrs"/>
 	</xs:complexType>
 
 
 	<xs:complexType name="ADD_ROSPEC_RESPONSE">
 		<xs:sequence>
-			<xs:element name="LLRPStatus" type="rp:LLRPStatus" />
+			<xs:element name="LLRPStatus" type="llrp:LLRPStatus" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:headerAttrs"/>
+		<xs:attributeGroup ref="llrp:headerAttrs"/>
 	</xs:complexType>
 
 
 	<xs:complexType name="GET_READER_CONFIG_RESPONSE">
 		<xs:sequence>
-			<xs:element name="LLRPStatus" type="rp:LLRPStatus" />
-			<xs:element name="Identification" type="rp:Identification" minOccurs="0" />
-			<xs:element name="AntennaProperties" type="rp:AntennaProperties" minOccurs="0" maxOccurs="unbounded" />
-			<xs:element name="AntennaConfiguration" type="rp:AntennaConfiguration" minOccurs="0" maxOccurs="unbounded" />
-			<xs:element name="ReaderEventNotificationSpec" type="rp:ReaderEventNotificationSpec" minOccurs="0" />
-			<xs:element name="ROReportSpec" type="rp:ROReportSpec" minOccurs="0" />
-			<xs:element name="AccessReportSpec" type="rp:AccessReportSpec" minOccurs="0" />
-			<xs:element name="LLRPConfigurationStateValue" type="rp:LLRPConfigurationStateValue" minOccurs="0" />
-			<xs:element name="KeepaliveSpec" type="rp:KeepaliveSpec" minOccurs="0" />
-			<xs:element name="GPIPortCurrentState" type="rp:GPIPortCurrentState" minOccurs="0" maxOccurs="unbounded" />
-			<xs:element name="GPOWriteData" type="rp:GPOWriteData" minOccurs="0" maxOccurs="unbounded" />
-			<xs:element name="EventsAndReports" type="rp:EventsAndReports" minOccurs="0" />
-			<xs:group ref="rp:extensionPoint" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="LLRPStatus" type="llrp:LLRPStatus" />
+			<xs:element name="Identification" type="llrp:Identification" minOccurs="0" />
+			<xs:element name="AntennaProperties" type="llrp:AntennaProperties" minOccurs="0" maxOccurs="unbounded" />
+			<xs:element name="AntennaConfiguration" type="llrp:AntennaConfiguration" minOccurs="0" maxOccurs="unbounded" />
+			<xs:element name="ReaderEventNotificationSpec" type="llrp:ReaderEventNotificationSpec" minOccurs="0" />
+			<xs:element name="ROReportSpec" type="llrp:ROReportSpec" minOccurs="0" />
+			<xs:element name="AccessReportSpec" type="llrp:AccessReportSpec" minOccurs="0" />
+			<xs:element name="LLRPConfigurationStateValue" type="llrp:LLRPConfigurationStateValue" minOccurs="0" />
+			<xs:element name="KeepaliveSpec" type="llrp:KeepaliveSpec" minOccurs="0" />
+			<xs:element name="GPIPortCurrentState" type="llrp:GPIPortCurrentState" minOccurs="0" maxOccurs="unbounded" />
+			<xs:element name="GPOWriteData" type="llrp:GPOWriteData" minOccurs="0" maxOccurs="unbounded" />
+			<xs:element name="EventsAndReports" type="llrp:EventsAndReports" minOccurs="0" />
+			<xs:group ref="llrp:extensionPoint" minOccurs="0" maxOccurs="unbounded"/>
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:headerAttrs"/>
+		<xs:attributeGroup ref="llrp:headerAttrs"/>
 	</xs:complexType>
 
 
@@ -465,7 +469,7 @@
 		<xs:sequence>
 			<xs:element name="ROSpecID" type="xs:unsignedInt" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:headerAttrs"/>
+		<xs:attributeGroup ref="llrp:headerAttrs"/>
 	</xs:complexType>
 
 
@@ -473,20 +477,20 @@
 		<xs:sequence>
 			<xs:element name="ROSpecID" type="xs:unsignedInt" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:headerAttrs"/>
+		<xs:attributeGroup ref="llrp:headerAttrs"/>
 	</xs:complexType>
 
 
 	<xs:complexType name="START_ROSPEC_RESPONSE">
 		<xs:sequence>
-			<xs:element name="LLRPStatus" type="rp:LLRPStatus" />
+			<xs:element name="LLRPStatus" type="llrp:LLRPStatus" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:headerAttrs"/>
+		<xs:attributeGroup ref="llrp:headerAttrs"/>
 	</xs:complexType>
 
 
 	<xs:complexType name="GET_REPORT">
-		<xs:attributeGroup ref="rp:headerAttrs"/>
+		<xs:attributeGroup ref="llrp:headerAttrs"/>
 	</xs:complexType>
 
 
@@ -494,21 +498,21 @@
 		<xs:sequence>
 			<xs:element name="ROSpecID" type="xs:unsignedInt" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:headerAttrs"/>
+		<xs:attributeGroup ref="llrp:headerAttrs"/>
 	</xs:complexType>
 
 
 	<xs:complexType name="GET_ACCESSSPECS">
-		<xs:attributeGroup ref="rp:headerAttrs"/>
+		<xs:attributeGroup ref="llrp:headerAttrs"/>
 	</xs:complexType>
 
 
 	<xs:complexType name="Identification">
 		<xs:sequence>
-			<xs:element name="IDType" type="rp:IdentificationType" />
+			<xs:element name="IDType" type="llrp:IdentificationType" />
 			<xs:element name="ReaderID" type="xs:hexBinary" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
@@ -516,17 +520,17 @@
 		<xs:sequence>
 			<xs:element name="ChannelIndex" type="xs:unsignedShort" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
 	<xs:complexType name="ROSpecStartTrigger">
 		<xs:sequence>
-			<xs:element name="ROSpecStartTriggerType" type="rp:ROSpecStartTriggerType" />
-			<xs:element name="PeriodicTriggerValue" type="rp:PeriodicTriggerValue" minOccurs="0" />
-			<xs:element name="GPITriggerValue" type="rp:GPITriggerValue" minOccurs="0" />
+			<xs:element name="ROSpecStartTriggerType" type="llrp:ROSpecStartTriggerType" />
+			<xs:element name="PeriodicTriggerValue" type="llrp:PeriodicTriggerValue" minOccurs="0" />
+			<xs:element name="GPITriggerValue" type="llrp:GPITriggerValue" minOccurs="0" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
@@ -534,16 +538,16 @@
 		<xs:sequence>
 			<xs:element name="ROSpecID" type="xs:unsignedInt" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
 	<xs:complexType name="C1G2BlockEraseOpSpecResult">
 		<xs:sequence>
-			<xs:element name="Result" type="rp:C1G2BlockEraseResultType" />
+			<xs:element name="Result" type="llrp:C1G2BlockEraseResultType" />
 			<xs:element name="OpSpecID" type="xs:unsignedShort" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
@@ -551,7 +555,7 @@
 		<xs:sequence>
 			<xs:element name="PC_Bits" type="xs:unsignedShort" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
@@ -560,7 +564,7 @@
 			<xs:element name="NumCollisionSlots" type="xs:unsignedShort" />
 			<xs:element name="NumEmptySlots" type="xs:unsignedShort" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
@@ -572,21 +576,21 @@
 			<xs:element name="DeviceManufacturerName" type="xs:unsignedInt" />
 			<xs:element name="ModelName" type="xs:unsignedInt" />
 			<xs:element name="ReaderFirmwareVersion" type="xs:string" />
-			<xs:element name="ReceiveSensitivityTableEntry" type="rp:ReceiveSensitivityTableEntry" maxOccurs="unbounded" />
-			<xs:element name="PerAntennaReceiveSensitivityRange" type="rp:PerAntennaReceiveSensitivityRange" minOccurs="0" maxOccurs="unbounded" />
-			<xs:element name="GPIOCapabilities" type="rp:GPIOCapabilities" />
-			<xs:element name="PerAntennaAirProtocol" type="rp:PerAntennaAirProtocol" maxOccurs="unbounded" />
+			<xs:element name="ReceiveSensitivityTableEntry" type="llrp:ReceiveSensitivityTableEntry" maxOccurs="unbounded" />
+			<xs:element name="PerAntennaReceiveSensitivityRange" type="llrp:PerAntennaReceiveSensitivityRange" minOccurs="0" maxOccurs="unbounded" />
+			<xs:element name="GPIOCapabilities" type="llrp:GPIOCapabilities" />
+			<xs:element name="PerAntennaAirProtocol" type="llrp:PerAntennaAirProtocol" maxOccurs="unbounded" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
 	<xs:complexType name="C1G2LockPayload">
 		<xs:sequence>
-			<xs:element name="Privilege" type="rp:C1G2LockPrivilege" />
-			<xs:element name="DataField" type="rp:C1G2LockDataField" />
+			<xs:element name="Privilege" type="llrp:C1G2LockPrivilege" />
+			<xs:element name="DataField" type="llrp:C1G2LockDataField" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
@@ -596,12 +600,12 @@
 			<xs:element name="ParameterSubtype" type="xs:unsignedInt" />
 			<xs:element name="Data" type="xs:hexBinary" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
 	<xs:complexType name="ReportBufferOverflowErrorEvent">
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
@@ -611,7 +615,7 @@
 			<xs:element name="ReceiveSensitivityIndexMin" type="xs:unsignedShort" />
 			<xs:element name="ReceiveSensitivityIndexMax" type="xs:unsignedShort" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
@@ -621,57 +625,57 @@
 			<xs:element name="AntennaID" type="xs:unsignedShort" />
 			<xs:element name="AntennaGain" type="xs:short" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
 	<xs:complexType name="InventoryParameterSpec">
 		<xs:sequence>
 			<xs:element name="InventoryParameterSpecID" type="xs:unsignedShort" />
-			<xs:element name="ProtocolID" type="rp:AirProtocols" />
-			<xs:element name="AntennaConfiguration" type="rp:AntennaConfiguration" minOccurs="0" maxOccurs="unbounded" />
-			<xs:group ref="rp:extensionPoint" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="ProtocolID" type="llrp:AirProtocols" />
+			<xs:element name="AntennaConfiguration" type="llrp:AntennaConfiguration" minOccurs="0" maxOccurs="unbounded" />
+			<xs:group ref="llrp:extensionPoint" minOccurs="0" maxOccurs="unbounded"/>
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
 	<xs:complexType name="C1G2KillOpSpecResult">
 		<xs:sequence>
-			<xs:element name="Result" type="rp:C1G2KillResultType" />
+			<xs:element name="Result" type="llrp:C1G2KillResultType" />
 			<xs:element name="OpSpecID" type="xs:unsignedShort" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
 	<xs:complexType name="AccessCommand">
 		<xs:sequence>
 			<xs:choice >
-				<xs:element name="C1G2TagSpec" type="rp:C1G2TagSpec"/>
+				<xs:element name="C1G2TagSpec" type="llrp:C1G2TagSpec"/>
 			</xs:choice>
 			<xs:choice maxOccurs="unbounded" >
-				<xs:element name="C1G2Write" type="rp:C1G2Write"/>
-				<xs:element name="C1G2BlockWrite" type="rp:C1G2BlockWrite"/>
-				<xs:element name="C1G2Lock" type="rp:C1G2Lock"/>
-				<xs:element name="C1G2BlockErase" type="rp:C1G2BlockErase"/>
-				<xs:element name="C1G2Kill" type="rp:C1G2Kill"/>
-				<xs:element name="C1G2Read" type="rp:C1G2Read"/>
+				<xs:element name="C1G2Write" type="llrp:C1G2Write"/>
+				<xs:element name="C1G2BlockWrite" type="llrp:C1G2BlockWrite"/>
+				<xs:element name="C1G2Lock" type="llrp:C1G2Lock"/>
+				<xs:element name="C1G2BlockErase" type="llrp:C1G2BlockErase"/>
+				<xs:element name="C1G2Kill" type="llrp:C1G2Kill"/>
+				<xs:element name="C1G2Read" type="llrp:C1G2Read"/>
 			</xs:choice>
-			<xs:group ref="rp:extensionPoint" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:group ref="llrp:extensionPoint" minOccurs="0" maxOccurs="unbounded"/>
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
 	<xs:complexType name="RegulatoryCapabilities">
 		<xs:sequence>
-			<xs:element name="CountryCode" type="rp:CountryCode" />
-			<xs:element name="CommunicationsStandard" type="rp:CommunicationsStandard" />
-			<xs:element name="UHFBandCapabilities" type="rp:UHFBandCapabilities" minOccurs="0" />
-			<xs:group ref="rp:extensionPoint" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="CountryCode" type="xs:unsignedShort" />
+			<xs:element name="CommunicationsStandard" type="llrp:CommunicationsStandard" />
+			<xs:element name="UHFBandCapabilities" type="llrp:UHFBandCapabilities" minOccurs="0" />
+			<xs:group ref="llrp:extensionPoint" minOccurs="0" maxOccurs="unbounded"/>
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
@@ -680,7 +684,7 @@
 			<xs:element name="EnableCRC" type="xs:boolean" />
 			<xs:element name="EnablePCBits" type="xs:boolean" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
@@ -688,9 +692,9 @@
 		<xs:sequence>
 			<xs:element name="Offset" type="xs:unsignedInt" />
 			<xs:element name="Period" type="xs:unsignedInt" />
-			<xs:element name="UTCTimestamp" type="rp:UTCTimestamp" minOccurs="0" />
+			<xs:element name="UTCTimestamp" type="llrp:UTCTimestamp" minOccurs="0" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
@@ -698,11 +702,11 @@
 		<xs:sequence>
 			<xs:element name="OpSpecID" type="xs:unsignedShort" />
 			<xs:element name="AccessPassword" type="xs:unsignedInt" />
-			<xs:element name="MB" type="rp:twoBit" />
+			<xs:element name="MB" type="llrp:twoBit" />
 			<xs:element name="WordPointer" type="xs:unsignedShort" />
 			<xs:element name="WordCount" type="xs:unsignedShort" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
@@ -712,55 +716,55 @@
 			<xs:element name="GPIEvent" type="xs:boolean" />
 			<xs:element name="Timeout" type="xs:unsignedInt" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
 	<xs:complexType name="EventNotificationState">
 		<xs:sequence>
-			<xs:element name="EventType" type="rp:NotificationEventType" />
+			<xs:element name="EventType" type="llrp:NotificationEventType" />
 			<xs:element name="NotificationState" type="xs:boolean" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
 	<xs:complexType name="ROBoundarySpec">
 		<xs:sequence>
-			<xs:element name="ROSpecStartTrigger" type="rp:ROSpecStartTrigger" />
-			<xs:element name="ROSpecStopTrigger" type="rp:ROSpecStopTrigger" />
+			<xs:element name="ROSpecStartTrigger" type="llrp:ROSpecStartTrigger" />
+			<xs:element name="ROSpecStopTrigger" type="llrp:ROSpecStopTrigger" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
 	<xs:complexType name="C1G2TagInventoryStateUnawareFilterAction">
 		<xs:sequence>
-			<xs:element name="Action" type="rp:C1G2StateUnawareAction" />
+			<xs:element name="Action" type="llrp:C1G2StateUnawareAction" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
 	<xs:complexType name="AISpec">
 		<xs:sequence>
-			<xs:element name="AntennaIDs" type="rp:listOfUnsignedShort" />
-			<xs:element name="AISpecStopTrigger" type="rp:AISpecStopTrigger" />
-			<xs:element name="InventoryParameterSpec" type="rp:InventoryParameterSpec" maxOccurs="unbounded" />
-			<xs:group ref="rp:extensionPoint" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="AntennaIDs" type="llrp:listOfUnsignedShort" />
+			<xs:element name="AISpecStopTrigger" type="llrp:AISpecStopTrigger" />
+			<xs:element name="InventoryParameterSpec" type="llrp:InventoryParameterSpec" maxOccurs="unbounded" />
+			<xs:group ref="llrp:extensionPoint" minOccurs="0" maxOccurs="unbounded"/>
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
 	<xs:complexType name="RFSurveyReportData">
 		<xs:sequence>
-			<xs:element name="ROSpecID" type="rp:ROSpecID" minOccurs="0" />
-			<xs:element name="SpecIndex" type="rp:SpecIndex" minOccurs="0" />
-			<xs:element name="FrequencyRSSILevelEntry" type="rp:FrequencyRSSILevelEntry" maxOccurs="unbounded" />
-			<xs:group ref="rp:extensionPoint" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="ROSpecID" type="llrp:ROSpecID" minOccurs="0" />
+			<xs:element name="SpecIndex" type="llrp:SpecIndex" minOccurs="0" />
+			<xs:element name="FrequencyRSSILevelEntry" type="llrp:FrequencyRSSILevelEntry" maxOccurs="unbounded" />
+			<xs:group ref="llrp:extensionPoint" minOccurs="0" maxOccurs="unbounded"/>
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
@@ -768,39 +772,39 @@
 		<xs:sequence>
 			<xs:element name="Microseconds" type="xs:dateTime" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
 	<xs:complexType name="ReaderEventNotificationData">
 		<xs:sequence>
 			<xs:choice >
-				<xs:element name="Uptime" type="rp:Uptime"/>
-				<xs:element name="UTCTimestamp" type="rp:UTCTimestamp"/>
+				<xs:element name="Uptime" type="llrp:Uptime"/>
+				<xs:element name="UTCTimestamp" type="llrp:UTCTimestamp"/>
 			</xs:choice>
-			<xs:element name="HoppingEvent" type="rp:HoppingEvent" minOccurs="0" />
-			<xs:element name="GPIEvent" type="rp:GPIEvent" minOccurs="0" />
-			<xs:element name="ROSpecEvent" type="rp:ROSpecEvent" minOccurs="0" />
-			<xs:element name="ReportBufferLevelWarningEvent" type="rp:ReportBufferLevelWarningEvent" minOccurs="0" />
-			<xs:element name="ReportBufferOverflowErrorEvent" type="rp:ReportBufferOverflowErrorEvent" minOccurs="0" />
-			<xs:element name="ReaderExceptionEvent" type="rp:ReaderExceptionEvent" minOccurs="0" />
-			<xs:element name="RFSurveyEvent" type="rp:RFSurveyEvent" minOccurs="0" />
-			<xs:element name="AISpecEvent" type="rp:AISpecEvent" minOccurs="0" />
-			<xs:element name="AntennaEvent" type="rp:AntennaEvent" minOccurs="0" />
-			<xs:element name="ConnectionAttemptEvent" type="rp:ConnectionAttemptEvent" minOccurs="0" />
-			<xs:element name="ConnectionCloseEvent" type="rp:ConnectionCloseEvent" minOccurs="0" />
-			<xs:group ref="rp:extensionPoint" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="HoppingEvent" type="llrp:HoppingEvent" minOccurs="0" />
+			<xs:element name="GPIEvent" type="llrp:GPIEvent" minOccurs="0" />
+			<xs:element name="ROSpecEvent" type="llrp:ROSpecEvent" minOccurs="0" />
+			<xs:element name="ReportBufferLevelWarningEvent" type="llrp:ReportBufferLevelWarningEvent" minOccurs="0" />
+			<xs:element name="ReportBufferOverflowErrorEvent" type="llrp:ReportBufferOverflowErrorEvent" minOccurs="0" />
+			<xs:element name="ReaderExceptionEvent" type="llrp:ReaderExceptionEvent" minOccurs="0" />
+			<xs:element name="RFSurveyEvent" type="llrp:RFSurveyEvent" minOccurs="0" />
+			<xs:element name="AISpecEvent" type="llrp:AISpecEvent" minOccurs="0" />
+			<xs:element name="AntennaEvent" type="llrp:AntennaEvent" minOccurs="0" />
+			<xs:element name="ConnectionAttemptEvent" type="llrp:ConnectionAttemptEvent" minOccurs="0" />
+			<xs:element name="ConnectionCloseEvent" type="llrp:ConnectionCloseEvent" minOccurs="0" />
+			<xs:group ref="llrp:extensionPoint" minOccurs="0" maxOccurs="unbounded"/>
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
 	<xs:complexType name="FrequencyHopTable">
 		<xs:sequence>
 			<xs:element name="HopTableID" type="xs:unsignedByte" />
-			<xs:element name="Frequency" type="rp:listOfUnsignedInt" />
+			<xs:element name="Frequency" type="llrp:listOfUnsignedInt" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
@@ -808,22 +812,22 @@
 		<xs:sequence>
 			<xs:element name="Microseconds" type="xs:unsignedLong" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
 	<xs:complexType name="AccessCommandOpSpec">
 		<xs:sequence>
 			<xs:choice >
-				<xs:element name="C1G2Write" type="rp:C1G2Write"/>
-				<xs:element name="C1G2BlockWrite" type="rp:C1G2BlockWrite"/>
-				<xs:element name="C1G2Lock" type="rp:C1G2Lock"/>
-				<xs:element name="C1G2BlockErase" type="rp:C1G2BlockErase"/>
-				<xs:element name="C1G2Kill" type="rp:C1G2Kill"/>
-				<xs:element name="C1G2Read" type="rp:C1G2Read"/>
+				<xs:element name="C1G2Write" type="llrp:C1G2Write"/>
+				<xs:element name="C1G2BlockWrite" type="llrp:C1G2BlockWrite"/>
+				<xs:element name="C1G2Lock" type="llrp:C1G2Lock"/>
+				<xs:element name="C1G2BlockErase" type="llrp:C1G2BlockErase"/>
+				<xs:element name="C1G2Kill" type="llrp:C1G2Kill"/>
+				<xs:element name="C1G2Read" type="llrp:C1G2Read"/>
 			</xs:choice>
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
@@ -831,7 +835,7 @@
 		<xs:sequence>
 			<xs:element name="Microseconds" type="xs:dateTime" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
@@ -839,17 +843,17 @@
 		<xs:sequence>
 			<xs:element name="AntennaID" type="xs:unsignedShort" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
 	<xs:complexType name="C1G2ReadOpSpecResult">
 		<xs:sequence>
-			<xs:element name="Result" type="rp:C1G2ReadResultType" />
+			<xs:element name="Result" type="llrp:C1G2ReadResultType" />
 			<xs:element name="OpSpecID" type="xs:unsignedShort" />
-			<xs:element name="ReadData" type="rp:listOfHexWord" />
+			<xs:element name="ReadData" type="llrp:listOfHexWord" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
@@ -858,19 +862,19 @@
 			<xs:element name="I" type="xs:boolean" />
 			<xs:element name="S" type="xs:boolean" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
 	<xs:complexType name="UHFBandCapabilities">
 		<xs:sequence>
-			<xs:element name="TransmitPowerLevelTableEntry" type="rp:TransmitPowerLevelTableEntry" maxOccurs="unbounded" />
-			<xs:element name="FrequencyInformation" type="rp:FrequencyInformation" />
+			<xs:element name="TransmitPowerLevelTableEntry" type="llrp:TransmitPowerLevelTableEntry" maxOccurs="unbounded" />
+			<xs:element name="FrequencyInformation" type="llrp:FrequencyInformation" />
 			<xs:choice maxOccurs="unbounded" >
-				<xs:element name="C1G2UHFRFModeTable" type="rp:C1G2UHFRFModeTable"/>
+				<xs:element name="C1G2UHFRFModeTable" type="llrp:C1G2UHFRFModeTable"/>
 			</xs:choice>
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
@@ -878,11 +882,11 @@
 		<xs:sequence>
 			<xs:element name="OpSpecID" type="xs:unsignedShort" />
 			<xs:element name="AccessPassword" type="xs:unsignedInt" />
-			<xs:element name="MB" type="rp:twoBit" />
+			<xs:element name="MB" type="llrp:twoBit" />
 			<xs:element name="WordPointer" type="xs:unsignedShort" />
-			<xs:element name="WriteData" type="rp:listOfHexWord" />
+			<xs:element name="WriteData" type="llrp:listOfHexWord" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
@@ -890,7 +894,7 @@
 		<xs:sequence>
 			<xs:element name="EPC" type="xs:hexBinary" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
@@ -898,30 +902,15 @@
 		<xs:sequence>
 			<xs:element name="PeakRSSI" type="xs:byte" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
-	</xs:complexType>
-
-
-	<xs:complexType name="AirProtocolOpSpec">
-		<xs:sequence>
-			<xs:choice >
-				<xs:element name="C1G2Write" type="rp:C1G2Write"/>
-				<xs:element name="C1G2BlockWrite" type="rp:C1G2BlockWrite"/>
-				<xs:element name="C1G2Lock" type="rp:C1G2Lock"/>
-				<xs:element name="C1G2BlockErase" type="rp:C1G2BlockErase"/>
-				<xs:element name="C1G2Kill" type="rp:C1G2Kill"/>
-				<xs:element name="C1G2Read" type="rp:C1G2Read"/>
-			</xs:choice>
-		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
 	<xs:complexType name="ReaderEventNotificationSpec">
 		<xs:sequence>
-			<xs:element name="EventNotificationState" type="rp:EventNotificationState" maxOccurs="unbounded" />
+			<xs:element name="EventNotificationState" type="llrp:EventNotificationState" maxOccurs="unbounded" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
@@ -938,10 +927,10 @@
 			<xs:element name="EnableTagSeenCount" type="xs:boolean" />
 			<xs:element name="EnableAccessSpecID" type="xs:boolean" />
 			<xs:choice minOccurs="0" maxOccurs="unbounded" >
-				<xs:element name="C1G2EPCMemorySelector" type="rp:C1G2EPCMemorySelector"/>
+				<xs:element name="C1G2EPCMemorySelector" type="llrp:C1G2EPCMemorySelector"/>
 			</xs:choice>
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
@@ -949,83 +938,83 @@
 		<xs:sequence>
 			<xs:element name="InventoryParameterSpecID" type="xs:unsignedShort" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
 	<xs:complexType name="FieldError">
 		<xs:sequence>
 			<xs:element name="FieldNum" type="xs:unsignedShort" />
-			<xs:element name="ErrorCode" type="rp:StatusCode" />
+			<xs:element name="ErrorCode" type="llrp:StatusCode" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
 	<xs:complexType name="AntennaConfiguration">
 		<xs:sequence>
 			<xs:element name="AntennaID" type="xs:unsignedShort" />
-			<xs:element name="RFReceiver" type="rp:RFReceiver" minOccurs="0" />
-			<xs:element name="RFTransmitter" type="rp:RFTransmitter" minOccurs="0" />
+			<xs:element name="RFReceiver" type="llrp:RFReceiver" minOccurs="0" />
+			<xs:element name="RFTransmitter" type="llrp:RFTransmitter" minOccurs="0" />
 			<xs:choice minOccurs="0" maxOccurs="unbounded" >
-				<xs:element name="C1G2InventoryCommand" type="rp:C1G2InventoryCommand"/>
+				<xs:element name="C1G2InventoryCommand" type="llrp:C1G2InventoryCommand"/>
 			</xs:choice>
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
 	<xs:complexType name="C1G2TagInventoryStateAwareFilterAction">
 		<xs:sequence>
-			<xs:element name="Target" type="rp:C1G2StateAwareTarget" />
-			<xs:element name="Action" type="rp:C1G2StateAwareAction" />
+			<xs:element name="Target" type="llrp:C1G2StateAwareTarget" />
+			<xs:element name="Action" type="llrp:C1G2StateAwareAction" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
 	<xs:complexType name="AISpecEvent">
 		<xs:sequence>
-			<xs:element name="EventType" type="rp:AISpecEventType" />
+			<xs:element name="EventType" type="llrp:AISpecEventType" />
 			<xs:element name="ROSpecID" type="xs:unsignedInt" />
 			<xs:element name="SpecIndex" type="xs:unsignedShort" />
 			<xs:choice minOccurs="0" >
-				<xs:element name="C1G2SingulationDetails" type="rp:C1G2SingulationDetails"/>
+				<xs:element name="C1G2SingulationDetails" type="llrp:C1G2SingulationDetails"/>
 			</xs:choice>
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
         <xs:complexType name="ROReportSpec">
 		<xs:sequence>
-			<xs:element name="ROReportTrigger" type="rp:ROReportTriggerType" />
+			<xs:element name="ROReportTrigger" type="llrp:ROReportTriggerType" />
 			<xs:element name="N" type="xs:unsignedShort" />
-			<xs:element name="TagReportContentSelector" type="rp:TagReportContentSelector" />
-			<xs:group ref="rp:extensionPoint" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="TagReportContentSelector" type="llrp:TagReportContentSelector" />
+			<xs:group ref="llrp:extensionPoint" minOccurs="0" maxOccurs="unbounded"/>
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
 	<xs:complexType name="AntennaEvent">
 		<xs:sequence>
-			<xs:element name="EventType" type="rp:AntennaEventType" />
+			<xs:element name="EventType" type="llrp:AntennaEventType" />
 			<xs:element name="AntennaID" type="xs:unsignedShort" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
 	<xs:complexType name="C1G2InventoryCommand">
 		<xs:sequence>
 			<xs:element name="TagInventoryStateAware" type="xs:boolean" />
-			<xs:element name="C1G2Filter" type="rp:C1G2Filter" minOccurs="0" maxOccurs="unbounded" />
-			<xs:element name="C1G2RFControl" type="rp:C1G2RFControl" minOccurs="0" />
-			<xs:element name="C1G2SingulationControl" type="rp:C1G2SingulationControl" minOccurs="0" />
-			<xs:group ref="rp:extensionPoint" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="C1G2Filter" type="llrp:C1G2Filter" minOccurs="0" maxOccurs="unbounded" />
+			<xs:element name="C1G2RFControl" type="llrp:C1G2RFControl" minOccurs="0" />
+			<xs:element name="C1G2SingulationControl" type="llrp:C1G2SingulationControl" minOccurs="0" />
+			<xs:group ref="llrp:extensionPoint" minOccurs="0" maxOccurs="unbounded"/>
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
@@ -1033,27 +1022,27 @@
 		<xs:sequence>
 			<xs:element name="SpecIndex" type="xs:unsignedShort" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
 	<xs:complexType name="ROSpecStopTrigger">
 		<xs:sequence>
-			<xs:element name="ROSpecStopTriggerType" type="rp:ROSpecStopTriggerType" />
+			<xs:element name="ROSpecStopTriggerType" type="llrp:ROSpecStopTriggerType" />
 			<xs:element name="DurationTriggerValue" type="xs:unsignedInt" />
-			<xs:element name="GPITriggerValue" type="rp:GPITriggerValue" minOccurs="0" />
+			<xs:element name="GPITriggerValue" type="llrp:GPITriggerValue" minOccurs="0" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
 	<xs:complexType name="RFSurveyEvent">
 		<xs:sequence>
-			<xs:element name="EventType" type="rp:RFSurveyEventType" />
+			<xs:element name="EventType" type="llrp:RFSurveyEventType" />
 			<xs:element name="ROSpecID" type="xs:unsignedInt" />
 			<xs:element name="SpecIndex" type="xs:unsignedShort" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
@@ -1062,7 +1051,7 @@
 			<xs:element name="GPOPortNumber" type="xs:unsignedShort" />
 			<xs:element name="GPOData" type="xs:boolean" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
@@ -1070,19 +1059,19 @@
 		<xs:sequence>
 			<xs:element name="Microseconds" type="xs:unsignedLong" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
 	<xs:complexType name="TagObservationTrigger">
 		<xs:sequence>
-			<xs:element name="TriggerType" type="rp:TagObservationTriggerType" />
+			<xs:element name="TriggerType" type="llrp:TagObservationTriggerType" />
 			<xs:element name="NumberOfTags" type="xs:unsignedShort" />
 			<xs:element name="NumberOfAttempts" type="xs:unsignedShort" />
 			<xs:element name="T" type="xs:unsignedShort" />
 			<xs:element name="Timeout" type="xs:unsignedInt" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
@@ -1090,7 +1079,7 @@
 		<xs:sequence>
 			<xs:element name="TagCount" type="xs:unsignedShort" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
@@ -1109,7 +1098,7 @@
 			<xs:element name="MaxNumAccessSpecs" type="xs:unsignedInt" />
 			<xs:element name="MaxNumOpSpecsPerAccessSpec" type="xs:unsignedInt" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
@@ -1117,7 +1106,7 @@
 		<xs:sequence>
 			<xs:element name="OpSpecID" type="xs:unsignedShort" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
@@ -1125,47 +1114,32 @@
 		<xs:sequence>
 			<xs:element name="OpSpecID" type="xs:unsignedShort" />
 			<xs:element name="AccessPassword" type="xs:unsignedInt" />
-			<xs:element name="MB" type="rp:twoBit" />
+			<xs:element name="MB" type="llrp:twoBit" />
 			<xs:element name="WordPointer" type="xs:unsignedShort" />
-			<xs:element name="WriteData" type="rp:listOfHexWord" />
+			<xs:element name="WriteData" type="llrp:listOfHexWord" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
-	</xs:complexType>
-
-
-	<xs:complexType name="AirProtocolOpSpecResult">
-		<xs:sequence>
-			<xs:choice >
-				<xs:element name="C1G2WriteOpSpecResult" type="rp:C1G2WriteOpSpecResult"/>
-				<xs:element name="C1G2BlockWriteOpSpecResult" type="rp:C1G2BlockWriteOpSpecResult"/>
-				<xs:element name="C1G2BlockEraseOpSpecResult" type="rp:C1G2BlockEraseOpSpecResult"/>
-				<xs:element name="C1G2ReadOpSpecResult" type="rp:C1G2ReadOpSpecResult"/>
-				<xs:element name="C1G2LockOpSpecResult" type="rp:C1G2LockOpSpecResult"/>
-				<xs:element name="C1G2KillOpSpecResult" type="rp:C1G2KillOpSpecResult"/>
-			</xs:choice>
-		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
 	<xs:complexType name="AISpecStopTrigger">
 		<xs:sequence>
-			<xs:element name="AISpecStopTriggerType" type="rp:AISpecStopTriggerType" />
+			<xs:element name="AISpecStopTriggerType" type="llrp:AISpecStopTriggerType" />
 			<xs:element name="DurationTrigger" type="xs:unsignedInt" />
-			<xs:element name="GPITriggerValue" type="rp:GPITriggerValue" minOccurs="0" />
-			<xs:element name="TagObservationTrigger" type="rp:TagObservationTrigger" minOccurs="0" />
+			<xs:element name="GPITriggerValue" type="llrp:GPITriggerValue" minOccurs="0" />
+			<xs:element name="TagObservationTrigger" type="llrp:TagObservationTrigger" minOccurs="0" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
 	<xs:complexType name="C1G2WriteOpSpecResult">
 		<xs:sequence>
-			<xs:element name="Result" type="rp:C1G2WriteResultType" />
+			<xs:element name="Result" type="llrp:C1G2WriteResultType" />
 			<xs:element name="OpSpecID" type="xs:unsignedShort" />
 			<xs:element name="NumWordsWritten" type="xs:unsignedShort" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
@@ -1174,7 +1148,7 @@
 			<xs:element name="GPIPortNumber" type="xs:unsignedShort" />
 			<xs:element name="GPIEvent" type="xs:boolean" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
@@ -1185,11 +1159,11 @@
 			<xs:element name="AverageRSSI" type="xs:byte" />
 			<xs:element name="PeakRSSI" type="xs:byte" />
 			<xs:choice >
-				<xs:element name="Uptime" type="rp:Uptime"/>
-				<xs:element name="UTCTimestamp" type="rp:UTCTimestamp"/>
+				<xs:element name="Uptime" type="llrp:Uptime"/>
+				<xs:element name="UTCTimestamp" type="llrp:UTCTimestamp"/>
 			</xs:choice>
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
@@ -1197,7 +1171,7 @@
 		<xs:sequence>
 			<xs:element name="LLRPConfigurationStateValue" type="xs:unsignedInt" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
@@ -1205,7 +1179,7 @@
 		<xs:sequence>
 			<xs:element name="HoldEventsAndReportsUponReconnect" type="xs:boolean" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
@@ -1213,17 +1187,17 @@
 		<xs:sequence>
 			<xs:element name="Microseconds" type="xs:dateTime" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
 	<xs:complexType name="C1G2TagInventoryMask">
 		<xs:sequence>
-			<xs:element name="MB" type="rp:twoBit" />
+			<xs:element name="MB" type="llrp:twoBit" />
 			<xs:element name="Pointer" type="xs:unsignedShort" />
-			<xs:element name="TagMask" type="rp:bitVector" />
+			<xs:element name="TagMask" type="llrp:bitVector" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
@@ -1233,33 +1207,33 @@
 			<xs:element name="CanSupportBlockWrite" type="xs:boolean" />
 			<xs:element name="MaxNumSelectFiltersPerQuery" type="xs:unsignedShort" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
 	<xs:complexType name="AccessSpecStopTrigger">
 		<xs:sequence>
-			<xs:element name="AccessSpecStopTrigger" type="rp:AccessSpecStopTriggerType" />
+			<xs:element name="AccessSpecStopTrigger" type="llrp:AccessSpecStopTriggerType" />
 			<xs:element name="OperationCountValue" type="xs:unsignedShort" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
 	<xs:complexType name="KeepaliveSpec">
 		<xs:sequence>
-			<xs:element name="KeepaliveTriggerType" type="rp:KeepaliveTriggerType" />
+			<xs:element name="KeepaliveTriggerType" type="llrp:KeepaliveTriggerType" />
 			<xs:element name="PeriodicTriggerValue" type="xs:unsignedInt" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
 	<xs:complexType name="EPCData">
 		<xs:sequence>
-			<xs:element name="EPC" type="rp:bitVector" />
+			<xs:element name="EPC" type="llrp:bitVector" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
@@ -1267,41 +1241,39 @@
 		<xs:sequence>
 			<xs:element name="CRC" type="xs:unsignedShort" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
-
 
 	<xs:complexType name="PerAntennaAirProtocol">
 		<xs:sequence>
 			<xs:element name="AntennaID" type="xs:unsignedShort" />
-			<xs:element name="ProtocolID" type="rp:AirProtocols" />
+			<xs:element name="ProtocolID" type="llrp:listOfAirProtocols" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
-
 
 	<xs:complexType name="C1G2Kill">
 		<xs:sequence>
 			<xs:element name="OpSpecID" type="xs:unsignedShort" />
 			<xs:element name="KillPassword" type="xs:unsignedInt" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
 	<xs:complexType name="FixedFrequencyTable">
 		<xs:sequence>
-			<xs:element name="Frequency" type="rp:listOfUnsignedInt" />
+			<xs:element name="Frequency" type="llrp:listOfUnsignedInt" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
 	<xs:complexType name="AccessReportSpec">
 		<xs:sequence>
-			<xs:element name="AccessReportTrigger" type="rp:AccessReportTriggerType" />
+			<xs:element name="AccessReportTrigger" type="llrp:AccessReportTriggerType" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
@@ -1311,28 +1283,28 @@
 			<xs:element name="ChannelIndex" type="xs:unsignedShort" />
 			<xs:element name="TransmitPower" type="xs:unsignedShort" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
 	<xs:complexType name="RFSurveySpecStopTrigger">
 		<xs:sequence>
-			<xs:element name="StopTriggerType" type="rp:RFSurveySpecStopTriggerType" />
+			<xs:element name="StopTriggerType" type="llrp:RFSurveySpecStopTriggerType" />
 			<xs:element name="DurationPeriod" type="xs:unsignedInt" />
 			<xs:element name="N" type="xs:unsignedInt" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
 	<xs:complexType name="LLRPStatus">
 		<xs:sequence>
-			<xs:element name="StatusCode" type="rp:StatusCode" />
+			<xs:element name="StatusCode" type="llrp:StatusCode" />
 			<xs:element name="ErrorDescription" type="xs:string" />
-			<xs:element name="FieldError" type="rp:FieldError" minOccurs="0" />
-			<xs:element name="ParameterError" type="rp:ParameterError" minOccurs="0" />
+			<xs:element name="FieldError" type="llrp:FieldError" minOccurs="0" />
+			<xs:element name="ParameterError" type="llrp:ParameterError" minOccurs="0" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
@@ -1340,84 +1312,84 @@
 		<xs:sequence>
 			<xs:element name="AccessSpecID" type="xs:unsignedInt" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
 	<xs:complexType name="C1G2SingulationControl">
 		<xs:sequence>
-			<xs:element name="Session" type="rp:twoBit" />
+			<xs:element name="Session" type="llrp:twoBit" />
 			<xs:element name="TagPopulation" type="xs:unsignedShort" />
 			<xs:element name="TagTransitTime" type="xs:unsignedInt" />
-			<xs:element name="C1G2TagInventoryStateAwareSingulationAction" type="rp:C1G2TagInventoryStateAwareSingulationAction" minOccurs="0" />
+			<xs:element name="C1G2TagInventoryStateAwareSingulationAction" type="llrp:C1G2TagInventoryStateAwareSingulationAction" minOccurs="0" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
 	<xs:complexType name="ROSpecEvent">
 		<xs:sequence>
-			<xs:element name="EventType" type="rp:ROSpecEventType" />
+			<xs:element name="EventType" type="llrp:ROSpecEventType" />
 			<xs:element name="ROSpecID" type="xs:unsignedInt" />
 			<xs:element name="PreemptingROSpecID" type="xs:unsignedInt" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
 	<xs:complexType name="TagReportData">
 		<xs:sequence>
 			<xs:choice >
-				<xs:element name="EPCData" type="rp:EPCData"/>
-				<xs:element name="EPC_96" type="rp:EPC_96"/>
+				<xs:element name="EPCData" type="llrp:EPCData"/>
+				<xs:element name="EPC_96" type="llrp:EPC_96"/>
 			</xs:choice>
-			<xs:element name="ROSpecID" type="rp:ROSpecID" minOccurs="0" />
-			<xs:element name="SpecIndex" type="rp:SpecIndex" minOccurs="0" />
-			<xs:element name="InventoryParameterSpecID" type="rp:InventoryParameterSpecID" minOccurs="0" />
-			<xs:element name="AntennaID" type="rp:AntennaID" minOccurs="0" />
-			<xs:element name="PeakRSSI" type="rp:PeakRSSI" minOccurs="0" />
-			<xs:element name="ChannelIndex" type="rp:ChannelIndex" minOccurs="0" />
-			<xs:element name="FirstSeenTimestampUTC" type="rp:FirstSeenTimestampUTC" minOccurs="0" />
-			<xs:element name="FirstSeenTimestampUptime" type="rp:FirstSeenTimestampUptime" minOccurs="0" />
-			<xs:element name="LastSeenTimestampUTC" type="rp:LastSeenTimestampUTC" minOccurs="0" />
-			<xs:element name="LastSeenTimestampUptime" type="rp:LastSeenTimestampUptime" minOccurs="0" />
-			<xs:element name="TagSeenCount" type="rp:TagSeenCount" minOccurs="0" />
+			<xs:element name="ROSpecID" type="llrp:ROSpecID" minOccurs="0" />
+			<xs:element name="SpecIndex" type="llrp:SpecIndex" minOccurs="0" />
+			<xs:element name="InventoryParameterSpecID" type="llrp:InventoryParameterSpecID" minOccurs="0" />
+			<xs:element name="AntennaID" type="llrp:AntennaID" minOccurs="0" />
+			<xs:element name="PeakRSSI" type="llrp:PeakRSSI" minOccurs="0" />
+			<xs:element name="ChannelIndex" type="llrp:ChannelIndex" minOccurs="0" />
+			<xs:element name="FirstSeenTimestampUTC" type="llrp:FirstSeenTimestampUTC" minOccurs="0" />
+			<xs:element name="FirstSeenTimestampUptime" type="llrp:FirstSeenTimestampUptime" minOccurs="0" />
+			<xs:element name="LastSeenTimestampUTC" type="llrp:LastSeenTimestampUTC" minOccurs="0" />
+			<xs:element name="LastSeenTimestampUptime" type="llrp:LastSeenTimestampUptime" minOccurs="0" />
+			<xs:element name="TagSeenCount" type="llrp:TagSeenCount" minOccurs="0" />
 			<xs:choice minOccurs="0" maxOccurs="unbounded" >
-				<xs:element name="C1G2_CRC" type="rp:C1G2_CRC"/>
-				<xs:element name="C1G2_PC" type="rp:C1G2_PC"/>
+				<xs:element name="C1G2_CRC" type="llrp:C1G2_CRC"/>
+				<xs:element name="C1G2_PC" type="llrp:C1G2_PC"/>
 			</xs:choice>
-			<xs:element name="AccessSpecID" type="rp:AccessSpecID" minOccurs="0" />
+			<xs:element name="AccessSpecID" type="llrp:AccessSpecID" minOccurs="0" />
 			<xs:choice minOccurs="0" maxOccurs="unbounded" >
-				<xs:element name="C1G2WriteOpSpecResult" type="rp:C1G2WriteOpSpecResult"/>
-				<xs:element name="C1G2BlockWriteOpSpecResult" type="rp:C1G2BlockWriteOpSpecResult"/>
-				<xs:element name="C1G2BlockEraseOpSpecResult" type="rp:C1G2BlockEraseOpSpecResult"/>
-				<xs:element name="C1G2ReadOpSpecResult" type="rp:C1G2ReadOpSpecResult"/>
-				<xs:element name="C1G2LockOpSpecResult" type="rp:C1G2LockOpSpecResult"/>
-				<xs:element name="C1G2KillOpSpecResult" type="rp:C1G2KillOpSpecResult"/>
+				<xs:element name="C1G2WriteOpSpecResult" type="llrp:C1G2WriteOpSpecResult"/>
+				<xs:element name="C1G2BlockWriteOpSpecResult" type="llrp:C1G2BlockWriteOpSpecResult"/>
+				<xs:element name="C1G2BlockEraseOpSpecResult" type="llrp:C1G2BlockEraseOpSpecResult"/>
+				<xs:element name="C1G2ReadOpSpecResult" type="llrp:C1G2ReadOpSpecResult"/>
+				<xs:element name="C1G2LockOpSpecResult" type="llrp:C1G2LockOpSpecResult"/>
+				<xs:element name="C1G2KillOpSpecResult" type="llrp:C1G2KillOpSpecResult"/>
 			</xs:choice>
-			<xs:group ref="rp:extensionPoint" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:group ref="llrp:extensionPoint" minOccurs="0" maxOccurs="unbounded"/>
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
 	<xs:complexType name="FrequencyInformation">
 		<xs:sequence>
 			<xs:element name="Hopping" type="xs:boolean" />
-			<xs:element name="FrequencyHopTable" type="rp:FrequencyHopTable" minOccurs="0" maxOccurs="unbounded" />
-			<xs:element name="FixedFrequencyTable" type="rp:FixedFrequencyTable" minOccurs="0" />
+			<xs:element name="FrequencyHopTable" type="llrp:FrequencyHopTable" minOccurs="0" maxOccurs="unbounded" />
+			<xs:element name="FixedFrequencyTable" type="llrp:FixedFrequencyTable" minOccurs="0" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
 	<xs:complexType name="C1G2BlockWriteOpSpecResult">
 		<xs:sequence>
-			<xs:element name="Result" type="rp:C1G2BlockWriteResultType" />
+			<xs:element name="Result" type="llrp:C1G2BlockWriteResultType" />
 			<xs:element name="OpSpecID" type="xs:unsignedShort" />
 			<xs:element name="NumWordsWritten" type="xs:unsignedShort" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
@@ -1425,7 +1397,7 @@
 		<xs:sequence>
 			<xs:element name="ReceiverSensitivity" type="xs:unsignedShort" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
@@ -1433,20 +1405,20 @@
 		<xs:sequence>
 			<xs:element name="OpSpecID" type="xs:unsignedShort" />
 			<xs:element name="AccessPassword" type="xs:unsignedInt" />
-			<xs:element name="MB" type="rp:twoBit" />
+			<xs:element name="MB" type="llrp:twoBit" />
 			<xs:element name="WordPointer" type="xs:unsignedShort" />
 			<xs:element name="WordCount" type="xs:unsignedShort" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
 	<xs:complexType name="C1G2LockOpSpecResult">
 		<xs:sequence>
-			<xs:element name="Result" type="rp:C1G2LockResultType" />
+			<xs:element name="Result" type="llrp:C1G2LockResultType" />
 			<xs:element name="OpSpecID" type="xs:unsignedShort" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
@@ -1455,7 +1427,7 @@
 			<xs:element name="HopTableID" type="xs:unsignedShort" />
 			<xs:element name="NextChannelIndex" type="xs:unsignedShort" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
@@ -1464,7 +1436,7 @@
 			<xs:element name="NumGPIs" type="xs:unsignedShort" />
 			<xs:element name="NumGPOs" type="xs:unsignedShort" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
@@ -1473,7 +1445,7 @@
 			<xs:element name="ModeIndex" type="xs:unsignedShort" />
 			<xs:element name="Tari" type="xs:unsignedShort" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
@@ -1481,33 +1453,33 @@
 		<xs:sequence>
 			<xs:element name="Microseconds" type="xs:unsignedLong" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
 	<xs:complexType name="ReaderExceptionEvent">
 		<xs:sequence>
 			<xs:element name="Message" type="xs:string" />
-			<xs:element name="ROSpecID" type="rp:ROSpecID" minOccurs="0" />
-			<xs:element name="SpecIndex" type="rp:SpecIndex" minOccurs="0" />
-			<xs:element name="InventoryParameterSpecID" type="rp:InventoryParameterSpecID" minOccurs="0" />
-			<xs:element name="AntennaID" type="rp:AntennaID" minOccurs="0" />
-			<xs:element name="AccessSpecID" type="rp:AccessSpecID" minOccurs="0" />
-			<xs:element name="OpSpecID" type="rp:OpSpecID" minOccurs="0" />
-			<xs:group ref="rp:extensionPoint" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="ROSpecID" type="llrp:ROSpecID" minOccurs="0" />
+			<xs:element name="SpecIndex" type="llrp:SpecIndex" minOccurs="0" />
+			<xs:element name="InventoryParameterSpecID" type="llrp:InventoryParameterSpecID" minOccurs="0" />
+			<xs:element name="AntennaID" type="llrp:AntennaID" minOccurs="0" />
+			<xs:element name="AccessSpecID" type="llrp:AccessSpecID" minOccurs="0" />
+			<xs:element name="OpSpecID" type="llrp:OpSpecID" minOccurs="0" />
+			<xs:group ref="llrp:extensionPoint" minOccurs="0" maxOccurs="unbounded"/>
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
 	<xs:complexType name="C1G2Filter">
 		<xs:sequence>
-			<xs:element name="T" type="rp:C1G2TruncateAction" />
-			<xs:element name="C1G2TagInventoryMask" type="rp:C1G2TagInventoryMask" />
-			<xs:element name="C1G2TagInventoryStateAwareFilterAction" type="rp:C1G2TagInventoryStateAwareFilterAction" minOccurs="0" />
-			<xs:element name="C1G2TagInventoryStateUnawareFilterAction" type="rp:C1G2TagInventoryStateUnawareFilterAction" minOccurs="0" />
+			<xs:element name="T" type="llrp:C1G2TruncateAction" />
+			<xs:element name="C1G2TagInventoryMask" type="llrp:C1G2TagInventoryMask" />
+			<xs:element name="C1G2TagInventoryStateAwareFilterAction" type="llrp:C1G2TagInventoryStateAwareFilterAction" minOccurs="0" />
+			<xs:element name="C1G2TagInventoryStateUnawareFilterAction" type="llrp:C1G2TagInventoryStateUnawareFilterAction" minOccurs="0" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
@@ -1516,7 +1488,7 @@
 			<xs:element name="Index" type="xs:unsignedShort" />
 			<xs:element name="ReceiveSensitivityValue" type="xs:short" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
@@ -1525,12 +1497,12 @@
 			<xs:element name="Index" type="xs:unsignedShort" />
 			<xs:element name="TransmitPowerValue" type="xs:short" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
 	<xs:complexType name="ConnectionCloseEvent">
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
@@ -1539,29 +1511,29 @@
 			<xs:element name="AntennaID" type="xs:unsignedShort" />
 			<xs:element name="StartFrequency" type="xs:unsignedInt" />
 			<xs:element name="EndFrequency" type="xs:unsignedInt" />
-			<xs:element name="RFSurveySpecStopTrigger" type="rp:RFSurveySpecStopTrigger" />
-			<xs:group ref="rp:extensionPoint" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="RFSurveySpecStopTrigger" type="llrp:RFSurveySpecStopTrigger" />
+			<xs:group ref="llrp:extensionPoint" minOccurs="0" maxOccurs="unbounded"/>
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
 	<xs:complexType name="C1G2TagSpec">
 		<xs:sequence>
-			<xs:element name="C1G2TargetTag" type="rp:C1G2TargetTag" maxOccurs="unbounded" />
+			<xs:element name="C1G2TargetTag" type="llrp:C1G2TargetTag" maxOccurs="unbounded" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
 	<xs:complexType name="ParameterError">
 		<xs:sequence>
 			<xs:element name="ParameterType" type="xs:unsignedShort" />
-			<xs:element name="ErrorCode" type="rp:StatusCode" />
-			<xs:element name="FieldError" type="rp:FieldError" minOccurs="0" />
-			<xs:element name="ParameterError" type="rp:ParameterError" minOccurs="0" />
+			<xs:element name="ErrorCode" type="llrp:StatusCode" />
+			<xs:element name="FieldError" type="llrp:FieldError" minOccurs="0" />
+			<xs:element name="ParameterError" type="llrp:ParameterError" minOccurs="0" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
@@ -1569,35 +1541,35 @@
 		<xs:sequence>
 			<xs:element name="OpSpecID" type="xs:unsignedShort" />
 			<xs:element name="AccessPassword" type="xs:unsignedInt" />
-			<xs:element name="C1G2LockPayload" type="rp:C1G2LockPayload" maxOccurs="unbounded" />
+			<xs:element name="C1G2LockPayload" type="llrp:C1G2LockPayload" maxOccurs="unbounded" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
 	<xs:complexType name="C1G2UHFRFModeTableEntry">
 		<xs:sequence>
 			<xs:element name="ModeIdentifier" type="xs:unsignedInt" />
-			<xs:element name="DRValue" type="rp:C1G2DRValue" />
+			<xs:element name="DRValue" type="llrp:C1G2DRValue" />
 			<xs:element name="EPCHAGTCConformance" type="xs:boolean" />
-			<xs:element name="MValue" type="rp:C1G2MValue" />
-			<xs:element name="ForwardLinkModulation" type="rp:C1G2ForwardLinkModulation" />
-			<xs:element name="SpectralMaskIndicator" type="rp:C1G2SpectralMaskIndicator" />
+			<xs:element name="MValue" type="llrp:C1G2MValue" />
+			<xs:element name="ForwardLinkModulation" type="llrp:C1G2ForwardLinkModulation" />
+			<xs:element name="SpectralMaskIndicator" type="llrp:C1G2SpectralMaskIndicator" />
 			<xs:element name="BDRValue" type="xs:unsignedInt" />
 			<xs:element name="PIEValue" type="xs:unsignedInt" />
 			<xs:element name="MinTariValue" type="xs:unsignedInt" />
 			<xs:element name="MaxTariValue" type="xs:unsignedInt" />
 			<xs:element name="StepTariValue" type="xs:unsignedInt" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
 	<xs:complexType name="ConnectionAttemptEvent">
 		<xs:sequence>
-			<xs:element name="Status" type="rp:ConnectionAttemptStatusType" />
+			<xs:element name="Status" type="llrp:ConnectionAttemptStatusType" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
@@ -1605,37 +1577,37 @@
 		<xs:sequence>
 			<xs:element name="ROSpecID" type="xs:unsignedInt" />
 			<xs:element name="Priority" type="xs:unsignedByte" />
-			<xs:element name="CurrentState" type="rp:ROSpecState" />
-			<xs:element name="ROBoundarySpec" type="rp:ROBoundarySpec" />
+			<xs:element name="CurrentState" type="llrp:ROSpecState" />
+			<xs:element name="ROBoundarySpec" type="llrp:ROBoundarySpec" />
 			<xs:choice maxOccurs="unbounded" >
-				<xs:element name="AISpec" type="rp:AISpec"/>
-				<xs:element name="RFSurveySpec" type="rp:RFSurveySpec"/>
-				<xs:element name="Custom" type="rp:Custom" minOccurs="0" maxOccurs="unbounded" />
+				<xs:element name="AISpec" type="llrp:AISpec"/>
+				<xs:element name="RFSurveySpec" type="llrp:RFSurveySpec"/>
+				<xs:element name="Custom" type="llrp:Custom" minOccurs="0" maxOccurs="unbounded" />
 				<xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:choice>
-			<xs:element name="ROReportSpec" type="rp:ROReportSpec" minOccurs="0" />
+			<xs:element name="ROReportSpec" type="llrp:ROReportSpec" minOccurs="0" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
 	<xs:complexType name="C1G2TargetTag">
 		<xs:sequence>
-			<xs:element name="MB" type="rp:twoBit" />
+			<xs:element name="MB" type="llrp:twoBit" />
 			<xs:element name="Match" type="xs:boolean" />
 			<xs:element name="Pointer" type="xs:unsignedShort" />
-			<xs:element name="TagMask" type="rp:bitVector" />
-			<xs:element name="TagData" type="rp:bitVector" />
+			<xs:element name="TagMask" type="llrp:bitVector" />
+			<xs:element name="TagData" type="llrp:bitVector" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
 	<xs:complexType name="C1G2UHFRFModeTable">
 		<xs:sequence>
-			<xs:element name="C1G2UHFRFModeTableEntry" type="rp:C1G2UHFRFModeTableEntry" maxOccurs="unbounded" />
+			<xs:element name="C1G2UHFRFModeTableEntry" type="llrp:C1G2UHFRFModeTableEntry" maxOccurs="unbounded" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
@@ -1643,15 +1615,15 @@
 		<xs:sequence>
 			<xs:element name="AccessSpecID" type="xs:unsignedInt" />
 			<xs:element name="AntennaID" type="xs:unsignedShort" />
-			<xs:element name="ProtocolID" type="rp:AirProtocols" />
-			<xs:element name="CurrentState" type="rp:AccessSpecState" />
+			<xs:element name="ProtocolID" type="llrp:AirProtocols" />
+			<xs:element name="CurrentState" type="llrp:AccessSpecState" />
 			<xs:element name="ROSpecID" type="xs:unsignedInt" />
-			<xs:element name="AccessSpecStopTrigger" type="rp:AccessSpecStopTrigger" />
-			<xs:element name="AccessCommand" type="rp:AccessCommand" />
-			<xs:element name="AccessReportSpec" type="rp:AccessReportSpec" minOccurs="0" />
-			<xs:group ref="rp:extensionPoint" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="AccessSpecStopTrigger" type="llrp:AccessSpecStopTrigger" />
+			<xs:element name="AccessCommand" type="llrp:AccessCommand" />
+			<xs:element name="AccessReportSpec" type="llrp:AccessReportSpec" minOccurs="0" />
+			<xs:group ref="llrp:extensionPoint" minOccurs="0" maxOccurs="unbounded"/>
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
@@ -1659,9 +1631,9 @@
 		<xs:sequence>
 			<xs:element name="GPIPortNum" type="xs:unsignedShort" />
 			<xs:element name="Config" type="xs:boolean" />
-			<xs:element name="State" type="rp:GPIPortState" />
+			<xs:element name="State" type="llrp:GPIPortState" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 
@@ -1669,7 +1641,7 @@
 		<xs:sequence>
 			<xs:element name="ReportBufferPercentageFull" type="xs:unsignedByte" />
 		</xs:sequence>
-		<xs:attributeGroup ref="rp:paramAttrs"/>
+		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
 
 	<xs:simpleType name="KeepaliveTriggerType">
@@ -2062,18 +2034,6 @@
 			<xs:enumeration value="Upon_Seeing_No_More_New_Tags_For_Tms_Or_Timeout"/>
 			<xs:enumeration value="Upon_Seeing_N_Tags_Or_Timeout"/>
 			<xs:enumeration value="N_Attempts_To_See_All_Tags_In_FOV_Or_Timeout"/>
-		</xs:restriction>
-	</xs:simpleType>
-
-	<xs:simpleType name="CountryCode">
-		<xs:restriction base="xs:string">
-			<xs:enumeration value="Hong_Kong"/>
-			<xs:enumeration value="Taiwan_Province_of_China"/>
-			<xs:enumeration value="Australia"/>
-			<xs:enumeration value="Korea_Republic_of"/>
-			<xs:enumeration value="Unspecified"/>
-			<xs:enumeration value="Japan"/>
-			<xs:enumeration value="United_States"/>
 		</xs:restriction>
 	</xs:simpleType>
 

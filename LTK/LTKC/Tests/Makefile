@@ -1,5 +1,5 @@
 ############################################################################
-#   Copyright 2007 Impinj, Inc.
+#   Copyright 2007,2008 Impinj, Inc.
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -16,34 +16,42 @@
 ############################################################################
 
 LIBDIR=../Library
-DX101_REF_DIR=../../Tests/dx101/
-
 INCL = -I$(LIBDIR)
-#CFLAGS = -O -Wall
-CFLAGS = -g -Wall $(INCL)
 
-LTKC_LIB = $(LIBDIR)/ltkc.a
+#CFLAGS = -O -Wall $(INCL)
+AR          = ar
+CC          = gcc
+CFLAGS      = -g -Wall $(INCL)
 
-DX101_REF_IN  = $(DX101_REF_DIR)/dx101_a_in.bin
-DX101_REF_OUT = $(DX101_REF_DIR)/dx101_a_out.txt
-DX101_TMP_OUT = dx101_out.tmp
+LTKC_LIB = $(LIBDIR)/libltkc.a
+LTKC_HDRS = \
+	$(LIBDIR)/ltkc.h		\
+	$(LIBDIR)/ltkc_base.h		\
+	$(LIBDIR)/ltkc_connection.h	\
+	$(LIBDIR)/ltkc_frame.h		\
+	$(LIBDIR)/ltkc_platform.h	\
+	$(LIBDIR)/ltkc_xmltext.h	\
+	$(LIBDIR)/out_ltkc.h
 
 all: dx101 dx201
 
-run101: dx101
-	./dx101 $(DX101_REF_IN) > $(DX101_TMP_OUT)
-	@if cmp $(DX101_TMP_OUT) $(DX101_REF_OUT); \
-	 then echo PASSED; \
-	 else echo FAILED; \
-	fi
+everything:
+	make all
 
 dx101 : dx101.o $(LTKC_LIB)
 	$(CC) $(CFLAGS) -o dx101 dx101.o $(LTKC_LIB)
 
+dx101.o : dx101.c $(LTKC_HDRS)
+	$(CC) -c $(CFLAGS) dx101.c -o dx101.o
+
 dx201 : dx201.o $(LTKC_LIB)
 	$(CC) $(CFLAGS) -o dx201 dx201.o $(LTKC_LIB)
+
+dx201.o : dx201.c $(LTKC_HDRS)
+	$(CC) -c $(CFLAGS) dx201.c -o dx201.o
 
 clean:
 	rm -f *.o *.core core.[0-9]*
 	rm -f *.tmp
-	rm -f dx101 dx201
+	rm -f dx101
+	rm -f dx201

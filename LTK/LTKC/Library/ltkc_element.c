@@ -1,7 +1,7 @@
 
 /*
  ***************************************************************************
- *  Copyright 2007 Impinj, Inc.
+ *  Copyright 2007,2008 Impinj, Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -179,3 +179,99 @@ LLRP_Element_attachToSubParameterList (
     }
 }
 
+int
+LLRP_Element_walk (
+  const LLRP_tSElement *          pElement,
+  int                           (*pFunc)(
+                                  const LLRP_tSElement *    pElement,
+                                  void *                    pArg),
+  void *                        pArg,
+  int                           iDepth,
+  int                           nMaxDepth)
+{
+    LLRP_tSParameter *          pParameter;
+    int                         rc;
+
+    rc = (*pFunc)(pElement, pArg);
+    if(0 != rc)
+    {
+        return rc;
+    }
+
+    if(iDepth >= nMaxDepth)
+    {
+        return 0;
+    }
+
+    for(pParameter = pElement->listAllSubParameters;
+        NULL != pParameter;
+        pParameter = pParameter->pNextAllSubParameters)
+    {
+        rc = LLRP_Element_walk(&pParameter->elementHdr,
+                pFunc, pArg, iDepth+1, nMaxDepth);
+        if(0 != rc)
+        {
+            return rc;
+        }
+    }
+
+    return 0;
+}
+
+void
+LLRP_Message_setMessageID (
+  LLRP_tSMessage *              pMessage,
+  llrp_u32_t                    MessageID)
+{
+    pMessage->MessageID = MessageID;
+}
+
+llrp_bool_t
+LLRP_Parameter_isAllowedIn (
+  LLRP_tSParameter *            pParameter,
+  const LLRP_tSTypeDescriptor * pEnclosingTypeDescriptor)
+{
+    const LLRP_tSTypeDescriptor *pType;
+
+    pType = pParameter->elementHdr.pType;
+
+    if(NULL == pType->pfIsAllowedIn)
+    {
+        return FALSE;
+    }
+
+    return (*pType->pfIsAllowedIn)(pEnclosingTypeDescriptor);
+}
+
+llrp_bool_t
+LLRP_Parameter_isAllowedExtension (
+  LLRP_tSParameter *            pParameter,
+  const LLRP_tSTypeDescriptor * pEnclosingTypeDescriptor)
+{
+    const LLRP_tSTypeDescriptor *pType;
+
+    pType = pParameter->elementHdr.pType;
+
+    /*
+     * If it is a generic Custom parameter allow it.
+     */
+    if(!pType->bIsMessage && NULL == pType->pVendorDescriptor &&
+       1023u == pType->TypeNum)
+    {
+        return TRUE;
+    }
+
+    /*
+     * If it is some kind of custom parameter allow it.
+     */
+    if(!pType->bIsMessage && NULL != pType->pVendorDescriptor)
+    {
+        return TRUE;
+    }
+
+    /*
+     * At this point checking specifically if it is allowed
+     * is perfunctory.
+     */
+    return LLRP_Parameter_isAllowedIn(pParameter, pEnclosingTypeDescriptor);
+}

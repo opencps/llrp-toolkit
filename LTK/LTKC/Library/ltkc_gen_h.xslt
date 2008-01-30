@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
  -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
- -  Copyright 2007 Impinj, Inc.
+ -  Copyright 2007,2008 Impinj, Inc.
  -
  -  Licensed under the Apache License, Version 2.0 (the "License");
  -  you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@
 
 <xsl:stylesheet
         version='1.0'
-        xmlns:LL="http://www.llrp.org/ltk/schema/core/encoding/binary/0.7"
+        xmlns:LL="http://www.llrp.org/ltk/schema/core/encoding/binary/1.0"
         xmlns:xsl='http://www.w3.org/1999/XSL/Transform'>
 <xsl:output omit-xml-declaration='yes' method='text' encoding='iso-8859-1'/>
 
@@ -38,16 +38,17 @@
 <xsl:call-template name='FileHeader'/>
 <xsl:call-template name='ForwardDeclStructMessages'/>
 <xsl:call-template name='ForwardDeclStructParameters'/>
-<xsl:call-template name='IsMemberTestFunctionDeclarations'/>
-<xsl:call-template name='EnumerationDefinitionsMessages'/>
-<xsl:call-template name='EnumerationDefinitionsParameters'/>
-<xsl:call-template name='EnumerationDefinitionsVendors'/>
+<xsl:call-template name='VendorDescriptorDeclarations'/>
+<xsl:call-template name='NamespaceDescriptorDeclarations'/>
 <xsl:call-template name='EnumerationDefinitionsFields'/>
 <xsl:call-template name='StructDeclarationsMessages'/>
 <xsl:call-template name='StructDeclarationsParameters'/>
+<xsl:call-template name='StructDeclarationsChoices'/>
 
-extern LLRP_tSTypeRegistry *
-LLRP_getTheTypeRegistry(void);
+void
+LLRP_enroll<xsl:value-of select='$RegistryName'/>TypesIntoRegistry (
+  LLRP_tSTypeRegistry *         pTypeRegistry);
+
 </xsl:template>
 
 
@@ -147,25 +148,23 @@ typedef struct LLRP_S<xsl:value-of select='@name'/>
 
 <!--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  -
- - @brief IsMemberTestFunctionDeclarations template
+ - @brief VendorDescriptorDeclarations template
  -
  - Invoked by top level template.
  -
- - Generates declarations of the functions that test whether
- - an LLRP parameter is the member of a choice (union)
+ - Generates declarations of the vendor descriptors.
  -
  -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  -->
 
-<xsl:template name='IsMemberTestFunctionDeclarations'>
+<xsl:template name='VendorDescriptorDeclarations'>
 
 /*
- * Choice (union) membership test functions.
+ * Vendor descriptor declarations.
  */
-<xsl:for-each select='LL:choiceDefinition'>
-extern llrp_bool_t
-LLRP_isMemberOf<xsl:value-of select='@name'/> (
-  LLRP_tSParameter *            pParameter);
+<xsl:for-each select='LL:vendorDefinition'>
+extern const LLRP_tSVendorDescriptor
+LLRP_vdesc<xsl:value-of select='@name'/>;
 </xsl:for-each>
 
 </xsl:template>
@@ -173,92 +172,26 @@ LLRP_isMemberOf<xsl:value-of select='@name'/> (
 
 <!--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  -
- - @brief EnumerationDefinitionsMessages template
+ - @brief NamespaceDescriptorDeclarations template
  -
  - Invoked by top level template.
  -
- - Generates definitions of the enumeration for standard message types.
- - This does not include custom message types. Names are prefixed MT_.
+ - Generates declarations of the namespace descriptors.
  -
  -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  -->
 
-<xsl:template name='EnumerationDefinitionsMessages'>
+<xsl:template name='NamespaceDescriptorDeclarations'>
 
 /*
- * Standard message TypeNum enumeration definition.
+ * Namespace descriptor declarations.
  */
-
-enum LLRP_EMessageType
-{
-<xsl:for-each select='LL:messageDefinition'>
-    LLRP_MT_<xsl:value-of select='@name'/> = <xsl:value-of select='@typeNum'/>,</xsl:for-each>
-};
-typedef enum LLRP_EMessageType LLRP_tEMessageType;
+<xsl:for-each select='LL:namespaceDefinition'>
+extern const LLRP_tSNamespaceDescriptor
+LLRP_nsdesc<xsl:value-of select='@prefix'/>;
+</xsl:for-each>
 
 </xsl:template>
-
-
-
-<!--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
- -
- - @brief EnumerationDefinitionsParameters template
- -
- - Invoked by top level template.
- -
- - Generates definitions of the enumeration for standard parameter types.
- - This does not include custom message types. Names are prefixed PT_.
- -
- -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
- -->
-
-<xsl:template name='EnumerationDefinitionsParameters'>
-
-/*
- * Standard parameter TypeNum enumeration definition.
- */
-
-enum LLRP_EParameterType
-{
-<xsl:for-each select='LL:parameterDefinition'>
-    LLRP_PT_<xsl:value-of select='@name'/> = <xsl:value-of select='@typeNum'/>,</xsl:for-each>
-};
-
-typedef enum LLRP_EParameterType LLRP_tEParameterType;
-
-</xsl:template>
-
-
-
-<!--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
- -
- - @brief EnumerationDefinitionsVendors template
- -
- - Invoked by top level template.
- -
- - Generates definitions of the enumeration for vendor PEN's (IDs)
- - used in CUSTOM_MESSAGE and Custom parameter.
- -
- -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
- -->
-
-<xsl:template name='EnumerationDefinitionsVendors'>
-
-/*
- * Vendor ID (PEN, Private Enterprise Number) definition.
- */
-
-enum LLRP_EVendorID
-{
-    LLRP_VENDOR_NONE = 0,
-<xsl:for-each select='LL:vendorDefinition' xml:space='preserve'>
-    LLRP_<xsl:value-of select='@name'/> = <xsl:value-of select='@vendorID'/>,</xsl:for-each>
-};
-
-typedef enum LLRP_EVendorID LLRP_tEVendorID;
-
-</xsl:template>
-
 
 
 <!--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -289,7 +222,7 @@ typedef enum LLRP_EVendorID LLRP_tEVendorID;
  * enumeration string tables.
  */
 
-<xsl:for-each select='LL:enumerationDefinition'>
+<xsl:for-each select='LL:enumerationDefinition|LL:customEnumerationDefinition'>
   <xsl:variable name='enumBaseName' select='@name'/>
 enum LLRP_E<xsl:value-of select='@name'/>
 {
@@ -326,11 +259,12 @@ LLRP_est<xsl:value-of select='$enumBaseName'/>[];
 
 <xsl:template name='StructDeclarationsMessages'>
 
-<xsl:for-each select='LL:messageDefinition'>
+<xsl:for-each select='LL:messageDefinition|LL:customMessageDefinition'>
   <xsl:call-template name='StructDeclarationCommon'>
     <xsl:with-param name='StructBase'>LLRP_tSMessage</xsl:with-param>
     <xsl:with-param name='StructName'>LLRP_S<xsl:value-of select='@name'/></xsl:with-param>
     <xsl:with-param name='BaseName'><xsl:value-of select='@name'/></xsl:with-param>
+    <xsl:with-param name='IsCustomParameter'>false</xsl:with-param>
   </xsl:call-template>
 </xsl:for-each>
 
@@ -355,11 +289,17 @@ LLRP_est<xsl:value-of select='$enumBaseName'/>[];
 
 <xsl:template name='StructDeclarationsParameters'>
 
-<xsl:for-each select='LL:parameterDefinition'>
+<xsl:for-each select='LL:parameterDefinition|LL:customParameterDefinition'>
   <xsl:call-template name='StructDeclarationCommon'>
     <xsl:with-param name='StructBase'>LLRP_tSParameter</xsl:with-param>
     <xsl:with-param name='StructName'>LLRP_S<xsl:value-of select='@name'/></xsl:with-param>
     <xsl:with-param name='BaseName'><xsl:value-of select='@name'/></xsl:with-param>
+    <xsl:with-param name='IsCustomParameter'>
+      <xsl:choose>
+        <xsl:when test='self::LL:customParameterDefinition'>true</xsl:when>
+        <xsl:otherwise>false</xsl:otherwise>
+      </xsl:choose>
+    </xsl:with-param>
   </xsl:call-template>
 </xsl:for-each>
 
@@ -378,6 +318,7 @@ LLRP_est<xsl:value-of select='$enumBaseName'/>[];
  -                          or CParameter usually
  - @param   StructName      Name of generated class. This already has
  -                          "LLRP_tS" prefixed to the LLRP name.
+ - @param   IsCustomParameter Either "true" or "false".
  -
  -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  -->
@@ -386,6 +327,7 @@ LLRP_est<xsl:value-of select='$enumBaseName'/>[];
   <xsl:param name='StructBase'/>
   <xsl:param name='StructName'/>
   <xsl:param name='BaseName'/>
+  <xsl:param name='IsCustomParameter'/>
   <xsl:variable name='TypeName'>LLRP_tS<xsl:value-of select='$BaseName'/></xsl:variable>
 struct <xsl:value-of select='$StructName'/>
 {
@@ -422,6 +364,12 @@ LLRP_<xsl:value-of select='$BaseName'/>_encode (
   const LLRP_tS<xsl:value-of select='$BaseName'/> *pThis,
   LLRP_tSEncoderStream *        pEncoderStream);
 
+  <xsl:if test='$IsCustomParameter = "true"'>
+extern llrp_bool_t
+LLRP_<xsl:value-of select='$BaseName'/>_isAllowedIn (
+  const LLRP_tSTypeDescriptor *pEnclosingElementType);
+  </xsl:if>
+
   <xsl:call-template name='StructDeclFieldAccessors'/>
   <xsl:call-template name='StructDeclSubParameterAccessors'/>
 
@@ -451,12 +399,14 @@ LLRP_<xsl:value-of select='$BaseName'/>_encode (
       <xsl:with-param name='StructName' select='$StructName'/>
       <xsl:with-param name='FieldType'>
         <xsl:choose>
+          <xsl:when test='@enumeration and @type = "u8v"'>llrp_u8v_t</xsl:when>
           <xsl:when test='@enumeration'>LLRP_tE<xsl:value-of select='@enumeration'/></xsl:when>
           <xsl:otherwise>llrp_<xsl:value-of select='@type'/>_t</xsl:otherwise>
         </xsl:choose>
       </xsl:with-param>
       <xsl:with-param name='MemberName'>
         <xsl:choose>
+          <xsl:when test='@enumeration and @type = "u8v"'><xsl:value-of select='@name'/></xsl:when>
           <xsl:when test='@enumeration'>e<xsl:value-of select='@name'/></xsl:when>
           <xsl:otherwise><xsl:value-of select='@name'/></xsl:otherwise>
        </xsl:choose>
@@ -516,12 +466,14 @@ LLRP_<xsl:value-of select='$BaseName'/>_encode (
       <xsl:with-param name='StructName' select='$StructName'/>
       <xsl:with-param name='FieldType'>
         <xsl:choose>
+          <xsl:when test='@enumeration and @type = "u8v"'>llrp_u8v_t</xsl:when>
           <xsl:when test='@enumeration'>LLRP_tE<xsl:value-of select='@enumeration'/></xsl:when>
           <xsl:otherwise>llrp_<xsl:value-of select='@type'/>_t</xsl:otherwise>
         </xsl:choose>
       </xsl:with-param>
       <xsl:with-param name='MemberName'>
         <xsl:choose>
+          <xsl:when test='@enumeration and @type = "u8v"'><xsl:value-of select='@name'/></xsl:when>
           <xsl:when test='@enumeration'>e<xsl:value-of select='@name'/></xsl:when>
           <xsl:otherwise><xsl:value-of select='@name'/></xsl:otherwise>
        </xsl:choose>
@@ -590,6 +542,9 @@ LLRP_<xsl:value-of select='$StructName'/>_set<xsl:value-of select='$BaseName'/> 
 <xsl:template name='StructDeclSubParameters'>
   <xsl:for-each select='LL:parameter|LL:choice'>
     <xsl:choose>
+      <xsl:when test='self::LL:parameter and @type = "Custom"'>
+        <xsl:call-template name='StructDeclSubExtensionPoint'/>
+      </xsl:when>
       <xsl:when test='self::LL:parameter'>
         <xsl:call-template name='StructDeclSubParam'/>
       </xsl:when>
@@ -661,6 +616,25 @@ LLRP_<xsl:value-of select='$StructName'/>_set<xsl:value-of select='$BaseName'/> 
       </xsl:call-template>
     </xsl:otherwise>
   </xsl:choose>
+</xsl:template>
+
+
+<!--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ -
+ - @brief StructDeclSubExtensionPoint template
+ -
+ - Invoked by template
+ -      StructDeclSubParameters
+ -
+ -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ -->
+
+<xsl:template name='StructDeclSubExtensionPoint'>
+  <xsl:call-template name='StructDeclSubXXXWithNameAndType'>
+    <xsl:with-param name='Name'><xsl:value-of select='@type'/></xsl:with-param>
+    <xsl:with-param name='NativeType'>LLRP_tSParameter</xsl:with-param>
+    <xsl:with-param name='Repeat'><xsl:value-of select='@repeat'/></xsl:with-param>
+  </xsl:call-template>
 </xsl:template>
 
 
@@ -774,6 +748,11 @@ LLRP_<xsl:value-of select='$StructName'/>_set<xsl:value-of select='$BaseName'/> 
   <xsl:variable name='StructName' select='@name'/>
   <xsl:for-each select='LL:parameter|LL:choice'>
     <xsl:choose>
+      <xsl:when test='self::LL:parameter and @type = "Custom"'>
+        <xsl:call-template name='StructDeclSubExtensionPointAccessor'>
+           <xsl:with-param name='StructName' select='$StructName'/>
+        </xsl:call-template>
+      </xsl:when>
       <xsl:when test='self::LL:parameter'>
         <xsl:call-template name='StructDeclSubParamAccessor'>
            <xsl:with-param name='StructName' select='$StructName'/>
@@ -855,6 +834,27 @@ LLRP_<xsl:value-of select='$StructName'/>_set<xsl:value-of select='$BaseName'/> 
       </xsl:call-template>
     </xsl:otherwise>
   </xsl:choose>
+</xsl:template>
+
+
+<!--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ -
+ - @brief StructDeclSubExtensionPointAccessor template
+ -
+ - Invoked by template
+ -      StructDeclSubParameterAccessors
+ -
+ -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ -->
+
+<xsl:template name='StructDeclSubExtensionPointAccessor'>
+  <xsl:param name='StructName'/>
+  <xsl:call-template name='StructDeclSubXXXAccessorWithNameAndType'>
+    <xsl:with-param name='StructName' select='$StructName'/>
+    <xsl:with-param name='Name'><xsl:value-of select='@type'/></xsl:with-param>
+    <xsl:with-param name='NativeType'>LLRP_tSParameter</xsl:with-param>
+    <xsl:with-param name='Repeat'><xsl:value-of select='@repeat'/></xsl:with-param>
+  </xsl:call-template>
 </xsl:template>
 
 
@@ -969,5 +969,32 @@ LLRP_<xsl:value-of select='$StructName'/>_add<xsl:value-of select='$Name'/> (
   <xsl:value-of select='$NativeType'/> *pValue);
 
 </xsl:template>
+
+<!--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ -
+ - @brief StructDeclarationsChoices template
+ -
+ - Invoked by top level template.
+ -
+ - Generates declaration of the choice classes.
+ - A choice class is really a set of functions and type descriptors.
+ -
+ -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ -->
+
+<xsl:template name='StructDeclarationsChoices'>
+
+<xsl:for-each select='LL:choiceDefinition|LL:customChoiceDefinition'>
+
+extern llrp_bool_t
+LLRP_<xsl:value-of select='@name'/>_isMember (
+  LLRP_tSParameter *            pParameter);
+
+extern const LLRP_tSTypeDescriptor
+LLRP_td<xsl:value-of select='@name'/>;
+</xsl:for-each>
+
+</xsl:template>
+
 
 </xsl:stylesheet>

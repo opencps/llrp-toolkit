@@ -1,7 +1,7 @@
 
 /*
  ***************************************************************************
- *  Copyright 2007 Impinj, Inc.
+ *  Copyright 2007,2008 Impinj, Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -19,14 +19,12 @@
  */
 
 
-
 #include <assert.h>
 #include <stdio.h>
 
 #include "ltkcpp_platform.h"
 #include "ltkcpp_base.h"
 #include "ltkcpp_frame.h"
-
 
 
 namespace LLRP

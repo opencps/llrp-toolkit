@@ -1,7 +1,7 @@
 
 /*
  ***************************************************************************
- *  Copyright 2007 Impinj, Inc.
+ *  Copyright 2007,2008 Impinj, Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@
 
 
 #include <assert.h>
-
 
 #include "ltkc_platform.h"
 #include "ltkc_base.h"
@@ -196,6 +195,11 @@ get_e32 (
   LLRP_tSDecoderStream *        pBaseDecoderStream,
   const LLRP_tSFieldDescriptor *pFieldDescriptor);
 
+static llrp_u8v_t
+get_e8v (
+  LLRP_tSDecoderStream *        pBaseDecoderStream,
+  const LLRP_tSFieldDescriptor *pFieldDescriptor);
+
 static void
 get_reserved (
   LLRP_tSDecoderStream *        pBaseDecoderStream,
@@ -294,6 +298,7 @@ s_FrameDecoderStreamOps =
     .pfGet_e8               = get_e8,
     .pfGet_e16              = get_e16,
     .pfGet_e32              = get_e32,
+    .pfGet_e8v              = get_e8v,
 
     .pfGet_reserved         = get_reserved,
 };
@@ -1109,6 +1114,14 @@ get_e32 (
     return eValue;
 }
 
+static llrp_u8v_t
+get_e8v (
+  LLRP_tSDecoderStream *        pBaseDecoderStream,
+  const LLRP_tSFieldDescriptor *pFieldDescriptor)
+{
+    return get_u8v(pBaseDecoderStream, pFieldDescriptor);
+}
+
 static void
 get_reserved (
   LLRP_tSDecoderStream *        pBaseDecoderStream,
@@ -1532,7 +1545,7 @@ decodeParameter (
         {
             /*
              * If we don't have a definition for a particular
-             * CUSTOM message, just use the generic one.
+             * CUSTOM parameter, just use the generic one.
              */
             pDecoder->iNext -= 8;       /* back up to VendorPEN and SubType */
             pTypeDescriptor =

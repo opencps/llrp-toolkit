@@ -1,7 +1,7 @@
 
 /*
  ***************************************************************************
- *  Copyright 2007 Impinj, Inc.
+ *  Copyright 2007,2008 Impinj, Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -20,23 +20,34 @@
 
 
 #include "ltkc.h"
+#include "ltkc_genoutmac.h"
 
-#define SUBPARAM_SET(MEMBER,VALUE)			\
-        LLRP_Element_setSubParameterPtr(		\
-            (LLRP_tSElement *)pThis,			\
-            (LLRP_tSParameter**)&pThis->MEMBER,		\
-            (LLRP_tSParameter*)(VALUE))
+#include "out_ltkc.inc"
 
-#define SUBPARAM_ADD(MEMBER,VALUE)			\
-        LLRP_Element_addToSubParameterList(		\
-            (LLRP_tSElement *)pThis,			\
-            (LLRP_tSParameter**)&pThis->MEMBER,		\
-            (LLRP_tSParameter*)(VALUE))
 
-#define SUBPARAM_ATTACH(MEMBER,VALUE)			\
-        LLRP_Element_attachToSubParameterList(		\
-            (LLRP_tSParameter**)&pThis->MEMBER,		\
-            (LLRP_tSParameter*)(VALUE))
+static char     ident[] = {
+    "$" "Id: libltkc "
+    LTKC_VERSION_STR
+    "  Built: "
+    __DATE__
+    " "
+    __TIME__
+    " $"
+};
 
-#include "out_ltkc_c.inc"
 
+LLRP_tSTypeRegistry *
+LLRP_getTheTypeRegistry (void)
+{
+    LLRP_tSTypeRegistry *       pTypeRegistry;
+
+    pTypeRegistry = LLRP_TypeRegistry_construct();
+    if(NULL == pTypeRegistry)
+    {
+        return pTypeRegistry;
+    }
+
+    LLRP_enrollCoreTypesIntoRegistry (pTypeRegistry);
+
+    return pTypeRegistry;
+}

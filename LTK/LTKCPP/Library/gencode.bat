@@ -1,3 +1,5 @@
+rem THIS IS NOT WORKING AND I CAN NOT FIGURE OUT WHY
+
 rem #
 rem # This runs MSXSL.EXE to generate two files used by LTKCPP.
 rem #
@@ -12,6 +14,6 @@ rem # This BAT script assumes that MSXSL.EXE is in the current directory
 
 set LLRPDEF=..\..\Definitions\Core\llrp-1x0-def.xml
 
-.\msxsl.exe %LLRPDEF% ltkcpp_gen_h.xslt -o out_ltkcpp_h.inc
-.\msxsl.exe %LLRPDEF% ltkcpp_gen_cpp.xslt -o out_ltkcpp_cpp.inc
+.\msxsl.exe -o out_ltkcpp.h %LLRPDEF% ltkcpp_gen_h.xslt RegistryName='Core'
+.\msxsl.exe -o out_ltkcpp.inc %LLRPDEF% ltkcpp_gen_cpp.xslt RegistryName='Core'
 

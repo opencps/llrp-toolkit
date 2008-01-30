@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
  -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
- -  Copyright 2007 Impinj, Inc.
+ -  Copyright 2007,2008 Impinj, Inc.
  -
  -  Licensed under the Apache License, Version 2.0 (the "License");
  -  you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@
 
 <xsl:stylesheet
         version='1.0'
-        xmlns:LL="http://www.llrp.org/ltk/schema/core/encoding/binary/0.7"
+        xmlns:LL="http://www.llrp.org/ltk/schema/core/encoding/binary/1.0"
         xmlns:xsl='http://www.w3.org/1999/XSL/Transform'>
 <xsl:output omit-xml-declaration='yes' method='text' encoding='iso-8859-1'/>
 
@@ -36,11 +36,13 @@
 
 <xsl:template match='/LL:llrpdef'>
 <xsl:call-template name='FileHeader'/>
+<xsl:call-template name='VendorDescriptors'/>
+<xsl:call-template name='NamespaceDescriptors'/>
 <xsl:call-template name='EnumerationStringTablesFields'/>
-<xsl:call-template name='IsMemberTestFunctionDefinitions'/>
 <xsl:call-template name='StructDefinitionsMessages'/>
 <xsl:call-template name='StructDefinitionsParameters'/>
-<xsl:call-template name='GenerateGetTheTypeRegistryFunction'/>
+<xsl:call-template name='StructDefinitionsChoices'/>
+<xsl:call-template name='GenerateEnrollIntoTypeRegistryFunction'/>
 </xsl:template>
 
 
@@ -76,6 +78,80 @@
 
 <!--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  -
+ - @brief VendorDescriptors template
+ -
+ - Invoked by top level template.
+ -
+ - Current node
+ -      <llrpdef>
+ -
+ -
+ - Generates the vendor descriptor for each <vendorDefinition>.
+ - Such are at the top level and referenced by custom messages
+ - and parameters. The primary purpose of the <vendorDefinition>
+ - is to establish a short, programming name and the PEN (private
+ - enterprise number).
+ -
+ -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ -->
+
+<xsl:template name='VendorDescriptors'>
+/*
+ * Vendor descriptors
+ */
+
+  <xsl:for-each select='LL:vendorDefinition'>
+const LLRP_tSVendorDescriptor
+LLRP_vdesc<xsl:value-of select='@name'/> =
+{
+  .pName            = "<xsl:value-of select='@name'/>",
+  .VendorID         = <xsl:value-of select='@vendorID'/>,
+};
+
+</xsl:for-each>
+</xsl:template>
+
+
+<!--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ -
+ - @brief NamespaceDescriptors template
+ -
+ - Invoked by top level template.
+ -
+ - Current node
+ -      <llrpdef>
+ -
+ -
+ - Generates the namespace descriptor for each <namespaceDefinition>.
+ - Such are at the top level and referenced by custom messages
+ - and parameters. The primary purpose of the <namespaceDefinition>
+ - is to establish the XML namespace used for custom elements.
+ - Some LTK implementations use the namespace in a way consistent
+ - with their methods. This C implementation does not.
+ -
+ -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ -->
+
+<xsl:template name='NamespaceDescriptors'>
+/*
+ * Namespace descriptors
+ */
+
+  <xsl:for-each select='LL:namespaceDefinition'>
+const LLRP_tSNamespaceDescriptor
+LLRP_nsdesc<xsl:value-of select='@prefix'/> =
+{
+  .pPrefix          = "<xsl:value-of select='@prefix'/>",
+  .pURI             = "<xsl:value-of select='@URI'/>",
+  .pSchemaLocation  = "<xsl:value-of select='@schemaLocation'/>",
+};
+
+</xsl:for-each>
+</xsl:template>
+
+
+<!--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ -
  - @brief EnumerationStringTablesFields template
  -
  - Invoked by top level template.
@@ -96,7 +172,7 @@
  * Enumeration string tables
  */
 
-  <xsl:for-each select='LL:enumerationDefinition'>
+  <xsl:for-each select='LL:enumerationDefinition|LL:customEnumerationDefinition'>
     <xsl:variable name='enumBaseName' select='@name'/>
 const LLRP_tSEnumTableEntry
 LLRP_est<xsl:value-of select='$enumBaseName'/>[] =
@@ -111,45 +187,6 @@ LLRP_est<xsl:value-of select='$enumBaseName'/>[] =
 
 </xsl:for-each>
 </xsl:template>
-
-
-<!--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
- -
- - @brief IsMemberTestFunctionDefinitions template
- -
- - Invoked by top level template.
- -
- - Current node
- -      <llrpdef>
- -
- - Generates definitions of the functions that test whether
- - an LLRP parameter is the member of a choice (union)
- -
- -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
- -->
-
-<xsl:template name='IsMemberTestFunctionDefinitions'>
-
-/*
- * Choice (union) membership test functions.
- */
-<xsl:for-each select='LL:choiceDefinition'>
-llrp_bool_t
-LLRP_isMemberOf<xsl:value-of select='@name'/> (
-  LLRP_tSParameter *           pParam)
-{
-  <xsl:for-each select='LL:parameter'>
-    if(pParam->elementHdr.pType == &amp;LLRP_td<xsl:value-of select='@type'/>)
-    {
-        return TRUE;
-    }
-</xsl:for-each>
-    return FALSE;
-}
-</xsl:for-each>
-
-</xsl:template>
-
 
 
 <!--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -188,8 +225,47 @@ LLRP_isMemberOf<xsl:value-of select='@name'/> (
     <xsl:with-param name='BaseType'>tSMessage</xsl:with-param>
     <xsl:with-param name='LLRPName'><xsl:value-of select='@name'/></xsl:with-param>
     <xsl:with-param name='IsMessage'>TRUE</xsl:with-param>
-    <xsl:with-param name='TypeNum'>LLRP_MT_<xsl:value-of select='@name'/></xsl:with-param>
-    <xsl:with-param name='VendorID'>0</xsl:with-param>
+    <xsl:with-param name='TypeNum'><xsl:value-of select='@typeNum'/></xsl:with-param>
+    <xsl:with-param name='pVendorDescriptor'>NULL</xsl:with-param>
+    <xsl:with-param name='pNamespaceDescriptor'>&amp;LLRP_nsdescllrp</xsl:with-param>
+    <xsl:with-param name='pResponseType'>
+      <xsl:choose>
+        <xsl:when test='@responseType'>&amp;LLRP_td<xsl:value-of select='@responseType'/></xsl:when>
+        <xsl:otherwise>NULL</xsl:otherwise>
+      </xsl:choose>
+    </xsl:with-param>
+    <xsl:with-param name='IsCustomParameter'>false</xsl:with-param>
+  </xsl:call-template>
+</xsl:for-each>
+
+
+<xsl:for-each select='LL:customMessageDefinition'>
+
+/*
+*****************************************************************
+**
+** Custom message <xsl:value-of select='@name'/>
+**
+*****************************************************************
+*/ 
+  <xsl:call-template name='StructDefinitionCommon'>
+    <xsl:with-param name='BaseType'>tSParameter</xsl:with-param>
+    <xsl:with-param name='LLRPName'><xsl:value-of select='@name'/></xsl:with-param>
+    <xsl:with-param name='IsMessage'>TRUE</xsl:with-param>
+    <xsl:with-param name='TypeNum'><xsl:value-of select='@subtype'/></xsl:with-param>
+    <xsl:with-param name='pVendorDescriptor'>&amp;LLRP_vdesc<xsl:value-of select='@vendor'/></xsl:with-param>
+    <xsl:with-param name='pNamespaceDescriptor'>&amp;LLRP_nsdesc<xsl:value-of select='@namespace'/></xsl:with-param>
+    <xsl:with-param name='pResponseType'>
+      <xsl:choose>
+        <xsl:when test='@responseType'>
+          &amp;LLRP_td<xsl:value-of select='@responseType'/>
+        </xsl:when>
+        <xsl:otherwise>
+          NULL
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:with-param>
+    <xsl:with-param name='IsCustomParameter'>false</xsl:with-param>
   </xsl:call-template>
 </xsl:for-each>
 
@@ -231,9 +307,47 @@ LLRP_isMemberOf<xsl:value-of select='@name'/> (
     <xsl:with-param name='BaseType'>tSParameter</xsl:with-param>
     <xsl:with-param name='LLRPName'><xsl:value-of select='@name'/></xsl:with-param>
     <xsl:with-param name='IsMessage'>FALSE</xsl:with-param>
-    <xsl:with-param name='TypeNum'>LLRP_PT_<xsl:value-of select='@name'/></xsl:with-param>
-    <xsl:with-param name='VendorID'>0</xsl:with-param>
+    <xsl:with-param name='TypeNum'><xsl:value-of select='@typeNum'/></xsl:with-param>
+    <xsl:with-param name='pVendorDescriptor'>NULL</xsl:with-param>
+    <xsl:with-param name='pNamespaceDescriptor'>&amp;LLRP_nsdescllrp</xsl:with-param>
+    <xsl:with-param name='pResponseType'>NULL</xsl:with-param>
+    <xsl:with-param name='IsCustomParameter'>false</xsl:with-param>
   </xsl:call-template>
+</xsl:for-each>
+
+<xsl:for-each select='LL:customParameterDefinition'>
+
+
+/*
+*****************************************************************
+**
+** Custom parameter <xsl:value-of select='@name'/>
+**
+*****************************************************************
+*/ 
+  <xsl:call-template name='StructDefinitionCommon'>
+    <xsl:with-param name='BaseType'>tSParameter</xsl:with-param>
+    <xsl:with-param name='LLRPName'><xsl:value-of select='@name'/></xsl:with-param>
+    <xsl:with-param name='IsMessage'>FALSE</xsl:with-param>
+    <xsl:with-param name='TypeNum'><xsl:value-of select='@subtype'/></xsl:with-param>
+    <xsl:with-param name='pVendorDescriptor'>&amp;LLRP_vdesc<xsl:value-of select='@vendor'/></xsl:with-param>
+    <xsl:with-param name='pNamespaceDescriptor'>&amp;LLRP_nsdesc<xsl:value-of select='@namespace'/></xsl:with-param>
+    <xsl:with-param name='pResponseType'>NULL</xsl:with-param>
+    <xsl:with-param name='IsCustomParameter'>true</xsl:with-param>
+  </xsl:call-template>
+
+llrp_bool_t
+LLRP_<xsl:value-of select='@name'/>_isAllowedIn (
+  const LLRP_tSTypeDescriptor *pEnclosingElementType)
+{
+  <xsl:for-each select='LL:allowedIn'>
+    if(pEnclosingElementType == &amp;LLRP_td<xsl:value-of select='@type'/>)
+    {
+        return TRUE;
+    }
+  </xsl:for-each>
+    return FALSE;
+}
 </xsl:for-each>
 
 </xsl:template>
@@ -257,8 +371,16 @@ LLRP_isMemberOf<xsl:value-of select='@name'/> (
  - @param   IsMessage       Either TRUE or FALSE
  - @param   TypeNum         Either an enumerated symbol
  -                          (e.g. LLRP_PT_xxx) or an integer
- - @param   VendorID        The vendor name from the enum or 0
- -                          for standard LLRP elements.
+ - @param   pVendorDescriptor The pointer expression for this parameters
+ -                          vendor descriptor and, thereby, PEN for
+ -                          custom elements (messages/parameters).
+ -                          Usually NULL for standard LLRP elements.
+ - @param   pNamespaceDescriptor The pointer expression for this parameters
+ -                          namespace descriptor. Usually LLRP_nsdescllrp
+ -                          for standard parameters and messages.
+ - @param   pResponseType   The pointer expression for this messages
+ -                          response counterpart.
+ - @param   IsCustomParameter Either "true" or "false".
  -
  -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  -->
@@ -268,13 +390,19 @@ LLRP_isMemberOf<xsl:value-of select='@name'/> (
   <xsl:param name='LLRPName'/>
   <xsl:param name='IsMessage'/>
   <xsl:param name='TypeNum'/>
-  <xsl:param name='VendorID'/>
+  <xsl:param name='pVendorDescriptor'/>
+  <xsl:param name='pNamespaceDescriptor'/>
+  <xsl:param name='pResponseType'/>
+  <xsl:param name='IsCustomParameter'/>
 
   <xsl:call-template name='StructDefnTypeDescriptor'>
     <xsl:with-param name='LLRPName'><xsl:value-of select='$LLRPName'/></xsl:with-param>
     <xsl:with-param name='IsMessage'><xsl:value-of select='$IsMessage'/></xsl:with-param>
     <xsl:with-param name='TypeNum'><xsl:value-of select='$TypeNum'/></xsl:with-param>
-    <xsl:with-param name='VendorID'><xsl:value-of select='$VendorID'/></xsl:with-param>
+    <xsl:with-param name='pVendorDescriptor'><xsl:value-of select='$pVendorDescriptor'/></xsl:with-param>
+    <xsl:with-param name='pNamespaceDescriptor'><xsl:value-of select='$pNamespaceDescriptor'/></xsl:with-param>
+    <xsl:with-param name='pResponseType'><xsl:value-of select='$pResponseType'/></xsl:with-param>
+    <xsl:with-param name='IsCustomParameter'><xsl:value-of select='$IsCustomParameter'/></xsl:with-param>
   </xsl:call-template>
 
   <xsl:call-template name='StructDefnFieldDescriptorTable'>
@@ -319,6 +447,117 @@ LLRP_isMemberOf<xsl:value-of select='@name'/> (
 
 <!--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  -
+ - @brief StructDefinitionsChoices template
+ -
+ - Invoked by top level template.
+ - Current node
+ -      <llrpdef>
+ -
+ - Generates definitions of the choice elements: isMember,
+ - type descriptor, etc.
+ -
+ - This loops through the choice definitions, selects
+ - important values, and invokes the StructDefinitionCommon
+ - template with the right <xsl:with-param>s.
+ -
+ -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ -->
+
+<xsl:template name='StructDefinitionsChoices'>
+
+<xsl:for-each select='LL:choiceDefinition|LL:customChoiceDefinition'>
+
+
+/*
+*****************************************************************
+**
+** Choice <xsl:value-of select='@name'/>
+**
+*****************************************************************
+*/ 
+  <xsl:call-template name='StructDefinitionOneChoice'>
+    <xsl:with-param name='LLRPName'><xsl:value-of select='@name'/></xsl:with-param>
+    <xsl:with-param name='pVendorDescriptor'>NULL</xsl:with-param>
+  </xsl:call-template>
+</xsl:for-each>
+
+</xsl:template>
+
+
+<!--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ -
+ - @brief StructDefinitionOneChoice template
+ -
+ - Invoked by templates
+ -      StructDefinitionsChoices
+ -
+ - Current node
+ -      <llrpdef><choiceDefinition>
+ -
+ - @param   LLRPName        The original, LLRP name for the element
+ - @param   pVendorDescriptor The pointer expression for this parameters
+ -                          vendor descriptor and, thereby, PEN for
+ -                          custom elements (messages/parameters).
+ -                          Usually NULL for stanrd LLRP elements.
+ -
+ -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ -->
+
+<xsl:template name='StructDefinitionOneChoice'>
+  <xsl:param name='LLRPName'/>
+  <xsl:param name='pVendorDescriptor'/>
+
+const LLRP_tSTypeDescriptor
+LLRP_td<xsl:value-of select='$LLRPName'/> =
+{
+    .bIsMessage             = FALSE,
+    .pName                  = "<xsl:value-of select='$LLRPName'/>",
+    .pVendorDescriptor      = <xsl:value-of select='$pVendorDescriptor'/>,
+    .pNamespaceDescriptor   = NULL,
+    .TypeNum                = -1,
+    .ppFieldDescriptorTable = NULL,
+    .nSizeBytes             = 0,
+    .pfConstruct            = NULL,
+    .pfDestruct             = NULL,
+    .pfDecodeFields         = NULL,
+    .pfAssimilateSubParameters = NULL,
+    .pfEncode               = NULL,
+    .pfIsAllowedIn          = NULL,
+};
+
+llrp_bool_t
+LLRP_<xsl:value-of select='$LLRPName'/>_isMember (
+  LLRP_tSParameter *            pParameter)
+{
+    const LLRP_tSTypeDescriptor *pType;
+
+    pType = pParameter-&gt;elementHdr.pType;
+
+  <xsl:for-each select='LL:parameter'>
+    <xsl:choose>
+      <xsl:when test='@type = "Custom"'>
+    if(LLRP_Parameter_isAllowedIn(pParameter, &amp;LLRP_td<xsl:value-of select='$LLRPName'/>))
+    {
+        return TRUE;
+    }
+      </xsl:when>
+      <xsl:otherwise>
+    if(&amp;LLRP_td<xsl:value-of select='@type'/> == pType)
+    {
+        return TRUE;
+    }
+      </xsl:otherwise>
+    </xsl:choose>
+</xsl:for-each>
+
+    return FALSE;
+}
+
+</xsl:template>
+
+
+<!--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ -
  - @brief StructDefnTypeDescriptor template
  -
  - Invoked by templates
@@ -332,8 +571,16 @@ LLRP_isMemberOf<xsl:value-of select='@name'/> (
  - @param   IsMessage       Either TRUE or FALSE
  - @param   TypeNum         Either an enumerated symbol
  -                          (e.g. LLRP_PT_xxx) or an integer
- - @param   VendorID        The vendor name from the enum or 0
- -                          for standard LLRP elements.
+ - @param   pVendorDescriptor The pointer expression for this parameters
+ -                          vendor descriptor and, thereby, PEN for
+ -                          custom elements (messages/parameters).
+ -                          Usually NULL for standard LLRP elements.
+ - @param   pNamespaceDescriptor The pointer expression for this parameters
+ -                          namespace descriptor. Usually LLRP_nsdescllrp
+ -                          for standard parameters and messages.
+ - @param   pResponseType   The pointer expression for this messages
+ -                          response counterpart.
+ - @param   IsCustomParameter Either "true" or "false".
  -
  -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  -->
@@ -342,15 +589,20 @@ LLRP_isMemberOf<xsl:value-of select='@name'/> (
   <xsl:param name='LLRPName'/>
   <xsl:param name='IsMessage'/>
   <xsl:param name='TypeNum'/>
-  <xsl:param name='VendorID'/>
+  <xsl:param name='pVendorDescriptor'/>
+  <xsl:param name='pNamespaceDescriptor'/>
+  <xsl:param name='pResponseType'/>
+  <xsl:param name='IsCustomParameter'/>
 
 const LLRP_tSTypeDescriptor
 LLRP_td<xsl:value-of select='$LLRPName'/> =
 {
     .bIsMessage             = <xsl:value-of select='$IsMessage'/>,
     .pName                  = "<xsl:value-of select='$LLRPName'/>",
-    .VendorID               = <xsl:value-of select='$VendorID'/>,
+    .pVendorDescriptor      = <xsl:value-of select='$pVendorDescriptor'/>,
+    .pNamespaceDescriptor   = <xsl:value-of select='$pNamespaceDescriptor'/>,
     .TypeNum                = <xsl:value-of select='$TypeNum'/>,
+    .pResponseType          = <xsl:value-of select='$pResponseType'/>,
     .ppFieldDescriptorTable = LLRP_apfd<xsl:value-of select='$LLRPName'/>,
     .nSizeBytes             = sizeof(LLRP_tS<xsl:value-of select='$LLRPName'/>),
     .pfConstruct            = (LLRP_tSElement *(*)(void)) LLRP_<xsl:value-of select='$LLRPName'/>_construct,
@@ -367,6 +619,15 @@ LLRP_td<xsl:value-of select='$LLRPName'/> =
     .pfEncode               =
         (void (*)(const LLRP_tSElement *, LLRP_tSEncoderStream *))
             LLRP_<xsl:value-of select='$LLRPName'/>_encode,
+
+  <xsl:choose>
+    <xsl:when test='$IsCustomParameter = "true"'>
+    .pfIsAllowedIn          = LLRP_<xsl:value-of select='$LLRPName'/>_isAllowedIn,
+    </xsl:when>
+    <xsl:otherwise>
+    .pfIsAllowedIn          = NULL,
+    </xsl:otherwise>
+  </xsl:choose>
 };
 
 </xsl:template>
@@ -435,6 +696,14 @@ LLRP_apfd<xsl:value-of select='$LLRPName'/>[] =
           <xsl:with-param name='LLRPName'><xsl:value-of select='$LLRPName'/></xsl:with-param>
           <xsl:with-param name='FieldLLRPName'><xsl:value-of select='@name'/></xsl:with-param>
           <xsl:with-param name='FieldBaseType'><xsl:value-of select='@type'/></xsl:with-param>
+          <xsl:with-param name='FieldFormat'>
+            <xsl:choose>
+              <xsl:when test='@format'>
+                <xsl:value-of select='@format'/>
+              </xsl:when>
+              <xsl:otherwise>Normal</xsl:otherwise>
+            </xsl:choose>
+          </xsl:with-param>
         </xsl:call-template>
       </xsl:otherwise>
     </xsl:choose>
@@ -486,6 +755,7 @@ LLRP_apfd<xsl:value-of select='$LLRPName'/>[] =
       <xsl:when test='$FieldBaseType="u8"'  >LLRP_FT_E8</xsl:when>
       <xsl:when test='$FieldBaseType="u16"' >LLRP_FT_E16</xsl:when>
       <xsl:when test='$FieldBaseType="u32"' >LLRP_FT_E32</xsl:when>
+      <xsl:when test='$FieldBaseType="u8v"' >LLRP_FT_E8V</xsl:when>
       <xsl:otherwise>FT_EBOGOSITY</xsl:otherwise>
     </xsl:choose>
   </xsl:variable>
@@ -494,6 +764,7 @@ LLRP_apfd<xsl:value-of select='$LLRPName'/>[] =
     <xsl:with-param name='MemberName'>m_e<xsl:value-of select='$FieldLLRPName'/></xsl:with-param>
     <xsl:with-param name='FieldLLRPName'><xsl:value-of select='$FieldLLRPName'/></xsl:with-param>
     <xsl:with-param name='FieldEnumType'><xsl:value-of select='$FieldEnumType'/></xsl:with-param>
+    <xsl:with-param name='FieldEnumFormat'>LLRP_FMT_NORMAL</xsl:with-param>
     <xsl:with-param name='EnumStrTable'>LLRP_est<xsl:value-of select='$Enumeration'/></xsl:with-param>
   </xsl:call-template>
 </xsl:template>
@@ -517,10 +788,12 @@ LLRP_apfd<xsl:value-of select='$LLRPName'/>[] =
  - The EnumStrTable is NULL
  - $LLRPName and $FieldLLRPName are passed unchanged
  - The FieldEnumType is derived by mapping $FieldBaseType (@type)
+ - The FieldEnumFormat is derived by mapping $FieldFormat (@format)
  -
  - @param   LLRPName        The original, LLRP name for the element
  - @param   FieldLLRPName   The original, LLRP name for the field
  - @param   FieldBaseType   The type, something like {u,s}{8,16,32,64}[v]
+ - @param   FieldFormat     The format, something like Normal, Hex, Datetime
  -
  -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  -->
@@ -529,6 +802,7 @@ LLRP_apfd<xsl:value-of select='$LLRPName'/>[] =
   <xsl:param name='LLRPName'/>
   <xsl:param name='FieldLLRPName'/>
   <xsl:param name='FieldBaseType'/>
+  <xsl:param name='FieldFormat'/>
   <xsl:variable name='FieldEnumType'>
     <xsl:choose>
       <xsl:when test='$FieldBaseType="u8"'  >LLRP_FT_U8</xsl:when>
@@ -556,11 +830,22 @@ LLRP_apfd<xsl:value-of select='$LLRPName'/>[] =
       <xsl:otherwise>LLRP_FT_BOGOSITY</xsl:otherwise>
     </xsl:choose>
   </xsl:variable>
+  <xsl:variable name='FieldEnumFormat'>
+    <xsl:choose>
+      <xsl:when test='$FieldFormat="Normal"'  >LLRP_FMT_NORMAL</xsl:when>
+      <xsl:when test='$FieldFormat="Dec"'     >LLRP_FMT_DEC</xsl:when>
+      <xsl:when test='$FieldFormat="Hex"'     >LLRP_FMT_HEX</xsl:when>
+      <xsl:when test='$FieldFormat="Datetime"'>LLRP_FMT_DATETIME</xsl:when>
+      <xsl:when test='$FieldFormat="UTF8"'    >LLRP_FMT_UTF8</xsl:when>
+      <xsl:otherwise>LLRP_FMT_BOGOSITY</xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
   <xsl:call-template name='StructDefnFieldDescCommon'>
     <xsl:with-param name='LLRPName'><xsl:value-of select='$LLRPName'/></xsl:with-param>
     <xsl:with-param name='MemberName'>m_<xsl:value-of select='$FieldLLRPName'/></xsl:with-param>
     <xsl:with-param name='FieldLLRPName'><xsl:value-of select='$FieldLLRPName'/></xsl:with-param>
     <xsl:with-param name='FieldEnumType'><xsl:value-of select='$FieldEnumType'/></xsl:with-param>
+    <xsl:with-param name='FieldEnumFormat'><xsl:value-of select='$FieldEnumFormat'/></xsl:with-param>
     <xsl:with-param name='EnumStrTable'>NULL</xsl:with-param>
   </xsl:call-template>
 </xsl:template>
@@ -582,8 +867,8 @@ LLRP_apfd<xsl:value-of select='$LLRPName'/>[] =
  - @param   MemberName      The name of the structure variable,
  -                          Something or eSomething
  - @param   FieldLLRPName   The original, LLRP name for the field
- - @param   FieldEnumType   The enum symbol from
- -                          LLRP_tEFieldType
+ - @param   FieldEnumType   The enum symbol from LLRP_tEFieldType
+ - @param   FieldEnumFormat The enum symbol from LLRP_tEFieldFormat
  - @param   EnumStrTable    The initializer for the enum string table
  -                          base pointer
  -
@@ -595,12 +880,14 @@ LLRP_apfd<xsl:value-of select='$LLRPName'/>[] =
   <xsl:param name='MemberName'/>
   <xsl:param name='FieldLLRPName'/>
   <xsl:param name='FieldEnumType'/>
+  <xsl:param name='FieldEnumFormat'/>
   <xsl:param name='EnumStrTable'/>
 
 const LLRP_tSFieldDescriptor
 LLRP_fd<xsl:value-of select='$LLRPName'/>_<xsl:value-of select='$FieldLLRPName'/> =
 {
     .eFieldType         = <xsl:value-of select='$FieldEnumType'/>,
+    .eFieldFormat       = <xsl:value-of select='$FieldEnumFormat'/>,
     .pName              = "<xsl:value-of select='$FieldLLRPName'/>",
     .pEnumTable         = <xsl:value-of select='$EnumStrTable'/>,
 };
@@ -703,7 +990,7 @@ LLRP_<xsl:value-of select='$LLRPName'/>_decodeFields (
 {
     LLRP_tSDecoderStreamOps *   pOps;
 
-    pOps = pDecoderStream->pDecoderStreamOps;
+    pOps = pDecoderStream-&gt;pDecoderStreamOps;
 
   <xsl:for-each select='LL:field|LL:reserved'>
     <xsl:choose>
@@ -743,6 +1030,19 @@ LLRP_<xsl:value-of select='$LLRPName'/>_decodeFields (
   <xsl:param name='LLRPName'/>
   <xsl:variable name='FieldDesc'>&amp;LLRP_fd<xsl:value-of select='$LLRPName'/>_<xsl:value-of select='@name'/></xsl:variable>
   <xsl:choose>
+    <xsl:when test='@enumeration and @type = "u8v"'>
+    if(NULL != pThis)
+    {
+        pThis-&gt;<xsl:value-of select='@name'/> =
+                pOps-&gt;pfGet_e8v(pDecoderStream,
+                        <xsl:value-of select='$FieldDesc'/>);
+    }
+    else
+    {
+        pOps-&gt;pfGet_e8v(pDecoderStream,
+                <xsl:value-of select='$FieldDesc'/>);
+    }
+    </xsl:when>
     <xsl:when test='@enumeration'>
       <xsl:call-template name='DecodeOneFieldEnum'>
         <xsl:with-param name='LLRPName'>
@@ -753,13 +1053,13 @@ LLRP_<xsl:value-of select='$LLRPName'/>_decodeFields (
     <xsl:otherwise>
     if(NULL != pThis)
     {
-        pThis-><xsl:value-of select='@name'/> =
-                pOps->pfGet_<xsl:value-of select='@type'/>(pDecoderStream,
+        pThis-&gt;<xsl:value-of select='@name'/> =
+                pOps-&gt;pfGet_<xsl:value-of select='@type'/>(pDecoderStream,
                         <xsl:value-of select='$FieldDesc'/>);
     }
     else
     {
-        pOps->pfGet_<xsl:value-of select='@type'/>(pDecoderStream,
+        pOps-&gt;pfGet_<xsl:value-of select='@type'/>(pDecoderStream,
                 <xsl:value-of select='$FieldDesc'/>);
     }
     </xsl:otherwise>
@@ -793,18 +1093,19 @@ LLRP_<xsl:value-of select='$LLRPName'/>_decodeFields (
       <xsl:when test='@type="u8"'>e8</xsl:when>
       <xsl:when test='@type="u16"'>e16</xsl:when>
       <xsl:when test='@type="u32"'>e32</xsl:when>
-      <xsl:otherwise>bogus</xsl:otherwise>
+      <xsl:when test='@type="u8v"'>e8v</xsl:when>
+      <xsl:otherwise>ebogus</xsl:otherwise>
     </xsl:choose>
   </xsl:variable>
     if(NULL != pThis)
     {
-        pThis->e<xsl:value-of select='@name'/> =
-                (LLRP_tE<xsl:value-of select='@enumeration'/>) pOps->pfGet_<xsl:value-of select='$eType'/>(pDecoderStream,
+        pThis-&gt;e<xsl:value-of select='@name'/> =
+                (LLRP_tE<xsl:value-of select='@enumeration'/>) pOps-&gt;pfGet_<xsl:value-of select='$eType'/>(pDecoderStream,
                         <xsl:value-of select='$FieldDesc'/>);
     }
     else
     {
-        pOps->pfGet_<xsl:value-of select='$eType'/>(pDecoderStream,
+        pOps-&gt;pfGet_<xsl:value-of select='$eType'/>(pDecoderStream,
                 <xsl:value-of select='$FieldDesc'/>);
     }
 </xsl:template>
@@ -825,7 +1126,7 @@ LLRP_<xsl:value-of select='$LLRPName'/>_decodeFields (
  -->
 
 <xsl:template name='DecodeOneReserved'>
-    pOps->pfGet_reserved(pDecoderStream, <xsl:value-of select='@bitCount'/>);
+    pOps-&gt;pfGet_reserved(pDecoderStream, <xsl:value-of select='@bitCount'/>);
 </xsl:template>
 
 
@@ -855,10 +1156,13 @@ LLRP_<xsl:value-of select='$LLRPName'/>_assimilateSubParameters (
     LLRP_tSParameter *              pCur;
     const LLRP_tSTypeDescriptor *   pType;
 
-    pCur = pThis->hdr.elementHdr.listAllSubParameters;
+    pCur = pThis-&gt;hdr.elementHdr.listAllSubParameters;
 
   <xsl:for-each select='LL:parameter|LL:choice'>
     <xsl:choose>
+      <xsl:when test='self::LL:parameter and @type = "Custom"'>
+        <xsl:call-template name='AssimSubParamExtension'/>
+      </xsl:when>
       <xsl:when test='self::LL:parameter'>
         <xsl:call-template name='AssimSubParamParameter'/>
       </xsl:when>
@@ -911,36 +1215,36 @@ LLRP_<xsl:value-of select='$LLRPName'/>_assimilateSubParameters (
     pType = &amp;LLRP_td<xsl:value-of select='$ParamType'/>;
   <xsl:choose>
     <xsl:when test='@repeat="1"'>
-    if(NULL == pCur || pCur->elementHdr.pType != pType)
+    if(NULL == pCur || pCur-&gt;elementHdr.pType != pType)
     {
         goto missing;
     }
-    pThis->p<xsl:value-of select='$MemberBaseName'/> = (LLRP_tS<xsl:value-of select='$ParamType'/> *) pCur;
-    pCur = pCur->pNextAllSubParameters;
+    pThis-&gt;p<xsl:value-of select='$MemberBaseName'/> = (LLRP_tS<xsl:value-of select='$ParamType'/> *) pCur;
+    pCur = pCur-&gt;pNextAllSubParameters;
     </xsl:when>
     <xsl:when test='@repeat="0-1"'>
-    if(NULL != pCur &amp;&amp; pCur->elementHdr.pType == pType)
+    if(NULL != pCur &amp;&amp; pCur-&gt;elementHdr.pType == pType)
     {
-        pThis->p<xsl:value-of select='$MemberBaseName'/> = (LLRP_tS<xsl:value-of select='$ParamType'/> *) pCur;
-        pCur = pCur->pNextAllSubParameters;
+        pThis-&gt;p<xsl:value-of select='$MemberBaseName'/> = (LLRP_tS<xsl:value-of select='$ParamType'/> *) pCur;
+        pCur = pCur-&gt;pNextAllSubParameters;
     }
     </xsl:when>
     <xsl:when test='@repeat="0-N"'>
-    while(NULL != pCur &amp;&amp; pCur->elementHdr.pType == pType)
+    while(NULL != pCur &amp;&amp; pCur-&gt;elementHdr.pType == pType)
     {
         SUBPARAM_ATTACH(list<xsl:value-of select='$MemberBaseName'/>, pCur);
-        pCur = pCur->pNextAllSubParameters;
+        pCur = pCur-&gt;pNextAllSubParameters;
     }
     </xsl:when>
     <xsl:when test='@repeat="1-N"'>
-    if(NULL == pCur || pCur->elementHdr.pType != pType)
+    if(NULL == pCur || pCur-&gt;elementHdr.pType != pType)
     {
         goto missing;
     }
-    while(NULL != pCur &amp;&amp; pCur->elementHdr.pType == pType)
+    while(NULL != pCur &amp;&amp; pCur-&gt;elementHdr.pType == pType)
     {
         SUBPARAM_ATTACH(list<xsl:value-of select='$MemberBaseName'/>, pCur);
-        pCur = pCur->pNextAllSubParameters;
+        pCur = pCur-&gt;pNextAllSubParameters;
     }
     </xsl:when>
     <xsl:otherwise>
@@ -971,7 +1275,7 @@ LLRP_<xsl:value-of select='$LLRPName'/>_assimilateSubParameters (
       <xsl:otherwise><xsl:value-of select='@type'/></xsl:otherwise>
     </xsl:choose>
   </xsl:variable>
-  <xsl:variable name='isMember'>LLRP_isMemberOf<xsl:value-of select='@type'/>(pCur)</xsl:variable>
+  <xsl:variable name='isMember'>LLRP_<xsl:value-of select='@type'/>_isMember(pCur)</xsl:variable>
 
     // <xsl:value-of select='@repeat'/> of choice <xsl:value-of select='$MemberBaseName'/>
     pType = NULL;
@@ -981,21 +1285,21 @@ LLRP_<xsl:value-of select='$LLRPName'/>_assimilateSubParameters (
     {
         goto missing;
     }
-    pThis->p<xsl:value-of select='$MemberBaseName'/> = pCur;
-    pCur = pCur->pNextAllSubParameters;
+    pThis-&gt;p<xsl:value-of select='$MemberBaseName'/> = pCur;
+    pCur = pCur-&gt;pNextAllSubParameters;
     </xsl:when>
     <xsl:when test='@repeat="0-1"'>
     if(NULL != pCur &amp;&amp; <xsl:value-of select='$isMember'/>)
     {
-        pThis->p<xsl:value-of select='$MemberBaseName'/> = pCur;
-        pCur = pCur->pNextAllSubParameters;
+        pThis-&gt;p<xsl:value-of select='$MemberBaseName'/> = pCur;
+        pCur = pCur-&gt;pNextAllSubParameters;
     }
     </xsl:when>
     <xsl:when test='@repeat="0-N"'>
     while(NULL != pCur &amp;&amp; <xsl:value-of select='$isMember'/>)
     {
         SUBPARAM_ATTACH(list<xsl:value-of select='$MemberBaseName'/>, pCur);
-        pCur = pCur->pNextAllSubParameters;
+        pCur = pCur-&gt;pNextAllSubParameters;
     }
     </xsl:when>
     <xsl:when test='@repeat="1-N"'>
@@ -1006,7 +1310,7 @@ LLRP_<xsl:value-of select='$LLRPName'/>_assimilateSubParameters (
     while(NULL != pCur &amp;&amp; <xsl:value-of select='$isMember'/>)
     {
         SUBPARAM_ATTACH(list<xsl:value-of select='$MemberBaseName'/>, pCur);
-        pCur = pCur->pNextAllSubParameters;
+        pCur = pCur-&gt;pNextAllSubParameters;
     }
     </xsl:when>
     <xsl:otherwise>
@@ -1015,6 +1319,74 @@ LLRP_<xsl:value-of select='$LLRPName'/>_assimilateSubParameters (
   </xsl:choose>
 
 </xsl:template>
+
+
+<!--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ -
+ - @brief AssimSubParamExtension template
+ -
+ - Invoked by templates
+ -      AssimilateSubParametersFunction
+ -
+ - Current node
+ -      <llrpdef><messageDefinition><parameter type='Custom'>
+ -      <llrpdef><parameterDefinition><parameter type='Custom'>
+ -
+ -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ -->
+
+<xsl:template name='AssimSubParamExtension'>
+  <xsl:variable name='MemberBaseName'>
+    <xsl:choose>
+      <xsl:when test='@name'><xsl:value-of select='@name'/></xsl:when>
+      <xsl:otherwise><xsl:value-of select='@type'/></xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+  <xsl:variable name='isAllowed'>LLRP_Parameter_isAllowedExtension(pCur, &amp;LLRP_td<xsl:value-of select='../@name'/>)</xsl:variable>
+
+    // <xsl:value-of select='@repeat'/> of choice <xsl:value-of select='$MemberBaseName'/>
+    pType = NULL;
+  <xsl:choose>
+    <xsl:when test='@repeat="1"'>
+    if(NULL == pCur || !<xsl:value-of select='$isAllowed'/>)
+    {
+        goto missing;
+    }
+    pThis-&gt;p<xsl:value-of select='$MemberBaseName'/> = pCur;
+    pCur = pCur-&gt;pNextAllSubParameters;
+    </xsl:when>
+    <xsl:when test='@repeat="0-1"'>
+    if(NULL != pCur &amp;&amp; <xsl:value-of select='$isAllowed'/>)
+    {
+        pThis-&gt;p<xsl:value-of select='$MemberBaseName'/> = pCur;
+        pCur = pCur-&gt;pNextAllSubParameters;
+    }
+    </xsl:when>
+    <xsl:when test='@repeat="0-N"'>
+    while(NULL != pCur &amp;&amp; <xsl:value-of select='$isAllowed'/>)
+    {
+        SUBPARAM_ATTACH(list<xsl:value-of select='$MemberBaseName'/>, pCur);
+        pCur = pCur-&gt;pNextAllSubParameters;
+    }
+    </xsl:when>
+    <xsl:when test='@repeat="1-N"'>
+    if(NULL == pCur || !<xsl:value-of select='$isAllowed'/>)
+    {
+        goto missing;
+    }
+    while(NULL != pCur &amp;&amp; <xsl:value-of select='$isAllowed'/>)
+    {
+        SUBPARAM_ATTACH(list<xsl:value-of select='$MemberBaseName'/>, pCur);
+        pCur = pCur-&gt;pNextAllSubParameters;
+    }
+    </xsl:when>
+    <xsl:otherwise>
+    HELP -- parameter/choice <xsl:value-of select='@type'/> <xsl:value-of select='@repeat'/>
+    </xsl:otherwise>
+  </xsl:choose>
+
+</xsl:template>
+
 
 <!--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  -
@@ -1039,7 +1411,7 @@ LLRP_<xsl:value-of select='$LLRPName'/>_encode (
   const LLRP_tS<xsl:value-of select='$LLRPName'/> *pThis,
   LLRP_tSEncoderStream *        pEncoderStream)
 {
-    const LLRP_tSEncoderStreamOps *pOps = pEncoderStream->pEncoderStreamOps;
+    const LLRP_tSEncoderStreamOps *pOps = pEncoderStream-&gt;pEncoderStreamOps;
     const LLRP_tSTypeDescriptor *pType;
 
   <xsl:call-template name='EncodeAllFields'>
@@ -1050,6 +1422,7 @@ LLRP_<xsl:value-of select='$LLRPName'/>_encode (
   </xsl:call-template>
 }
 </xsl:template>
+
 
 <!--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  -
@@ -1108,6 +1481,11 @@ LLRP_<xsl:value-of select='$LLRPName'/>_encode (
 <xsl:template name='EncodeOneField'>
   <xsl:param name='LLRPName'/>
   <xsl:choose>
+    <xsl:when test='@enumeration and @type = "u8v"'>
+    pOps-&gt;pfPut_e8v(pEncoderStream,
+        pThis-&gt;<xsl:value-of select='@name'/>,
+        &amp;LLRP_fd<xsl:value-of select='$LLRPName'/>_<xsl:value-of select='@name'/>);
+    </xsl:when>
     <xsl:when test='@enumeration'>
       <xsl:call-template name='EncodeOneFieldEnum'>
         <xsl:with-param name='LLRPName'><xsl:value-of select='$LLRPName'/></xsl:with-param>
@@ -1140,8 +1518,8 @@ LLRP_<xsl:value-of select='$LLRPName'/>_encode (
 
 <xsl:template name='EncodeOneFieldPlain'>
   <xsl:param name='LLRPName'/>
-    pOps->pfPut_<xsl:value-of select='@type'/>(pEncoderStream,
-        pThis-><xsl:value-of select='@name'/>,
+    pOps-&gt;pfPut_<xsl:value-of select='@type'/>(pEncoderStream,
+        pThis-&gt;<xsl:value-of select='@name'/>,
         &amp;LLRP_fd<xsl:value-of select='$LLRPName'/>_<xsl:value-of select='@name'/>);
 </xsl:template>
 
@@ -1171,11 +1549,12 @@ LLRP_<xsl:value-of select='$LLRPName'/>_encode (
       <xsl:when test='@type="u8"' >e8</xsl:when>
       <xsl:when test='@type="u16"'>e16</xsl:when>
       <xsl:when test='@type="u32"'>e32</xsl:when>
+      <xsl:when test='@type="u8v"'>e8v</xsl:when>
       <xsl:otherwise>ebogus</xsl:otherwise>
     </xsl:choose>
   </xsl:variable>
-    pOps->pfPut_<xsl:value-of select='$eType'/>(pEncoderStream,
-        (int)pThis->e<xsl:value-of select='@name'/>,
+    pOps-&gt;pfPut_<xsl:value-of select='$eType'/>(pEncoderStream,
+        (int)pThis-&gt;e<xsl:value-of select='@name'/>,
         &amp;LLRP_fd<xsl:value-of select='$LLRPName'/>_<xsl:value-of select='@name'/>);
 </xsl:template>
 
@@ -1198,7 +1577,7 @@ LLRP_<xsl:value-of select='$LLRPName'/>_encode (
 
 <xsl:template name='EncodeOneReserved'>
   <xsl:param name='LLRPName'/>
-    pOps->pfPut_reserved(pEncoderStream, <xsl:value-of select='@bitCount'/>);
+    pOps-&gt;pfPut_reserved(pEncoderStream, <xsl:value-of select='@bitCount'/>);
 </xsl:template>
 
 
@@ -1237,23 +1616,23 @@ LLRP_<xsl:value-of select='$LLRPName'/>_encode (
     </xsl:choose>
     <xsl:choose>
       <xsl:when test='@repeat="1"'>
-    pOps->pfPutRequiredSubParameter(pEncoderStream,
-        (LLRP_tSParameter *)pThis->p<xsl:value-of select='$MemberBaseName'/>,
+    pOps-&gt;pfPutRequiredSubParameter(pEncoderStream,
+        (LLRP_tSParameter *)pThis-&gt;p<xsl:value-of select='$MemberBaseName'/>,
         pType);
       </xsl:when>
       <xsl:when test='@repeat="0-1"'>
-    pOps->pfPutOptionalSubParameter(pEncoderStream,
-        (LLRP_tSParameter *)pThis->p<xsl:value-of select='$MemberBaseName'/>,
+    pOps-&gt;pfPutOptionalSubParameter(pEncoderStream,
+        (LLRP_tSParameter *)pThis-&gt;p<xsl:value-of select='$MemberBaseName'/>,
         pType);
       </xsl:when>
       <xsl:when test='@repeat="0-N"'>
-    pOps->pfPutOptionalSubParameterList(pEncoderStream,
-        (LLRP_tSParameter *)pThis->list<xsl:value-of select='$MemberBaseName'/>,
+    pOps-&gt;pfPutOptionalSubParameterList(pEncoderStream,
+        (LLRP_tSParameter *)pThis-&gt;list<xsl:value-of select='$MemberBaseName'/>,
         pType);
       </xsl:when>
       <xsl:when test='@repeat="1-N"'>
-    pOps->pfPutRequiredSubParameterList(pEncoderStream,
-        (LLRP_tSParameter *)pThis->list<xsl:value-of select='$MemberBaseName'/>,
+    pOps-&gt;pfPutRequiredSubParameterList(pEncoderStream,
+        (LLRP_tSParameter *)pThis-&gt;list<xsl:value-of select='$MemberBaseName'/>,
         pType);
       </xsl:when>
       <xsl:otherwise>
@@ -1284,7 +1663,7 @@ LLRP_<xsl:value-of select='$LLRPName'/>_encode (
   <xsl:param name='LLRPName'/>
   <xsl:for-each select='LL:field'>
     <xsl:choose>
-      <xsl:when test='@enumeration'>
+      <xsl:when test='@enumeration and @type != "u8v"'>
         <xsl:call-template name='FieldAccessorsEnum'>
           <xsl:with-param name='LLRPName'><xsl:value-of select='$LLRPName'/></xsl:with-param>
         </xsl:call-template>
@@ -1442,6 +1821,11 @@ LLRP_<xsl:value-of select='$LLRPName'/>_set<xsl:value-of select='@name'/> (
   <xsl:param name='LLRPName'/>
   <xsl:for-each select='LL:parameter|LL:choice'>
     <xsl:choose>
+      <xsl:when test='self::LL:parameter and @type = "Custom"'>
+        <xsl:call-template name='SubParamAccessorsExtensionPoint'>
+          <xsl:with-param name='LLRPName'><xsl:value-of select='$LLRPName'/></xsl:with-param>
+        </xsl:call-template>
+      </xsl:when>
       <xsl:when test='self::LL:parameter'>
         <xsl:call-template name='SubParamAccessorsParam'>
           <xsl:with-param name='LLRPName'><xsl:value-of select='$LLRPName'/></xsl:with-param>
@@ -1590,7 +1974,7 @@ LLRP_<xsl:value-of select='$LLRPName'/>_next<xsl:value-of select='$MemberBaseNam
   LLRP_tS<xsl:value-of select='@type'/> *pCurrent)
 {
     return (LLRP_tS<xsl:value-of select='@type'/> *)
-                pCurrent->hdr.pNextSubParameter;
+                pCurrent-&gt;hdr.pNextSubParameter;
 }
 
 </xsl:template>
@@ -1670,7 +2054,7 @@ LLRP_<xsl:value-of select='$LLRPName'/>_set<xsl:value-of select='$MemberBaseName
   LLRP_tS<xsl:value-of select='$LLRPName'/> *pThis,
   LLRP_tSParameter * pValue)
 {
-    if(!LLRP_isMemberOf<xsl:value-of select='@type'/>(pValue))
+    if(!LLRP_<xsl:value-of select='@type'/>_isMember(pValue))
     {
         return LLRP_RC_InvalidChoiceMember;
     }
@@ -1721,7 +2105,7 @@ LLRP_<xsl:value-of select='$LLRPName'/>_add<xsl:value-of select='$MemberBaseName
   LLRP_tS<xsl:value-of select='$LLRPName'/> *pThis,
   LLRP_tSParameter *pValue)
 {
-    if(!LLRP_isMemberOf<xsl:value-of select='@type'/>(pValue))
+    if(!LLRP_<xsl:value-of select='@type'/>_isMember(pValue))
     {
         return LLRP_RC_InvalidChoiceMember;
     }
@@ -1735,7 +2119,7 @@ LLRP_tSParameter *
 LLRP_<xsl:value-of select='$LLRPName'/>_next<xsl:value-of select='$MemberBaseName'/> (
   LLRP_tSParameter *pCurrent)
 {
-    return pCurrent->pNextSubParameter;
+    return pCurrent-&gt;pNextSubParameter;
 }
 
 </xsl:template>
@@ -1743,7 +2127,96 @@ LLRP_<xsl:value-of select='$LLRPName'/>_next<xsl:value-of select='$MemberBaseNam
 
 <!--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  -
- - @brief GenerateGetTheTypeRegistryFunction template
+ - @brief SubParamAccessorsExtensionPoint template
+ -
+ - Invoked by templates
+ -      SubParameterAccessorFunctions
+ -
+ - Current node
+ -      <llrpdef><messageDefinition><parameter type='Custom'>
+ -      <llrpdef><parameterDefinition><parameter type='Custom'>
+ -
+ - @param   LLRPName        The original, LLRP name for the element
+ -
+ -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ -->
+
+<xsl:template name='SubParamAccessorsExtensionPoint'>
+  <xsl:param name='LLRPName'/>
+  <xsl:choose>
+    <xsl:when test='@repeat = "0-N" or @repeat = "1-N"'>
+      <xsl:call-template name='SubParamAccessorsExtensionPointList'>
+        <xsl:with-param name='LLRPName'><xsl:value-of select='$LLRPName'/></xsl:with-param>
+      </xsl:call-template>
+    </xsl:when>
+    <xsl:otherwise>
+    HELP -- SubParamAccessorsExtensionPoint <xsl:value-of select='@repeat'/>
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:template>
+
+
+<!--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ -
+ - @brief SubParamAccessorsExtensionPointList template
+ -
+ - Invoked by templates
+ -      SubParamAccessorsChoice
+ -
+ - Current node
+ -      <llrpdef><messageDefinition><parameter type='Custom' repeat="0-N">
+ -      <llrpdef><messageDefinition><parameter type='Custom' repeat="1-N">
+ -      <llrpdef><parameterDefinition><parameter type='Custom' repeat="0-N">
+ -      <llrpdef><parameterDefinition><parameter type='Custom' repeat="1-N">
+ -
+ - @param   LLRPName        The original, LLRP name for the element
+ -
+ -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ -->
+
+<xsl:template name='SubParamAccessorsExtensionPointList'>
+  <xsl:param name='LLRPName'/>
+  <xsl:variable name='MemberBaseName'>
+    <xsl:choose>
+      <xsl:when test='@name'><xsl:value-of select='@name'/></xsl:when>
+      <xsl:otherwise><xsl:value-of select='@type'/></xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+LLRP_tSParameter *
+LLRP_<xsl:value-of select='$LLRPName'/>_begin<xsl:value-of select='$MemberBaseName'/> (
+  LLRP_tS<xsl:value-of select='$LLRPName'/> *pThis)
+{
+    return pThis-&gt;list<xsl:value-of select='$MemberBaseName'/>;
+}
+
+LLRP_tResultCode
+LLRP_<xsl:value-of select='$LLRPName'/>_add<xsl:value-of select='$MemberBaseName'/> (
+  LLRP_tS<xsl:value-of select='$LLRPName'/> *pThis,
+  LLRP_tSParameter *pValue)
+{
+    if(!LLRP_Parameter_isAllowedIn(pValue, &amp;LLRP_td<xsl:value-of select='$LLRPName'/>))
+    {
+        return LLRP_RC_NotAllowedAtExtensionPoint;
+    }
+
+    SUBPARAM_ADD(list<xsl:value-of select='$MemberBaseName'/>, pValue);
+
+    return LLRP_RC_OK;
+}
+
+LLRP_tSParameter *
+LLRP_<xsl:value-of select='$LLRPName'/>_next<xsl:value-of select='$MemberBaseName'/> (
+  LLRP_tSParameter *pCurrent)
+{
+    return pCurrent-&gt;pNextSubParameter;
+}
+
+</xsl:template>
+
+
+<!--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ -
+ - @brief GenerateEnrollIntoTypeRegistryFunction template
  -
  - Invoked by top level template.
  -
@@ -1756,25 +2229,15 @@ LLRP_<xsl:value-of select='$LLRPName'/>_next<xsl:value-of select='$MemberBaseNam
  -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  -->
 
-<xsl:template name='GenerateGetTheTypeRegistryFunction'>
-LLRP_tSTypeRegistry *
-LLRP_getTheTypeRegistry(void)
+<xsl:template name='GenerateEnrollIntoTypeRegistryFunction'>
+void
+LLRP_enroll<xsl:value-of select='$RegistryName'/>TypesIntoRegistry (
+  LLRP_tSTypeRegistry *         pTypeRegistry)
 {
-    LLRP_tSTypeRegistry *       pTypeRegistry;
-
-    pTypeRegistry = malloc(sizeof *pTypeRegistry);
-    if(NULL == pTypeRegistry)
-    {
-        return pTypeRegistry;
-    }
-
-    memset(pTypeRegistry, 0, sizeof *pTypeRegistry);
-
-  <xsl:for-each select='LL:parameterDefinition|LL:messageDefinition'>
+  <xsl:for-each select='LL:parameterDefinition|LL:messageDefinition|LL:customParameterDefinition|LL:customMessageDefinition'>
     LLRP_TypeRegistry_enroll(pTypeRegistry,
         &amp;LLRP_td<xsl:value-of select='@name'/>);
   </xsl:for-each>
-    return pTypeRegistry;
 }
 </xsl:template>
 

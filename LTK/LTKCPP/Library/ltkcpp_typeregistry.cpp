@@ -1,7 +1,7 @@
 
 /*
  ***************************************************************************
- *  Copyright 2007 Impinj, Inc.
+ *  Copyright 2007,2008 Impinj, Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -43,7 +43,7 @@ EResultCode
 CTypeRegistry::enroll (
   const CTypeDescriptor *       pTypeDescriptor)
 {
-    if(0 == pTypeDescriptor->m_VendorID)
+    if(NULL == pTypeDescriptor->m_pVendorDescriptor)
     {
         if(1023u < pTypeDescriptor->m_TypeNum)
         {
@@ -66,8 +66,17 @@ CTypeRegistry::enroll (
     }
     else
     {
-        /* TODO: Custom messages and parameter */
-        return RC_Botch;
+        /*
+         * Custom messages or parameter
+         */
+        if(pTypeDescriptor->m_bIsMessage)
+        {
+            m_listCustomMessageTypeDescriptors.push_back(pTypeDescriptor);
+        }
+        else
+        {
+            m_listCustomParameterTypeDescriptors.push_back(pTypeDescriptor);
+        }
     }
 
     return RC_OK;
@@ -103,7 +112,21 @@ CTypeRegistry::lookupCustomMessage (
   unsigned int                  VendorID,
   unsigned int                  MessageSubTypeNum) const
 {
-    /* TODO: custom messages */
+    for (
+        std::list<const CTypeDescriptor *>::const_iterator elem =
+                            m_listCustomMessageTypeDescriptors.begin();
+        elem != m_listCustomMessageTypeDescriptors.end();
+        elem++)
+    {
+        const CTypeDescriptor * pTypeDescriptor;
+        pTypeDescriptor = *elem;
+        if(VendorID == pTypeDescriptor->m_pVendorDescriptor->m_VendorID &&
+           MessageSubTypeNum == pTypeDescriptor->m_TypeNum)
+        {
+            return pTypeDescriptor;
+        }
+    }
+
     return NULL;
 }
 
@@ -112,7 +135,21 @@ CTypeRegistry::lookupCustomParameter (
   unsigned int                  VendorID,
   unsigned int                  ParameterSubTypeNum) const
 {
-    /* TODO: custom parameters */
+    for (
+        std::list<const CTypeDescriptor *>::const_iterator elem = 
+                            m_listCustomParameterTypeDescriptors.begin();
+        elem != m_listCustomParameterTypeDescriptors.end();
+        elem++)
+    {
+        const CTypeDescriptor * pTypeDescriptor;
+        pTypeDescriptor = *elem;
+        if(VendorID == pTypeDescriptor->m_pVendorDescriptor->m_VendorID &&
+           ParameterSubTypeNum == pTypeDescriptor->m_TypeNum)
+        {
+            return pTypeDescriptor;
+        }
+    }
+
     return NULL;
 }
 

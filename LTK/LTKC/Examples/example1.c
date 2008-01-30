@@ -1,7 +1,7 @@
 
 /*
  ***************************************************************************
- *  Copyright 2007 Impinj, Inc.
+ *  Copyright 2007,2008 Impinj, Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -44,6 +44,16 @@
  **      no -v -- Only prints the tag report and errors
  **      -v    -- Also prints one line progress messages
  **      -vv   -- Also prints all LLRP messages as XML text
+ **
+ ** IMPORTANT:
+ **     This example was written before best practices were determined.
+ **     Most of the command messages (including subparameters) are
+ **     composed using local (auto) variables with initializers.
+ **     It has been determined that this approach has drawbacks.
+ **     Best practice is to use the constructor and accessors.
+ **
+ **     Function deleteAllROSpecs() was recoded to demonstrate
+ **     good technique. Someday we might be able to fix the rest.
  **
  *****************************************************************************/
 
@@ -101,6 +111,18 @@ void
 printOneTagReportData (
   LLRP_tSTagReportData *        pTagReportData);
 
+void
+handleReaderEventNotification (
+  LLRP_tSReaderEventNotificationData *pNtfData);
+
+void
+handleAntennaEvent (
+  LLRP_tSAntennaEvent *         pAntennaEvent);
+
+void
+handleReaderExceptionEvent (
+  LLRP_tSReaderExceptionEvent * pReaderExceptionEvent);
+
 int
 checkLLRPStatus (
   LLRP_tSLLRPStatus *           pLLRPStatus,
@@ -108,8 +130,7 @@ checkLLRPStatus (
 
 LLRP_tSMessage *
 transact (
-  LLRP_tSMessage *              pSendMsg,
-  const LLRP_tSTypeDescriptor * pResponseType);
+  LLRP_tSMessage *              pSendMsg);
 
 LLRP_tSMessage *
 recvMessage (
@@ -335,7 +356,7 @@ run (
 
     if(g_Verbose)
     {
-        printf ("INFO: Connected, checking status....\n");
+        printf("INFO: Connected, checking status....\n");
     }
 
     /*
@@ -374,7 +395,7 @@ run (
                         }
                     }
 
-                    if (i == 5)
+                    if(i == 5)
                     {
                         rc = 0;
                     }
@@ -396,7 +417,7 @@ run (
 
     if(g_Verbose)
     {
-        printf ("INFO: Finished\n");
+        printf("INFO: Finished\n");
     }
 
     /*
@@ -603,7 +624,7 @@ resetConfigurationToFactoryDefaults (void)
     /*
      * Send the message, expect the response of certain type
      */
-    pRspMsg = transact(&Cmd.hdr, &LLRP_tdSET_READER_CONFIG_RESPONSE);
+    pRspMsg = transact(&Cmd.hdr);
     if(NULL == pRspMsg)
     {
         /* transact already tattled */
@@ -663,24 +684,41 @@ resetConfigurationToFactoryDefaults (void)
  ** @return     ==0             Everything OK
  **             !=0             Something went wrong
  **
+ ** IMPORANT:
+ **     The coding of this function demonstrates best practices.
+ **     Please see IMPORTANT comment at the top of this file.
+ **
  *****************************************************************************/
 
 int
 deleteAllROSpecs (void)
 {
-    LLRP_tSDELETE_ROSPEC        Cmd = {
-        .hdr.elementHdr.pType   = &LLRP_tdDELETE_ROSPEC,
-        .hdr.MessageID          = 102,
-
-        .ROSpecID               = 0     /* All */
-    };
+    LLRP_tSDELETE_ROSPEC *      pCmd;
+    LLRP_tSMessage *            pCmdMsg;
     LLRP_tSMessage *            pRspMsg;
     LLRP_tSDELETE_ROSPEC_RESPONSE *pRsp;
 
     /*
+     * Compose the command message
+     */
+    pCmd = LLRP_DELETE_ROSPEC_construct();
+    pCmdMsg = &pCmd->hdr;
+    LLRP_Message_setMessageID(pCmdMsg, 102);
+    LLRP_DELETE_ROSPEC_setROSpecID(pCmd, 0);        /* All */
+
+    /*
      * Send the message, expect the response of certain type
      */
-    pRspMsg = transact(&Cmd.hdr, &LLRP_tdDELETE_ROSPEC_RESPONSE);
+    pRspMsg = transact(pCmdMsg);
+
+    /*
+     * Done with the command message
+     */
+    freeMessage(pCmdMsg);
+
+    /*
+     * transact() returns NULL if something went wrong.
+     */
     if(NULL == pRspMsg)
     {
         /* transact already tattled */
@@ -880,7 +918,7 @@ addROSpec (void)
     /*
      * Send the message, expect the response of certain type
      */
-    pRspMsg = transact(&Cmd.hdr, &LLRP_tdADD_ROSPEC_RESPONSE);
+    pRspMsg = transact(&Cmd.hdr);
     if(NULL == pRspMsg)
     {
         /* transact already tattled */
@@ -954,7 +992,7 @@ enableROSpec (void)
     /*
      * Send the message, expect the response of certain type
      */
-    pRspMsg = transact(&Cmd.hdr, &LLRP_tdENABLE_ROSPEC_RESPONSE);
+    pRspMsg = transact(&Cmd.hdr);
     if(NULL == pRspMsg)
     {
         /* transact already tattled */
@@ -1028,7 +1066,7 @@ startROSpec (void)
     /*
      * Send the message, expect the response of certain type
      */
-    pRspMsg = transact(&Cmd.hdr, &LLRP_tdSTART_ROSPEC_RESPONSE);
+    pRspMsg = transact(&Cmd.hdr);
     if(NULL == pRspMsg)
     {
         /* transact already tattled */
@@ -1138,6 +1176,35 @@ awaitAndPrintReport (void)
         }
 
         /*
+         * Is it a reader event? This example only recognizes
+         * AntennaEvents.
+         */
+        else if(&LLRP_tdREADER_EVENT_NOTIFICATION == pType)
+        {
+            LLRP_tSREADER_EVENT_NOTIFICATION *pNtf;
+            LLRP_tSReaderEventNotificationData *pNtfData;
+
+            pNtf = (LLRP_tSREADER_EVENT_NOTIFICATION *) pMessage;
+
+            pNtfData =
+               LLRP_READER_EVENT_NOTIFICATION_getReaderEventNotificationData(
+                    pNtf);
+
+            if(NULL != pNtfData)
+            {
+                handleReaderEventNotification(pNtfData);
+            }
+            else
+            {
+                /*
+                 * This should never happen. Using continue
+                 * to keep indent depth down.
+                 */
+                printf("WARNING: READER_EVENT_NOTIFICATION without data\n");
+            }
+        }
+
+        /*
          * Hmmm. Something unexpected. Just tattle and keep going.
          */
         else
@@ -1200,7 +1267,7 @@ printTagReportData (
         pTagReportData = (LLRP_tSTagReportData *)
                                     pTagReportData->hdr.pNextSubParameter)
     {
-        printOneTagReportData (pTagReportData);
+        printOneTagReportData(pTagReportData);
     }
 }
 
@@ -1276,6 +1343,137 @@ printOneTagReportData (
      * End of line
      */
     printf("\n");
+}
+
+
+/**
+ *****************************************************************************
+ **
+ ** @brief  Handle a ReaderEventNotification
+ **
+ ** Handle the payload of a READER_EVENT_NOTIFICATION message.
+ ** This routine simply dispatches to handlers of specific
+ ** event types.
+ **
+ ** @return     void
+ **
+ *****************************************************************************/
+
+void
+handleReaderEventNotification (
+  LLRP_tSReaderEventNotificationData *pNtfData)
+{
+    LLRP_tSAntennaEvent *       pAntennaEvent;
+    LLRP_tSReaderExceptionEvent *pReaderExceptionEvent;
+    int                         nReported = 0;
+
+    pAntennaEvent =
+        LLRP_ReaderEventNotificationData_getAntennaEvent(pNtfData);
+    if(NULL != pAntennaEvent)
+    {
+        handleAntennaEvent(pAntennaEvent);
+        nReported++;
+    }
+
+    pReaderExceptionEvent =
+        LLRP_ReaderEventNotificationData_getReaderExceptionEvent(pNtfData);
+    if(NULL != pReaderExceptionEvent)
+    {
+        handleReaderExceptionEvent(pReaderExceptionEvent);
+        nReported++;
+    }
+
+    /*
+     * Similarly handle other events here:
+     *      HoppingEvent
+     *      GPIEvent
+     *      ROSpecEvent
+     *      ReportBufferLevelWarningEvent
+     *      ReportBufferOverflowErrorEvent
+     *      RFSurveyEvent
+     *      AISpecEvent
+     *      ConnectionAttemptEvent
+     *      ConnectionCloseEvent
+     *      Custom
+     */
+
+    if(0 == nReported)
+    {
+        printf("NOTICE: Unexpected (unhandled) ReaderEvent\n");
+    }
+}
+
+
+/**
+ *****************************************************************************
+ **
+ ** @brief  Handle an AntennaEvent
+ **
+ ** An antenna was disconnected or (re)connected. Tattle.
+ **
+ ** @return     void
+ **
+ *****************************************************************************/
+
+void
+handleAntennaEvent (
+  LLRP_tSAntennaEvent *         pAntennaEvent)
+{
+    LLRP_tEAntennaEventType     eEventType;
+    llrp_u16_t                  AntennaID;
+    char *                      pStateStr;
+
+    eEventType = LLRP_AntennaEvent_getEventType(pAntennaEvent);
+    AntennaID = LLRP_AntennaEvent_getAntennaID(pAntennaEvent);
+
+    switch(eEventType)
+    {
+    case LLRP_AntennaEventType_Antenna_Disconnected:
+        pStateStr = "disconnected";
+        break;
+
+    case LLRP_AntennaEventType_Antenna_Connected:
+        pStateStr = "connected";
+        break;
+
+    default:
+        pStateStr = "?unknown-event?";
+        break;
+    }
+
+    printf("NOTICE: Antenna %d is %s\n", AntennaID, pStateStr);
+}
+
+
+/**
+ *****************************************************************************
+ **
+ ** @brief  Handle a ReaderExceptionEvent
+ **
+ ** Something has gone wrong. There are lots of details but
+ ** all this does is print the message, if one.
+ **
+ ** @return     void
+ **
+ *****************************************************************************/
+
+void
+handleReaderExceptionEvent (
+  LLRP_tSReaderExceptionEvent * pReaderExceptionEvent)
+{
+    llrp_utf8v_t                Message;
+
+    Message = LLRP_ReaderExceptionEvent_getMessage(pReaderExceptionEvent);
+
+    if(0 < Message.nValue && NULL != Message.pValue)
+    {
+        printf("NOTICE: ReaderException '%.*s'\n",
+             Message.nValue, Message.pValue);
+    }
+    else
+    {
+        printf("NOTICE: ReaderException but no message\n");
+    }
 }
 
 
@@ -1370,8 +1568,7 @@ checkLLRPStatus (
 
 LLRP_tSMessage *
 transact (
-  LLRP_tSMessage *              pSendMsg,
-  const LLRP_tSTypeDescriptor * pResponseType)
+  LLRP_tSMessage *              pSendMsg)
 {
     LLRP_tSConnection *         pConn = g_pConnectionToReader;
     LLRP_tSMessage *            pRspMsg;
@@ -1392,7 +1589,7 @@ transact (
      * If LLRP_Conn_transact() returns NULL then there was
      * an error. In that case we try to print the error details.
      */
-    pRspMsg = LLRP_Conn_transact(pConn, pSendMsg, 5000, pResponseType);
+    pRspMsg = LLRP_Conn_transact(pConn, pSendMsg, 5000);
     if(NULL == pRspMsg)
     {
         const LLRP_tSErrorDetails *pError = LLRP_Conn_getTransactError(pConn);
@@ -1434,6 +1631,10 @@ transact (
      */
     if(&LLRP_tdERROR_MESSAGE == pRspMsg->elementHdr.pType)
     {
+        const LLRP_tSTypeDescriptor *pResponseType;
+
+        pResponseType = pSendMsg->elementHdr.pType->pResponseType;
+
         printf("ERROR: Received ERROR_MESSAGE instead of %s\n",
             pResponseType->pName);
         freeMessage(pRspMsg);
@@ -1618,9 +1819,6 @@ freeMessage (
  ** @brief  Helper to print a message as XML text
  **
  ** Print a LLRP message as XML text
- **     - Construct an XML encoder that prints to stdout
- **     - Encode the message through the XML encoder
- **     - Destruct the XML encoder
  **
  ** @param[in]  pMessage        Pointer to message to print
  **
@@ -1632,40 +1830,19 @@ void
 printXMLMessage (
   LLRP_tSMessage *              pMessage)
 {
-    LLRP_tSPrXMLEncoder *       pXMLEncoder;
-    LLRP_tSEncoder *            pEncoder;
+    char                        aBuf[100*1024];
 
     /*
-     * Make sure the message is not NULL.
+     * Convert the message to an XML string.
+     * This fills the buffer with either the XML string
+     * or an error message. The return value could
+     * be checked.
      */
-    if(NULL == pMessage)
-    {
-        printf("ERROR: NULL pMessage to printXMLMessage\n");
-        return;
-    }
+
+    LLRP_toXMLString(&pMessage->elementHdr, aBuf, sizeof aBuf);
 
     /*
-     * Construct an XML encoder
+     * Print the XML Text to the standard output.
      */
-    pXMLEncoder = LLRP_PrXMLEncoder_construct(stdout);
-    if(NULL == pXMLEncoder)
-    {
-        printf("ERROR: PrXMLEncoder_construct failed\n");
-        return;
-    }
-
-    /*
-     * Essentially cast the XMLEncoder as a generic encoder.
-     */
-    pEncoder = &pXMLEncoder->encoderHdr;
-
-    /*
-     * Now let the encoding mechanism do its thing.
-     */
-    LLRP_Encoder_encodeElement(pEncoder, &pMessage->elementHdr);
-
-    /*
-     * Done with the XML encoder.
-     */
-    LLRP_Encoder_destruct(pEncoder);
+    printf("%s", aBuf);
 }

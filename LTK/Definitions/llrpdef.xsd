@@ -21,22 +21,22 @@
  -->
 
 <xs:schema
-  targetNamespace="http://www.llrp.org/ltk/schema/core/encoding/binary/0.8"
-  xmlns:llrpdef="http://www.llrp.org/ltk/schema/core/encoding/binary/0.8"
+  targetNamespace="http://www.llrp.org/ltk/schema/core/encoding/binary/1.0"
+  xmlns:llrpdef="http://www.llrp.org/ltk/schema/core/encoding/binary/1.0"
   xmlns:xs="http://www.w3.org/2001/XMLSchema"
   elementFormDefault="qualified"
-  version="0.7">
+  version="1.0">
 
   <xs:annotation>
     <xs:documentation xml:lang="en">
 	Copyright 2007 Impinj Inc.
-										 
+
 	Licensed under the Apache License, Version 2.0 (the "License");
 	you may not use this file except in compliance with the License.
 	You may obtain a copy of the License at
-										 
+
 	     http://www.apache.org/licenses/LICENSE-2.0
-										 
+
 	Unless required by applicable law or agreed to in writing, software
 	distributed under the License is distributed on an "AS IS" BASIS,
 	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -59,10 +59,16 @@
                   type="llrpdef:enumerationDefinition"/>
       <xs:element name="vendorDefinition"
                   type="llrpdef:vendorDefinition"/>
+      <xs:element name="namespaceDefinition"
+                  type="llrpdef:namespaceDefinition"/>
       <xs:element name="customMessageDefinition"
                   type="llrpdef:customMessageDefinition"/>
       <xs:element name="customParameterDefinition"
                   type="llrpdef:customParameterDefinition"/>
+      <xs:element name="customChoiceDefinition"
+                  type="llrpdef:customChoiceDefinition"/>
+      <xs:element name="customEnumerationDefinition"
+                  type="llrpdef:customEnumerationDefinition"/>
       <xs:element name="annotation" type="llrpdef:annotation"/>
     </xs:choice>
   </xs:complexType>
@@ -81,7 +87,8 @@
     </xs:sequence>
     <xs:attribute name="name"           type="llrpdef:name"    use="required"/>
     <xs:attribute name="typeNum"        type="llrpdef:typeNum" use="required"/>
-    <xs:attribute name="required" type="xs:boolean"      use="optional"/>
+    <xs:attribute name="required"       type="xs:boolean"      use="optional"/>
+    <xs:attribute name="responseType"   type="llrpdef:name"    use="optional"/>
   </xs:complexType>
 
   <xs:complexType name="parameterDefinition">
@@ -98,7 +105,7 @@
     </xs:sequence>
     <xs:attribute name="name"           type="llrpdef:name"    use="required"/>
     <xs:attribute name="typeNum"        type="llrpdef:typeNum" use="required"/>
-    <xs:attribute name="required" type="xs:boolean"      use="optional"/>
+    <xs:attribute name="required"       type="xs:boolean"      use="optional"/>
   </xs:complexType>
 
   <xs:complexType name="choiceDefinition">
@@ -131,8 +138,17 @@
     <xs:sequence>
       <xs:element name="annotation" type="llrpdef:annotation" minOccurs="0" maxOccurs="unbounded"/>
     </xs:sequence>
-    <xs:attribute name="name"    type="llrpdef:name"    use="required"/>
-    <xs:attribute name="vendorID" type="xs:unsignedInt" use="required"/>
+    <xs:attribute name="name"       type="llrpdef:name"     use="required"/>
+    <xs:attribute name="vendorID"   type="xs:unsignedInt"   use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="namespaceDefinition">
+    <xs:sequence>
+      <xs:element name="annotation" type="llrpdef:annotation" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attribute name="prefix"         type="llrpdef:name" use="required"/>
+    <xs:attribute name="URI"            type="xs:anyURI"    use="required"/>
+    <xs:attribute name="schemaLocation" type="xs:anyURI"    use="optional"/>
   </xs:complexType>
 
   <xs:complexType name="customMessageDefinition">
@@ -147,9 +163,11 @@
         <xs:element name="choice"    type="llrpdef:choiceReference"/>
       </xs:choice>
     </xs:sequence>
-    <xs:attribute name="name"    type="llrpdef:name"    use="required"/>
-    <xs:attribute name="vendor"  type="llrpdef:name"    use="required"/>
-    <xs:attribute name="subtype" type="xs:unsignedByte" use="required"/>
+    <xs:attribute name="name"         type="llrpdef:name"    use="required"/>
+    <xs:attribute name="vendor"       type="llrpdef:name"    use="required"/>
+    <xs:attribute name="subtype"      type="llrpdef:customMessageSubtype" use="required"/>
+    <xs:attribute name="namespace"    type="llrpdef:name"    use="required"/>
+    <xs:attribute name="responseType" type="llrpdef:name"    use="optional"/>
   </xs:complexType>
 
   <xs:complexType name="customParameterDefinition">
@@ -168,18 +186,39 @@
                         type="llrpdef:allowedInParameterReference"/>
       </xs:sequence>
     </xs:sequence>
-    <xs:attribute name="name"    type="llrpdef:name"    use="required"/>
-    <xs:attribute name="vendor"  type="llrpdef:name"    use="required"/>
-    <xs:attribute name="subtype" type="xs:unsignedInt"  use="required"/>
+    <xs:attribute name="name"       type="llrpdef:name"     use="required"/>
+    <xs:attribute name="vendor"     type="llrpdef:name"     use="required"/>
+    <xs:attribute name="subtype"    type="xs:unsignedInt"   use="required"/>
+    <xs:attribute name="namespace"  type="llrpdef:name"     use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="customChoiceDefinition">
+    <xs:sequence>
+      <xs:element name="annotation" type="llrpdef:annotation" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="parameter" type="llrpdef:choiceParameterReference"
+                  minOccurs="1" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attribute name="name"       type="llrpdef:name"     use="required"/>
+    <xs:attribute name="namespace"  type="llrpdef:name"     use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="customEnumerationDefinition">
+    <xs:sequence>
+      <xs:element name="annotation" type="llrpdef:annotation" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="entry" type="llrpdef:enumerationEntryDefinition"
+                  minOccurs="1" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attribute name="name"       type="llrpdef:name"     use="required"/>
+    <xs:attribute name="namespace"  type="llrpdef:name"     use="required"/>
   </xs:complexType>
 
   <xs:complexType name="parameterReference">
     <xs:sequence>
       <xs:element name="annotation" type="llrpdef:annotation" minOccurs="0" maxOccurs="unbounded"/>
     </xs:sequence>
-    <xs:attribute name="type"   type="llrpdef:name"     use="required"/>
-    <xs:attribute name="repeat" type="llrpdef:repeat"   use="required"/>
-    <xs:attribute name="name"   type="llrpdef:name"     use="optional"/>
+    <xs:attribute name="type"           type="llrpdef:name"    use="required"/>
+    <xs:attribute name="repeat"         type="llrpdef:repeat"  use="required"/>
+    <xs:attribute name="name"           type="llrpdef:name"    use="optional"/>
   </xs:complexType>
 
   <xs:complexType name="choiceReference">
@@ -231,6 +270,7 @@
       <xs:element name="documentation" type="llrpdef:documentation"/>
       <xs:element name="description" type="llrpdef:description"/>
     </xs:choice>
+    <xs:attribute name="source" type="xs:anyURI" use="optional"/>
   </xs:complexType>
 
   <xs:complexType name="documentation" mixed="true">
@@ -280,7 +320,15 @@
   <xs:simpleType name="reservedBitCount">
     <xs:restriction base="xs:integer">
       <xs:minInclusive value="1"/>
-      <xs:maxInclusive value="31"/>
+      <xs:maxInclusive value="32"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <!-- Custom message subtype 255 is reserved by LTK for later expansion -->
+  <xs:simpleType name="customMessageSubtype">
+    <xs:restriction base="xs:integer">
+      <xs:minInclusive value="1"/>
+      <xs:maxInclusive value="254"/>
     </xs:restriction>
   </xs:simpleType>
 
@@ -322,7 +370,7 @@
 
   <xs:simpleType name="fieldFormat">
     <xs:restriction base="xs:string">
-      <xs:enumeration value="dec"/>
+      <xs:enumeration value="Dec"/>
       <xs:enumeration value="Hex"/>
       <xs:enumeration value="Datetime"/>
       <xs:enumeration value="UTF8"/>

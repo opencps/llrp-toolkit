@@ -2,8 +2,8 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="7.10"
-	Name="Library"
-	ProjectGUID="{22C47EC2-0B79-47B8-9E70-53A6322C0F57}"
+	Name="libltkcppllrporg"
+	ProjectGUID="{4E89CB57-DFEB-4D17-8DCD-158FB22BD1E6}"
 	Keyword="Win32Proj">
 	<Platforms>
 		<Platform
@@ -19,10 +19,11 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
+				AdditionalIncludeDirectories="..\..\Library"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB"
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="3"
-				RuntimeLibrary="5"
+				RuntimeLibrary="3"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="TRUE"
@@ -31,7 +32,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="$(OutDir)/VS_LTKCPP.lib"/>
+				OutputFile="$(OutDir)/libltkcppllrporg_d.lib"/>
 			<Tool
 				Name="VCMIDLTool"/>
 			<Tool
@@ -59,8 +60,9 @@
 			CharacterSet="2">
 			<Tool
 				Name="VCCLCompilerTool"
+				AdditionalIncludeDirectories="..\..\Library"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
-				RuntimeLibrary="4"
+				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="TRUE"
@@ -69,7 +71,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="$(OutDir)/VS_LTKCPP.lib"/>
+				OutputFile="$(OutDir)/libltkcppllrporg_r.lib"/>
 			<Tool
 				Name="VCMIDLTool"/>
 			<Tool
@@ -98,31 +100,7 @@
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}">
 			<File
-				RelativePath="..\..\Library\ltkcpp_array.cpp">
-			</File>
-			<File
-				RelativePath="..\..\Library\ltkcpp_connection.cpp">
-			</File>
-			<File
-				RelativePath="..\..\Library\ltkcpp_element.cpp">
-			</File>
-			<File
-				RelativePath="..\..\Library\ltkcpp_encdec.cpp">
-			</File>
-			<File
-				RelativePath="..\..\Library\ltkcpp_error.cpp">
-			</File>
-			<File
-				RelativePath="..\..\Library\ltkcpp_framedecode.cpp">
-			</File>
-			<File
-				RelativePath="..\..\Library\ltkcpp_frameencode.cpp">
-			</File>
-			<File
-				RelativePath="..\..\Library\ltkcpp_frameextract.cpp">
-			</File>
-			<File
-				RelativePath="..\..\Library\ltkcpp_genout.cpp">
+				RelativePath="..\..\Library\LLRP.org\llrporg_ltkcpp_genout.cpp">
 				<FileConfiguration
 					Name="Debug|Win32">
 					<Tool
@@ -136,34 +114,13 @@
 						WarningLevel="2"/>
 				</FileConfiguration>
 			</File>
-			<File
-				RelativePath="..\..\Library\ltkcpp_hdrfd.cpp">
-			</File>
-			<File
-				RelativePath="..\..\Library\ltkcpp_prxmlencode.cpp">
-			</File>
-			<File
-				RelativePath="..\..\Library\ltkcpp_typeregistry.cpp">
-			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}">
 			<File
-				RelativePath="..\..\Library\ltkcpp.h">
-			</File>
-			<File
-				RelativePath="..\..\Library\ltkcpp_base.h">
-			</File>
-			<File
-				RelativePath="..\..\Library\ltkcpp_frame.h">
-			</File>
-			<File
-				RelativePath="..\..\Library\ltkcpp_platform.h">
-			</File>
-			<File
-				RelativePath="..\..\Library\ltkcpp_prxml.h">
+				RelativePath="..\..\Library\LLRP.org\llrporg_ltkcpp.h">
 			</File>
 		</Filter>
 		<Filter
@@ -171,6 +128,9 @@
 			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx"
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}">
 		</Filter>
+		<File
+			RelativePath=".\ReadMe.txt">
+		</File>
 	</Files>
 	<Globals>
 	</Globals>

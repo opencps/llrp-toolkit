@@ -1,5 +1,5 @@
 ############################################################################
-#   Copyright 2007 Impinj, Inc.
+#   Copyright 2007,2008 Impinj, Inc.
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -16,55 +16,113 @@
 ############################################################################
 
 #CPPFLAGS = -O -Wall
-CPPFLAGS = -g -Wall
+AR              = ar
+CXX             = g++
+CPPFLAGS        = -g -Wall
 
-LLRPDEF = ../../Definitions/Core/llrp-1x0-def.xml
+LLRPDEF         = ../../Definitions/Core/llrp-1x0-def.xml
 
-LTKCPP_LIB = ltkcpp.a
+CODE_GEN_H_XSLT = ltkcpp_gen_h.xslt
+CODE_GEN_CPP_XSLT = ltkcpp_gen_cpp.xslt
 
 LTKCPP_HDRS = \
 	ltkcpp.h		\
 	ltkcpp_base.h		\
 	ltkcpp_connection.h	\
 	ltkcpp_frame.h		\
-	ltkcpp_prxml.h		\
-	ltkcpp_platform.h
+	ltkcpp_platform.h	\
+	ltkcpp_xmltext.h	\
+	out_ltkcpp.h
 
+LTKCPP_LIB = libltkcpp.a
 LTKCPP_OBJS = \
 	ltkcpp_array.o		\
 	ltkcpp_connection.o	\
 	ltkcpp_element.o	\
-	ltkcpp_encdec.o		\
+	ltkcpp_encdec.o	\
 	ltkcpp_error.o		\
 	ltkcpp_framedecode.o	\
 	ltkcpp_frameencode.o	\
 	ltkcpp_frameextract.o	\
 	ltkcpp_hdrfd.o		\
-	ltkcpp_prxmlencode.o	\
-        ltkcpp_typeregistry.o	\
+	ltkcpp_xmltextencode.o	\
+	ltkcpp_typeregistry.o	\
 	ltkcpp_genout.o
 
 
 all:    $(LTKCPP_LIB)
+	cd LLRP.org; make all
+
+everything:
+	make all
 
 $(LTKCPP_LIB) : $(LTKCPP_OBJS)
 	$(AR) crv $(LTKCPP_LIB) $(LTKCPP_OBJS)
 
-$(LTKCPP_OBJS) :  $(LTKCPP_HDRS) out_ltkcpp_h.inc
+$(LTKCPP_OBJS) :  $(LTKCPP_HDRS)
 
-ltkcpp_genout.o : ltkcpp_genout.cpp out_ltkcpp_cpp.inc out_ltkcpp_h.inc
-	g++ -c $(CPPFLAGS) -Wno-unused ltkcpp_genout.cpp
+ltkcpp_array.o         : ltkcpp_array.cpp
+	$(CXX) -c $(CPPFLAGS) ltkcpp_array.cpp \
+		-o ltkcpp_array.o
 
-out_ltkcpp_h.inc:  ltkcpp_gen_h.xslt     $(LLRPDEF)
-	xsltproc -o out_ltkcpp_h.inc   ltkcpp_gen_h.xslt   $(LLRPDEF)
+ltkcpp_connection.o    : ltkcpp_connection.cpp
+	$(CXX) -c $(CPPFLAGS) ltkcpp_connection.cpp \
+		-o ltkcpp_connection.o
 
-out_ltkcpp_cpp.inc:  ltkcpp_gen_cpp.xslt $(LLRPDEF)
-	xsltproc -o out_ltkcpp_cpp.inc ltkcpp_gen_cpp.xslt $(LLRPDEF)
+ltkcpp_element.o       : ltkcpp_element.cpp
+	$(CXX) -c $(CPPFLAGS) ltkcpp_element.cpp \
+		-o ltkcpp_element.o
 
-# Handy target to generate code when building with Visual Studio
-outs: out_ltkcpp_h.inc out_ltkcpp_cpp.inc
+ltkcpp_encdec.o        : ltkcpp_encdec.cpp
+	$(CXX) -c $(CPPFLAGS) ltkcpp_encdec.cpp \
+		-o ltkcpp_encdec.o
+
+ltkcpp_error.o         : ltkcpp_error.cpp
+	$(CXX) -c $(CPPFLAGS) ltkcpp_error.cpp \
+		-o ltkcpp_error.o
+
+ltkcpp_framedecode.o   : ltkcpp_framedecode.cpp
+	$(CXX) -c $(CPPFLAGS) ltkcpp_framedecode.cpp \
+		-o ltkcpp_framedecode.o
+
+ltkcpp_frameencode.o   : ltkcpp_frameencode.cpp
+	$(CXX) -c $(CPPFLAGS) ltkcpp_frameencode.cpp \
+		-o ltkcpp_frameencode.o
+
+ltkcpp_frameextract.o  : ltkcpp_frameextract.cpp
+	$(CXX) -c $(CPPFLAGS) ltkcpp_frameextract.cpp \
+		-o ltkcpp_frameextract.o
+
+ltkcpp_hdrfd.o         : ltkcpp_hdrfd.cpp
+	$(CXX) -c $(CPPFLAGS) ltkcpp_hdrfd.cpp \
+		-o ltkcpp_hdrfd.o
+
+ltkcpp_xmltextencode.o : ltkcpp_xmltextencode.cpp
+	$(CXX) -c $(CPPFLAGS) ltkcpp_xmltextencode.cpp \
+		-o ltkcpp_xmltextencode.o
+
+ltkcpp_typeregistry.o  : ltkcpp_typeregistry.cpp
+	$(CXX) -c $(CPPFLAGS) ltkcpp_typeregistry.cpp \
+		-o ltkcpp_typeregistry.o
+
+ltkcpp_genout.o        : out_ltkcpp.inc out_ltkcpp.h
+ltkcpp_genout.o        : ltkcpp_genout.cpp
+	$(CXX) -c $(CPPFLAGS) -Wno-unused ltkcpp_genout.cpp \
+		-o ltkcpp_genout.o
+
+out_ltkcpp.h:  ltkcpp_gen_h.xslt     $(LLRPDEF)
+	xsltproc --stringparam RegistryName Core \
+		-o out_ltkcpp.h   $(CODE_GEN_H_XSLT)   $(LLRPDEF)
+
+out_ltkcpp.inc:  ltkcpp_gen_cpp.xslt $(LLRPDEF)
+	xsltproc --stringparam RegistryName Core \
+		-o out_ltkcpp.inc $(CODE_GEN_CPP_XSLT) $(LLRPDEF)
 
 clean:
 	rm -f *.o *.core core.[0-9]*
-	rm -f out_ltkcpp_cpp.inc out_ltkcpp_h.inc
-	rm -f $(LTKCPP_LIB)
+	rm -f out_*.inc out_*.h
+	rm -f *.a
+	cd LLRP.org; make clean
+
+# Handy target to generate code when building with Visual Studio
+outs: out_ltkcpp.h out_ltkcpp.inc
