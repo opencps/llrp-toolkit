@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
-	xmlns:llrp="http://www.llrp.org/ltk/schema/core/encoding/binary/0.8">
+	xmlns:llrp="http://www.llrp.org/ltk/schema/core/encoding/binary/1.0">
   <xsl:output omit-xml-declaration='yes' method='text' indent='yes'/>
   <xsl:template match="/llrp:llrpdef">
     /*
     ***************************************************************************
-    *  Copyright 2007 Impinj, Inc.
+    *  Copyright 2008 Impinj, Inc.
     *
     *  Licensed under the Apache License, Version 2.0 (the "License");
     *  you may not use this file except in compliance with the License.
@@ -30,14 +30,15 @@
     *
     ***************************************************************************
     */
-    
+
     /*
     ***************************************************************************
     * File Name:       LLRPClient.cs
     *
+    * Version:         1.0
     * Author:          Impinj
     * Organization:    Impinj
-    * Date:            September, 2007
+    * Date:            Jan. 18, 2008
     *
     * Description:     This file contains implementation of LLRP client. LLRP
     *                 client is used to build LLRP based application
@@ -62,9 +63,15 @@
     namespace LLRP
     {
 
+    //delegates for sending asyn. messages
     public delegate void delegateReaderEventNotification(MSG_READER_EVENT_NOTIFICATION msg);
     public delegate void delegateRoAccessReport(MSG_RO_ACCESS_REPORT msg);
     public delegate void delegateKeepAlive(MSG_KEEPALIVE msg);
+    
+    //Delegates for sending encapsulated asyn. messages
+    public delegate void delegateEncapReaderEventNotification(ENCAPED_READER_EVENT_NOTIFICATION msg);
+    public delegate void delegateEncapRoAccessReport(ENCAPED_RO_ACCESS_REPORT msg);
+    public delegate void delegateEncapKeepAlive(ENCAPED_KEEP_ALIVE msg);
 
     [Serializable]
     public class ClientManualResetEvent
@@ -84,36 +91,77 @@
     {
     #region Network Parameters
     private CommunicationInterface cI;
-    private int LLRP1_TCP_PORT = 5084;
-    private int MSG_TIME_OUT = 1000;
+    private int LLRP_TCP_PORT = 5084;
+    private int MSG_TIME_OUT = 10000;
+    #endregion
+
+    #region Private Members
     private ManualResetEvent conn_evt;
     private ENUM_ConnectionAttemptStatusType conn_status_type;
+    private string reader_name;
     #endregion
+
 
     public event delegateReaderEventNotification OnReaderEventNotification;
     public event delegateRoAccessReport OnRoAccessReportReceived;
     public event delegateKeepAlive OnKeepAlive;
 
+    public event delegateEncapReaderEventNotification OnEncapedReaderEventNotification;
+    public event delegateEncapRoAccessReport OnEncapedRoAccessReportReceived;
+    public event delegateEncapKeepAlive OnEncapedKeepAlive;
+
     protected void TriggerReaderEventNotification(MSG_READER_EVENT_NOTIFICATION msg)
     {
-    try { if (OnReaderEventNotification != null) OnReaderEventNotification(msg); }
+    try {
+    if (OnReaderEventNotification != null) OnReaderEventNotification(msg);
+    if (OnEncapedReaderEventNotification != null)
+    {
+    ENCAPED_READER_EVENT_NOTIFICATION ntf = new ENCAPED_READER_EVENT_NOTIFICATION();
+    ntf.reader = reader_name;
+    ntf.ntf = msg;
+    }
+    }
     catch { }
     }
 
     protected void TriggerRoAccessReport(MSG_RO_ACCESS_REPORT msg)
     {
-    try { if (OnRoAccessReportReceived != null) OnRoAccessReportReceived(msg); }
+    try
+    {
+    if (OnRoAccessReportReceived != null) OnRoAccessReportReceived(msg);
+    if (OnEncapedRoAccessReportReceived != null)
+    {
+    ENCAPED_RO_ACCESS_REPORT report = new ENCAPED_RO_ACCESS_REPORT();
+    report.reader = reader_name;
+    report.report = msg;
+
+    OnEncapedRoAccessReportReceived(report);
+    }
+    }
     catch { }
     }
 
     protected void TriggerKeepAlive(MSG_KEEPALIVE msg)
     {
-    try { if (OnKeepAlive != null) OnKeepAlive(msg); }
+    try {
+    if (OnKeepAlive != null) OnKeepAlive(msg);
+    if (OnEncapedKeepAlive != null)
+    {
+    ENCAPED_KEEP_ALIVE keepalive = new ENCAPED_KEEP_ALIVE();
+    keepalive.reader = reader_name;
+    keepalive.keep_alive = msg;
+
+    OnEncapedKeepAlive(keepalive);
+    }
+    }
     catch { }
     }
 
     #region Properties
-
+    public string ReaderName
+    {
+    get{return reader_name;}
+    }
     #endregion
 
     #region Assistance Functions
@@ -143,12 +191,13 @@
 
     public bool Open(string llrp_reader_name, int timeout, out ENUM_ConnectionAttemptStatusType status)
     {
-    status = ENUM_ConnectionAttemptStatusType.Success;
+    reader_name = llrp_reader_name;
     
+    status = ENUM_ConnectionAttemptStatusType.Failed_Reason_Other_Than_A_Connection_Already_Exists;
     cI.OnMessageReceived += new delegateMessageReceived(ProcesssMessage);
 
-    try{ cI.Open(llrp_reader_name, LLRP1_TCP_PORT);}
-    catch{return false;}
+    try{ cI.Open(llrp_reader_name, LLRP_TCP_PORT);}
+    catch{cI.OnMessageReceived -= new delegateMessageReceived(ProcesssMessage);return false;}
 
 
     conn_evt = new ManualResetEvent(false);
@@ -158,14 +207,38 @@
     if(status== ENUM_ConnectionAttemptStatusType.Success)return true;
     }
 
-    try { cI.Close(); }
-    catch { }
+    reader_name = llrp_reader_name;
+
+    try
+    {
+    cI.Close();
+    cI.OnMessageReceived -= new delegateMessageReceived(ProcesssMessage);
+    }
+    catch
+    {
+    }
     return false;
     }
 
-    public void Close()
+    public bool Close()
     {
+    try
+    {
+    MSG_CLOSE_CONNECTION msg = new MSG_CLOSE_CONNECTION();
+    MSG_ERROR_MESSAGE msg_err;
+    MSG_CLOSE_CONNECTION_RESPONSE rsp = this.CLOSE_CONNECTION(msg, out msg_err, MSG_TIME_OUT);
+
+    if (rsp == null || rsp.LLRPStatus.StatusCode != ENUM_StatusCode.M_Success) return false;
+
     cI.Close();
+    cI.OnMessageReceived -= new delegateMessageReceived(ProcesssMessage);
+
+    return true;
+    }
+    catch
+    {
+    return false;
+    }
     }
 
     public void Dispose()
@@ -205,9 +278,9 @@
           bArr = Util.ConvertByteArrayToBitArray(data);
           length = bArr.Count;
           MSG_READER_EVENT_NOTIFICATION ntf = MSG_READER_EVENT_NOTIFICATION.FromBitArray(ref bArr, ref cursor, length);
-          if (conn_evt != null <xsl:text disable-output-escaping="yes">&amp;&amp;</xsl:text> ntf.__ReaderEventNotificationData.__ConnectionAttemptEvent != null)
+          if (conn_evt != null <xsl:text disable-output-escaping="yes">&amp;&amp;</xsl:text> ntf.ReaderEventNotificationData.ConnectionAttemptEvent != null)
           {
-          conn_status_type = ntf.__ReaderEventNotificationData.__ConnectionAttemptEvent.__Status;
+          conn_status_type = ntf.ReaderEventNotificationData.ConnectionAttemptEvent.Status;
           conn_evt.Set();
           }
           else

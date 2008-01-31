@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
-	xmlns:llrp="http://www.llrp.org/ltk/schema/core/encoding/binary/0.8">
+	xmlns:llrp="http://www.llrp.org/ltk/schema/core/encoding/binary/1.0"
+  xmlns:h="http://www.w3.org/1999/xhtml">
   <xsl:output omit-xml-declaration='yes' method='text' indent='yes'/>
+  
   <xsl:template match="/llrp:llrpdef">
     /*
     ***************************************************************************
@@ -36,9 +38,10 @@
     ***************************************************************************
     * File Name:       LLRPMsg.cs
     *
+    * Version:         1.0
     * Author:          Impinj
     * Organization:    Impinj
-    * Date:            September, 2007
+    * Date:            Jan. 18, 2008
     *
     * Description:     This file contains LLRP message definitions
     ***************************************************************************
@@ -74,9 +77,9 @@
     
     //LLRP message definitions
     <xsl:for-each select="llrp:messageDefinition">
-        <!--/// <xsl:text disable-output-escaping="yes">&lt;summary</xsl:text><xsl:text disable-output-escaping="yes">&gt;</xsl:text>
-        /// <xsl:value-of select="annotation/description"/>
-        /// <xsl:text disable-output-escaping="yes">&lt;/summary</xsl:text><xsl:text disable-output-escaping="yes">&gt;</xsl:text>-->
+        /// <xsl:text disable-output-escaping="yes">&lt;summary</xsl:text><xsl:text disable-output-escaping="yes">&gt;</xsl:text>
+        /// <xsl:for-each select ="llrp:annotation/llrp:description/h:p"><xsl:value-of select="."/></xsl:for-each> 
+        /// <xsl:text disable-output-escaping="yes">&lt;/summary</xsl:text><xsl:text disable-output-escaping="yes">&gt;</xsl:text>
       <xsl:variable name="msg_name">
         <xsl:value-of select="@name"/>
       </xsl:variable>
@@ -86,47 +89,47 @@
 
       <xsl:for-each select="*">
         <xsl:if test="name()='field'">
-          public <xsl:call-template name='DefineDataType'/><xsl:text> __</xsl:text><xsl:value-of select="@name"/><xsl:call-template name='DefineDefaultValue'/>
+          public <xsl:call-template name='DefineDataType'/><xsl:text> </xsl:text><xsl:value-of select="@name"/><xsl:call-template name='DefineDefaultValue'/>
           <xsl:call-template name="DefineDataLength"/>
         </xsl:if>
         <xsl:if test="name()='reserved'">
-          private const UInt16 param_reserved = <xsl:value-of select="@bitCount"/>;
+          private const UInt16 param_reserved_len = <xsl:value-of select="@bitCount"/>;
         </xsl:if>
         <xsl:if test="name()='parameter'">
           <xsl:choose>
             <xsl:when test="@type='Custom'">
               <xsl:choose>
                 <xsl:when test="contains(@repeat, '0-N') or contains(@repeat, '1-N')">
-                  private CustomParameterArrayList __<xsl:call-template name='DefineParameterName'/> = new CustomParameterArrayList();
+                  public readonly CustomParameterArrayList <xsl:call-template name='DefineParameterName'/> = new CustomParameterArrayList();
                   public void AddCustomParameter(I<xsl:copy-of select='$msg_name'/>_Custom_Param param)
                   {
-                  __<xsl:call-template name='DefineParameterName'/>.Add(param);
+                  <xsl:call-template name='DefineParameterName'/>.Add(param);
                   }
                   private void AddCustomParameter(ICustom_Parameter param)
                   {
-                  __<xsl:call-template name='DefineParameterName'/>.Add(param);
+                  <xsl:call-template name='DefineParameterName'/>.Add(param);
                   }
                 </xsl:when>
                 <xsl:otherwise>
-                  private I<xsl:copy-of select='$msg_name'/>_Custom_Param __<xsl:call-template name='DefineParameterName'/>;
+                  public readonly I<xsl:copy-of select='$msg_name'/>_Custom_Param <xsl:call-template name='DefineParameterName'/>;
                 </xsl:otherwise>
               </xsl:choose>
             </xsl:when>
             <xsl:otherwise>
               <xsl:choose>
                 <xsl:when test="contains(@repeat, '0-N') or contains(@repeat, '1-N')">
-                  public PARAM_<xsl:value-of select="@type"/>[] __<xsl:call-template name='DefineParameterName'/>;
+                  public PARAM_<xsl:value-of select="@type"/>[] <xsl:call-template name='DefineParameterName'/>;
                 </xsl:when>
                 <xsl:otherwise>
-                  public PARAM_<xsl:value-of select="@type"/> __<xsl:call-template name='DefineParameterName'/>;
-                </xsl:otherwise>
-              </xsl:choose>
-            </xsl:otherwise>
-          </xsl:choose>
-        </xsl:if>
-        <xsl:if test="name()='choice'">
-          public UNION_<xsl:value-of select="@type"/> __<xsl:call-template name='DefineParameterName'/> = new UNION_<xsl:value-of select="@type"/>();
-          <!--public ENUM_<xsl:value-of select="@type"/>_TYPE __<xsl:call-template name='DefineParameterName'/>_type;-->
+                  public PARAM_<xsl:value-of select="@type"/><xsl:text> </xsl:text><xsl:call-template name='DefineParameterName'/>;
+              </xsl:otherwise>
+            </xsl:choose>
+          </xsl:otherwise>
+        </xsl:choose>
+      </xsl:if>
+      <xsl:if test="name()='choice'">
+        public UNION_<xsl:value-of select="@type"/><xsl:text> </xsl:text><xsl:call-template name='DefineParameterName'/> = new UNION_<xsl:value-of select="@type"/>();
+          <!--public ENUM_<xsl:value-of select="@type"/>_TYPE <xsl:call-template name='DefineParameterName'/>_type;-->
         </xsl:if>
       </xsl:for-each>
 
@@ -142,102 +145,7 @@
     }
   </xsl:template>
 
-  <xsl:template name="DefineDataType" match="field">
-    <xsl:choose><xsl:when test="@enumeration">ENUM_<xsl:value-of select="@enumeration"/></xsl:when>
-      <xsl:otherwise>
-        <xsl:choose>
-          <xsl:when test="@type = 'u1'">bool</xsl:when>
-          <xsl:when test="@type = 'u1v'">LLRPBitArray</xsl:when>
-          <xsl:when test="@type = 'u2'">TwoBits</xsl:when>
-          <xsl:when test="@type = 'u8'">byte</xsl:when>
-          <xsl:when test="@type = 's8'">sbyte</xsl:when>
-          <xsl:when test="@type = 'u8v'">ByteArray</xsl:when>
-          <xsl:when test="@type = 'u16'">UInt16</xsl:when>
-          <xsl:when test="@type = 'u16v'">UInt16Array</xsl:when>
-          <xsl:when test="@type = 's16'">Int16</xsl:when>
-          <xsl:when test="@type = 'u32'">UInt32</xsl:when>
-          <xsl:when test="@type = 'u32v'">UInt32Array</xsl:when>
-          <xsl:when test="@type = 'u64'">UInt64</xsl:when>
-          <xsl:when test="@type = 'utf8v'">string</xsl:when>
-          <xsl:when test="@type = 'u96'">LLRPBitArray</xsl:when>
-          <xsl:when test="@type = 'bytesToEnd'">ByteArray</xsl:when>
-          <xsl:otherwise>Unkown_Type</xsl:otherwise>
-        </xsl:choose>
-      </xsl:otherwise>
-    </xsl:choose>
-  </xsl:template>
-
-  <xsl:template name="DefineDataLength" match="field">
-    <xsl:choose>
-     <xsl:when test="@enumeration">
-      private Int16 __<xsl:value-of select="@name"/>_len = <xsl:choose>
-        <xsl:when test="@type = 'u1'">1;</xsl:when>
-        <xsl:when test="@type = 'u2'">2;</xsl:when>
-        <xsl:when test="@type = 'u8'">8;</xsl:when>
-        <xsl:when test="@type = 'u16'">16;</xsl:when>
-        <xsl:otherwise>Unknown_Length;</xsl:otherwise></xsl:choose>
-    </xsl:when>
-     <xsl:when test="@format='Hex'">
-       private Int16 __<xsl:value-of select="@name"/>_len;
-    </xsl:when>
-    <xsl:when test="@format='UTF8'">
-      private Int16 __<xsl:value-of select="@name"/>_len;
-    </xsl:when>
-    <xsl:otherwise>
-      private Int16 __<xsl:value-of select="@name"/>_len=0;
-    </xsl:otherwise>
-    </xsl:choose>
-    
-
-  </xsl:template>
-
-  <xsl:template name="DefineParameterType" match="parameter">
-    <xsl:choose>
-      <xsl:when test="@repeat = '1'"></xsl:when>
-      <xsl:when test="@repeat = '0-1'"></xsl:when>
-      <xsl:when test="@repeat = '1-N'">[]</xsl:when>
-      <xsl:when test="@repeat = '0-N'">[]</xsl:when>
-      <xsl:otherwise>Unknown_Type</xsl:otherwise>
-    </xsl:choose>
-  </xsl:template>
-
-  <xsl:template name="DefineDefaultValue" match="field">
-    <xsl:choose>
-      <xsl:when test="@enumeration">;</xsl:when>
-      <!--ENUM_<xsl:value-of select="@enumeration"/>-->
-      <xsl:otherwise>
-        <xsl:choose>
-          <xsl:when test="@type = 'u1'">=false;</xsl:when>
-          <xsl:when test="@type = 'u1v'">=new LLRPBitArray();</xsl:when>
-          <xsl:when test="@type = 'u2'">=new TwoBits(0);</xsl:when>
-          <xsl:when test="@type = 'u8'">=0;</xsl:when>
-          <xsl:when test="@type = 's8'">=0;</xsl:when>
-          <xsl:when test="@type = 'u8v'">=new ByteArray();</xsl:when>
-          <xsl:when test="@type = 'u16'">=0;</xsl:when>
-          <xsl:when test="@type = 'u16v'">=new UInt16Array();</xsl:when>
-          <xsl:when test="@type = 's16'">=0;</xsl:when>
-          <xsl:when test="@type = 'u32'">=0;</xsl:when>
-          <xsl:when test="@type = 'u32v'">=new UInt32Array();</xsl:when>
-          <xsl:when test="@type = 'u64'">=0;</xsl:when>
-          <xsl:when test="@type = 'utf8v'">=string.Empty;</xsl:when>
-          <xsl:when test="@type = 'u96'">=new LLRPBitArray();</xsl:when>
-          <xsl:when test="@type = 'bytesToEnd'">=new ByteArray();</xsl:when>
-          <xsl:otherwise>Unkown_Type</xsl:otherwise>
-        </xsl:choose>
-      </xsl:otherwise>
-    </xsl:choose>
-  </xsl:template>
-
-  <xsl:template name="DefineParameterName" match="field">
-    <xsl:choose>
-      <xsl:when test="@name">
-        <xsl:value-of select="@name"/>
-      </xsl:when>
-      <xsl:otherwise>
-        <xsl:value-of select="@type"/>
-      </xsl:otherwise>
-    </xsl:choose>
-  </xsl:template>
+  <xsl:include href="templates.xslt"/>
 
   <xsl:template name="DecodeFromBitArray">
     public new static MSG_<xsl:value-of select="@name"/> FromBitArray(ref BitArray bit_array, ref int cursor, int length)
@@ -297,16 +205,16 @@
           <xsl:when test="@enumaration">
             UInt32 val;
             Util.ConvertBitArrayToObj(ref bit_array, ref cursor, out val, typeof(UInt32), field_len);
-            obj.__<xsl:value-of select="@name"/> = (<xsl:call-template name='DefineDataType'/>)val;
+            obj.<xsl:value-of select="@name"/> = (<xsl:call-template name='DefineDataType'/>)val;
           </xsl:when>
           <xsl:otherwise>
             Util.ConvertBitArrayToObj(ref bit_array, ref cursor, out obj_val, typeof(<xsl:call-template name='DefineDataType'/>), field_len);
-            obj.__<xsl:value-of select="@name"/> = (<xsl:call-template name='DefineDataType'/>)obj_val;
+            obj.<xsl:value-of select="@name"/> = (<xsl:call-template name='DefineDataType'/>)obj_val;
           </xsl:otherwise>
         </xsl:choose>
       </xsl:if>
       <xsl:if test="name()='reserved'">
-        cursor += param_reserved;
+        cursor += param_reserved_len;
       </xsl:if>
       <xsl:if test="name()='parameter'">
         <xsl:choose>
@@ -315,12 +223,12 @@
               ICustom_Parameter custom = CustomParamDecodeFactory.DecodeCustomParameter(ref bit_array, ref cursor, length);
               if(custom!=null)
               {
-              obj.__<xsl:call-template name='DefineParameterName'/>.Add(custom);
-              while((custom = CustomParamDecodeFactory.DecodeCustomParameter(ref bit_array, ref cursor, length))!=null)obj.__<xsl:call-template name='DefineParameterName'/>.Add(custom);
+              obj.<xsl:call-template name='DefineParameterName'/>.Add(custom);
+              while((custom = CustomParamDecodeFactory.DecodeCustomParameter(ref bit_array, ref cursor, length))!=null)obj.<xsl:call-template name='DefineParameterName'/>.Add(custom);
               }
             </xsl:if>
             <xsl:if test="@repeat = '1' or @repeat='0-1'">
-              obj.__<xsl:call-template name='DefineParameterName'/> = CustomParamDecodeFactory.DecodeCustomParameter(ref bit_array, ref cursor, length);
+              obj.<xsl:call-template name='DefineParameterName'/> = CustomParamDecodeFactory.DecodeCustomParameter(ref bit_array, ref cursor, length);
             </xsl:if>
           </xsl:when>
           <xsl:otherwise>
@@ -332,14 +240,14 @@
               while((_param_<xsl:value-of select="@type"/>=PARAM_<xsl:value-of select="@type"/>.FromBitArray(ref bit_array, ref cursor, length))!=null)param_list.Add(_param_<xsl:value-of select="@type"/>);
               if(param_list.Count<xsl:text disable-output-escaping="yes">&gt;</xsl:text>0)
               {
-              obj.__<xsl:call-template name='DefineParameterName'/> = new PARAM_<xsl:value-of select="@type"/>[param_list.Count];
+              obj.<xsl:call-template name='DefineParameterName'/> = new PARAM_<xsl:value-of select="@type"/>[param_list.Count];
               for(int i=0;i<xsl:text disable-output-escaping="yes">&lt;</xsl:text>param_list.Count;i++)
-              obj.__<xsl:call-template name='DefineParameterName'/>[i] = (PARAM_<xsl:value-of select="@type"/>)param_list[i];
+              obj.<xsl:call-template name='DefineParameterName'/>[i] = (PARAM_<xsl:value-of select="@type"/>)param_list[i];
               }
               }
             </xsl:if>
             <xsl:if test="@repeat = '1' or @repeat='0-1'">
-              obj.__<xsl:call-template name='DefineParameterName'/> = PARAM_<xsl:value-of select="@type"/>.FromBitArray(ref bit_array, ref cursor, length);
+              obj.<xsl:call-template name='DefineParameterName'/> = PARAM_<xsl:value-of select="@type"/>.FromBitArray(ref bit_array, ref cursor, length);
             </xsl:if>
           </xsl:otherwise>
         </xsl:choose>
@@ -352,10 +260,10 @@
           <xsl:if test='@name=$choiceParameterName'>
             <xsl:for-each select='*'>
               PARAM_<xsl:value-of select='@type'/> _param_<xsl:value-of select='@type'/> = PARAM_<xsl:value-of select='@type'/>.FromBitArray(ref bit_array, ref cursor, length);
-              if(_param_<xsl:value-of select='@type'/>!=null)obj.__<xsl:copy-of select='$choiceParameterName'/>.Add(_param_<xsl:value-of select='@type'/>);
-              <!--obj.__<xsl:copy-of select='$choiceParameterName'/>_type = ENUM_<xsl:copy-of select='$choiceParameterName'/>_TYPE.<xsl:value-of select='@type'/>;-->
+              if(_param_<xsl:value-of select='@type'/>!=null)obj.<xsl:copy-of select='$choiceParameterName'/>.Add(_param_<xsl:value-of select='@type'/>);
+              <!--obj.<xsl:copy-of select='$choiceParameterName'/>_type = ENUM_<xsl:copy-of select='$choiceParameterName'/>_TYPE.<xsl:value-of select='@type'/>;-->
               while((_param_<xsl:value-of select='@type'/> = PARAM_<xsl:value-of select='@type'/>.FromBitArray(ref bit_array, ref cursor, length))!=null){
-              obj.__<xsl:copy-of select='$choiceParameterName'/>.Add(_param_<xsl:value-of select='@type'/>);
+              obj.<xsl:copy-of select='$choiceParameterName'/>.Add(_param_<xsl:value-of select='@type'/>);
               }
             </xsl:for-each>
           </xsl:if>
@@ -365,7 +273,7 @@
     return obj;
     }
   </xsl:template>
-  
+
   <xsl:template name="EncodeToBitArray">
     public override bool[] ToBitArray()
     {
@@ -394,31 +302,31 @@
     cursor+=32;
     <xsl:for-each select="*">
       <xsl:if test="name()='field'">
-        if(__<xsl:value-of select="@name"/>!=null)
+        if(<xsl:value-of select="@name"/>!=null)
         {
         try
         {
-        BitArray tempBitArr = Util.ConvertObjToBitArray(__<xsl:value-of select="@name"/>, __<xsl:value-of select="@name"/>_len);
+        BitArray tempBitArr = Util.ConvertObjToBitArray(<xsl:value-of select="@name"/>, <xsl:value-of select="@name"/>_len);
         tempBitArr.CopyTo(bit_array, cursor);
         cursor += tempBitArr.Length;
         }
-        catch{cursor +=__<xsl:value-of select="@name"/>_len;}
+        catch{cursor +=<xsl:value-of select="@name"/>_len;}
         }
       </xsl:if>
       <xsl:if test="name()='reserved'">
-        cursor += param_reserved;
+        cursor += param_reserved_len;
       </xsl:if>
       <xsl:if test="name()='parameter'">
-        if(__<xsl:call-template name='DefineParameterName'/> != null)
+        if(<xsl:call-template name='DefineParameterName'/> != null)
         {
         <xsl:choose>
           <xsl:when test="@repeat = '0-N' or @repeat = '1-N'">
-            len = __<xsl:call-template name='DefineParameterName'/>.Length;
+            len = <xsl:call-template name='DefineParameterName'/>.Length;
             for(int i=0; i<xsl:text disable-output-escaping="yes">&lt;</xsl:text>len;i++)
-            __<xsl:call-template name='DefineParameterName'/>[i].ToBitArray(ref bit_array, ref cursor);
+            <xsl:call-template name='DefineParameterName'/>[i].ToBitArray(ref bit_array, ref cursor);
           </xsl:when>
           <xsl:otherwise>
-            __<xsl:call-template name='DefineParameterName'/>.ToBitArray(ref bit_array, ref cursor);
+            <xsl:call-template name='DefineParameterName'/>.ToBitArray(ref bit_array, ref cursor);
           </xsl:otherwise>
         </xsl:choose>
         }
@@ -427,8 +335,8 @@
         <xsl:variable name="choiceParameterName">
           <xsl:call-template name='DefineParameterName'/>
         </xsl:variable>
-        len = __<xsl:copy-of select='$choiceParameterName'/>.Count;
-        for(int i=0; i<xsl:text disable-output-escaping="yes">&lt;</xsl:text>len;i++)__<xsl:copy-of select='$choiceParameterName'/>[i].ToBitArray(ref bit_array, ref cursor);
+        len = <xsl:copy-of select='$choiceParameterName'/>.Count;
+        for(int i=0; i<xsl:text disable-output-escaping="yes">&lt;</xsl:text>len;i++)<xsl:copy-of select='$choiceParameterName'/>[i].ToBitArray(ref bit_array, ref cursor);
       </xsl:if>
     </xsl:for-each>
 
@@ -441,7 +349,7 @@
     return boolArr;
     }
   </xsl:template>
-  
+
   <xsl:template name ="ToString">
     public override string ToString()
     {
@@ -450,32 +358,32 @@
     <xsl:for-each select="*">
       <xsl:choose>
         <xsl:when test="name()='field'">
-          if(__<xsl:value-of select="@name"/>!=null)
+          if(<xsl:value-of select="@name"/>!=null)
           {
           <xsl:choose>
             <xsl:when test ="@format='Hex'">
-              xml_str +="<xsl:text disable-output-escaping="yes">&lt;</xsl:text><xsl:value-of select="@name"/><xsl:text disable-output-escaping="yes">&gt;</xsl:text>" + __<xsl:value-of select="@name"/>.ToHexString() + "<xsl:text disable-output-escaping="yes">&lt;/</xsl:text><xsl:value-of select="@name"/><xsl:text disable-output-escaping="yes">&gt;</xsl:text>";
+              xml_str +="<xsl:text disable-output-escaping="yes">&lt;</xsl:text><xsl:value-of select="@name"/><xsl:text disable-output-escaping="yes">&gt;</xsl:text>" + <xsl:value-of select="@name"/>.ToHexString() + "<xsl:text disable-output-escaping="yes">&lt;/</xsl:text><xsl:value-of select="@name"/><xsl:text disable-output-escaping="yes">&gt;</xsl:text>";
             </xsl:when>
             <xsl:otherwise>
-              xml_str +="<xsl:text disable-output-escaping="yes">&lt;</xsl:text><xsl:value-of select="@name"/><xsl:text disable-output-escaping="yes">&gt;</xsl:text>" + __<xsl:value-of select="@name"/>.ToString() + "<xsl:text disable-output-escaping="yes">&lt;/</xsl:text><xsl:value-of select="@name"/><xsl:text disable-output-escaping="yes">&gt;</xsl:text>";
+              xml_str +="<xsl:text disable-output-escaping="yes">&lt;</xsl:text><xsl:value-of select="@name"/><xsl:text disable-output-escaping="yes">&gt;</xsl:text>" + <xsl:value-of select="@name"/>.ToString() + "<xsl:text disable-output-escaping="yes">&lt;/</xsl:text><xsl:value-of select="@name"/><xsl:text disable-output-escaping="yes">&gt;</xsl:text>";
             </xsl:otherwise>
-          </xsl:choose>     
+          </xsl:choose>
           }
         </xsl:when>
         <xsl:when test="name()='parameter'">
-            if(__<xsl:call-template name='DefineParameterName'/>!= null)
-            {          
+          if(<xsl:call-template name='DefineParameterName'/>!= null)
+          {
           <xsl:choose>
             <xsl:when test="@type='Custom'">
               <!--xml_str += "<xsl:text disable-output-escaping="yes">&lt;</xsl:text>Custom<xsl:text disable-output-escaping="yes">&gt;</xsl:text>";-->
               <xsl:choose>
                 <xsl:when test="@repeat = '0-N' or @repeat = '1-N'">
-                  len = __<xsl:call-template name='DefineParameterName'/>.Length;
+                  len = <xsl:call-template name='DefineParameterName'/>.Length;
                   for(int i=0; i<xsl:text disable-output-escaping="yes">&lt;</xsl:text>len;i++)
-                  xml_str += __<xsl:call-template name='DefineParameterName'/>[i].ToString();
+                  xml_str += <xsl:call-template name='DefineParameterName'/>[i].ToString();
                 </xsl:when>
                 <xsl:otherwise>
-                  xml_str += __<xsl:call-template name='DefineParameterName'/>.ToString();
+                  xml_str += <xsl:call-template name='DefineParameterName'/>.ToString();
                 </xsl:otherwise>
               </xsl:choose>
               <!--xml_str += "<xsl:text disable-output-escaping="yes">&lt;</xsl:text>/Custom<xsl:text disable-output-escaping="yes">&gt;</xsl:text>";-->
@@ -483,12 +391,12 @@
             <xsl:otherwise>
               <xsl:choose>
                 <xsl:when test="@repeat = '0-N' or @repeat = '1-N'">
-                  len = __<xsl:call-template name='DefineParameterName'/>.Length;
+                  len = <xsl:call-template name='DefineParameterName'/>.Length;
                   for(int i=0; i<xsl:text disable-output-escaping="yes">&lt;</xsl:text>len;i++)
-                  xml_str += __<xsl:call-template name='DefineParameterName'/>[i].ToString();
+                  xml_str += <xsl:call-template name='DefineParameterName'/>[i].ToString();
                 </xsl:when>
                 <xsl:otherwise>
-                  xml_str += __<xsl:call-template name='DefineParameterName'/>.ToString();
+                  xml_str += <xsl:call-template name='DefineParameterName'/>.ToString();
                 </xsl:otherwise>
               </xsl:choose>
             </xsl:otherwise>
@@ -499,10 +407,10 @@
           <xsl:variable name="choiceParameterName">
             <xsl:call-template name='DefineParameterName'/>
           </xsl:variable>
-          if(__<xsl:call-template name='DefineParameterName'/>!= null)
+          if(<xsl:call-template name='DefineParameterName'/>!= null)
           {
-          len = __<xsl:copy-of select='$choiceParameterName'/>.Count;
-          for(int i=0; i<xsl:text disable-output-escaping="yes">&lt;</xsl:text>len;i++)xml_str += __<xsl:copy-of select='$choiceParameterName'/>[i].ToString();
+          len = <xsl:copy-of select='$choiceParameterName'/>.Count;
+          for(int i=0; i<xsl:text disable-output-escaping="yes">&lt;</xsl:text>len;i++)xml_str += <xsl:copy-of select='$choiceParameterName'/>[i].ToString();
           }
         </xsl:when>
         <xsl:otherwise>
@@ -514,7 +422,7 @@
     return xml_str;
     }
   </xsl:template>
-  
+
   <xsl:template name ="FromString">
     public new static MSG_<xsl:value-of select="@name"/>  FromString(string str)
     {
@@ -533,29 +441,32 @@
           val = XmlUtil.GetNodeValue(node, "<xsl:value-of select="@name"/>");
           <xsl:choose>
             <xsl:when test="@enumeration">
-              msg.__<xsl:value-of select="@name"/> = (<xsl:call-template name='DefineDataType'/>)Enum.Parse(typeof(<xsl:call-template name='DefineDataType'/>), val);
+              msg.<xsl:value-of select="@name"/> = (<xsl:call-template name='DefineDataType'/>)Enum.Parse(typeof(<xsl:call-template name='DefineDataType'/>), val);
             </xsl:when>
             <xsl:otherwise>
               <xsl:if test="@type='u1v' or @type='u2' or @type='u8v' or @type='u16v' or @type='u32v' or @type='u96' or @type='bytesToEnd'">
-                msg.__<xsl:value-of select="@name"/> = <xsl:call-template name='DefineDataType'/>.FromString(val);
+                msg.<xsl:value-of select="@name"/> = <xsl:call-template name='DefineDataType'/>.FromString(val);
+              </xsl:if>
+              <xsl:if test="@type='u1'">
+                msg.<xsl:value-of select="@name"/> = Convert.ToBoolean(val);
               </xsl:if>
               <xsl:if test="@type='u8'">
-                msg.__<xsl:value-of select="@name"/> = Convert.ToByte(val);
+                msg.<xsl:value-of select="@name"/> = Convert.ToByte(val);
               </xsl:if>
               <xsl:if test="@type='s8'">
-                msg.__<xsl:value-of select="@name"/> = Convert.ToSByte(val);
+                msg.<xsl:value-of select="@name"/> = Convert.ToSByte(val);
               </xsl:if>
               <xsl:if test="@type='u16'">
-                msg.__<xsl:value-of select="@name"/> = Convert.ToUInt16(val);
+                msg.<xsl:value-of select="@name"/> = Convert.ToUInt16(val);
               </xsl:if>
               <xsl:if test="@type='s16'">
-                msg.__<xsl:value-of select="@name"/> = Convert.ToInt16(val);
+                msg.<xsl:value-of select="@name"/> = Convert.ToInt16(val);
               </xsl:if>
               <xsl:if test="@type='u32'">
-                msg.__<xsl:value-of select="@name"/> = Convert.ToUInt32(val);
+                msg.<xsl:value-of select="@name"/> = Convert.ToUInt32(val);
               </xsl:if>
               <xsl:if test="@type='u64'">
-                msg.__<xsl:value-of select="@name"/> = Convert.ToUInt64(val);
+                msg.<xsl:value-of select="@name"/> = Convert.ToUInt64(val);
               </xsl:if>
             </xsl:otherwise>
           </xsl:choose>
@@ -585,7 +496,7 @@
                   if(null!=xnl)
                   {
                   if(xnl.Count!=0)
-                  msg.__<xsl:call-template name='DefineParameterName'/> = CustomParamDecodeFactory.DecodeXmlNodeToCustomParameter((XmlNode)xnl[0]);
+                  msg.<xsl:call-template name='DefineParameterName'/> = CustomParamDecodeFactory.DecodeXmlNodeToCustomParameter((XmlNode)xnl[0]);
                   }
                 </xsl:otherwise>
               </xsl:choose>
@@ -598,9 +509,9 @@
                   {
                   if(xnl.Count!=0)
                   {
-                  msg.__<xsl:call-template name='DefineParameterName'/> = new PARAM_<xsl:value-of select="@type"/>[xnl.Count];
+                  msg.<xsl:call-template name='DefineParameterName'/> = new PARAM_<xsl:value-of select="@type"/>[xnl.Count];
                   for(int i=0; i<xsl:text disable-output-escaping="yes">&lt;</xsl:text>xnl.Count; i++)
-                  msg.__<xsl:call-template name='DefineParameterName'/>[i] = PARAM_<xsl:value-of select="@type"/>.FromXmlNode(xnl[i]);
+                  msg.<xsl:call-template name='DefineParameterName'/>[i] = PARAM_<xsl:value-of select="@type"/>.FromXmlNode(xnl[i]);
                   }
                   }
                 </xsl:when>
@@ -609,7 +520,7 @@
                   if(null!=xnl)
                   {
                   if(xnl.Count!=0)
-                  msg.__<xsl:call-template name='DefineParameterName'/> = PARAM_<xsl:value-of select="@type"/>.FromXmlNode(xnl[0]);
+                  msg.<xsl:call-template name='DefineParameterName'/> = PARAM_<xsl:value-of select="@type"/>.FromXmlNode(xnl[0]);
                   }
                 </xsl:otherwise>
               </xsl:choose>
@@ -622,16 +533,16 @@
           <xsl:variable name="choiceParameterName">
             <xsl:call-template name='DefineParameterName'/>
           </xsl:variable>
-          msg.__<xsl:copy-of select='$choiceParameterName'/> = new UNION_<xsl:value-of select="@type"/>();
+          msg.<xsl:copy-of select='$choiceParameterName'/> = new UNION_<xsl:value-of select="@type"/>();
           <xsl:for-each select='../../llrp:choiceDefinition'>
             <xsl:if test='@name=$choiceParameterName'>
               <xsl:for-each select='*'>
                 XmlNodeList xnl = XmlUtil.GetXmlNodes(node, "<xsl:call-template name='DefineParameterName'/>");
                 if(xnl.Count!=0)
                 {
-                <!--msg.__<xsl:copy-of select='$choiceParameterName'/>_type = ENUM_<xsl:copy-of select='$choiceParameterName'/>_TYPE.<xsl:value-of select='@type'/>;-->
+                <!--msg.<xsl:copy-of select='$choiceParameterName'/>_type = ENUM_<xsl:copy-of select='$choiceParameterName'/>_TYPE.<xsl:value-of select='@type'/>;-->
                 for(int i=0; i<xsl:text disable-output-escaping="yes">&lt;</xsl:text>xnl.Count; i++)
-                msg.__<xsl:copy-of select='$choiceParameterName'/>.Add(PARAM_<xsl:value-of select='@type'/>.FromXmlNode(xnl[i]));
+                msg.<xsl:copy-of select='$choiceParameterName'/>.Add(PARAM_<xsl:value-of select='@type'/>.FromXmlNode(xnl[i]));
                 }
               </xsl:for-each>
             </xsl:if>

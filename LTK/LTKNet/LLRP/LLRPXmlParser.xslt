@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
-	xmlns:llrp="http://www.llrp.org/ltk/schema/core/encoding/binary/0.8">
+  xmlns:llrp="http://www.llrp.org/ltk/schema/core/encoding/binary/1.0">
   <xsl:output omit-xml-declaration='yes' method='text' indent='yes'/>
   <xsl:template match="/llrp:llrpdef">
     /*
@@ -35,9 +35,12 @@
     /*
     ***************************************************************************
     * File Name:       LLRPXmlParser.cs
+    *
+    * Version:         1.0
     * Author:          Impinj
     * Organization:    Impinj
-    * Date:            September, 2007
+    * Date:            Jan. 18, 2008
+    *
     * Description:     This file contains general XML parser for LLRP messages
     ***************************************************************************
     */

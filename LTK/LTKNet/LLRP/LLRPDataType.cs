@@ -58,7 +58,7 @@ namespace LLRP.DataType
     /// <summary>
     /// LLRP parameter
     /// </summary>
-    public class Parameter : IParameter
+    public abstract class Parameter : IParameter
     {
         protected UInt16 typeID;
         protected UInt16 length;
@@ -75,7 +75,7 @@ namespace LLRP.DataType
     /// <summary>
     /// LLRP Message
     /// </summary>
-    public class Message
+    public abstract class Message
     {
         protected UInt16 reserved;
         protected UInt16 version = 1;
@@ -338,7 +338,7 @@ namespace LLRP.DataType
                 UInt16[] bD = data.ToArray();
 
                 string s = string.Empty;
-                for (int i = 0; i < bD.Length; i++) s += Convert.ToInt16(bD[i]).ToString() + " ";
+                for (int i = 0; i < bD.Length; i++) s += Convert.ToUInt16(bD[i]).ToString() + " ";
 
                 return s;
             }

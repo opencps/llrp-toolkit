@@ -1,6 +1,6 @@
 
 * This file contains general information of LLRP Tool Kit for .Net
-* Last updated 2 Oct 2007
+* Last updated 21 Jan 2008
 
 
 Note: 
@@ -14,11 +14,10 @@ All the projects will be loaded through LTKNet.sln.
 3. When load the solution file in Visual Studio, there might be an alert. You need to choose "Load Normally".
 4. The IDE shows several missed files. They will be generated once you build the project.
 5. LLRPTest project XML parser parses single message
-6. Projects only work on LTK schema 0.8
+6. Projects only work on LTK schema 1.0
 7. If the code generator generates wrong code, it is possibly that the LLRP definition file is wrong. Please delete
    generated files: LLRPClient.cs, LLRPEndPoint.cs, LLRPEnum.cs, LLRPMsg.cs, LLRPParam.cs, and LLRPXmlParser.cs from
    the project folder. Note: not from IDE.
-8. All public members in each class are prefixed with "__". It is allowed to change to other style.
 
 
 INTRODUCTION
@@ -108,6 +107,7 @@ LLRP--
       |- LLRPClient.xslt	  : XSL transform stylesheet for parameters
       |- LLRPXmlParser.xslt       : XSL transform stylesheet for general xml parser
       |- LLRPEnum.xslt      	  : XSL transform stylesheet for enumerations
+      |- templates.xslt		  : XSL transform general templates
       |- Transaction.cs		  : Simple TCPIP send and receive class
       |- TCPIPConnection.cs       : LLRP TCPIP client and Server implementation
       |- LLRPUtil.cs		  : Data type conversion
@@ -115,21 +115,18 @@ LLRP--
       |- Customparameters.cs	  : interfaces and base classes for LLRP custom parameters
       |- CommunicationInterface.cs: Communication interface base class
       |- LLRP.csproj		  : project file
+      |- LLRPHelper.cs		  : Helper classes
       |- CodeGenerator.dll	  : Code generator
 
 
 
 LLRPVendorExt-
       |- VendorExt.xml     	  : Vendor LLRP extension definitions
+      |- templates.xslt		  : XSL transform general templates
       |- VendorExt.xslt	  	  : Vendor LLRP extension XSL tranform stylesheet
       |- CodeGenerator.dll	  : Code generator
       |- LLRPImpinjExt.csproj     : project file
 
-
-      
-LLRPCodeGenerator
-      |- Program.cs		  : Program file
-      |- LLRPNetCodeGenerator.csproj : Project file
 
 LLRPTest
       |- MainFrm.cs		  : GUI 

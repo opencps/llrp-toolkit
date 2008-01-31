@@ -117,4 +117,7 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="label4.Text" xml:space="preserve">
+    <value>Note: "LoadXML" function is used for varifying LLRP XML file purpose only. It parses XML to LLRP object then parse object back to XML. All the LLRP sample operations should be picked from the dropdown box. LLRP message is hard coded. Developer is encouraged to change parameters to practice different LLRP behavior. </value>
+  </data>
 </root>

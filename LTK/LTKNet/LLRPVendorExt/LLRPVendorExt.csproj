@@ -37,14 +37,14 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="templates.xslt" />
+    <Content Include="VendorExt.xslt" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\LLRP\LLRP.csproj">
       <Project>{1C0436C6-1226-4B5C-BE7D-8AC69AEB66FC}</Project>
       <Name>LLRP</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="VendorExt.xml" />
-    <Content Include="VendorExt.xslt" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <UsingTask TaskName="LLRPCodeGenerator" AssemblyFile="CodeGenerator.dll" />

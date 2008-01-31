@@ -1,6 +1,6 @@
 /*
  ***************************************************************************
- *  Copyright 2007 Impinj, Inc.
+ *  Copyright 2008 Impinj, Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@
  * 
  * Author:          Impinj
  * Organization:    Impinj
- * Date:            September, 2007
+ * Date:            18 Jan, 2008
  * 
  * Description:     This file contains implementation of TCPIP communication
  *                  classes including client and server
@@ -51,11 +51,12 @@ namespace LLRP
     /// </summary>
     class TCPIPClient : CommunicationInterface
     {
-        private const Int32 const_buffer_size = 1024;
+        private const int BUFFER_SIZE = 1024;
         
         private TcpClient tcp_client;
         private NetworkStream ns;
         private bool new_message = true;
+        
         private Int16 msg_ver;
         private Int16 msg_type;        
         private Int32 msg_len = 0;
@@ -63,13 +64,17 @@ namespace LLRP
         private byte[] msg_data;
         private Int32 msg_cursor = 0;
 
+        private bool trying_to_close = false;
+
+        private object syn_msg = new object();
+
         /// <summary>
         /// Message received event.
         /// </summary>
 
         public TCPIPClient()
         {
-            state = new AsynReadState(const_buffer_size);
+            state = new AsynReadState(BUFFER_SIZE);
         }
 
         /// <summary>
@@ -87,14 +92,18 @@ namespace LLRP
                 ns = tcp_client.GetStream();
 
                 if (ns == null) return false;
+
+                trying_to_close = false;
             }
             catch 
             {
                 return false;
             }
 
+            ns.Flush();
+
             //Start asyn-read
-            ns.BeginRead(state.data, 0, const_buffer_size, new AsyncCallback(OnDataRead), state);
+            ns.BeginRead(state.data, 0, BUFFER_SIZE, new AsyncCallback(OnDataRead), state);
 
             return true;
         }
@@ -106,100 +115,133 @@ namespace LLRP
         {
             int offset = 0;                     //used to keep the start position of a LLRP message in 
                                                 //byte array returned from the read
-
             AsynReadState ss = (AsynReadState)ar.AsyncState;    //used to keep data
 
-            try
+            lock (syn_msg)
             {
-            REPEAT:                             //if multiple messages exist in the result. repeat the process
-                if (new_message)                //new_message is a flag to indicate if the data is part of unfinished message
+                try
                 {
-                    //Calculate message type, version, length and id
-                    int header = (ss.data[offset] << 8) + ss.data[offset + 1];
-                    msg_type = (Int16)(header & 0x03FF);
-                    msg_ver = (Int16)((header >> 10) & 0x07);
-                    msg_len = (ss.data[offset + 2]<<24) + (ss.data[offset+3]<<16) + (ss.data[offset+4]<<8) +ss.data[offset+5];
-                    msg_id = (ss.data[offset + 6] << 24) + (ss.data[offset + 7] << 16) + (ss.data[offset + 8] << 8) + ss.data[offset + 9];
-
-                    //if the message length is 0. the rest of byte array are empty. restart non-block reading
-                    if (msg_len <= 0)
+                REPEAT:
+                    if (new_message)                //new_message is a flag to indicate if the data is part of unfinished message
                     {
-                        if (ns != null && ns.CanRead)
+                        msg_cursor = 0;
+                        int reserved_date_len = ss.data.Length - offset;
+
+                        if (reserved_date_len > 10)
                         {
+
+                            //Calculate message type, version, length and id
+                            int header = (ss.data[offset] << 8) + ss.data[offset + 1];
                             try
                             {
-                                ns.Flush();
-                                state = new AsynReadState(const_buffer_size);
-                                ns.BeginRead(state.data, 0, state.data.Length, new AsyncCallback(OnDataRead), state);    
+                                msg_type = (Int16)(header & 0x03FF);
+                                msg_ver = (Int16)((header >> 10) & 0x07);
+                                msg_len = (ss.data[offset + 2] << 24) + (ss.data[offset + 3] << 16) + (ss.data[offset + 4] << 8) + ss.data[offset + 5];
+                                msg_id = (ss.data[offset + 6] << 24) + (ss.data[offset + 7] << 16) + (ss.data[offset + 8] << 8) + ss.data[offset + 9];
                             }
-                            catch{}
-                         
-                            return;
+                            catch
+                            {
+                                msg_len = 0;
+                            }
+
+                            if (msg_len > 20000)
+                            {
+                                int i = 0;
+                            }
+
+                            //if data length larger than needed data for a complete message, 
+                            //copy data into existing message and triggered message event 
+                            if (msg_len > 0 && msg_ver == 1)
+                            {
+
+                                msg_data = new byte[msg_len];
+                                //if message length greater than the calcualted message length. copy message and trigger message event
+
+                                if (ss.data.Length >= (offset + msg_len))
+                                {
+                                    Array.Copy(ss.data, offset, msg_data, 0, msg_len);
+                                    delegateMessageReceived msgRecv = new delegateMessageReceived(TriggerMessageEvent);
+                                    msgRecv.BeginInvoke(msg_ver, msg_type, msg_id, msg_data, null, null);
+
+                                    offset += msg_len;
+
+                                    new_message = true;
+
+                                    goto REPEAT;
+                                }
+                                else//If the received data is shorter than the message length, keep reading for the next data 
+                                {
+                                    new_message = false;
+
+                                    Array.Copy(ss.data, offset, msg_data, 0, ss.data.Length - offset);
+                                    msg_cursor = ss.data.Length - offset;
+
+                                }
+                            }
                         }
                         else
+                        {
+                            new_message = true;
+
+                            //if ns !=null, do next asyn-read, to ensure that read
+                            if (ns != null && ns.CanRead)
+                            {
+                                try
+                                {
+                                    ns.Flush();
+                                    state = new AsynReadState(BUFFER_SIZE);
+
+                                    Array.Copy(ss.data, offset, state.data, 0, reserved_date_len);
+
+                                    if (!trying_to_close) ns.BeginRead(state.data, reserved_date_len, BUFFER_SIZE-reserved_date_len, new AsyncCallback(OnDataRead), state);
+                                }
+                                catch { }
+                            }
+
                             return;
+                        }
                     }
-                    
-                    msg_data = new byte[msg_len];
-                    //if message length greater than the calcualted message length. copy message and trigger message event
-                    if (ss.data.Length >= offset+msg_len)
+                    else
                     {
-                        Array.Copy(ss.data, offset, msg_data, 0, msg_len);
-          
-                        delegateMessageReceived msgRecv = new delegateMessageReceived(TriggerMessageEvent);
-                        msgRecv.BeginInvoke(msg_ver,msg_type, msg_id, msg_data, null, null);
+                        //if data length larger than needed data for a complete message, 
+                        //copy data into existing message and triggered message event 
+                        if (ss.data.Length >= msg_len - msg_cursor)
+                        {
+                            Array.Copy(ss.data, 0, msg_data, msg_cursor, msg_len - msg_cursor);
+                            delegateMessageReceived msgRecv = new delegateMessageReceived(TriggerMessageEvent);
+                            msgRecv.BeginInvoke(msg_ver, msg_type, msg_id, msg_data, null, null);
 
-                        offset += msg_len;
-                        msg_len = 0;
+                            offset += msg_len - msg_cursor;
 
-                        goto REPEAT;
+                            new_message = true;
+
+                            goto REPEAT;
+                        }
+                        else //keep reading
+                        {
+                            new_message = false;
+
+                            Array.Copy(ss.data, 0, msg_data, msg_cursor, ss.data.Length);
+                            msg_cursor += ss.data.Length;
+                        }
                     }
-                    else//If the received data is shorter than the message length, keep reading for the next data 
+
+                    //if ns !=null, do next asyn-read, to ensure that read
+                    if (ns != null && ns.CanRead)
                     {
-                        new_message = false;
-                        Array.Copy(ss.data, 0, msg_data, 0, ss.data.Length-offset);
-                        msg_cursor += (ss.data.Length-offset);
+                        try
+                        {
+                            ns.Flush();
+                            state = new AsynReadState(BUFFER_SIZE);
+
+                            if (!trying_to_close) ns.BeginRead(state.data, 0, BUFFER_SIZE, new AsyncCallback(OnDataRead), state);
+                        }
+                        catch { }
                     }
                 }
-                else
+                catch
                 {
-                    //if data length larger than needed data for a complete message, 
-                    //copy data into existing message and triggered message event 
-                    if (ss.data.Length >= msg_len - msg_cursor)
-                    {
-                        Array.Copy(ss.data, 0, msg_data, msg_cursor, msg_len - msg_cursor);
-                        delegateMessageReceived msgRecv = new delegateMessageReceived(TriggerMessageEvent);
-                        msgRecv.BeginInvoke(msg_ver, msg_type, msg_id, msg_data, null, null);
-
-                        offset += msg_len - msg_cursor;
-                        msg_len = 0;
-                        msg_cursor = 0;
-
-                        new_message = true;
-                        goto REPEAT;
-                    }
-                    else //keep reading
-                    {
-                        new_message = false;
-                        Array.Copy(ss.data, 0, msg_data, msg_cursor, ss.data.Length);
-                        msg_cursor += ss.data.Length;
-                    }
                 }
-
-                //if ns !=null, do next asyn-read, to ensure that read
-                if (ns != null && ns.CanRead)
-                {
-                    try
-                    {
-                        ns.Flush();
-                        state = new AsynReadState(const_buffer_size);
-                        ns.BeginRead(state.data, 0, state.data.Length, new AsyncCallback(OnDataRead), state);
-                    }
-                    catch{}  
-                }
-            }
-            catch
-            {
             }
         }
         
@@ -208,7 +250,9 @@ namespace LLRP
         /// </summary>
         public override void Close()
         {
-            if(ns!=null)ns.Close();
+            trying_to_close = true;
+
+            if (ns!=null)ns.Close();
             if (tcp_client != null)tcp_client.Close();
         }
 
@@ -223,6 +267,11 @@ namespace LLRP
 
             try
             {
+                ns.Flush();
+                lock (syn_msg)
+                {
+                    new_message = true;
+                }
                 ns.BeginWrite(data, 0, data.Length, null, null);
                 return data.Length;
             }
@@ -270,7 +319,7 @@ namespace LLRP
     /// </summary>
     class TCPIPServer : CommunicationInterface
     {
-        private const Int32 const_buffer_size = 1024;
+        private const Int32 BUFFER_SIZE = 1024;
         
         private TcpListener server;
         private NetworkStream ns;
@@ -284,7 +333,7 @@ namespace LLRP
 
         public TCPIPServer()
         {
-            state = new AsynReadState(const_buffer_size);
+            state = new AsynReadState(BUFFER_SIZE);
         }
 
         //Asyn-call back
@@ -299,7 +348,7 @@ namespace LLRP
                 delegateClientConnected clientConn = new delegateClientConnected(TriggerOnClientConnect);
                 clientConn.BeginInvoke(null, null);
 
-                ns.BeginRead(state.data, 0, const_buffer_size, new AsyncCallback(OnDataRead), state);
+                ns.BeginRead(state.data, 0, BUFFER_SIZE, new AsyncCallback(OnDataRead), state);
             }
             catch
             {
@@ -420,7 +469,7 @@ namespace LLRP
                             try
                             {
                                 ns.Flush();
-                                state = new AsynReadState(const_buffer_size);
+                                state = new AsynReadState(BUFFER_SIZE);
                                 ns.BeginRead(state.data, 0, state.data.Length, new AsyncCallback(OnDataRead), state);
                             }
                             catch { }
@@ -463,6 +512,9 @@ namespace LLRP
                         msgRecv.BeginInvoke(msg_ver, msg_type, msg_id, msg_data, null, null);
 
                         offset += msg_len - msg_cursor;
+
+                        
+
                         msg_len = 0;
                         msg_cursor = 0;
 
@@ -478,12 +530,12 @@ namespace LLRP
                 }
 
                 //if ns !=null, do next asyn-read, to ensure that read
-                if (ns != null)
+                if (ns != null && ns.CanRead)
                 {
                     try
                     {
                         ns.Flush();
-                        state = new AsynReadState(const_buffer_size);
+                        state = new AsynReadState(BUFFER_SIZE);
                         ns.BeginRead(state.data, 0, state.data.Length, new AsyncCallback(OnDataRead), state);
                     }
                     catch { }

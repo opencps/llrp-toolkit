@@ -50,13 +50,13 @@ namespace LLRP
     /// </summary>
     public class PARAM_Custom : Parameter, ICustom_Parameter
     {
-        protected UInt32 __VendorIdentifier;
-        protected UInt32 __ParameterSubtype;
-        protected ByteArray __Data;
+        protected UInt32 VendorIdentifier;
+        protected UInt32 ParameterSubtype;
+        protected ByteArray Data;
 
-        private Int16 __VendorIdentifier_len = 0;
-        private Int16 __ParameterSubtype_len = 0;
-        private Int16 __Data_len;
+        private Int16 VendorIdentifier_len = 0;
+        private Int16 ParameterSubtype_len = 0;
+        private Int16 Data_len;
 
         public PARAM_Custom()
         {
@@ -65,12 +65,12 @@ namespace LLRP
 
         public UInt32 VendorID
         {
-            get { return __VendorIdentifier; }
+            get { return VendorIdentifier; }
         }
 
         public UInt32 SubType
         {
-            get { return __ParameterSubtype; }
+            get { return ParameterSubtype; }
         }
         
         /// <summary>
@@ -80,9 +80,9 @@ namespace LLRP
         public override string ToString()
         {
             string xml_str = "<Custom>";
-            xml_str += "<VendorIdentifier>" + __VendorIdentifier.ToString() + "</VendorIdentifier>";
-            xml_str += "<ParameterSubtype>" + __ParameterSubtype.ToString() + "</ParameterSubtype>";
-            xml_str += "<Data>" + __Data.ToHexString() + "</Data>";
+            xml_str += "<VendorIdentifier>" + VendorIdentifier.ToString() + "</VendorIdentifier>";
+            xml_str += "<ParameterSubtype>" + ParameterSubtype.ToString() + "</ParameterSubtype>";
+            xml_str += "<Data>" + Data.ToHexString() + "</Data>";
             xml_str += "</Custom>";
             return xml_str;
         }
@@ -116,7 +116,7 @@ namespace LLRP
 
             try
             {
-                BitArray tempBitArr = Util.ConvertObjToBitArray(__VendorIdentifier, __VendorIdentifier_len);
+                BitArray tempBitArr = Util.ConvertObjToBitArray(VendorIdentifier, VendorIdentifier_len);
                 tempBitArr.CopyTo(bit_array, cursor);
                 cursor += tempBitArr.Length;
             }
@@ -124,7 +124,7 @@ namespace LLRP
 
             try
             {
-                BitArray tempBitArr = Util.ConvertObjToBitArray(__ParameterSubtype, __ParameterSubtype_len);
+                BitArray tempBitArr = Util.ConvertObjToBitArray(ParameterSubtype, ParameterSubtype_len);
                 tempBitArr.CopyTo(bit_array, cursor);
                 cursor += tempBitArr.Length;
             }
@@ -133,10 +133,10 @@ namespace LLRP
             try
             {
                 int temp_cursor = cursor;
-                BitArray tempBitArr = Util.ConvertIntToBitArray((UInt32)(__Data.Count), 16);
+                BitArray tempBitArr = Util.ConvertIntToBitArray((UInt32)(Data.Count), 16);
                 tempBitArr.CopyTo(bit_array, cursor);
                 cursor += 16;
-                tempBitArr = Util.ConvertObjToBitArray(__Data, __Data_len);
+                tempBitArr = Util.ConvertObjToBitArray(Data, Data_len);
                 tempBitArr.CopyTo(bit_array, cursor);
                 cursor += tempBitArr.Length;
             }
@@ -200,21 +200,21 @@ namespace LLRP
             field_len = 32;
 
             Util.ConvertBitArrayToObj(ref bit_array, ref cursor, out obj_val, typeof(UInt32), field_len);
-            obj.__VendorIdentifier = (UInt32)obj_val;
+            obj.VendorIdentifier = (UInt32)obj_val;
 
             if (cursor > length) throw new Exception("Input data is not complete message");
 
             field_len = 32;
 
             Util.ConvertBitArrayToObj(ref bit_array, ref cursor, out obj_val, typeof(UInt32), field_len);
-            obj.__ParameterSubtype = (UInt32)obj_val;
+            obj.ParameterSubtype = (UInt32)obj_val;
 
             if (cursor > length) throw new Exception("Input data is not complete message");
 
             field_len = (bit_array.Length - cursor)/8;
 
             Util.ConvertBitArrayToObj(ref bit_array, ref cursor, out obj_val, typeof(ByteArray), field_len);
-            obj.__Data = (ByteArray)obj_val;
+            obj.Data = (ByteArray)obj_val;
 
             return obj;
         }
@@ -232,15 +232,15 @@ namespace LLRP
 
             val = XmlUtil.GetNodeValue(node, "VendorIdentifier");
 
-            param.__VendorIdentifier = Convert.ToUInt32(val);
+            param.VendorIdentifier = Convert.ToUInt32(val);
 
             val = XmlUtil.GetNodeValue(node, "ParameterSubtype");
 
-            param.__ParameterSubtype = Convert.ToUInt32(val);
+            param.ParameterSubtype = Convert.ToUInt32(val);
 
             val = XmlUtil.GetNodeValue(node, "Data");
 
-            param.__Data = ByteArray.FromString(val);
+            param.Data = ByteArray.FromString(val);
 
             return param;
         }
@@ -263,17 +263,24 @@ namespace LLRP
         /// <returns></returns>
         public static ICustom_Parameter DecodeCustomParameter(ref BitArray bit_array, ref int cursor, int length)
         {
+            if (cursor >= length) return null;
+
             if (vendorExtensionIDTypeHash == null || vendorExtensionNameTypeHash == null)
             {
                 vendorExtensionIDTypeHash = new Hashtable();
                 vendorExtensionNameTypeHash = new Hashtable();
 
-                DirectoryInfo di = new DirectoryInfo(Environment.CurrentDirectory);
+                Assembly asm = Assembly.GetCallingAssembly();
+
+                string fullName = asm.ManifestModule.FullyQualifiedName;
+                string path = fullName.Substring(0, fullName.LastIndexOf("\\"));
+
+                DirectoryInfo di = new DirectoryInfo(path);//Environment.CurrentDirectory);
                 FileInfo[] f_infos = di.GetFiles("LLRP.*.dll");
 
                 foreach (FileInfo fi in f_infos)
                 {
-                    Assembly asm = Assembly.LoadFile(fi.FullName);
+                    asm = Assembly.LoadFile(fi.FullName);
                     Type[] types = asm.GetTypes();
                     foreach(Type tp in types)
                     {
@@ -294,22 +301,28 @@ namespace LLRP
             PARAM_Custom param = PARAM_Custom.FromBitArray(ref bit_array, ref cursor, length);
             if (param != null)
             {
-                cursor = old_cursor;
-
                 string key = param.VendorID + "-" + param.SubType;
                 if (vendorExtensionIDTypeHash != null)
                 {
-                    Type tp = (Type)vendorExtensionIDTypeHash[key];
-                    object[] parameters = new object[]{bit_array, cursor, length};
+                    cursor = old_cursor;
+                    object[] parameters = new object[] { bit_array, cursor, length };
 
-                    MethodInfo mis = tp.GetMethod("FromBitArray");
-                 
-                    if (mis == null) return null;
-                    object obj = mis.Invoke(null, parameters);
+                    try
+                    {
+                        Type tp = (Type)vendorExtensionIDTypeHash[key];
+                        MethodInfo mis = tp.GetMethod("FromBitArray");
 
-                    cursor = (int)parameters[1];
+                        if (mis == null) return null;
 
-                    return (ICustom_Parameter)obj;
+                        object obj = mis.Invoke(null, parameters);
+                        cursor = (int)parameters[1];
+
+                        return (ICustom_Parameter)obj;
+                    }
+                    catch
+                    {
+                        return param;
+                    }
                 }
                 else
                     return param;

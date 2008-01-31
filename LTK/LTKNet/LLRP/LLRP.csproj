@@ -40,6 +40,7 @@
     <Compile Include="LLRPDataType.cs" />
     <Compile Include="LLRPEndPoint.cs" />
     <Compile Include="LLRPEnum.cs" />
+    <Compile Include="LLRPHelper.cs" />
     <Compile Include="LLRPMsg.cs" />
     <Compile Include="LLRPParam.cs" />
     <Compile Include="LLRPClient.cs" />
@@ -61,13 +62,13 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="llrp-1x0-def.xml" />
     <Content Include="LLRPClient.xslt" />
     <Content Include="LLRPEndPoint.xslt" />
     <Content Include="LLRPEnum.xslt" />
     <Content Include="LLRPMsg.xslt" />
     <Content Include="LLRPParam.xslt" />
     <Content Include="LLRPXmlParser.xslt" />
+    <Content Include="templates.xslt" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <UsingTask TaskName="CodeGenerator.LLRPCodeGenerator" AssemblyFile="CodeGenerator.dll" />
