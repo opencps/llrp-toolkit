@@ -67,6 +67,7 @@ our @EXPORT_OK	= qw(
 	get_msg_name
 );
 
+use Carp;
 use RFID::LLRP::Builder qw(encode_message decode_message);
 use RFID::LLRP::Link qw(reader_connect reader_disconnect read_message transact);
 
@@ -264,7 +265,7 @@ sub cleanup_and_die {
 		$_->($sock, Trace => $params{Trace});
 	}
 	reader_disconnect ($sock);
-	die $msg;
+	croak $msg;
 }
 
 sub max {

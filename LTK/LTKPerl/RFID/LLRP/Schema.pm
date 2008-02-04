@@ -222,7 +222,6 @@ sub read_schema {
 			$compiler->($head, @tokens);
 		}
 	}
-	close (INFILE);
 
 	# build the name registry
 	my %category = (
@@ -249,9 +248,10 @@ sub read_schema {
 		}
 	}
 
-	# build a parameter name enumeration
+	# build a core parameter name enumeration
 	my $param_names = {};
 	foreach $desc (@{$llrp{Parameters}}) {
+		next unless defined $desc->{TypeID};
 		my ($type_id, $name) = ($desc->{TypeID}, $desc->{Name});
 		$param_names->{Definition}->[$type_id] = $name;
 		$param_names->{Lookup}->{$name} = $type_id;
@@ -436,6 +436,9 @@ sub compile_params {
 
 	# delete the compiler if this is the end of the block
 	if ($class eq 'end') {
+
+		$body_ref->{ParamCount} =  $body_ref->{ParamCount} || 0;
+		$body_ref->{FieldCount} =  $body_ref->{FieldCount} || 0;
 	
 		$compiler = undef;
 
@@ -452,6 +455,7 @@ sub compile_params {
 			
 			if ($name eq 'fmt') {
 				$name =~ s/fmt/Format/;
+				$value = ucfirst lc $value;
 			} else {
 				$name = ucfirst lc $name;
 			}
