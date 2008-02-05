@@ -56,6 +56,17 @@ public class SignedInteger extends LLRPNumberType {
     public SignedInteger(LLRPBitList bitList) {
         decodeBinary(bitList);
     }
+    
+
+    /**
+     * Creates a new UnsignedInteger object from jdom element - used for xml decoding
+     *
+     * @param element to be decoded
+     */
+    public SignedInteger(Element element) {
+        decodeXML(element);
+    }
+    
 
     /**
      * decode to binary representation.

@@ -40,8 +40,7 @@ public class LLRPUnmarshaller {
     private static final Logger LOGGER = Logger.getLogger(LLRPUnmarshaller.class);
 
     @SuppressWarnings("unchecked")
-    public static LlrpDefinition getLLRPDefinition(String jaxBPackage,
-        String llrpSchemaPath, String llrpXMLPath, String extensionsPath) {
+    public static LlrpDefinition getLLRPDefinition(String jaxBPackage, String xmlPaths) {
         Object o = null;
         LlrpDefinition def = null;
 
@@ -53,11 +52,11 @@ public class LLRPUnmarshaller {
 
             Unmarshaller unmarshaller = context.createUnmarshaller();
             SchemaFactory sf = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
-            Schema schema = sf.newSchema(new File(llrpSchemaPath));
-            LOGGER.debug("set schema file: " + llrpSchemaPath);
-            unmarshaller.setSchema(schema);
+//            Schema schema = sf.newSchema(new File(llrpSchemaPath));
+            LOGGER.debug("set schema file: " + xmlPaths);
+//            unmarshaller.setSchema(schema);
             //o = unmarshaller.unmarshal(new File(llrpXMLPath));
-            o = unmarshaller.unmarshal(createOne(llrpXMLPath, extensionsPath));
+            o = unmarshaller.unmarshal(createOne(xmlPaths));
 
             if (o instanceof LlrpDefinition) {
                 def = (LlrpDefinition) o;
@@ -67,36 +66,33 @@ public class LLRPUnmarshaller {
         } catch (JAXBException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-        } catch (SAXException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        } 
 
         return def;
     }
 
     @SuppressWarnings("unchecked")
-    public static InputStream createOne(String llrpXMLPath,
-        String extensionsPath) {
+    public static InputStream createOne(String xmlPaths) {
         LOGGER.debug("combine llrp xml with vendor extensions");
-
-        try {
+        LOGGER.debug("paths are "+xmlPaths);
+         try {
             // ---- Read XML file ----
             SAXBuilder builder = new SAXBuilder();
             LOGGER.debug("read llrp XML into Sax Document ");
-            LOGGER.debug("llrp xml is " + llrpXMLPath);
+            LOGGER.debug("llrp xml is " + xmlPaths);
 
-            Document doc = builder.build(llrpXMLPath);
+            Document doc = null;
 
             // if string is not empty or holding semicolon only
-            if (extensionsPath.length() > 1) {
+            if (xmlPaths.length() > 1) {
                 // ---- Modify XML data ----
-                String[] extensions = extensionsPath.split(";");
+                String[] paths = xmlPaths.split(";");
+                doc = builder.build(paths[0]);
+                // start at 1 as we already read the first
+                for (int i = 1; i < paths.length; i++) {
+                    LOGGER.debug("add vendor extension " + paths[i]);
 
-                for (int i = 0; i < extensions.length; i++) {
-                    LOGGER.debug("add vendor extension " + extensions[i]);
-
-                    Document temp = builder.build(extensions[i]);
+                    Document temp = builder.build(paths[i]);
                     List<Element> children = new LinkedList<Element>(temp.getRootElement()
                                                                          .getChildren());
 

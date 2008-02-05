@@ -37,7 +37,7 @@ import org.jdom.Document;
 import org.jdom.JDOMException;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
-import org.llrp.ltk.generated.messages.LLRPMessageFactory;
+//import org.llrp.ltk.generated.messages.LLRPMessageFactory;
 import org.llrp.ltk.types.LLRPBitList;
 import org.llrp.ltk.types.LLRPMessage;
 
@@ -146,7 +146,7 @@ public class LLRPConverter {
 		String bitstring = getFileContent(file);
 		LLRPBitList bits = new LLRPBitList(bitstring);
 		LOGGER.debug("Input binary message: " + bitstring);
-		message = LLRPMessageFactory.createLLRPMessage(bits);
+//		message = LLRPMessageFactory.createLLRPMessage(bits);
 
 		return message.toXMLString();
 	}
@@ -157,7 +157,7 @@ public class LLRPConverter {
 				FileReader(file));
 		XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat());
 		LOGGER.debug("Input XML Message: " + outputter.outputString(doc));
-		message = LLRPMessageFactory.createLLRPMessage(doc);
+//		message = LLRPMessageFactory.createLLRPMessage(doc);
 
 		return message.toBinaryString();
 	}

@@ -122,27 +122,53 @@ import org.llrp.ltk.generated.LLRPConstants;
 			## its a field and therefore it might be also an enumeration
 			## only place where we can find super types of enumerations
 			## distinguish between custom and normal enumerations
-			#if ($field.getEnumeration() && !$utility.hasImport($field.getEnumeration()) && !$utility.isCustomEnumeration($field.getEnumeration()))
-				// !$utility.isCustomEnumeration($field.getEnumeration())
-				import org.llrp.ltk.generated.enumerations.$field.getEnumeration();
-				$utility.setSuperType($field.getEnumeration(),$field.getType().value())
-				$utility.addImport($field.getEnumeration())
-			#elseif ($field.getEnumeration() && !$utility.hasImport($field.getEnumeration()) && $utility.isCustomEnumeration($field.getEnumeration()))
-				import org.llrp.ltk.generated.custom.enumerations.$field.getCustomEnumeration();
-				$utility.setSuperType($field.getCustomEnumeration(),$field.getType().value())
-				$utility.addImport($field.getCustomEnumeration())
-
-			
-		#elseif ($field.getFormat())
-			#set ($firstF = "$utility.convertType($field.getType().value())")
-			#set ($secondF = "_")
-			#set ($thirdF = "$field.getFormat()")
-			#set ($together = "$firstF$secondF$thirdF")
-			#if (!$utility.hasImport($together))
-				import org.llrp.ltk.types.$together;
-				$utility.addImport($together)
-			#end
-		#elseif (!$utility.hasImport($utility.convertType($field.getType().value())))
+			#if ($field.getEnumeration() && !$utility.isCustomEnumeration($field.getEnumeration()))
+				
+				#if ($utility.isArray($utility.convertType($field.getType().value())))
+					#set ($arr = "Array")
+					#set ($type = "$field.getEnumeration()")
+					#set ($together = "$type$arr")
+					#if (!$utility.hasImport($together))
+						$utility.setSuperType($together,$field.getType().value())
+						$utility.addImport($together)
+						import org.llrp.ltk.generated.enumerations.$together;
+					#end
+				#else
+					#if (!$utility.hasImport($field.getEnumeration()))
+						$utility.setSuperType($field.getEnumeration(),$field.getType().value())
+						import org.llrp.ltk.generated.enumerations.$field.getEnumeration();
+						$utility.addImport($field.getEnumeration())
+					#end
+				#end
+			#elseif ($field.getEnumeration() && $utility.isCustomEnumeration($field.getEnumeration()))
+				
+				
+				#if ($utility.isArray($utility.convertType($field.getType().value())))
+					#set ($arr = "Array")
+					#set ($type = "$field.getEnumeration()")
+					#set ($together = "$type$arr")
+					#if (!$utility.hasImport($together))
+						$utility.setSuperType($together,$field.getType())
+						$utility.addImport($together)
+						import org.llrp.ltk.generated.custom.enumerations.$together;
+					#end
+				#else
+					#if (!$utility.hasImport($field.getEnumeration()))
+						$utility.setSuperType($field.getEnumeration(),$field.getType().value())
+						import org.llrp.ltk.generated.custom.enumerations.$field.getEnumeration();
+						$utility.addImport($field.getEnumeration())
+					#end
+				#end
+			#elseif ($field.getFormat())
+				#set ($firstF = "$utility.convertType($field.getType().value())")
+				#set ($secondF = "_")
+				#set ($thirdF = "$field.getFormat()")
+				#set ($together = "$firstF$secondF$thirdF")
+				#if (!$utility.hasImport($together))
+					import org.llrp.ltk.types.$together;
+					$utility.addImport($together)
+				#end
+			#elseif (!$utility.hasImport($utility.convertType($field.getType().value())))
 				import org.llrp.ltk.types.$utility.convertType($field.getType().value());
 				$utility.addImport($utility.convertType($field.getType().value()))
 			#end
@@ -226,6 +252,8 @@ public class $parameter.Name extends $superType $interfaces{
 	public static final SignedShort TYPENUM = new SignedShort($parameter.getTypeNum());
 ##need always a LOGGER
 	private static final Logger LOGGER = Logger.getLogger("$parameter.getName()");
+	
+	
 ## field or reserved
 #foreach($field in $parameter.getFieldOrReserved())
 	## reserved field
@@ -233,7 +261,12 @@ public class $parameter.Name extends $superType $interfaces{
 		protected $resType $resName$utility.getCurrentNumerOfReserved() = new $resType ($field.getBitCount());
 	#elseif ($utility.hasType($field,$fieldDefinition))
 		#if ($field.getEnumeration())
-			protected $field.getEnumeration() $utility.firstToLowerCase($field.getName());
+				#if ($utility.isArray($utility.convertType($field.getType().value())))
+					#set ($arr = "Array")
+				#else
+					#set ($arr = "")
+				#end
+			protected $field.getEnumeration()$arr $utility.firstToLowerCase($field.getName());
 		#elseif ($field.getFormat())
 			#set ($firstF = "$utility.convertType($field.getType().value())")
 			#set ($secondF = "_")
@@ -480,7 +513,13 @@ $utility.clearNumberOfReserved()
 			#elseif ($utility.hasType($field,$fieldDefinition))
 				#set ($curName = $utility.firstToLowerCase($field.getName()))
 				#if ($field.getEnumeration())
-					#set ($curType = $field.getEnumeration())
+					#set ($curType = $field.getEnumeration())	#if ($utility.isArray($utility.convertType($field.getType().value())))
+						#set ($arr = "Array")
+						#set ($temp = "$utility.firstToUpperCase($field.getEnumeration())")
+						#set ($curType = "$temp$arr")
+					#else
+						#set ($curType = $utility.firstToUpperCase($field.getEnumeration()))
+					#end
 				#elseif ($field.getFormat())
 					#set ($firstF = "$utility.convertType($field.getType().value())")
 					#set ($secondF = "_")
@@ -801,8 +840,13 @@ $utility.clearNumberOfReserved()
 			#elseif ($utility.hasType($field,$fieldDefinition))
 				#set ($curName = $utility.firstToLowerCase($field.getName()))
 				#if ($field.getEnumeration())
-					#set ($curType = $field.getEnumeration())
-				
+					#if ($utility.isArray($utility.convertType($field.getType().value())))
+						#set ($arr = "Array")
+						#set ($temp = "$utility.firstToUpperCase($field.getEnumeration())")
+						#set ($curType = "$temp$arr")
+					#else
+						#set ($curType = $utility.firstToUpperCase($field.getEnumeration()))
+					#end
 				#elseif ($field.getFormat())
 					#set ($firstF = "$utility.convertType($field.getType().value())")
 					#set ($secondF = "_")
@@ -1027,11 +1071,18 @@ $utility.clearNumberOfReserved()
 		#elseif ($utility.hasType($field,$fieldDefinition))
 		## FieldDefinition
 			#if ($field.getEnumeration())
+					#if ($utility.isArray($utility.convertType($field.getType().value())))
+						#set ($arr = "Array")
+						#set ($temp = "$utility.firstToUpperCase($field.getEnumeration())")
+						#set ($curType = "$temp$arr")
+					#else
+						#set ($curType = $utility.firstToUpperCase($field.getEnumeration()))
+					#end
 				/**
-				 * set $utility.firstToLowerCase($field.getName()) of type $field.getEnumeration() .
+				 * set $utility.firstToLowerCase($field.getName()) of type $curType .
 				 * @param  $utility.firstToLowerCase($field.getName()) to be set
 				 */
-				public void set$field.getName()(final $field.getEnumeration()  $utility.firstToLowerCase($field.getName())){
+				public void set$field.getName()(final $curType  $utility.firstToLowerCase($field.getName())){
 					this.$utility.firstToLowerCase($field.getName()) = $utility.firstToLowerCase($field.getName());
 				}
 			#elseif ($field.getFormat())
@@ -1105,11 +1156,18 @@ $utility.clearNumberOfReserved()
 		#elseif ($utility.hasType($field,$fieldDefinition))
 		## FieldDefinition
 			#if ($field.getEnumeration())
+					#if ($utility.isArray($utility.convertType($field.getType().value())))
+						#set ($arr = "Array")
+						#set ($temp = "$utility.firstToUpperCase($field.getEnumeration())")
+						#set ($curType = "$temp$arr")
+					#else
+						#set ($curType = $utility.firstToUpperCase($field.getEnumeration()))
+					#end
 				/**
-				 * get $utility.firstToLowerCase($field.getName()) of type $field.getEnumeration().
-				 * @return  $field.getEnumeration()
+				 * get $utility.firstToLowerCase($field.getName()) of type $curType.
+				 * @return  $curType
 				 */
-				public $field.getEnumeration() get$field.getName()$emptyBrack{
+				public $curType get$field.getName()$emptyBrack{
 					return $utility.firstToLowerCase($field.getName());
 				}
 			#elseif ($field.getFormat())
@@ -1249,7 +1307,14 @@ $utility.clearNumberOfReserved()
 		#foreach($field in $parameter.getFieldOrReserved())
 			// the length of a TV parameter in bits is always the type 
 		#if ($field.getEnumeration())
-			tempLength += $field.getEnumeration()$length;
+			#if ($utility.isArray($utility.convertType($field.getType().value())))
+					#set ($arr = "Array")
+						#set ($temp = "$utility.firstToUpperCase($field.getEnumeration())")
+						#set ($curType = "$temp$arr")
+					#else
+						#set ($curType = $utility.firstToUpperCase($field.getEnumeration()))
+					#end
+			tempLength += $curType$length;
 		#elseif ($field.getFormat())
 			#set ($firstF = "$utility.convertType($field.getType().value())")
 			#set ($secondF = "_")

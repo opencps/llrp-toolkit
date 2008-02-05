@@ -34,8 +34,11 @@ package org.llrp.ltk.generated;
  */
 public class LLRPConstants {
 
-	public static final String LLRPDEFSCHEMAPATH = "$schemaPath";
-	public static final String XMLNAMESPACE = "$namespace";
 	public static final String XMLENCODINGSCHEMA = "$XMLEncodingSchema";
-	public static final String NAMESPACEPREFIX = "$NamespacePrefix";
+	#set($ns = "NAMESPACE")
+	#set($path = "MESSAGESCHEMAPATH")
+	#foreach ($namespace in $namespaces)
+		public static final String $namespace.getPrefix().toUpperCase()$ns = "$namespace.getURI()";
+		public static final String $namespace.getPrefix().toUpperCase()$path = "$extensionSchemas.get($namespace.getPrefix())";
+	#end
 }

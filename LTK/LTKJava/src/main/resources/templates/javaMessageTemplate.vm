@@ -42,6 +42,7 @@ package org.llrp.ltk.generated.messages;
 #set($emptyBrack = "()")
 #set($subtypeNr = ".subtype")
 #set($getClassName = ".getClass().getSimpleName()")
+#set($ns = "NAMESPACE")
 
 ##set the class names here
 #set ($parameterReference = "ParameterReference")
@@ -120,20 +121,50 @@ import org.llrp.ltk.generated.LLRPConstants;
 		#elseif ($utility.hasType($field,$fieldDefinition))
 			## its a field and therefore it might be also an enumeration
 			## only place where we can find super types of enumerations
-			#if ($field.getEnumeration() && !$utility.hasImport($field.getEnumeration()))
-				import org.llrp.ltk.generated.enumerations.$field.getEnumeration();
-				$utility.setSuperType($field.getEnumeration(),$field.getType().value())
-				$utility.addImport($field.getEnumeration())
-		#elseif ($field.getFormat())
-			#set ($firstF = "$utility.convertType($field.getType().value())")
-			#set ($secondF = "_")
-			#set ($thirdF = "$field.getFormat()")
-			#set ($together = "$firstF$secondF$thirdF")
-			#if (!$utility.hasImport($together))
-				import org.llrp.ltk.types.$together;
-				$utility.addImport($together)
-			#end
-		#elseif (!$utility.hasImport($utility.convertType($field.getType().value())))
+			#if ($field.getEnumeration() && !$utility.isCustomEnumeration($field.getEnumeration()))
+				#if ($utility.isArray($utility.convertType($field.getType().value())))
+					#set ($arr = "Array")
+					#set ($type = "$field.getEnumeration()")
+					#set ($together = "$type$arr")
+					#if (!$utility.hasImport($together))
+						$utility.setSuperType($together,$field.getType().value())
+						$utility.addImport($together)
+						import org.llrp.ltk.generated.enumerations.$together;
+					#end
+				#else
+					#if (!$utility.hasImport($field.getEnumeration()))
+						$utility.setSuperType($field.getEnumeration(),$field.getType().value())
+						import org.llrp.ltk.generated.enumerations.$field.getEnumeration();
+						$utility.addImport($field.getEnumeration())
+					#end
+				#end
+			#elseif ($field.getEnumeration() && $utility.isCustomEnumeration($field.getEnumeration()))
+				#if ($utility.isArray($utility.convertType($field.getType().value())))
+					#set ($arr = "Array")
+					#set ($type = "$field.getEnumeration()")
+					#set ($together = "$type$arr")
+					#if (!$utility.hasImport($together))
+						$utility.setSuperType($together,$field.getType().value())
+						$utility.addImport($together)
+						import org.llrp.ltk.generated.custom.enumerations.$together;
+					#end
+				#else
+					#if (!$utility.hasImport($field.getEnumeration()))
+						$utility.setSuperType($field.getEnumeration(),$field.getType().value())
+						import org.llrp.ltk.generated.custom.enumerations.$field.getEnumeration();
+						$utility.addImport($field.getEnumeration())
+					#end
+				#end
+			#elseif ($field.getFormat())
+				#set ($firstF = "$utility.convertType($field.getType().value())")
+				#set ($secondF = "_")
+				#set ($thirdF = "$field.getFormat()")
+				#set ($together = "$firstF$secondF$thirdF")
+				#if (!$utility.hasImport($together))
+					import org.llrp.ltk.types.$together;
+					$utility.addImport($together)
+				#end
+			#elseif (!$utility.hasImport($utility.convertType($field.getType().value())))
 				import org.llrp.ltk.types.$utility.convertType($field.getType().value());
 				$utility.addImport($utility.convertType($field.getType().value()))
 			#end
@@ -197,17 +228,25 @@ public class $message.getName() extends LLRPMessage{
 	## reserved field
 	#if ($utility.hasType($field,$reservedDefinition))
 		protected $resType $resName$utility.getCurrentNumerOfReserved() = new $resType ($field.getBitCount());
-	#elseif ($utility.hasType($field,$fieldDefinition))
-		#if ($field.getEnumeration())
-			protected $field.getEnumeration() $utility.firstToLowerCase($field.getName());
-		#elseif ($field.getFormat())
-			#set ($firstF = "$utility.convertType($field.getType().value())")
-			#set ($secondF = "_")
-			#set ($thirdF = "$field.getFormat()")
-			protected $firstF$secondF$thirdF $utility.firstToLowerCase($field.getName()); 
-		#else
-			protected $utility.convertType($field.getType().value()) $utility.firstToLowerCase($field.getName());
-		#end
+		#elseif ($utility.hasType($field,$fieldDefinition))
+			#if ($field.getEnumeration())
+					#if ($utility.isArray($utility.convertType($field.getType().value())))
+						#set ($arr = "Array")
+						#set ($temp = "$utility.firstToUpperCase($field.getEnumeration())")
+						#set ($curType = "$temp$arr")
+					#else
+						#set ($curType = $utility.firstToUpperCase($field.getEnumeration()))
+					#end
+				#set ($anEnum = $utility.firstToUpperCase($curType))
+				protected $anEnum $utility.firstToLowerCase($field.getName());
+			#elseif ($field.getFormat())
+				#set ($firstF = "$utility.convertType($field.getType().value())")
+				#set ($secondF = "_")
+				#set ($thirdF = "$field.getFormat()")
+				protected $firstF$secondF$thirdF $utility.firstToLowerCase($field.getName()); 
+			#else
+				protected $utility.convertType($field.getType().value()) $utility.firstToLowerCase($field.getName());
+			#end
 	## FieldDefinition
 	#else
 				//TODO 2 template wrote this - unexpected object $field
@@ -352,10 +391,14 @@ $utility.clearNumberOfReserved()
 	 * {@inheritDoc}
 	 */
 	public Document encodeXML(){
-			Namespace ns = Namespace.getNamespace(LLRPConstants.NAMESPACEPREFIX,LLRPConstants.XMLNAMESPACE);
+			Namespace ns = Namespace.getNamespace("llrp",LLRPConstants.LLRPNAMESPACE);
+
 			Element root = new Element("$message.getName()",ns);
-        	//root.addNamespaceDeclaration(Namespace.getNamespace("xsi",LLRPConstants.XMLENCODINGSCHEMA));
-        
+		//	Element root = new Element("$message.getName()");
+			#foreach ($namespace in $namespaces)
+				root.addNamespaceDeclaration(Namespace.getNamespace("$namespace.getPrefix()", LLRPConstants.$namespace.getPrefix().toUpperCase()$ns));				
+			#end
+        	
 			if (version == null){
 				throw new MissingParameterException("Version not set");
 			} else {
@@ -379,7 +422,7 @@ $utility.clearNumberOfReserved()
 					root.addContent($utility.firstToLowerCase($field.getName())$encodeXML("$field.getName()",ns));
 				}
 			#else
-				//TODO 4 template parameter encode wrote this - unexpected object $field $field.getName()
+				// $field has been skipped
 			#end
 		#end
 		## parameter or choice
@@ -429,10 +472,11 @@ $utility.clearNumberOfReserved()
 			#end
 		#end
 		Document doc = new Document(root);
-		if (!isValidXMLMessage(doc, LLRPConstants.LLRPDEFSCHEMAPATH)){
-			throw new LLRPException("message can not be encoded to valid xml");
-		}
-		return doc;
+  		if (isValidXMLMessage(doc,LLRPConstants.LLRPMESSAGESCHEMAPATH)){
+  				return doc;
+  		} else {
+  			return null;
+  		}
 	}
 ##must clear numbers of reserved definitons found
 $utility.clearNumberOfReserved() 	
@@ -460,7 +504,13 @@ $utility.clearNumberOfReserved()
 			#elseif ($utility.hasType($field,$fieldDefinition))
 				#set ($curName = $utility.firstToLowerCase($field.getName()))
 				#if ($field.getEnumeration())
-					#set ($curType = $field.getEnumeration())
+					#if ($utility.isArray($utility.convertType($field.getType().value())))
+						#set ($arr = "Array")
+						#set ($temp = "$utility.firstToUpperCase($field.getEnumeration())")
+						#set ($curType = "$temp$arr")
+					#else
+						#set ($curType = $utility.firstToUpperCase($field.getEnumeration()))
+					#end
 				#elseif ($field.getFormat())
 					#set ($firstF = "$utility.convertType($field.getType().value())")
 					#set ($secondF = "_")
@@ -773,8 +823,10 @@ $utility.clearNumberOfReserved()
 	 * {@inheritDoc}
 	 */
   	public void decodeXML(final Document document){
-  		if (!isValidXMLMessage(document,LLRPConstants.LLRPDEFSCHEMAPATH)){
-			throw new IllegalArgumentException("Validation of input XML LLRP message against LLRP.xsd schema failed.");
+  		try{
+  			isValidXMLMessage(document,LLRPConstants.LLRPMESSAGESCHEMAPATH);
+  		} catch (LLRPException e){
+			throw new IllegalArgumentException("Validation of input XML LLRP message against "+ LLRPConstants.LLRPMESSAGESCHEMAPATH + " schema failed.");
 		}
   		Element root = document.getRootElement();
   		List<Element> tempList = null;
@@ -791,9 +843,15 @@ $utility.clearNumberOfReserved()
 			#elseif ($utility.hasType($field,$fieldDefinition))
 				#set ($curName = $utility.firstToLowerCase($field.getName()))
 				#if ($field.getEnumeration())
-					#set ($curType = $field.getEnumeration())
+					#if ($utility.isArray($utility.convertType($field.getType().value())))
+						#set ($arr = "Array")
+						#set ($temp = "$utility.firstToUpperCase($field.getEnumeration())")
+						#set ($curType = "$temp$arr")
+					#else
+						#set ($curType = $utility.firstToUpperCase($field.getEnumeration()))
+					#end
 				#elseif ($field.getFormat())
-					#set ($firstF = "$utility.convertType($field.getType().value())")
+					#set ($firstF = $utility.convertType($field.getType().value()))
 					#set ($secondF = "_")
 					#set ($thirdF = "$field.getFormat()")
 					#set ($curType ="$firstF$secondF$thirdF")					
@@ -886,11 +944,7 @@ $utility.clearNumberOfReserved()
   	}
   
 
-
-
- 
-      
-   	
+ 	  	
 	
 ## generate setters 
 	//setters
@@ -902,11 +956,18 @@ $utility.clearNumberOfReserved()
 		#elseif ($utility.hasType($field,$fieldDefinition))
 		## FieldDefinition
 			#if ($field.getEnumeration())
+				#if ($utility.isArray($utility.convertType($field.getType().value())))
+						#set ($arr = "Array")
+						#set ($temp = "$utility.firstToUpperCase($field.getEnumeration())")
+						#set ($curType = "$temp$arr")
+					#else
+						#set ($curType = $utility.firstToUpperCase($field.getEnumeration()))
+					#end
 				/**
-				 * set $utility.firstToLowerCase($field.getName()) of type $field.getEnumeration() .
+				 * set $utility.firstToLowerCase($field.getName()) of type $curType .
 				 * @param  $utility.firstToLowerCase($field.getName()) to be set
 				 */
-				public void set$field.getName()(final $field.getEnumeration()  $utility.firstToLowerCase($field.getName())){
+				public void set$utility.firstToUpperCase($field.getName())(final $utility.firstToUpperCase($curType)  $utility.firstToLowerCase($field.getName())){
 					this.$utility.firstToLowerCase($field.getName()) = $utility.firstToLowerCase($field.getName());
 				}
 			#elseif ($field.getFormat())
@@ -918,7 +979,7 @@ $utility.clearNumberOfReserved()
 				 * set $utility.firstToLowerCase($field.getName()) of type $together .
 				 * @param  $utility.firstToLowerCase($field.getName()) to be set
 				 */
-				public void set$field.getName()(final $together $utility.firstToLowerCase($field.getName())){
+				public void set$utility.firstToUpperCase($field.getName())(final $together $utility.firstToLowerCase($field.getName())){
 					this.$utility.firstToLowerCase($field.getName()) = $utility.firstToLowerCase($field.getName());
 				}
 			
@@ -927,7 +988,7 @@ $utility.clearNumberOfReserved()
 				 * set   $utility.firstToLowerCase($field.getName()) of type $utility.convertType($field.getType().value()) .
 				 * @param   $utility.firstToLowerCase($field.getName()) to be set
 				 */
-				public void set$field.getName()(final $utility.convertType($field.getType().value())  $utility.firstToLowerCase($field.getName())){
+				public void set$utility.firstToUpperCase($field.getName())(final $utility.convertType($field.getType().value())  $utility.firstToLowerCase($field.getName())){
 					this.$utility.firstToLowerCase($field.getName()) = $utility.firstToLowerCase($field.getName());
 				}
 			
@@ -980,11 +1041,18 @@ $utility.clearNumberOfReserved()
 		#elseif ($utility.hasType($field,$fieldDefinition))
 		## FieldDefinition
 			#if ($field.getEnumeration())
+					#if ($utility.isArray($utility.convertType($field.getType().value())))
+						#set ($arr = "Array")
+						#set ($temp = "$utility.firstToUpperCase($field.getEnumeration())")
+						#set ($curType = "$temp$arr")
+					#else
+						#set ($curType = $utility.firstToUpperCase($field.getEnumeration()))
+					#end
 				/**
-				 * get $utility.firstToLowerCase($field.getName()) of type $field.getEnumeration().
-				 * @return  $field.getEnumeration()
+				 * get $utility.firstToLowerCase($field.getName()) of type $curType.
+				 * @return  $curType
 				 */
-				public $field.getEnumeration() get$field.getName()$emptyBrack{
+				public $utility.firstToUpperCase($curType) get$field.getName()$emptyBrack{
 					return $utility.firstToLowerCase($field.getName());
 				}
 			#elseif ($field.getFormat())
@@ -1114,7 +1182,7 @@ $utility.clearNumberOfReserved()
 ##must clear numbers of reserved definitons found
 $utility.clearNumberOfReserved() 	
   		
-	
+
 
 
 	/**

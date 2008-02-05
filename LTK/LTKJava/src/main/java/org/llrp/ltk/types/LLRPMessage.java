@@ -326,14 +326,17 @@ public abstract class LLRPMessage {
         } catch (SAXException e) {
             XMLOutputter output = new XMLOutputter();
             output.setFormat(Format.getPrettyFormat());
-            LOGGER.warn("LTK XML message can not be validated against schema " +
-                schemaPath + output.outputString(jdomDoc)+"because "+e.getMessage());
-
-            return false;
-        } catch (IOException e) {
+            if (e.getCause() != null){	
+            	LOGGER.warn("LTK XML message can not be validated against schema " + schemaPath + output.outputString(jdomDoc)+"because "+e.getCause().getMessage());
+            	throw new LLRPException("LTK XML message can not be validated against schema " + schemaPath + output.outputString(jdomDoc)+"because "+e.getCause().getMessage());
+            } else {	
+            	LOGGER.warn("LTK XML message can not be validated against schema " + schemaPath + output.outputString(jdomDoc));
+            	throw new LLRPException("LTK XML message can not be validated against schema " + schemaPath + output.outputString(jdomDoc));
+            }
+          } catch (IOException e) {
             LOGGER.warn("LLRP.xsd schema cannot be found " + schemaPath);
 
-            return false;
+            throw new LLRPException("LLRP.xsd schema cannot be found " + schemaPath);
         }
 
         return true;

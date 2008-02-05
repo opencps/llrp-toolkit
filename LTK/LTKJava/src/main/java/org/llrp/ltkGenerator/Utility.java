@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
+import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.log4j.Logger;
 import org.llrp.ltk.exceptions.LLRPException;
 import org.llrp.ltkGenerator.generated.Annotation;
@@ -30,7 +31,7 @@ public class Utility {
 	private Set<String> imports;
 	private Map<String, List<String>> allowedIn;
 	private Logger logger = CodeGenerator.logger;
-	private Properties properties;
+	private PropertiesConfiguration properties;
 	private int numberOfReserved;
 	private Map<String, String> customEnumerationsMap;
 	private Map<String, String> customChoicesMap;
@@ -38,7 +39,7 @@ public class Utility {
 	private Map<String, String> customMessageMap;
 	private static final String NOTYPE = "NoType";
 
-	public Utility(Properties properties) {
+	public Utility(PropertiesConfiguration properties) {
 		numberOfReserved = 0;
 		superTypes = new HashMap<String, String>();
 		imports = new HashSet<String>();
@@ -217,6 +218,9 @@ public class Utility {
 	}
 
 	public boolean isByteToEnd(String type) {
+		if (type == null){
+			return false;
+		}
 		return type.toLowerCase().contains("bytestoend");
 	}
 
@@ -501,6 +505,9 @@ public class Utility {
 	}
 
 	public boolean isCustomChoice(String name) {
+		if (name == null){
+			return false;
+		}
 		return customChoicesMap.containsKey(name.toLowerCase());
 	}
 

@@ -35,7 +35,8 @@ package org.llrp.ltk.generated.custom.parameters;
 	
 	
 ## some strings we need
-#set($encode = ".encodeBinary()")	
+#set($encode = ".encodeBinary()")
+#set($encodeXML = ".encodeXML")		
 #set($list = "List")
 #set($length = ".length()")
 #set($resName = "reserved")
@@ -44,6 +45,7 @@ package org.llrp.ltk.generated.custom.parameters;
 #set($subtypeNr = ".subtype")
 #set($add = ".add")
 #set($emptyBrack = "()")
+#set($getClassName = ".getClass().getSimpleName()")
 
 ##set the class names here
 #set ($parameterReference = "ParameterReference")
@@ -52,10 +54,10 @@ package org.llrp.ltk.generated.custom.parameters;
 #set ($choiceDefinition = "ChoiceDefinition")
 #set ($reservedDefinition = "ReservedDefinition")
 #set ($fieldDefinition = "FieldDefinition")
-#set ($listRepeat = "1-N")
-#set ($singleRepeat = "1")
+#set ($mustListRepeat = "1-N")
+#set ($exactlyOnceRepeat = "1")
 #set ($optionalRepeat = "0-1")
-#set ($optionalList = "0-N")
+#set ($optionalListRepeat = "0-N")
 	
 	
 
@@ -73,20 +75,44 @@ $utility.clearImports()
 	import org.apache.log4j.Logger;
 	$utility.addImport("logging")
 	
+
+	import org.jdom.Document;
+	$utility.addImport("document")
+	import org.jdom.Element;
+	$utility.addImport("element")
+	import org.jdom.Content;
+	$utility.addImport("content")
+	import org.jdom.Namespace;
+	$utility.addImport("Namespace")
+	
 	import org.llrp.ltk.types.LLRPBitList;
 	$utility.addImport("LLRPBitList")
-	import org.llrp.ltk.generated.parameters.Custom;
-	$utility.addImport("Custom")
+	import org.llrp.ltk.types.LLRPMessage;
+	$utility.addImport("LLRPMessage")
 	import org.llrp.ltk.types.SignedShort;
 	$utility.addImport("SignedShort")
-	import org.llrp.ltk.types.UnsignedInteger;
-	$utility.addImport("UnsignedInteger")
 	import org.llrp.ltk.types.UnsignedShort;
 	$utility.addImport("UnsignedShort")
+	import org.llrp.ltk.types.UnsignedInteger;
+	$utility.addImport("UnsignedInteger")
 	import org.llrp.ltk.exceptions.LLRPException;
 	$utility.addImport("LLRPException")
+	import org.llrp.ltk.exceptions.MissingParameterException;
+	$utility.addImport("MissingParameterException")
 	import org.llrp.ltk.exceptions.IllegalBitListException;
 	$utility.addImport("IllegalBitListException")
+	import org.llrp.ltk.exceptions.WrongParameterException;
+	$utility.addImport("WrongParameterException")
+	import org.llrp.ltk.types.TLVParameter;
+	$utility.addImport("TLVParameter")
+	import org.llrp.ltk.types.TVParameter;
+	$utility.addImport("TVParameter")
+	import org.llrp.ltk.generated.LLRPConstants;
+	$utility.addImport("LLRPConstants")
+		
+	import org.llrp.ltk.generated.parameters.Custom;
+	$utility.addImport("Custom")
+	
 	
 	## field or reserved
 	#foreach($field in $custom.getFieldOrReserved())
@@ -100,16 +126,51 @@ $utility.clearImports()
 			## its a field and therefore it might be also an enumeration
 			## only place where we can find super types of enumerations
 			## distinguish between custom and normal enumerations
-			#if ($field.getEnumeration() && !$utility.hasImport($field.getEnumeration()) && !$utility.isCustomEnumeration($field.getEnumeration()))
-				import org.llrp.ltk.generated.enumerations.$field.getEnumeration();
-				$utility.setSuperType($field.getEnumeration(),$field.getType().value())
-				$utility.addImport($field.getEnumeration())
-			#elseif ($field.getEnumeration() && !$utility.hasImport($field.getEnumeration()) && $utility.isCustomEnumeration($field.getEnumeration()))
-				#set($custEnum = $utility.firstToUpperCase($field.getEnumeration()))
-				import org.llrp.ltk.generated.custom.enumerations.$custEnum;
-				$utility.setSuperType($field.getEnumeration(),$field.getType().value())
-				$utility.addImport($field.getEnumeration())
-
+			#if ($field.getEnumeration() && !$utility.isCustomEnumeration($field.getEnumeration()))
+				#set($enum =  $utility.firstToUpperCase($field.getEnumeration()))													
+				#if ($utility.isArray($utility.convertType($field.getType().value())))
+					#set ($arr = "Array")
+					#set ($type = "$enum")
+					#set ($together = "$type$arr")
+					#if (!$utility.hasImport($together))
+						$utility.setSuperType($together,$field.getType())
+						$utility.addImport($together)
+						import org.llrp.ltk.generated.enumerations.$together;
+					#end
+				#else
+					#if (!$utility.hasImport($field.getEnumeration()))
+						$utility.setSuperType($field.getEnumeration(),$field.getType().value())
+						import org.llrp.ltk.generated.enumerations.$field.getEnumeration();
+						$utility.addImport($field.getEnumeration())
+					#end
+				#end
+			#elseif ($field.getEnumeration() && $utility.isCustomEnumeration($field.getEnumeration()))
+				#set($enum =  $utility.firstToUpperCase($field.getEnumeration()))									
+				#if ($utility.isArray($utility.convertType($field.getType().value())))
+					#set ($arr = "Array")
+					#set ($type = "$enum")
+					#set ($together = "$type$arr")
+					#if (!$utility.hasImport($together))
+						$utility.setSuperType($together,$field.getType().value())
+						$utility.addImport($together)
+						import org.llrp.ltk.generated.custom.enumerations.$together;
+					#end
+				#else
+					#if (!$utility.hasImport($field.getEnumeration()))
+						$utility.setSuperType($field.getEnumeration(),$field.getType().value())
+						import org.llrp.ltk.generated.custom.enumerations.$enum;
+						$utility.addImport($field.getEnumeration())
+					#end
+				#end
+			#elseif ($field.getFormat())
+				#set ($firstF = "$utility.convertType($field.getType().value())")
+				#set ($secondF = "_")
+				#set ($thirdF = "$field.getFormat()")
+				#set ($together = "$firstF$secondF$thirdF")
+				#if (!$utility.hasImport($together))
+					import org.llrp.ltk.types.$together;
+					$utility.addImport($together)
+				#end
 			#elseif (!$utility.hasImport($utility.convertType($field.getType().value())))
 				import org.llrp.ltk.types.$utility.convertType($field.getType().value());
 				$utility.addImport($utility.convertType($field.getType().value()))
@@ -124,7 +185,6 @@ $utility.clearImports()
 	## parameter or choice
 	#foreach($field in $custom.getParameterOrChoice())
 		##for choices we must also import implementing classes
-			// $field.getType()
 		#if ($utility.hasType($field,$choiceReference))
 			##check all subtypes
 			#foreach ($subtype in $utility.getSubTypes($field.getType()))
@@ -190,7 +250,7 @@ public class $custom.getName() extends Custom $interfaces{
 ##subtype is always needed
 	public static final UnsignedInteger subtype = new UnsignedInteger($custom.getSubtype());
 ##need always a logging
-	private static final Logger logging = Logger.getLogger("$custom.getName()");
+	private static final Logger LOGGER = Logger.getLogger("$custom.getName()");
 
 ## field or reserved
 #foreach($field in $custom.getFieldOrReserved())
@@ -199,9 +259,21 @@ public class $custom.getName() extends Custom $interfaces{
 		private $resType $resName$utility.getCurrentNumerOfReserved() = new $resType ($field.getBitCount());
 	#elseif ($utility.hasType($field,$fieldDefinition))
 		#if ($field.getEnumeration())
-			private $utility.firstToUpperCase($field.getEnumeration()) $utility.firstToLowerCase($field.getName());
+					#if ($utility.isArray($utility.convertType($field.getType().value())))
+						#set ($arr = "Array")
+						#set ($temp = "$utility.firstToUpperCase($field.getEnumeration())")
+						#set ($curType = "$temp$arr")
+					#else
+						#set ($curType = $utility.firstToUpperCase($field.getEnumeration()))
+					#end
+			protected $utility.firstToUpperCase($curType) $utility.firstToLowerCase($field.getName());
+		#elseif ($field.getFormat())
+			#set ($firstF = "$utility.convertType($field.getType().value())")
+			#set ($secondF = "_")
+			#set ($thirdF = "$field.getFormat()")
+			protected $firstF$secondF$thirdF $utility.firstToLowerCase($field.getName()); 
 		#else
-			private $utility.convertType($field.getType().value()) $utility.firstToLowerCase($field.getName());
+			protected $utility.convertType($field.getType().value()) $utility.firstToLowerCase($field.getName());
 		#end
 	## FieldDefinition
 	#else
@@ -223,7 +295,7 @@ $utility.clearNumberOfReserved()
 	#else
 		#set ($curName = $utility.firstToLowerCase($field.getType()))
 	#end 	
-	#if ($field.getRepeat()== $listRepeat || $field.getRepeat()== $optionalList)
+	#if ($field.getRepeat()== $mustListRepeat || $field.getRepeat()== $optionalListRepeat)
 		private List<$field.getType()> $curName$list = new LinkedList<$field.getType()>();
 	#else
 		private $field.getType() $curName;
@@ -232,27 +304,49 @@ $utility.clearNumberOfReserved()
 
 ## constructors
 
+/**
+ * empty constructor to create new parameter.
+ */
 	public $custom.getName()(){
 	}
-	
+
+/**
+ * Constructor to create parameter from binary encoded parameter
+ * calls decodeBinary to decode parameter.
+ * @param list to be decoded
+ */
 	public $custom.getName()(LLRPBitList list){
 		decodeBinary(list);
 	}
 
+/**
+ * Constructor to create parameter from xml encoded parameter
+ * calls decodeXML to decode parameter.
+ * @param xml element to be decoded
+ */
+	public $custom.getName()(Element element){
+		decodeXML(element);
+	}
+	
+/**
+ * Constructor to create this parameter from custom parameter
+ * @param custom
+ */
 	public $custom.getName()(Custom custom){
 		decodeBinary(custom.encodeBinary());
 	}
+	
 	
 ## encode method
 	public LLRPBitList encodeBinarySpecific(){
 	LLRPBitList resultBits = new LLRPBitList();
 	## inherited from custom - must also be encoded
 	if (vendorIdentifier== null){
-		logging.warn(" vendorIdentifier not set");
+		LOGGER.warn(" vendorIdentifier not set");
 	} 
 	resultBits.append(vendorIdentifier.encodeBinary());
 	if (parameterSubtype== null){
-		logging.warn(" parameterSubtype not set");
+		LOGGER.warn(" parameterSubtype not set");
 	} 
 			resultBits.append(parameterSubtype.encodeBinary());
 	## field or reserved
@@ -261,7 +355,7 @@ $utility.clearNumberOfReserved()
 			resultBits.append($resName$utility.getCurrentNumerOfReserved()$encode);
 		#elseif ($utility.hasType($field,$fieldDefinition))
 			if ($utility.firstToLowerCase($field.getName())== null){
-				logging.warn(" $utility.firstToLowerCase($field.getName()) not set");
+				LOGGER.warn(" $utility.firstToLowerCase($field.getName()) not set");
 			} 
 			resultBits.append($utility.firstToLowerCase($field.getName())$encode);
 		## FieldDefinition
@@ -280,9 +374,9 @@ $utility.clearNumberOfReserved()
 			#set ($curName = $utility.firstToLowerCase($field.getType()))
 		#end
 		## check if it is a list 	
-		#if ($field.getRepeat()==$listRepeat  || $field.getRepeat()== $optionalList)
+		#if ($field.getRepeat()==$mustListRepeat  || $field.getRepeat()== $optionalListRepeat)
 			if ($curName$list== null){
-				logging.warn(" $curName$list not set");
+				LOGGER.warn(" $curName$list not set");
 			} 
 			for ($field.Type field : $curName$list){
 				resultBits.append(field$encode);
@@ -290,12 +384,12 @@ $utility.clearNumberOfReserved()
 		#elseif ($field.getRepeat()==$optionalRepeat)
 			if ($curName != null){
 				// optional parameter, may be null
-				logging.warn(" $curName not set");
+				LOGGER.warn(" $curName not set");
 				resultBits.append($curName$encode);
 			} 
 		#else
 			if ($curName == null){
-				logging.warn(" $curName not set");
+				LOGGER.warn(" $curName not set");
 			} 
 			resultBits.append($curName$encode);
 		#end
@@ -306,6 +400,92 @@ $utility.clearNumberOfReserved()
 $utility.clearNumberOfReserved()
 
 
+## encode xml
+		/**
+	 * {@inheritDoc}
+	 */
+	public Content encodeXML(String name, Namespace ns){
+		//Element xmlElement = new Element(name,Namespace.getNamespace("rp"));
+		// custom parameters need their own namespaces
+		Element xmlElement = new Element(name,Namespace.getNamespace("$custom.getVendor().toUpperCase()"));
+		## field or reserved
+		#foreach($field in $custom.getFieldOrReserved())
+			#if ($utility.hasType($field,$reservedDefinition))
+				//xmlElement.addContent($resName$utility.getCurrentNumerOfReserved()$encodeXML("reserved",ns));
+			#elseif ($utility.hasType($field,$fieldDefinition))
+				## FieldDefinition
+				if ($utility.firstToLowerCase($field.getName())== null){
+					LOGGER.warn(" $utility.firstToLowerCase($field.getName()) not set");
+					throw new MissingParameterException(" $utility.firstToLowerCase($field.getName()) not set");
+				} else {
+					xmlElement.addContent($utility.firstToLowerCase($field.getName())$encodeXML("$field.getName()",ns));
+				}
+			#else
+				//TODO 4 template parameter encode wrote this - unexpected object $field $field.getName()
+			#end
+		#end
+		## parameter or choice
+		//parameters
+		#foreach($field in $custom.getParameterOrChoice())
+			## parameters usually don't have names, so the variable gets the type with first letter to lower case as name
+			## however there are some exceptions to this where there is a name given
+	
+			#if ($field.getName())
+				#set ($curName = $utility.firstToLowerCase($field.getName()))
+			#else
+				#set ($curName = $utility.firstToLowerCase($field.getType()))
+			#end
+			## check if it is a list 	
+			#if ($field.getRepeat()==$mustListRepeat)
+				if ($curName$list== null){
+					LOGGER.warn(" $curName$list not set");
+					throw new MissingParameterException("  $curName$list not set");
+				} 
+				for ($field.getType() field : $curName$list){
+					##choices have to be set by the actual name - not the name of the interface
+					xmlElement.addContent(field$encodeXML(field.getClass().getName().replaceAll(field.getClass().getPackage().getName()+".", ""),ns));
+				}
+			#elseif ($field.getRepeat()== $optionalListRepeat)
+				if ($curName$list == null){
+					LOGGER.info("$curName$list not set");
+				} else {
+					for ($field.getType() field : $curName$list){
+						xmlElement.addContent(field$encodeXML(field.getClass().getName().replaceAll(field.getClass().getPackage().getName()+".", ""),ns));
+					}
+				}
+			#elseif ($field.getRepeat()== $optionalRepeat)
+				if ($curName == null){
+					LOGGER.info("$curName not set");
+				} else {
+					#if ($field.getName())
+							// name was defined for this parameter - must use it to avoid confusion with parameters of same type
+							xmlElement.addContent($curName$encodeXML("$curName",ns));
+					#else
+							xmlElement.addContent($curName$encodeXML($curName$getClassName,ns));
+					#end
+				}
+			#elseif ($field.getRepeat()== $exactlyOnceRepeat)
+				if ($curName == null){
+					LOGGER.info("$curName not set");
+					throw new MissingParameterException("$curName not set");
+				} else {
+					#if ($field.getName())
+							// name was defined for this parameter - must use it to avoid confusion with parameters of same type
+							xmlElement.addContent($curName$encodeXML("$curName",ns));
+					#else
+							xmlElement.addContent($curName$encodeXML($curName$getClassName,ns));
+					#end					
+				}
+			#else
+				// TODO field.getRepeat() = $field.getRepeat()
+			#end
+		#end
+		return xmlElement;
+	}
+
+##must clear numbers of reserved definitons found
+$utility.clearNumberOfReserved()	
+	
 
 ##decode
   
@@ -334,8 +514,19 @@ $utility.clearNumberOfReserved()
 			#elseif ($utility.hasType($field,$fieldDefinition))
 				#set ($curName = $utility.firstToLowerCase($field.getName()))
 				#if ($field.getEnumeration())
-					#set ($curType = $field.getEnumeration())
-				#else
+						#if ($utility.isArray($utility.convertType($field.getType().value())))
+						#set ($arr = "Array")
+						#set ($temp = "$utility.firstToUpperCase($field.getEnumeration())")
+						#set ($curType = "$temp$arr")
+					#else
+						#set ($curType = $utility.firstToUpperCase($field.getEnumeration()))
+					#end
+				#elseif ($field.getFormat())
+					#set ($firstF = "$utility.convertType($field.getType().value())")
+					#set ($secondF = "_")
+					#set ($thirdF = "$field.getFormat()")
+					#set ($curType ="$firstF$secondF$thirdF")
+				#else					
 					#set ($curType = $utility.convertType($field.getType().value()))
 				#end
 				#if ($utility.isArray($curType))
@@ -374,7 +565,7 @@ $utility.clearNumberOfReserved()
 		#end
 		
 		## check if it is a list 	
-		#if ($field.getRepeat()==$listRepeat  || $field.getRepeat()== $optionalList)
+		#if ($field.getRepeat()==$mustListRepeat  || $field.getRepeat()== $optionalListRepeat)
 			// list of parameters
 			$curName$list = new LinkedList<$field.getType()>();
 			while (position < binary.length()){
@@ -410,10 +601,10 @@ $utility.clearNumberOfReserved()
 						
 					#end
 					
-					//if no parameter matched, jump out of while loop, if it is not an optional parameter, show warning
-					if (!atLeastOnce && (" $field.getRepeat() ".equals(" $listRepeat "))){
-						logging.warn("no parameter for $curName$list but List is not optional");
-					}
+					#if ($field.getRepeat()==$mustListRepeat )
+						//if no parameter matched, jump out of while loop, if it is not an optional parameter, show warning
+						LOGGER.warn("no parameter for $curName$list but List is not optional");
+					#end
 					break;
 				#elseif ($utility.isCustom($field.getType()))
 					## custom parameter need separate treatment
@@ -435,7 +626,7 @@ $utility.clearNumberOfReserved()
 			
 
 
-		#elseif ($field.getRepeat()==$singleRepeat || $field.getRepeat()==$optionalRepeat)
+		#elseif ($field.getRepeat()==$exactlyOnceRepeat || $field.getRepeat()==$optionalRepeat)
 			##may be optional or exactly once
 			// look ahead to see type
 			// may be optional or exactly once
@@ -486,7 +677,7 @@ $utility.clearNumberOfReserved()
 							#end
 						#end
 						if (!found){
-							logging.warn("no parameter for $curName but it is not optional");
+							LOGGER.warn("no parameter for $curName but it is not optional");
 						}
 					#elseif ($utility.isCustom($field.getType()))
 						## custom parameter need separate treatment
@@ -507,12 +698,12 @@ $utility.clearNumberOfReserved()
 							position+=tempLength;
 						} else {
 						## if it is an optional parameter it is ok to come to here. Therefor only print an error message if it is not optional
-							#if ($field.getRepeat()==$singleRepeat )
+							#if ($field.getRepeat()==$exactlyOnceRepeat )
 								// its an error - parameter must be here
-								logging.warn("parameter "+$curName +" not set but it is not optional");
+								LOGGER.warn("parameter "+$curName +" not set but it is not optional");
 								//throw new IllegalBitListException("parameter expected: $field.getType() but recieved " + type );
 							#else
-								logging.info("parameter "+$curName +" not set");
+								LOGGER.info("parameter "+$curName +" not set");
 							#end
 						}	
 					#else
@@ -535,56 +726,246 @@ $utility.clearNumberOfReserved()
 
 
 
-
-
-## generate getters 
-	//getters
-	## field or reserved
-	#foreach($field in $custom.getFieldOrReserved())
-		## reserved field
-		#if ($utility.hasType($field,$reservedDefinition))
-			## nothing
-		#elseif ($utility.hasType($field,$fieldDefinition))
-		
-			#if ($field.getEnumeration())
-				public $field.getEnumeration() get$field.getName()$emptyBrack{
-					return $utility.firstToLowerCase($field.getName());
+  		
+##decode XML
+  
+		/**
+	 * {@inheritDoc}
+	 */
+	public void decodeXML(Element element){
+		Element temp = null;
+		List<Element> tempList = null;
+		boolean atLeastOnce = false;
+		## field or reserved
+		#foreach($field in $custom.getFieldOrReserved())
+			## reserved field
+			#if ($utility.hasType($field,$reservedDefinition))
+				## skip reserved
+			#elseif ($utility.hasType($field,$fieldDefinition))
+				#set ($curName = $utility.firstToLowerCase($field.getName()))
+				#if ($field.getEnumeration())
+						#if ($utility.isArray($utility.convertType($field.getType().value())))
+						#set ($arr = "Array")
+						#set ($temp = "$utility.firstToUpperCase($field.getEnumeration())")
+						#set ($curType = "$temp$arr")
+					#else
+						#set ($curType = $utility.firstToUpperCase($field.getEnumeration()))
+					#end
+				
+				#elseif ($field.getFormat())
+					#set ($firstF = "$utility.convertType($field.getType().value())")
+					#set ($secondF = "_")
+					#set ($thirdF = "$field.getFormat()")
+					#set ($curType ="$firstF$secondF$thirdF")
+				#else
+					#set ($curType = $utility.convertType($field.getType().value()))
+				#end
+				temp = element.getChild("$field.getName()",element.getNamespace());
+				if (temp != null){
+					$curName = new $curType (temp);
 				}
 			#else
-				public $utility.convertType($field.getType().value()) get$field.getName()$emptyBrack{
-					return $utility.firstToLowerCase($field.getName());
-				}
+						//TODO 8 template wrote this - unexpected object $field
 			#end
-
-		## FieldDefinition
-		#else
-					//TODO template wrote this - unexpected object $field
-		#end	
-	#end
-
-
-	## parameter or choice
-	#foreach($field in $custom.getParameterOrChoice())
-		## parameters usually don't have names, so the variable gets the typ with first letter to lower case as name
-		## however there are some exceptions to this where there is a name given
-		#if ($field.getName())
-			#set ($curName = $utility.firstToLowerCase($field.getName()))
-		#else
-			#set ($curName = $utility.firstToLowerCase($field.getType()))
-		#end 
-		#if ($field.getRepeat()== $listRepeat  || $field.getRepeat()== $optionalList)
-			public List<$field.getType()> get$utility.firstToUpperCase($curName)$list$emptyBrack {
-				return $curName$list;
-			}
+		#end  
+		
+		
+		## parameter or choice
+		#foreach($field in $custom.getParameterOrChoice())
+			#if ($field.getName())
+				#set ($curName = $utility.firstToLowerCase($field.getName()))
+			#else
+				#set ($curName = $utility.firstToLowerCase($field.getType()))
+			#end
+			#if ($utility.hasType($field,$parameterReference))
+				//parameter - not choices - no special actions needed
+				#if ($field.getRepeat()==$mustListRepeat  || $field.getRepeat()== $optionalListRepeat)
+					//we expect a list of parameters
+					$curName$list = new LinkedList<$field.getType()>();
+					tempList = element.getChildren("$field.getType()",element.getNamespace());
+					#if ( $field.getRepeat() == $mustListRepeat)
+						if (tempList == null || tempList.isEmpty() ){
+							LOGGER.warn("$custom.getName() misses non optional parameter of type $curName$list");
+							throw new MissingParameterException("$custom.getName() misses non optional parameter of type $curName$list");
+						} else {
+							for (Element e : tempList){
+								#if ($utility.isCustom($field.getType()))
+									//custom parameter
+									#set($hasAllowed = "false")
+									#foreach ($custom in $utility.allowedCustom($custom))
+										#set($hasAllowed = "true")
+										tempList = element.getChildren("$custom",element.getNamespace());
+										for Element e: tempList){
+											custom = new Custom(e); 
+											$curName$list$add (new $custom (custom));
+											atLeastOnce = true;
+											LOGGER.debug("adding $custom to $curName$list ");
+											
+										}
+									#end
+									#if ($hasAllowed == "false")
+											$curName$list$add (new $field.getType()(e));
+											LOGGER.debug("adding $field.getType() to $curName$list ");
+									#end
+									//end custom
+								#else 
+									$curName$list$add (new $field.getType()(e));
+									LOGGER.debug("adding $field.getType() to $curName$list ");
+								#end
+							}	
+						}
+					#else
+					##if it is optional, just inform that it is not set
+						if (tempList == null || tempList.isEmpty() ){
+							LOGGER.info("$custom.getName() misses non optional parameter of type $curName$list");
+						} else {
+							for (Element e : tempList){
+								#if ($utility.isCustom($field.getType()))
+									//custom parameter
+									#set($hasAllowed = "false")
+									#foreach ($custom in $utility.allowedCustom($custom))
+										#set($hasAllowed = "true")
+										tempList = element.getChildren("$custom",element.getNamespace());
+										for Element e: tempList){
+											custom = new Custom(e); 
+											$curName$list$add (new $custom (custom));
+											atLeastOnce = true;
+											LOGGER.debug("adding $custom to $curName$list ");
+										}
+									#end
+									#if ($hasAllowed == "false")
+											$curName$list$add (new $field.getType()(e));
+											LOGGER.debug("adding $field.getType() to $curName$list ");
+									#end
+									//end custom
+								#else 
+									$curName$list$add (new $field.getType()(e));
+									LOGGER.debug("adding $field.getType() to $curName$list ");
+								#end
+							}	
+						}
+					#end
+					
+			
+				#else
+					// single parameter
+					temp = element.getChild("$field.getType()",element.getNamespace());
+					if (temp != null){
+						$curName = new $field.getType()(temp);
+						LOGGER.info("setting parameter $curName for parameter $custom.getName()");
+					} else {
+						#if ( $field.getRepeat() == $exactlyOnceRepeat)
+							LOGGER.warn("$custom.getName() misses non optional parameter of type $curName");
+							throw new MissingParameterException("$custom.getName() misses non optional parameter of type $curName");
+						#else
+							##if it is optional, just inform that it is not set
+							LOGGER.info("$custom.getName() misses non optional parameter of type $curName");
+						#end
+					}
+				#end		
+			#elseif ($utility.hasType($field,$choiceReference))
+				//choices - must check all possible subtypes
+				#if ($field.getRepeat()==$mustListRepeat  || $field.getRepeat()== $optionalListRepeat)
+					//list of Choice Type Parameter
+					$curName$list = new LinkedList<$field.getType()>();
+					// for each possible subtype get all childs
+						##check all subtypes
+						#foreach ($subtype in $utility.getSubTypes($field.getType()))
+							#if ($utility.isCustom($subtype))
+								## custom parameter need separate treatment
+								// check for all custom parameters allowed for this parameter 
+								#set($hasAllowed = "false")
+								#foreach ($custom in $utility.allowedCustom($custom))
+									#set($hasAllowed = "true")
+									tempList = element.getChildren("$custom",element.getNamespace());
+									for (Element e: tempList){
+										custom = new Custom(e); 
+										$curName$list$add (new $custom (custom));
+										atLeastOnce = true;
+										LOGGER.debug("adding $custom to $curName$list ");
+									}
+								#end
+								#if ($hasAllowed == "false")
+									tempList = element.getChildren("Custom",element.getNamespace());
+									for (Element e: tempList){
+										$curName$list$add (new Custom(e));
+										LOGGER.debug("adding $field.getType() to $curName$list ");
+									}
+									
+								#end
+								//end allowed parameters
+							#else
+								tempList = element.getChildren("$subtype",element.getNamespace());
+								for (Element e : tempList){
+									$curName$list$add (new $subtype(e));
+									LOGGER.debug("adding $subtype to $curName$list ");
+									atLeastOnce = true;
+								}
+								
+							#end
+							
+						#end
+						if (!atLeastOnce){
+							#if ( $field.getRepeat() == $mustListRepeat)
+								LOGGER.warn("$custom.getName() misses non optional parameter of type $curName$list");
+								throw new MissingParameterException("$custom.getName() misses non optional parameter of type $curName$list");
+							#else
+								LOGGER.info("$custom.getName() misses optional parameter of type $curName$list");
+							#end	
+						}
+						atLeastOnce = false;		
+				#else
 				
-		#else
-			public $field.getType() get$utility.firstToUpperCase($curName)$emptyBrack  {
-				return $curName;
-			}
+					##check all subtypes
+					boolean found = false;
+					LOGGER.debug("decoding choice type $field.getType() ");
+					#foreach ($subtype in $utility.getSubTypes($field.getType()))
+						#if ($utility.isCustom($subtype))
+							## custom parameter need separate treatment
+							// custom
+							temp = element.getChild("$subtype",element.getNamespace());
+							if (temp != null){
+								custom = new $field.getType() (temp));	
+								#foreach ($custom in $utility.allowedCustom($field.getType()))
+									if (temp.getName().equalsIgnoreCase("$custom")){ 
+										$curName =new $custom (custom) ;
+										LOGGER.debug(" $curName is instantiated with $custom ");
+									}
+								#end
+							}
+						#else		
+							// try to get child for each possible subtype
+							temp = element.getChild("$subtype",element.getNamespace());			
+							if (temp != null){
+								$curName = new $subtype (temp);
+								LOGGER.debug(" $curName instatiated to $subtype with");
+								found = true;
+							} 
+						#end
+					#end
+					if (!found){
+						#if ( $field.getRepeat() == $mustListRepeat)
+							LOGGER.warn("$custom.getName() misses non optional parameter of type $curName$list");
+							throw new MissingParameterException("$custom.getName() misses non optional parameter of type $curName$list");
+						#else
+						##if it is optional, just inform that it is not set
+							LOGGER.info("$custom.getName() misses optional parameter of type $curName$list");
+						#end	
+					}				
+				
+				#end
+			#else
+				//TODO 9 template wrote this in decode > list- unexpected object $field in while
+			#end	
 		#end
-	#end
+  	}
+  	
 
 
+ 
+
+   
+   	
 	
 ## generate setters 
 	//setters
@@ -594,19 +975,131 @@ $utility.clearNumberOfReserved()
 		#if ($utility.hasType($field,$reservedDefinition))
 			## nothing
 		#elseif ($utility.hasType($field,$fieldDefinition))
+		## FieldDefinition
 			#if ($field.getEnumeration())
-				public void  set$field.getName() ($field.getEnumeration() $utility.firstToLowerCase($field.getName())){
+					#if ($utility.isArray($utility.convertType($field.getType().value())))
+						#set ($arr = "Array")
+						#set ($temp = "$utility.firstToUpperCase($field.getEnumeration())")
+						#set ($curType = "$temp$arr")
+					#else
+						#set ($curType = $utility.firstToUpperCase($field.getEnumeration()))
+					#end
+				/**
+				 * set $utility.firstToLowerCase($field.getName()) of type $curType .
+				 * @param  $utility.firstToLowerCase($field.getName()) to be set
+				 */
+				public void set$utility.firstToUpperCase($field.getName())(final $utility.firstToUpperCase($curType)  $utility.firstToLowerCase($field.getName())){
 					this.$utility.firstToLowerCase($field.getName()) = $utility.firstToLowerCase($field.getName());
 				}
-			#else
-				public void  set$field.getName() ($utility.convertType($field.getType().value()) $utility.firstToLowerCase($field.getName())){
+			#elseif ($field.getFormat())
+				#set ($firstF = "$utility.convertType($field.getType().value())")
+				#set ($secondF = "_")
+				#set ($thirdF = "$field.getFormat()")
+				#set ($together = "$firstF$secondF$thirdF")
+				/**
+				 * set $utility.firstToLowerCase($field.getName()) of type $together .
+				 * @param  $utility.firstToLowerCase($field.getName()) to be set
+				 */
+				public void set$utility.firstToUpperCase($field.getName())(final $utility.firstToUpperCase($together) $utility.firstToLowerCase($field.getName())){
 					this.$utility.firstToLowerCase($field.getName()) = $utility.firstToLowerCase($field.getName());
+				}
+			
+			#else
+				/**
+				 * set   $utility.firstToLowerCase($field.getName()) of type $utility.convertType($field.getType().value()) .
+				 * @param   $utility.firstToLowerCase($field.getName()) to be set
+				 */
+				public void set$field.getName()(final $utility.convertType($field.getType().value())  $utility.firstToLowerCase($field.getName())){
+					this.$utility.firstToLowerCase($field.getName()) = $utility.firstToLowerCase($field.getName());
+				}
+			
+			#end
+			
+		#else
+					//TODO 11 template wrote this - unexpected object $field
+		#end	
+	#end
+
+
+	## parameter or choice
+	#foreach($field in $custom.getParameterOrChoice())
+		
+		## parameters usually don't have names, so the variable gets the typ with first letter to lower case as name
+		## however there are some exceptions to this where there is a name given
+		#if ($field.getName())
+			#set ($curName = $field.getName())
+		#else
+			#set ($curName = $utility.firstToLowerCase($field.getType()))
+		#end 
+		#if ($field.getRepeat()== $mustListRepeat  || $field.getRepeat()== $optionalListRepeat)
+			/**
+			 * set $curName$list of type  List<$field.getType()>.
+			 * @param  $curName$list to be set
+			 */
+			public void set$utility.firstToUpperCase($curName)$list (final List<$field.getType()> $curName$list) {
+				this.$curName$list = $curName$list;
+			}
+				
+		#else
+			/**
+			 * set $curName of type $field.getType().
+			 * @param  $curName to be set
+			 */
+			public void set$utility.firstToUpperCase($curName) (final $field.getType() $curName)  {
+				this.$curName = $curName;
+			}
+		#end
+	#end
+	// end setter
+	
+## generate getters 
+	//getters
+	## field or reserved
+	#foreach($field in $custom.getFieldOrReserved())
+		## reserved field
+		#if ($utility.hasType($field,$reservedDefinition))
+			## nothing
+		#elseif ($utility.hasType($field,$fieldDefinition))
+		## FieldDefinition
+			#if ($field.getEnumeration())
+					#if ($utility.isArray($utility.convertType($field.getType().value())))
+						#set ($arr = "Array")
+						#set ($temp = "$utility.firstToUpperCase($field.getEnumeration())")
+						#set ($curType = "$temp$arr")
+					#else
+						#set ($curType = $utility.firstToUpperCase($field.getEnumeration()))
+					#end
+				/**
+				 * get $utility.firstToLowerCase($field.getName()) of type $curType.
+				 * @return  $curType
+				 */
+				public $utility.firstToUpperCase($curType) get$utility.firstToUpperCase($field.getName())$emptyBrack{
+					return $utility.firstToLowerCase($field.getName());
+				}
+			#elseif ($field.getFormat())
+					#set ($firstF = "$utility.convertType($field.getType().value())")
+					#set ($secondF = "_")
+					#set ($thirdF = "$field.getFormat()")
+					#set ($together = "$firstF$secondF$thirdF")
+				/**
+				 * get $utility.firstToLowerCase($field.getName()) of type  $together.
+				 * @return  $together
+				 */
+				public  $together get$utility.firstToUpperCase($field.getName())$emptyBrack{
+					return $utility.firstToLowerCase($field.getName());
+				}
+			
+			#else
+				/**
+				 * get   $utility.firstToLowerCase($field.getName()) of type $utility.convertType($field.getType().value()).
+				 * @return   type $utility.convertType($field.getType().value()) to be set
+				 */
+				public $utility.convertType($field.getType().value()) get$field.getName()$emptyBrack{
+					return this.$utility.firstToLowerCase($field.getName());
 				}
 			#end
-
-		## FieldDefinition
 		#else
-					//TODO template wrote this - unexpected object $field
+			//TODO template wrote this - unexpected object $field
 		#end	
 	#end
 
@@ -616,23 +1109,139 @@ $utility.clearNumberOfReserved()
 		## parameters usually don't have names, so the variable gets the typ with first letter to lower case as name
 		## however there are some exceptions to this where there is a name given
 		#if ($field.getName())
+			#set ($curName = $field.getName())
+		#else
+			#set ($curName = $utility.firstToLowerCase($field.getType()))
+		#end 
+		#if ($field.getRepeat()== $mustListRepeat  || $field.getRepeat()== $optionalListRepeat)
+			/**
+			 * get $curName$list of type List<$field.getType()> .
+			 * @return  List<$field.getType()>
+			 */
+			public List<$field.getType()> get$utility.firstToUpperCase($curName)$list$emptyBrack {
+				return $curName$list;
+			}
+				
+		#else
+			/**
+			 * get $curName of type $field.getType() .
+			 * @return  $field.getType()
+			 */
+			public $field.getType() get$utility.firstToUpperCase($curName)$emptyBrack  {
+				return $curName;
+			}
+		#end
+	#end
+	// end getters
+##end getters	
+	
+
+	
+## add methods
+	 //add methods
+	## field or reserved
+	#foreach($field in $custom.getFieldOrReserved())
+		## reserved field
+		#if ($utility.hasType($field,$reservedDefinition))
+			## nothing
+		#elseif ($utility.hasType($field,$fieldDefinition))
+			#if ($field.getName())
+				#set($aName = $utility.firstToLowerCase($field.getName()))
+				#set($curType = $field.getName())
+			#else
+				#set ($aName = $utility.firstToLowerCase($field.getType()))
+				#set($curType = $field.getType())
+			#end 
+
+			#if ($utility.isArray($curType))
+						
+				/**
+				 * add element of type $utility.arrayBaseType($curType) to $curType .
+				 * @param  $utility.arrayBaseType($curType)
+				 */
+				public void addTo$curType ($utility.arrayBaseType($curType) element) {
+					if (this.$aName == null){
+						this.$aName = new $curType();
+					} 
+				 	this.$aName$add (element);
+				}
+			#end		
+		## FieldDefinition
+		#else
+					//TODO 12 template wrote this - unexpected object $field
+		#end	
+	#end
+  
+  
+
+  
+	## parameter or choice
+	#foreach($field in $custom.getParameterOrChoice())
+		## parameters usually don't have names, so the variable gets the typ with first letter to lower case as name
+		## however there are some exceptions to this where there is a name given
+		#if ($field.getName())
 			#set ($curName = $utility.firstToLowerCase($field.getName()))
 		#else
 			#set ($curName = $utility.firstToLowerCase($field.getType()))
 		#end 
-		#if ($field.getRepeat()== $listRepeat  || $field.getRepeat()== $optionalList)
-			public void set$utility.firstToUpperCase($curName)$list (List<$field.getType()> $curName$list) {
-				this.$curName$list = $curName$list;
+		#if ($field.getRepeat()== $mustListRepeat  || $field.getRepeat()== $optionalListRepeat)
+				/**
+				 * add element $curName of type $field.getType() .
+				 * @param  $curName of type $field.getType() 
+				 */
+			public void addTo$utility.firstToUpperCase($curName)$list ($field.getType() $curName) {
+				if (this.$curName$list == null){
+					this.$curName$list = new LinkedList<$field.getType()>();
+				} 
+			 	this.$curName$list$add ($curName);
 			}
 				
-		#else
-			public void set$utility.firstToUpperCase($curName) ($field.getType()  $curName)  {
-				this. $curName =  $curName;
-			}
 		#end
 	#end
-
+	// end add
+## end add	
 	
+## TV Parameters have type number from 0 - 127, TLV from 128 - 2047
+#if ($custom.getTypeNum() < 128)
+## TV Parameters need static length method for decoding
+	/**
+	* return length of parameter. For TV Parameter it is always length of its field plus 8 bits for type.
+	* @return Integer giving length
+	*/
+	public static Integer length(){
+		int tempLength = PARAMETERTYPELENGTH;
+		#foreach($field in $custom.getFieldOrReserved())
+			// the length of a TV parameter in bits is always the type 
+		#if ($field.getEnumeration())
+					#if ($utility.isArray($utility.convertType($field.getType().value())))
+						#set ($arr = "Array")
+						#set ($temp = "$utility.firstToUpperCase($field.getEnumeration())")
+						#set ($curType = "$temp$arr")
+					#else
+						#set ($curType = $utility.firstToUpperCase($field.getEnumeration()))
+					#end
+			tempLength += $curType$length;
+		#elseif ($field.getFormat())
+			#set ($firstF = "$utility.convertType($field.getType().value())")
+			#set ($secondF = "_")
+			#set ($thirdF = "$field.getFormat()")
+			 tempLength += $firstF$secondF$thirdF$length; 
+		#else
+			tempLength += $utility.convertType($field.getType().value())$length;
+		#end			
+		#end
+		return tempLength;
+	}
+#else
+## these method basically only exists for compile reasons
+	/**
+	* For TLV Parameter length can not be determined at compile time. This method therefore always returns 0.
+	* @return Integer always zero
+	*/
+	public static Integer length(){
+		return 0;
+	}
+#end
 	
 ## end of Class	
 }
