@@ -26,3 +26,7 @@ or LLRP drivers for other languages, Please check http://sourceforge.net/project
    4). Changed the default status of the connection attempt from "Success" to Failed_Reason_Other_Than_A_Connection_Already_Exists 
    5). Added encapsulated asyn. event so that the returned message contains reader identity
    6). Fixed OnDataRead function. Previous design may lead LLRP message out of Sync.
+   
+   Feb 5, 2008
+   7). Bug fixed. Description: (Decoder error when LLRP message is at certain length. 
+       Reason is that the actual data length read from socket was not used for reform the LLRP packet )
