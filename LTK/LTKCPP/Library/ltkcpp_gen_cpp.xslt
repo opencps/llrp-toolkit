@@ -599,6 +599,7 @@ C<xsl:value-of select='$LLRPName'/>::isMember (
   <xsl:param name='TypeNum'/>
   <xsl:param name='pVendorDescriptor'/>
   <xsl:param name='pNamespaceDescriptor'/>
+  <xsl:param name='pResponseType'/>
   <xsl:param name='IsCustomParameter'/>
 
 const CTypeDescriptor
