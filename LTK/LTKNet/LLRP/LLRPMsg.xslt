@@ -85,7 +85,7 @@
       </xsl:variable>
       public class MSG_<xsl:value-of select="@name"/> : Message
       {
-        protected static UInt32 sequence_num = 0;                     //used for generating message id automatically
+        protected new static UInt32 sequence_num = 0;                     //used for generating message id automatically
 
       <xsl:for-each select="*">
         <xsl:if test="name()='field'">

@@ -82,12 +82,13 @@ namespace LLRP.DataType
         protected UInt16 msgType;
         protected UInt32 msgLen;
         protected UInt32 msgID;
+        protected static UInt32 sequence_num = 0; 
 
         public virtual bool[] ToBitArray() { return null; }
         public virtual Message FromBitArray(ref BitArray bit_array, ref int cursor, int length) { return null; }
         public virtual Message FromString(string xml) { return null; }
 
-        public UInt32 MSG_ID { get { return msgID; } set { msgID = value; } }
+        public UInt32 MSG_ID { get { return msgID; } set { sequence_num = value; msgID = sequence_num; } }
         public UInt16 VERSION { get { return version; } set { version = value; } }
         public UInt32 Length { get { return msgLen; } set { msgLen = value; } }
         public UInt16 MSG_TYPE { get { return msgType; } set { msgType = value; } }
