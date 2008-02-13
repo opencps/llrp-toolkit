@@ -152,6 +152,8 @@
     {
     if(cursor<xsl:text disable-output-escaping="yes">&gt;</xsl:text>length)return null;
 
+    UInt16 loop_control_counter = 1;    //used for control choice element parsing loop
+    
     int field_len = 0;
     object obj_val;
     ArrayList param_list = new ArrayList();
@@ -173,7 +175,7 @@
 
     <xsl:for-each select="*">
       <xsl:if test="name()='field'">
-        if(cursor<xsl:text disable-output-escaping="yes">&gt;</xsl:text>length)throw new Exception("Input data is not complete message");
+        if(cursor<xsl:text disable-output-escaping="yes">&gt;</xsl:text>length)throw new Exception("Input data is not a complete LLRP message");
         <xsl:if test="@type='u1v' or @type='u8v' or @type='u16v' or @type='u32v' or @type='utf8v'">
           field_len = Util.DetermineFieldLength(ref bit_array, ref cursor);
         </xsl:if>
@@ -256,18 +258,26 @@
         <xsl:variable name="choiceParameterName">
           <xsl:call-template name='DefineParameterName'/>
         </xsl:variable>
+        loop_control_counter = 1;
+        while(loop_control_counter!=1)
+        {
+        loop_control_counter = 0;
         <xsl:for-each select='../../llrp:choiceDefinition'>
           <xsl:if test='@name=$choiceParameterName'>
             <xsl:for-each select='*'>
               PARAM_<xsl:value-of select='@type'/> _param_<xsl:value-of select='@type'/> = PARAM_<xsl:value-of select='@type'/>.FromBitArray(ref bit_array, ref cursor, length);
-              if(_param_<xsl:value-of select='@type'/>!=null)obj.<xsl:copy-of select='$choiceParameterName'/>.Add(_param_<xsl:value-of select='@type'/>);
-              <!--obj.<xsl:copy-of select='$choiceParameterName'/>_type = ENUM_<xsl:copy-of select='$choiceParameterName'/>_TYPE.<xsl:value-of select='@type'/>;-->
+              if(_param_<xsl:value-of select='@type'/>!=null)
+              {
+              loop_control_counter++;
+              obj.<xsl:copy-of select='$choiceParameterName'/>.Add(_param_<xsl:value-of select='@type'/>);
+              }
               while((_param_<xsl:value-of select='@type'/> = PARAM_<xsl:value-of select='@type'/>.FromBitArray(ref bit_array, ref cursor, length))!=null){
               obj.<xsl:copy-of select='$choiceParameterName'/>.Add(_param_<xsl:value-of select='@type'/>);
               }
             </xsl:for-each>
           </xsl:if>
         </xsl:for-each>
+        }
       </xsl:if>
     </xsl:for-each>
     return obj;
