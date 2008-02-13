@@ -30,3 +30,6 @@ or LLRP drivers for other languages, Please check http://sourceforge.net/project
    Feb 5, 2008
    7). Bug fixed. Description: (Decoder error when LLRP message is at certain length. 
        Reason is that the actual data length read from socket was not used for reform the LLRP packet )
+   Feb 13, 2008
+   8). Allowed multiple types of "choice" parameter to exist in a single LLRP parameter.
+   
