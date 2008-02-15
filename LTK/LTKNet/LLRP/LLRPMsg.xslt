@@ -374,6 +374,9 @@
             <xsl:when test ="@format='Hex'">
               xml_str +="<xsl:text disable-output-escaping="yes">&lt;</xsl:text><xsl:value-of select="@name"/><xsl:text disable-output-escaping="yes">&gt;</xsl:text>" + <xsl:value-of select="@name"/>.ToHexString() + "<xsl:text disable-output-escaping="yes">&lt;/</xsl:text><xsl:value-of select="@name"/><xsl:text disable-output-escaping="yes">&gt;</xsl:text>";
             </xsl:when>
+            <xsl:when test ="@type='u1'">
+              xml_str +="<xsl:text disable-output-escaping="yes">&lt;</xsl:text><xsl:value-of select="@name"/><xsl:text disable-output-escaping="yes">&gt;</xsl:text>" + <xsl:value-of select="@name"/>.ToString().ToLower() + "<xsl:text disable-output-escaping="yes">&lt;/</xsl:text><xsl:value-of select="@name"/><xsl:text disable-output-escaping="yes">&gt;</xsl:text>";
+            </xsl:when>
             <xsl:otherwise>
               xml_str +="<xsl:text disable-output-escaping="yes">&lt;</xsl:text><xsl:value-of select="@name"/><xsl:text disable-output-escaping="yes">&gt;</xsl:text>" + <xsl:value-of select="@name"/>.ToString() + "<xsl:text disable-output-escaping="yes">&lt;/</xsl:text><xsl:value-of select="@name"/><xsl:text disable-output-escaping="yes">&gt;</xsl:text>";
             </xsl:otherwise>
@@ -546,15 +549,29 @@
           msg.<xsl:copy-of select='$choiceParameterName'/> = new UNION_<xsl:value-of select="@type"/>();
           <xsl:for-each select='../../llrp:choiceDefinition'>
             <xsl:if test='@name=$choiceParameterName'>
+              try
+              {
+              foreach (XmlNode ccnode in node.ChildNodes)
+              {
+              switch (ccnode.Name)
+              {
               <xsl:for-each select='*'>
-                XmlNodeList xnl = XmlUtil.GetXmlNodes(node, "<xsl:call-template name='DefineParameterName'/>");
-                if(xnl.Count!=0)
-                {
-                <!--msg.<xsl:copy-of select='$choiceParameterName'/>_type = ENUM_<xsl:copy-of select='$choiceParameterName'/>_TYPE.<xsl:value-of select='@type'/>;-->
-                for(int i=0; i<xsl:text disable-output-escaping="yes">&lt;</xsl:text>xnl.Count; i++)
-                msg.<xsl:copy-of select='$choiceParameterName'/>.Add(PARAM_<xsl:value-of select='@type'/>.FromXmlNode(xnl[i]));
-                }
+                case "<xsl:call-template name='DefineParameterName'/>":
+                <xsl:choose>
+                  <xsl:when test="@type='Custom'">
+                    ICustom_Parameter custom = CustomParamDecodeFactory.DecodeXmlNodeToCustomParameter(ccnode);
+                    if(custom!=null)msg.<xsl:copy-of select='$choiceParameterName'/>.Add(custom);
+                    break;
+                  </xsl:when>
+                  <xsl:otherwise>
+                    msg.<xsl:copy-of select='$choiceParameterName'/>.Add(PARAM_<xsl:value-of select='@type'/>.FromXmlNode(ccnode));
+                    break;
+                  </xsl:otherwise>
+                </xsl:choose>
               </xsl:for-each>
+              }
+              }
+              }catch{}
             </xsl:if>
           </xsl:for-each>
           }

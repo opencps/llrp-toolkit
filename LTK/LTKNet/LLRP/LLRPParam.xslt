@@ -171,6 +171,9 @@
             <xsl:when test ="@format='Hex'">
               xml_str +="<xsl:text disable-output-escaping="yes">&lt;</xsl:text><xsl:value-of select="@name"/><xsl:text disable-output-escaping="yes">&gt;</xsl:text>" + <xsl:value-of select="@name"/>.ToHexString() + "<xsl:text disable-output-escaping="yes">&lt;/</xsl:text><xsl:value-of select="@name"/><xsl:text disable-output-escaping="yes">&gt;</xsl:text>";
             </xsl:when>
+            <xsl:when test ="@type='u1'">
+              xml_str +="<xsl:text disable-output-escaping="yes">&lt;</xsl:text><xsl:value-of select="@name"/><xsl:text disable-output-escaping="yes">&gt;</xsl:text>" + <xsl:value-of select="@name"/>.ToString().ToLower() + "<xsl:text disable-output-escaping="yes">&lt;/</xsl:text><xsl:value-of select="@name"/><xsl:text disable-output-escaping="yes">&gt;</xsl:text>";
+            </xsl:when>
             <xsl:otherwise>
               xml_str +="<xsl:text disable-output-escaping="yes">&lt;</xsl:text><xsl:value-of select="@name"/><xsl:text disable-output-escaping="yes">&gt;</xsl:text>" + <xsl:value-of select="@name"/>.ToString() + "<xsl:text disable-output-escaping="yes">&lt;/</xsl:text><xsl:value-of select="@name"/><xsl:text disable-output-escaping="yes">&gt;</xsl:text>";
             </xsl:otherwise>
@@ -337,33 +340,26 @@
             <xsl:if test='@name=$choiceParameterName'>
               try
               {
+              foreach (XmlNode ccnode in node.ChildNodes)
+              {
+              switch (ccnode.Name)
+              {
               <xsl:for-each select='*'>
+                case "<xsl:call-template name='DefineParameterName'/>":
                 <xsl:choose>
                   <xsl:when test="@type='Custom'">
-                    {
-                    XmlNodeList xnl = XmlUtil.GetXmlNodes(node, "<xsl:call-template name='DefineParameterName'/>");
-                    if(xnl.Count!=0)
-                    {
-                    for(int i=0; i<xsl:text disable-output-escaping="yes">&lt;</xsl:text>xnl.Count; i++)
-                    {
-                    ICustom_Parameter custom = CustomParamDecodeFactory.DecodeXmlNodeToCustomParameter(xnl[i]);
+                    ICustom_Parameter custom = CustomParamDecodeFactory.DecodeXmlNodeToCustomParameter(ccnode);
                     if(custom!=null)param.<xsl:copy-of select='$choiceParameterName'/>.Add(custom);
-                    }
-                    }
-                    }
+                    break;
                   </xsl:when>
                   <xsl:otherwise>
-                    {
-                    XmlNodeList xnl = XmlUtil.GetXmlNodes(node, "<xsl:call-template name='DefineParameterName'/>");
-                    if(xnl.Count!=0)
-                    {
-                    for(int i=0; i<xsl:text disable-output-escaping="yes">&lt;</xsl:text>xnl.Count; i++)
-                    param.<xsl:copy-of select='$choiceParameterName'/>.Add(PARAM_<xsl:value-of select='@type'/>.FromXmlNode(xnl[i]));
-                    }
-                    }
+                    param.<xsl:copy-of select='$choiceParameterName'/>.Add(PARAM_<xsl:value-of select='@type'/>.FromXmlNode(ccnode));
+                    break;
                   </xsl:otherwise>
                 </xsl:choose>
               </xsl:for-each>
+              }
+              }
               }catch{}
             </xsl:if>
           </xsl:for-each>

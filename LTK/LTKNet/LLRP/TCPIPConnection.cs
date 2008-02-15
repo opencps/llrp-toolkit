@@ -51,7 +51,7 @@ namespace LLRP
     /// </summary>
     class TCPIPClient : CommunicationInterface
     {
-        private const int BUFFER_SIZE = 1024;
+        private const int BUFFER_SIZE = 2048;
         
         private TcpClient tcp_client;
         private NetworkStream ns;
@@ -128,9 +128,8 @@ namespace LLRP
                         msg_cursor = 0;
                         int reserved_date_len = nReads - offset;
 
-                        if (reserved_date_len > 10)
+                        if (reserved_date_len >= 10)
                         {
-
                             //Calculate message type, version, length and id
                             int header = (ss.data[offset] << 8) + ss.data[offset + 1];
                             try
@@ -171,7 +170,6 @@ namespace LLRP
 
                                     Array.Copy(ss.data, offset, msg_data, 0, nReads - offset);
                                     msg_cursor = nReads - offset;
-
                                 }
                             }
                         }

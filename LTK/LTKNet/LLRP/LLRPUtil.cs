@@ -92,7 +92,28 @@ namespace LLRP.DataType
         {
             string s = string.Empty;
 
-            for (int i = 0; i < byte_array.Length; i++) s += string.Format("{0:X2}", byte_array[i]);
+            try
+            {
+                for (int i = 0; i < byte_array.Length; i++) s += string.Format("{0:X2}", byte_array[i]);
+            }
+            catch { }
+            return s;
+        }
+
+        /// <summary>
+        /// Convert byte array to Hex string in word order.
+        /// </summary>
+        /// <param name="byte_array"></param>
+        /// <returns></returns>
+        public static string ConvertByteArrayToHexWordString(byte[] byte_array)
+        {
+            string s = string.Empty;
+
+            try
+            {
+                for (int i = 0; i < byte_array.Length; i += 2) s += string.Format("{0:X2}{0:X2} ", byte_array[i], byte_array[i + 1]);
+            }
+            catch { }
             return s;
         }
 
@@ -130,7 +151,11 @@ namespace LLRP.DataType
         public static BitArray ConvertByteArrayToBitArray(byte[] data)
         {
             BitArray bit_array = new BitArray(data.Length * 8);
-            for (int i = 0; i < data.Length; i++) for (int j = 0; j < 8; j++) bit_array[i * 8 + j] = (((data[i] >> (7 - j)) & 0x01) == 1) ? true : false;
+            try
+            {
+                for (int i = 0; i < data.Length; i++) for (int j = 0; j < 8; j++) bit_array[i * 8 + j] = (((data[i] >> (7 - j)) & 0x01) == 1) ? true : false;
+            }
+            catch { }
             return bit_array;
         }
 
@@ -155,14 +180,18 @@ namespace LLRP.DataType
         public static object CalculateVal(ref BitArray bit_array, ref int cursor, int len)
         {
             UInt64 val = 0;
-            for (int i = 0; i < len; i++)
+            try
             {
-                val = val << 1;
-                if (cursor >= bit_array.Length) return (object)0;
-                val += (UInt64)(bit_array[cursor] ? 1 : 0);
+                for (int i = 0; i < len; i++)
+                {
+                    val = val << 1;
+                    if (cursor >= bit_array.Length) return (object)0;
+                    val += (UInt64)(bit_array[cursor] ? 1 : 0);
 
-                cursor++;
+                    cursor++;
+                }
             }
+            catch { }
 
             return (object)val;
         }

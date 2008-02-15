@@ -141,6 +141,23 @@ namespace LLRP.DataType
         }
 
         /// <summary>
+        /// Convert to bit array to Hex string in word order
+        /// </summary>
+        /// <returns></returns>
+        public string ToHexWordString()
+        {
+            try
+            {
+                byte[] bD = Util.ConvertBitArrayToByteArray(data.ToArray());
+                return Util.ConvertByteArrayToHexWordString(bD);
+            }
+            catch
+            {
+                return "code error!";
+            }
+        }
+
+        /// <summary>
         /// Convert to dec. based string
         /// </summary>
         /// <returns></returns>
@@ -221,6 +238,15 @@ namespace LLRP.DataType
         public int Count
         {
             get { return data.Count; }
+        }
+
+        /// <summary>
+        /// Convert to Hex string
+        /// </summary>
+        /// <returns></returns>
+        public string ToHexWordString()
+        {
+            return Util.ConvertByteArrayToHexWordString(data.ToArray());
         }
 
         /// <summary>
@@ -322,7 +348,26 @@ namespace LLRP.DataType
                 UInt16 hD = (UInt16)(data[i] >> 8);
                 UInt16 lD = (UInt16)(data[i] & 0x00FF);
 
-                s += hD.ToString("X2") + lD.ToString("X2");
+                s += hD.ToString("X2") + lD.ToString("X2") + " ";
+            }
+
+            return s;
+        }
+
+        /// <summary>
+        /// Convert to Hex string in word order
+        /// </summary>
+        /// <returns></returns>
+        public string ToHexWordString()
+        {
+            string s = string.Empty;
+
+            for (int i = 0; i < data.Count; i++)
+            {
+                UInt16 hD = (UInt16)(data[i] >> 8);
+                UInt16 lD = (UInt16)(data[i] & 0x00FF);
+
+                s += hD.ToString("X2") + lD.ToString("X2")+" ";
             }
 
             return s;
