@@ -20,7 +20,7 @@ import org.apache.velocity.app.Velocity;
 import org.apache.velocity.exception.MethodInvocationException;
 import org.apache.velocity.exception.ParseErrorException;
 import org.apache.velocity.exception.ResourceNotFoundException;
-import org.llrp.ltk.exceptions.LLRPException;
+
 import org.llrp.ltkGenerator.generated.ChoiceDefinition;
 import org.llrp.ltkGenerator.generated.CustomChoiceDefinition;
 import org.llrp.ltkGenerator.generated.CustomEnumerationDefinition;
@@ -107,7 +107,7 @@ public class CodeGenerator {
 	public void generate() {
 		logger.debug("start code generation");
 		logger.debug("retrieve llrp definitions");
-		String jaxBPackage;
+		String jaxBPackage = "";
 		String[] extensions;
 		String filePaths = "";
 		try {
@@ -122,10 +122,9 @@ public class CodeGenerator {
 				filePaths += oneExt[1] + ";";
 			}
 		} catch (Exception e) {
-			logger.warn("error processing properties file! error message: "+e.getMessage());
-			throw new LLRPException(
-			"error while processing properties file - please check for correctness");
-	}
+			logger.error("error processing properties file! error message: "+e.getMessage());
+			System.exit(1);
+		}
 
 		LlrpDefinition llrp = LLRPUnmarshaller.getLLRPDefinition(jaxBPackage,filePaths);
 		logger.debug("finished retrieving llrp definitions");
