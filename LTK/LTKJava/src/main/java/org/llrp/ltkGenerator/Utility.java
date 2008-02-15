@@ -7,12 +7,10 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.log4j.Logger;
-import org.llrp.ltk.exceptions.LLRPException;
 import org.llrp.ltkGenerator.generated.Annotation;
 import org.llrp.ltkGenerator.generated.ChoiceDefinition;
 import org.llrp.ltkGenerator.generated.ChoiceParameterReference;
@@ -326,13 +324,13 @@ public class Utility {
 		if (!s.equalsIgnoreCase(NOTYPE)) {
 			// if it already contains the key but a different value, something is not ok!
 			if (superTypes.containsKey(sub.toLowerCase()) && !superTypes.get(sub.toLowerCase()).equalsIgnoreCase(s)){
-				throw new LLRPException("trying to set "+ s+" as super type for "+ sub+ " but super type is already set to "+superTypes.get(sub.toLowerCase()));
+				throw new RuntimeException("Invalid definition in LLRPdef.xml or extension: trying to set "+ s+" as super type for "+ sub+ " but super type is already set to "+superTypes.get(sub.toLowerCase()));
 			}
 			superTypes.put(sub.toLowerCase(), s);
 			logger.debug("Utility.setSupertype: set " + s + " for " + sub.toLowerCase());
 		} else {
 			if (superTypes.containsKey(sub.toLowerCase()) && !superTypes.get(sub.toLowerCase()).equalsIgnoreCase(sup)){
-				throw new LLRPException("trying to set "+ sup+" as super type for "+ sub.toLowerCase()+ " but super type is already set to "+superTypes.get(sub.toLowerCase()));
+				throw new RuntimeException("Invalid definition in LLRPdef.xml or extension: trying to set "+ sup+" as super type for "+ sub.toLowerCase()+ " but super type is already set to "+superTypes.get(sub.toLowerCase()));
 			}
 			superTypes.put(sub.toLowerCase(), sup);
 			logger.debug("Utility.setSupertype: set " + sup + " for " + sub.toLowerCase());
