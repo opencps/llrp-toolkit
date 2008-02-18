@@ -95,14 +95,8 @@ $utility.clearImports()
 	$utility.addImport("UnsignedShort")
 	import org.llrp.ltk.types.UnsignedInteger;
 	$utility.addImport("UnsignedInteger")
-	import org.llrp.ltk.exceptions.LLRPException;
-	$utility.addImport("LLRPException")
 	import org.llrp.ltk.exceptions.MissingParameterException;
 	$utility.addImport("MissingParameterException")
-	import org.llrp.ltk.exceptions.IllegalBitListException;
-	$utility.addImport("IllegalBitListException")
-	import org.llrp.ltk.exceptions.WrongParameterException;
-	$utility.addImport("WrongParameterException")
 	import org.llrp.ltk.types.TLVParameter;
 	$utility.addImport("TLVParameter")
 	import org.llrp.ltk.types.TVParameter;
@@ -701,7 +695,7 @@ $utility.clearNumberOfReserved()
 							#if ($field.getRepeat()==$exactlyOnceRepeat )
 								// its an error - parameter must be here
 								LOGGER.warn("parameter "+$curName +" not set but it is not optional");
-								//throw new IllegalBitListException("parameter expected: $field.getType() but recieved " + type );
+								//throw new MissingParameterException("parameter expected: $field.getType() but recieved " + type );
 							#else
 								LOGGER.info("parameter "+$curName +" not set");
 							#end
