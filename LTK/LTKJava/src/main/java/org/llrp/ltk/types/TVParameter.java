@@ -15,8 +15,6 @@
  */
 package org.llrp.ltk.types;
 
-import org.llrp.ltk.exceptions.LLRPException;
-
 
 /**
  * TV Parameter do not encode length as the length is implicitly given by the
@@ -47,7 +45,7 @@ public abstract class TVParameter extends LLRPParameter {
         if (!tN.equals(getTypeNum())) {
             // LLRPMessage.logger.error("incorrect type. Expected
             // "+getTypeNum().toShort()+" message indicates "+tN.toShort());
-            throw new LLRPException("incorrect type. Expected " +
+            throw new IllegalArgumentException("incorrect type. Expected " +
                 getTypeNum().toShort() + " message indicates " + tN.toShort());
         }
 
@@ -61,7 +59,6 @@ public abstract class TVParameter extends LLRPParameter {
      *
      * @return LLRPBitList
      *
-     * @throws LLRPException
      */
     public LLRPBitList encodeBinary() {
         LLRPBitList le = getTypeNum().encodeBinary();

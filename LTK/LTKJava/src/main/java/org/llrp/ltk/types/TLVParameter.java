@@ -17,8 +17,6 @@ package org.llrp.ltk.types;
 
 import org.apache.log4j.Logger;
 
-import org.llrp.ltk.exceptions.LLRPException;
-
 
 /**
  * TLVParameter have type values from 128 to 1024 TLVParameters encode the
@@ -39,7 +37,7 @@ public abstract class TLVParameter extends LLRPParameter {
      *
      * @param binary list to be decoded
      *
-     * @throws LLRPException
+     * @throws IllegalArgumentException
      *             in case of any error or unexpected behaviour
      */
     public final void decodeBinary(LLRPBitList binary) {
@@ -49,7 +47,7 @@ public abstract class TLVParameter extends LLRPParameter {
         if (!tN.equals(getTypeNum())) {
             logging.error("incorrect type. Expected " + getTypeNum().toShort() +
                 " message indicates " + tN.toShort());
-            throw new LLRPException("incorrect type. Expected " +
+            throw new IllegalArgumentException("incorrect type. Expected " +
                 getTypeNum().toShort() + " message indicates " + tN.toShort());
         }
 
@@ -60,7 +58,7 @@ public abstract class TLVParameter extends LLRPParameter {
         if (bitLength.toShort() != binary.length()) {
             logging.error("incorrect length. Expected " + binary.length() +
                 " message indicates " + bitLength.toShort());
-            throw new LLRPException("incorrect length");
+            throw new IllegalArgumentException("incorrect length");
         }
 
         int headLength = RESERVEDLENGTH + TYPENUMBERLENGTH +
@@ -78,7 +76,6 @@ public abstract class TLVParameter extends LLRPParameter {
      *
      * @return LLRPBitList
      *
-     * @throws LLRPException
      */
     public final LLRPBitList encodeBinary() {
         //
