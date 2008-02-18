@@ -22,10 +22,8 @@ import org.jdom.Document;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 
-import org.llrp.ltk.exceptions.IllegalBitListException;
-import org.llrp.ltk.exceptions.LLRPException;
+import org.llrp.ltk.exceptions.InvalidLLRPMessageException;
 import org.llrp.ltk.exceptions.MissingParameterException;
-import org.llrp.ltk.exceptions.WrongParameterException;
 
 import org.xml.sax.SAXException;
 
@@ -72,7 +70,10 @@ public abstract class LLRPMessage {
      *
      * @return Byte[] which can directly be sent over a stream
      */
-    public final byte[] encodeBinary() {
+    public final byte[] encodeBinary() throws InvalidLLRPMessageException {
+    	
+    	try {
+    	
         LLRPBitList result = new LLRPBitList();
         result.append(reserved.encodeBinary());
         if (version != null){
@@ -94,6 +95,14 @@ public abstract class LLRPMessage {
         finalizeEncode(result);
 
         return result.toByteArray();
+        
+    	}
+    	catch (IllegalArgumentException e) {
+    		throw new InvalidLLRPMessageException(e.getMessage());
+    	}
+    	catch (MissingParameterException e) {
+    		throw new InvalidLLRPMessageException(e.getMessage());
+    	}        
     }
 
     /**
@@ -101,7 +110,7 @@ public abstract class LLRPMessage {
      *
      * @return LLRPBitList
      */
-    protected abstract LLRPBitList encodeBinarySpecific();
+    protected abstract LLRPBitList encodeBinarySpecific() throws InvalidLLRPMessageException;
 
     /**
      * create message from byte[]. Will also be called from Constructor taking a
@@ -110,18 +119,20 @@ public abstract class LLRPMessage {
      * @param byteArray
      *            representing message
      *
-     * @throws LLRPException
+     * @throws InvalidLLRPMessageException
      *             if bitstring is not well formatted or has any other error
-     * @throws IllegalBitListException
      */
-    public final void decodeBinary(byte[] byteArray) {
-        LLRPBitList bits = new LLRPBitList(byteArray);
+    public final void decodeBinary(byte[] byteArray) throws InvalidLLRPMessageException {
+        
+    	try {
+    	
+    	LLRPBitList bits = new LLRPBitList(byteArray);
 
         // message must have at least 80 bits for header
         if (bits.length() < MINHEADERLENGTH) {
             LOGGER.error("Bit String too short, must be at least 80, is " +
                 bits.length());
-            throw new IllegalBitListException("Bit String too short");
+            throw new InvalidLLRPMessageException("Invalid binary message: Bit String is too short");
         }
 
         Short messageType = new SignedShort(bits.subList(messageReservedLength +
@@ -136,7 +147,7 @@ public abstract class LLRPMessage {
             LOGGER.error("incorrect type. Message of Type " +
                 getTypeNum().toShort() + " expected, but message indicates " +
                 messageType);
-            throw new LLRPException("incorrect type. Message of Type " +
+            throw new InvalidLLRPMessageException("incorrect type. Message of Type " +
                 getTypeNum().toShort() + " expected, but message indicates " +
                 messageType);
         }
@@ -168,7 +179,16 @@ public abstract class LLRPMessage {
         // one.
         // pass only data bits, not header
         decodeBinarySpecific(bits.subList(position, bits.length() - position));
-    }
+   
+    	}
+    	catch (IllegalArgumentException e) {
+    		throw new InvalidLLRPMessageException(e.getMessage());
+    	}
+    	catch (MissingParameterException e) {
+    		throw new InvalidLLRPMessageException(e.getMessage());
+    	}       
+      		
+    	}
 
     // /**
     /**
@@ -222,25 +242,15 @@ public abstract class LLRPMessage {
      * @param version
      *            as bit array
      *
-     * @throws WrongParameterException
      */
     public void setVersion(BitList version) {
         if (version.length() != VERSIONLENGTH) {
             // LLRPMessage.logger.warn("wrong length of version - must be bit
             // array of length 3");
-            throw new LLRPException("wrong length of version");
+            throw new IllegalArgumentException("wrong length of version");
         }
 
         this.version = version;
-    }
-
-    /**
-     * Message as Bitstring.
-     *
-     * @return String
-     */
-    public String toString() {
-        return encodeBinary().toString();
     }
 
     /**
@@ -249,9 +259,9 @@ public abstract class LLRPMessage {
      * @param bits
      *            without header
      *
-     * @throws LLRPException
+     * @throws InvalidLLRPMessageException
      */
-    protected abstract void decodeBinarySpecific(LLRPBitList bits);
+    protected abstract void decodeBinarySpecific(LLRPBitList bits) throws InvalidLLRPMessageException;
 
     /**
      * finalizeEncode sets the length of the message.
@@ -285,7 +295,7 @@ public abstract class LLRPMessage {
      *
      * @return Dom Document
      */
-    public abstract Document encodeXML();
+    public abstract Document encodeXML() throws InvalidLLRPMessageException;
 
     /**
      * create objects from xml.
@@ -293,7 +303,7 @@ public abstract class LLRPMessage {
      * @param xml document as jdom document
      *
      */
-    public abstract void decodeXML(Document xml);
+    public abstract void decodeXML(Document xml) throws InvalidLLRPMessageException;
 
     /**
      * Check xml file against xml schema.
@@ -302,7 +312,7 @@ public abstract class LLRPMessage {
      *
      * @return boolean true if valid
      */
-    public boolean isValidXMLMessage(Document jdomDoc, String schemaPath) {
+    public boolean isValidXMLMessage(Document jdomDoc, String schemaPath) throws InvalidLLRPMessageException {
         try {
             //create input stream of jdomDoc
             XMLOutputter output = new XMLOutputter();
@@ -328,29 +338,63 @@ public abstract class LLRPMessage {
             output.setFormat(Format.getPrettyFormat());
             if (e.getCause() != null){	
             	LOGGER.warn("LTK XML message can not be validated against schema " + schemaPath + output.outputString(jdomDoc)+"because "+e.getCause().getMessage());
-            	throw new LLRPException("LTK XML message can not be validated against schema " + schemaPath + output.outputString(jdomDoc)+"because "+e.getCause().getMessage());
+            	throw new InvalidLLRPMessageException("LTK XML message can not be validated against schema " + schemaPath + output.outputString(jdomDoc)+"because "+e.getCause().getMessage());
             } else {	
             	LOGGER.warn("LTK XML message can not be validated against schema " + schemaPath + output.outputString(jdomDoc));
-            	throw new LLRPException("LTK XML message can not be validated against schema " + schemaPath + output.outputString(jdomDoc));
+            	throw new InvalidLLRPMessageException("LTK XML message can not be validated against schema " + schemaPath + output.outputString(jdomDoc));
             }
           } catch (IOException e) {
             LOGGER.warn("LLRP.xsd schema cannot be found " + schemaPath);
 
-            throw new LLRPException("LLRP.xsd schema cannot be found " + schemaPath);
+            throw new InvalidLLRPMessageException("LLRP.xsd schema cannot be found " + schemaPath);
         }
 
         return true;
     }
 
+    /**
+     * Return LLRP message as string in LTK XML format
+     *
+     * If there is an error during message encoding, the error message is returned.
+     * 
+     * @return LRRP message in LTK XML encoding
+     */
     public String toXMLString() {
-        Document d = this.encodeXML();
-        XMLOutputter outputter = new XMLOutputter();
-        outputter.setFormat(Format.getPrettyFormat());
+    	
+    	try {
+        	
+    		Document d = this.encodeXML();
+            XMLOutputter outputter = new XMLOutputter();
+            outputter.setFormat(Format.getPrettyFormat());
 
-        return outputter.outputString(d);
+            return outputter.outputString(d);
+        
+    	}
+    	catch (InvalidLLRPMessageException e) {
+    		
+    		return e.getMessage();
+   
+    	}
     }
 
+    /**
+     * Return LLRP message as binary string in LLRP binary format.
+     * 
+     * If there is an error during message encoding, the error message is returned.
+     *
+     * @return LRRP message in LLRP binary encoding
+     */
     public String toBinaryString() {
-        return new LLRPBitList(this.encodeBinary()).toString();
+    	
+    	try {
+    	
+    		return new LLRPBitList(this.encodeBinary()).toString();
+        
+    	}
+    	catch (InvalidLLRPMessageException e) {
+    		
+    		return e.getMessage();
+   
+    	}
     }
 }
