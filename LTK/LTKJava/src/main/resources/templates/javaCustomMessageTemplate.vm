@@ -91,14 +91,11 @@ $utility.clearImports()
 	$utility.addImport("UnsignedShort")
 	import org.llrp.ltk.types.UnsignedByte;
 	$utility.addImport("UnsignedByte")
-	import org.llrp.ltk.exceptions.LLRPException;
-	$utility.addImport("LLRPException")
-	import org.llrp.ltk.exceptions.IllegalBitListException;
-	$utility.addImport("IllegalBitListException")
+	import org.llrp.ltk.exceptions.InvalidLLRPMessageException;
+	$utility.addImport("InvalidLLRPMessageException")
 	import org.llrp.ltk.exceptions.MissingParameterException;
 	$utility.addImport("MissingParameterException")
-	import org.llrp.ltk.exceptions.WrongParameterException;
-	$utility.addImport("WrongParameterException")
+
 	
 	
 	import org.llrp.ltk.generated.parameters.Custom;
@@ -527,7 +524,7 @@ $utility.clearNumberOfReserved()
 				## if it is an optional parameter it is ok to come to here. Therefor only print an error message if it is not optional
 					#if ($field.getRepeat()==$exactlyOnceRepeat )
 						// its an error - parameter must be here
-						throw new IllegalBitListException("parameter expected: $field.getType() but recieved " + type );
+						throw new MissingParameterException("parameter expected: $field.getType() but recieved " + type );
 					#else
 						LOGGER.info("parameter "+$curName +" not set");
 					#end
@@ -549,11 +546,10 @@ $utility.clearNumberOfReserved()
 	 */
   	public void decodeXML(final Document document){
   		try{
-  			#set($path = "MESSAGESCHEMAPATH")
-  			isValidXMLMessage(document,LLRPConstants.$message.getVendor().toUpperCase()$path);
-  		} catch (LLRPException e){
-			throw new IllegalArgumentException("Validation of input XML LLRP message against "+ LLRPConstants.$message.getVendor().toUpperCase()$path + " schema failed.");
-		}
+  		
+  		#set($path = "MESSAGESCHEMAPATH")
+  		isValidXMLMessage(document,LLRPConstants.$message.getVendor().toUpperCase()$path);
+  		
   		Element root = document.getRootElement();
   		List<Element> tempList = null;
   		// the version field is always 3 bit long
@@ -590,7 +586,7 @@ $utility.clearNumberOfReserved()
 					$curName = new $utility.firstToUpperCase($curType)(temp);
 				} else {
 					LOGGER.warn("Element $curName not provided in xml as child of "+root.getName());
-					throw new WrongParameterException("Element $curName not provided");
+					throw new MissingParameterException("Element $curName not provided");
 				}
 			#else
 						//TODO template wrote this - unexpected object $field
@@ -667,6 +663,15 @@ $utility.clearNumberOfReserved()
 			// TODO repeat is $field.getRepeat() but this is not yet implemented
 		#end
 	#end
+  	
+  	}
+	catch (IllegalArgumentException e) {
+		throw new InvalidLLRPMessageException(e.getMessage());
+		}
+	catch (MissingParameterException e) {
+		throw new InvalidLLRPMessageException(e.getMessage());
+	    	}
+  	
   	}
   
   	
@@ -675,6 +680,10 @@ $utility.clearNumberOfReserved()
 	 * {@inheritDoc}
 	 */
 	public Document encodeXML(){
+	
+			try{
+	
+	
 			#set($ns = "NAMESPACE")
 			Namespace ns = Namespace.getNamespace("$message.getVendor()",LLRPConstants.$message.getVendor().toUpperCase()$ns);
 			Element root = new Element("$message.getName()",ns);
@@ -764,6 +773,15 @@ $utility.clearNumberOfReserved()
   		} else {
   			return null;
   		}
+  		
+  		}
+			catch (IllegalArgumentException e) {
+				throw new InvalidLLRPMessageException(e.getMessage());
+				}
+			catch (MissingParameterException e) {
+				throw new InvalidLLRPMessageException(e.getMessage());
+		    	}
+  		
 	}
 ##must clear numbers of reserved definitons found
 $utility.clearNumberOfReserved() 	
