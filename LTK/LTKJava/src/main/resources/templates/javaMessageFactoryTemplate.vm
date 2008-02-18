@@ -25,8 +25,6 @@
 
 package org.llrp.ltk.generated.messages;
 
-import java.lang.reflect.InvocationTargetException;
-
 import org.apache.log4j.Logger;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -34,6 +32,7 @@ import java.util.HashMap;
 import org.llrp.ltk.types.LLRPBitList;
 import org.llrp.ltk.types.LLRPMessage;
 import org.llrp.ltk.types.SignedShort;
+import org.llrp.ltk.exceptions.InvalidLLRPMessageException;
 import org.llrp.ltk.generated.messages.*;
 
 
@@ -88,7 +87,7 @@ public class LLRPMessageFactory {
 	 * @return appropriate LLRPMessage out of the given LLRPBitList
 	 * 		   or null when Message couldn't be generated
 	 */
-	public static LLRPMessage createLLRPMessage(LLRPBitList bits) {
+	public static LLRPMessage createLLRPMessage(LLRPBitList bits) throws InvalidLLRPMessageException {
 
 		// determine messageType
 		Short messageType = new SignedShort(bits.subList(reservedLength
@@ -103,8 +102,13 @@ public class LLRPMessageFactory {
 					message = new $message.getName()(bits);
 		#end
 
-		
-		return message;
+		// check whether the message type exists
+		if(message == null){
+		    throw new InvalidLLRPMessageException("The message type (\"" + messageType + "\") specified in the binary LLRP message is not known.");
+		}
+		else {
+			return message;
+		}
 	}
 
 	/**
@@ -115,14 +119,14 @@ public class LLRPMessageFactory {
 	 * @return appropriate LLRPMessage out of the given byte[]
 	 * 		   or null when Message couldn't be generated
 	 */
-	public static LLRPMessage createLLRPMessage(byte[] byteArray) {
+	public static LLRPMessage createLLRPMessage(byte[] byteArray) throws InvalidLLRPMessageException {
 
 		LLRPBitList bits = new LLRPBitList(byteArray);
 
 		return createLLRPMessage(bits);
 	}
 
-	public static LLRPMessage createLLRPMessage(Document document) {
+	public static LLRPMessage createLLRPMessage(Document document) throws InvalidLLRPMessageException {
 
 		// determine messageType
 		Element root = document.getRootElement();
@@ -137,6 +141,13 @@ public class LLRPMessageFactory {
 				message = new $message.getName()(document);
 		#end
 
-		return message;
+		// check whether the message type exists
+		if(message == null){
+		    throw new InvalidLLRPMessageException("The message type (\"" + className + "\") specified in the LTK-XML message is not known.");
+		}
+		else {
+			return message;
+		}
+
 	}
 }
