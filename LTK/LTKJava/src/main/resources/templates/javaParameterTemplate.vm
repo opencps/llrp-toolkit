@@ -88,14 +88,8 @@ $utility.clearImports()
 	$utility.addImport("SignedShort")
 	import org.llrp.ltk.types.UnsignedShort;
 	$utility.addImport("UnsignedShort")
-	import org.llrp.ltk.exceptions.LLRPException;
-	$utility.addImport("LLRPException")
 	import org.llrp.ltk.exceptions.MissingParameterException;
 	$utility.addImport("MissingParameterException")
-	import org.llrp.ltk.exceptions.IllegalBitListException;
-	$utility.addImport("IllegalBitListException")
-	import org.llrp.ltk.exceptions.WrongParameterException;
-	$utility.addImport("WrongParameterException")
 	import org.llrp.ltk.types.TLVParameter;
 	$utility.addImport("TLVParameter")
 	import org.llrp.ltk.types.TVParameter;
@@ -698,8 +692,8 @@ $utility.clearNumberOfReserved()
 					tempLength=8*tempByteLength;
 				}
 			
-			} catch (LLRPException le) {
-				// if a LLRPException is thrown, list was not long enough so the parameter is missing
+			} catch (IllegalArgumentException le) {
+				// if an IllegalArgumentException is thrown, list was not long enough so the parameter is missing
 				## throw exception only when single Parameter - if it is optinal it is okay that it is not set
 				#if ( $field.getRepeat() == $exactlyOnceRepeat)
 					LOGGER.warn("$parameter.getName() misses non optional parameter of type $field.getType()");
