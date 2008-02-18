@@ -93,10 +93,8 @@ $utility.clearImports()
 	$utility.addImport("UnsignedInteger")
 	import org.llrp.ltk.exceptions.MissingParameterException;
 	$utility.addImport("MissingParameterException")
-	import org.llrp.ltk.exceptions.WrongParameterException;
-	$utility.addImport("WrongParameterException")
-	import org.llrp.ltk.exceptions.LLRPException;
-	$utility.addImport("LLRPException")
+	import org.llrp.ltk.exceptions.InvalidLLRPMessageException;
+	$utility.addImport("InvalidLLRPMessageException")
 import org.llrp.ltk.generated.LLRPConstants;
 	$utility.addImport("LLRPConstants")
 	
@@ -269,7 +267,7 @@ $utility.clearNumberOfReserved()
  * calls decodeBinary to decode message.
  * @param list to be decoded
  */
-	public $message.getName()(final LLRPBitList list){
+	public $message.getName()(final LLRPBitList list) throws InvalidLLRPMessageException {
 		decodeBinary(list.toByteArray());
 	}
 
@@ -278,7 +276,7 @@ $utility.clearNumberOfReserved()
  * calls decodeBinary to decode message.
  * @param byteArray representing message
  */
-	public $message.getName()(final byte[] byteArray){
+	public $message.getName()(final byte[] byteArray) throws InvalidLLRPMessageException {
 		decodeBinary(byteArray);
 	}
 	
@@ -287,7 +285,7 @@ $utility.clearNumberOfReserved()
  * calls decodeXML to decode message.
  * @param document to be decoded
  */	
-	public $message.getName()(final Document document){
+	public $message.getName()(final Document document) throws InvalidLLRPMessageException {
 		decodeXML(document);
 	}
 
@@ -314,7 +312,7 @@ $utility.clearNumberOfReserved()
 		/**
 	 * {@inheritDoc}
 	 */
-	protected LLRPBitList encodeBinarySpecific(){
+	protected LLRPBitList encodeBinarySpecific() throws InvalidLLRPMessageException {
 	LLRPBitList resultBits = new LLRPBitList();
 	## field or reserved
 	#foreach($field in $message.getFieldOrReserved())
@@ -323,7 +321,7 @@ $utility.clearNumberOfReserved()
 		#elseif ($utility.hasType($field,$fieldDefinition))
 			if ($utility.firstToLowerCase($field.getName())== null){
 				LOGGER.warn(" $utility.firstToLowerCase($field.getName()) not set");
-				throw new MissingParameterException(" $utility.firstToLowerCase($field.getName()) not set  for Parameter of Type $message.getType()");
+				throw new InvalidLLRPMessageException(" $utility.firstToLowerCase($field.getName()) not set  for Parameter of Type $message.getType()");
 			} 
 			resultBits.append($utility.firstToLowerCase($field.getName())$encode);
 		## FieldDefinition
@@ -346,7 +344,7 @@ $utility.clearNumberOfReserved()
 			if ($curName$list== null){
 				LOGGER.warn(" $curName$list not set");
 				//parameter has to be set - throw exception
-				throw new MissingParameterException(" $curName$list not set");
+				throw new InvalidLLRPMessageException(" $curName$list not set");
 			} else {
 				for ($field.Type field : $curName$list){
 					resultBits.append(field$encode);
@@ -365,7 +363,7 @@ $utility.clearNumberOfReserved()
 			if ($curName == null){
 				// single parameter, may not be null
 				LOGGER.warn(" $curName not set");
-				throw new MissingParameterException(" $curName not set");
+				throw new InvalidLLRPMessageException(" $curName not set");
 			} else {
 				resultBits.append($curName$encode);
 			}
@@ -390,7 +388,10 @@ $utility.clearNumberOfReserved()
 		/**
 	 * {@inheritDoc}
 	 */
-	public Document encodeXML(){
+	public Document encodeXML() throws InvalidLLRPMessageException {
+	
+			try{
+	
 			Namespace ns = Namespace.getNamespace("llrp",LLRPConstants.LLRPNAMESPACE);
 
 			Element root = new Element("$message.getName()",ns);
@@ -400,12 +401,12 @@ $utility.clearNumberOfReserved()
 			#end
         	
 			if (version == null){
-				throw new MissingParameterException("Version not set");
+				throw new InvalidLLRPMessageException("Version not set");
 			} else {
 				root.setAttribute("Version", version.toString());
 			}
 			if (messageID == null){
-				throw new MissingParameterException("MessageID not set");
+				throw new InvalidLLRPMessageException("MessageID not set");
 			} else {
 				root.setAttribute("MessageID", messageID.toString());
 			}
@@ -417,7 +418,7 @@ $utility.clearNumberOfReserved()
 				## FieldDefinition
 				if ($utility.firstToLowerCase($field.getName())== null){
 					LOGGER.warn(" $utility.firstToLowerCase($field.getName()) not set");
-					throw new MissingParameterException(" $utility.firstToLowerCase($field.getName()) not set");
+					throw new InvalidLLRPMessageException(" $utility.firstToLowerCase($field.getName()) not set");
 				} else {
 					root.addContent($utility.firstToLowerCase($field.getName())$encodeXML("$field.getName()",ns));
 				}
@@ -440,7 +441,7 @@ $utility.clearNumberOfReserved()
 			#if ($field.getRepeat()==$mustListRepeat)
 				if ($curName$list== null){
 					LOGGER.warn(" $curName$list not set");
-					throw new MissingParameterException("  $curName$list not set");
+					throw new InvalidLLRPMessageException("  $curName$list not set");
 				} 
 				for ($field.getType() field : $curName$list){
 					##choices have to be set by the actual name - not the name of the interface
@@ -463,7 +464,7 @@ $utility.clearNumberOfReserved()
 			#elseif ($field.getRepeat()== $exactlyOnceRepeat)
 				if ($curName == null){
 					LOGGER.info("$curName not set");
-					throw new MissingParameterException("$curName not set");
+					throw new InvalidLLRPMessageException("$curName not set");
 				} else {
 					root.addContent($curName$encodeXML("$field.getType()",ns));
 				}
@@ -477,6 +478,20 @@ $utility.clearNumberOfReserved()
   		} else {
   			return null;
   		}
+  		
+  		
+  		}
+		    	catch (IllegalArgumentException e) {
+		    		throw new InvalidLLRPMessageException(e.getMessage());
+		    	}
+		    	catch (MissingParameterException e) {
+		    		throw new InvalidLLRPMessageException(e.getMessage());
+		    	}
+		    	
+  		
+  		
+  		
+  		
 	}
 ##must clear numbers of reserved definitons found
 $utility.clearNumberOfReserved() 	
@@ -488,7 +503,7 @@ $utility.clearNumberOfReserved()
 		/**
 	 * {@inheritDoc}
 	 */
-	protected void decodeBinarySpecific(LLRPBitList binary){
+	protected void decodeBinarySpecific(LLRPBitList binary) throws InvalidLLRPMessageException {
 		int position = 0;
 		int tempByteLength;
 		int tempLength = 0;
@@ -665,7 +680,7 @@ $utility.clearNumberOfReserved()
 					//if list is still empty no parameter matched
 					if ($curName$list$isEmpty){
 						LOGGER.warn("encoded message does not contain parameter for non optional $curName$list");
-						throw new MissingParameterException("$message.getName() misses non optional parameter of type $field.getType()");
+						throw new InvalidLLRPMessageException("$message.getName() misses non optional parameter of type $field.getType()");
 					}
 				#else
 					//if list is still empty no parameter matched
@@ -693,12 +708,12 @@ $utility.clearNumberOfReserved()
 					tempLength=8*tempByteLength;
 				}
 			
-			} catch (LLRPException le) {
-				// if a LLRPException is thrown, list was not long enough so the parameter is missing
+			} catch (IllegalArgumentException le) {
+				// if an IllegalArgumentException is thrown, list was not long enough so the parameter is missing
 				## throw exception only when single Parameter - if it is optinal it is okay that it is not set
 				#if ( $field.getRepeat() == $exactlyOnceRepeat)
 					LOGGER.warn("$message.getName() misses non optional parameter of type $field.getType()");
-					throw new MissingParameterException("$message.getName() misses non optional parameter of type $field.getType()");
+					throw new InvalidLLRPMessageException("$message.getName() misses non optional parameter of type $field.getType()");
 				#else
 				##if it is optional, just inform that it is not set
 					LOGGER.info("$message.getName() misses optional parameter of type $field.getType()");
@@ -750,7 +765,7 @@ $utility.clearNumberOfReserved()
 				if (!found){
 					#if ( $field.getRepeat() == $exactlyOnceRepeat)
 					LOGGER.warn("encoded message misses non optional parameter $curName");
-					throw new MissingParameterException("$message.getName() misses non optional parameter of type $field.getType()");
+					throw new InvalidLLRPMessageException("$message.getName() misses non optional parameter of type $field.getType()");
 					#else	
 						##if it is optional, just inform that it is not set
 						LOGGER.warn("encoded message misses non optional parameter $curName");
@@ -781,7 +796,7 @@ $utility.clearNumberOfReserved()
 				if (!found){
 					#if ( $field.getRepeat() == $exactlyOnceRepeat)
 						LOGGER.warn("$message.getName() misses non optional parameter of type $field.getType()");
-						throw new MissingParameterException("$message.getName() misses non optional parameter of type $field.getType()");
+						throw new InvalidLLRPMessageException("$message.getName() misses non optional parameter of type $field.getType()");
 					#else	
 						##if it is optional, just inform that it is not set
 						LOGGER.info("$message.getName() misses optional parameter of type $field.getType()");
@@ -800,7 +815,7 @@ $utility.clearNumberOfReserved()
 					## if it is an optional parameter it is ok to come to here. Therefor only print an error message if it is not optional
 					#if ( $field.getRepeat() == $exactlyOnceRepeat)
 						LOGGER.warn("$message.getName() misses non optional parameter of type $field.getType()");
-						throw new MissingParameterException("$message.getName() misses non optional parameter of type $field.getType()");
+						throw new InvalidLLRPMessageException("$message.getName() misses non optional parameter of type $field.getType()");
 					#else	
 						##if it is optional, just inform that it is not set
 						LOGGER.info("$message.getName() misses optional parameter of type $field.getType()");
@@ -822,12 +837,12 @@ $utility.clearNumberOfReserved()
 		/**
 	 * {@inheritDoc}
 	 */
-  	public void decodeXML(final Document document){
-  		try{
-  			isValidXMLMessage(document,LLRPConstants.LLRPMESSAGESCHEMAPATH);
-  		} catch (LLRPException e){
-			throw new IllegalArgumentException("Validation of input XML LLRP message against "+ LLRPConstants.LLRPMESSAGESCHEMAPATH + " schema failed.");
-		}
+  	public void decodeXML(final Document document) throws InvalidLLRPMessageException {
+
+		try {
+
+  		isValidXMLMessage(document,LLRPConstants.LLRPMESSAGESCHEMAPATH);
+  		
   		Element root = document.getRootElement();
   		List<Element> tempList = null;
   		// the version field is always 3 bit long
@@ -864,7 +879,7 @@ $utility.clearNumberOfReserved()
 					$curName = new $curType(temp);
 				} else {
 					LOGGER.warn("Element $curName not provided in xml as child of "+root.getName());
-					throw new WrongParameterException("Element $curName not provided");
+					throw new MissingParameterException("Element $curName not provided");
 				}
 			#else
 						//TODO template wrote this - unexpected object $field
@@ -929,7 +944,7 @@ $utility.clearNumberOfReserved()
 				## if it is an optional parameter it is ok to come to here. Therefor only print an error message if it is not optional
 					#if ($field.getRepeat()==$exactlyOnceRepeat )
 						// its an error - parameter must be here
-						throw new MissingParameterException("parameter expected: $field.getType() but received $field.getType()");
+						throw new InvalidLLRPMessageException("parameter expected: $field.getType() but received $field.getType()");
 					#else
 						LOGGER.info("parameter "+$curName +" not set");
 					#end
@@ -941,6 +956,18 @@ $utility.clearNumberOfReserved()
 			// TODO repeat is $field.getRepeat() but this is not yet implemented
 		#end
 	#end
+	
+	
+	}
+	    	catch (IllegalArgumentException e) {
+	    		throw new InvalidLLRPMessageException(e.getMessage());
+	    	}
+	    	catch (MissingParameterException e) {
+	    		throw new InvalidLLRPMessageException(e.getMessage());
+	    	}
+	
+	
+	
   	}
   
 
