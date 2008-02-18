@@ -15,8 +15,6 @@
  */
 package org.llrp.ltk.types;
 
-import org.llrp.ltk.exceptions.LLRPException;
-
 import java.util.BitSet;
 
 
@@ -245,23 +243,20 @@ public class LLRPBitList {
      * @param subLength
      *            long sublist is
      *
-     * @return
-     *
-     * @throws LLRPException thrown
+     * @return LLRPBitList sublist starting at from and total length sublength
      */
-    public LLRPBitList subList(Integer from, Integer subLength)
-        throws LLRPException {
+    public LLRPBitList subList(Integer from, Integer subLength) {
         if (from < 0) {
             // logger.error("try to start sublist at negative position - this is
             // not possible");
-            throw new LLRPException(
-                "try to start sublist at negative position - this is not possible");
+            throw new IllegalArgumentException(
+                "illegal argument: trying to start sublist at negative position");
         }
 
         if (length < (from + subLength)) {
             // logger.error("list not long enough. List has "+length+" elements,
             // tried to get sublist from "+from+" with length "+subLength);
-            throw new LLRPException("list not long enough");
+            throw new IllegalArgumentException("illegal argument: from plus sublist length longer than existing list");
         }
 
         // return a new bitlist containing copies of the elements
