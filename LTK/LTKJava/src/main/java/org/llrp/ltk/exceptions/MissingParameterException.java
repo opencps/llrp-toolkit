@@ -23,7 +23,7 @@ package org.llrp.ltk.exceptions;
  *
  * @author Basil Gasser - ETH Zurich
  */
-public class MissingParameterException extends LLRPException {
+public class MissingParameterException extends RuntimeException {
     /**
          * Creates a new MissingParameterException object.
          *
