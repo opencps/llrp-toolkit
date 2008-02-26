@@ -169,7 +169,7 @@ public class UnsignedShortArray extends LLRPType {
 	 * 
 	 * @return
 	 */
-	public static Integer length() {
+	public static int length() {
 		return UnsignedShort.length();
 	}
 

@@ -82,7 +82,7 @@ public class UnsignedByte extends LLRPNumberType {
      *
      * @return Integer
      */
-    public static Integer length() {
+    public static int length() {
         return LENGTH;
     }
 

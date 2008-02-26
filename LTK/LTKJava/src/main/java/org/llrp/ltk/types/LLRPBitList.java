@@ -194,7 +194,7 @@ public class LLRPBitList {
      *
      * @return
      */
-    public Integer length() {
+    public int length() {
         return length;
     }
 

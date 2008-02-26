@@ -107,7 +107,7 @@ public class UnsignedShort extends LLRPNumberType {
      *
      * @return test
      */
-    public static Integer length() {
+    public static int length() {
         return LENGTH;
     }
 

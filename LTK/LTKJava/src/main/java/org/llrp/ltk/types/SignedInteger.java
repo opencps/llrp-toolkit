@@ -97,7 +97,7 @@ public class SignedInteger extends LLRPNumberType {
      *
      * @return Integer
      */
-    public static Integer length() {
+    public static int length() {
         return LENGTH;
     }
 

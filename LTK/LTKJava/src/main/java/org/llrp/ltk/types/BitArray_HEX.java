@@ -70,7 +70,7 @@ public class BitArray_HEX extends BitArray {
 	 * 
 	 * @return Integer representing number of bits used for this type
 	 */
-	public static Integer length() {
+	public static int length() {
 		return LENGTH;
 	}
 

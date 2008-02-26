@@ -54,7 +54,7 @@ public class BitList extends LLRPType {
      * @param bitString to be decoded
      */
     public BitList(String bitString) {
-        this();
+        this( bitString.length());
         setValue(Integer.parseInt(bitString, 2));
     }
 
@@ -164,7 +164,7 @@ public class BitList extends LLRPType {
      *
      * @return Integer
      */
-    public Integer length() {
+    public int length() {
         return length;
     }
 

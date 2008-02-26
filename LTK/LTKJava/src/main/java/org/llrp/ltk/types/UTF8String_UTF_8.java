@@ -40,7 +40,7 @@ public class UTF8String_UTF_8 extends UTF8String {
      *
      * @return
      */
-    public static Integer length() {
+    public static int length() {
         return LENGTH;
     }
 }

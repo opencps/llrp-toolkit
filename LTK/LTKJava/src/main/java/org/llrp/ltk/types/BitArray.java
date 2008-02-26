@@ -132,7 +132,7 @@ public class BitArray extends LLRPType {
      *
      * @return Integer representing number of bits nedded for this type
      */
-    public static Integer length() {
+    public static int length() {
         return Bit.length();
     }
 

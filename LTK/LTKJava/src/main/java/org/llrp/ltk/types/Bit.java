@@ -113,7 +113,7 @@ public class Bit extends LLRPNumberType {
      *
      * @return Integer representing number of bits nedded for this type
      */
-    public static Integer length() {
+    public static int length() {
         return LENGTH;
     }
 

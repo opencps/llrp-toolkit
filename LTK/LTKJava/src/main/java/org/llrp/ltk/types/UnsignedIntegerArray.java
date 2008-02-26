@@ -102,7 +102,7 @@ public class UnsignedIntegerArray extends LLRPType {
      *
      * @return
      */
-    public static Integer length() {
+    public static int length() {
         return UnsignedInteger.length();
     }
 

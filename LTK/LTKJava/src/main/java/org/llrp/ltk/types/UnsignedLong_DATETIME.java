@@ -48,7 +48,7 @@ public class UnsignedLong_DATETIME extends UnsignedLong {
      *
      * @return
      */
-    public static Integer length() {
+    public static int length() {
         return LENGTH;
     }
 

@@ -106,7 +106,7 @@ public class SignedShort extends LLRPNumberType {
      *
      * @return Integer
      */
-    public static Integer length() {
+    public static int length() {
         return LENGTH;
     }
 

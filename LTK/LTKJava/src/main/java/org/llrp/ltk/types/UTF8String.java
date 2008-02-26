@@ -85,7 +85,7 @@ public class UTF8String extends LLRPType {
      *
      * @return Integer
      */
-    public static Integer length() {
+    public static int length() {
         // 8 because we encod it as bytes and a byte has 8 bits
         return 8;
     }

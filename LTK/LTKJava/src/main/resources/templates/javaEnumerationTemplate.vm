@@ -345,7 +345,7 @@ public class $className extends $superType implements LLRPEnumeration{
      *
      * @return Integer
      */
-    public static Integer length() {
+    public static int length() {
     	#set($length = ".length()")
         return $utility.getSuperType($className)$length; 
     }

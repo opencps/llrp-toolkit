@@ -106,7 +106,7 @@ public class TwoBitField extends LLRPType {
      *
      * @return Integer
      */
-    public static Integer length() {
+    public static int length() {
         return length;
     }
 

@@ -123,7 +123,7 @@ public class BytesToEnd extends LLRPType {
      *
      * @return  length of BaseType
      */
-    public static Integer length() {
+    public static int length() {
         return LLRPInteger.length();
     }
 

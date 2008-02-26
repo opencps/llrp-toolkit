@@ -26,7 +26,7 @@ public class Integer96_HEX extends Integer96 {
     *
     * @return
     */
-    public static Integer length() {
+    public static int length() {
         return LENGTH;
     }
 
