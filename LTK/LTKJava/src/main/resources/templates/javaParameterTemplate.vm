@@ -906,7 +906,7 @@ $utility.clearNumberOfReserved()
 					#else
 					##if it is optional, just inform that it is not set
 						if (tempList == null || tempList.isEmpty() ){
-							LOGGER.info("$parameter.getName() misses non optional parameter of type $curName$list");
+							LOGGER.info("$parameter.getName() misses optional parameter of type $curName$list");
 						} else {
 							for (Element e : tempList){
 								#if ($utility.isCustom($field.getType()))
