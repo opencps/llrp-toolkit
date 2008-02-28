@@ -948,7 +948,7 @@ $utility.clearNumberOfReserved()
 							throw new MissingParameterException("$parameter.getName() misses non optional parameter of type $curName");
 						#else
 							##if it is optional, just inform that it is not set
-							LOGGER.info("$parameter.getName() misses non optional parameter of type $curName");
+							LOGGER.info("$parameter.getName() misses optional parameter of type $curName");
 						#end
 					}
 				#end		
