@@ -378,7 +378,7 @@ public abstract class LLRPMessage {
     }
 
     /**
-     * Return LLRP message as binary string in LLRP binary format.
+     * Return LLRP message as binary string in LLRP binary encoding.
      * 
      * If there is an error during message encoding, the error message is returned.
      *
@@ -397,4 +397,32 @@ public abstract class LLRPMessage {
    
     	}
     }
+    
+    /**
+     * Return LLRP message as hex string in LLRP binary encoding.
+     * 
+     * If there is an error during message encoding, the error message is returned.
+     *
+     * @return LRRP message in LLRP binary encoding
+     */
+    public String toHexString() {
+    	
+    	try {
+    	
+    		byte[] bytes = this.encodeBinary();
+    		StringBuilder sb = new StringBuilder();
+    		for(byte b: bytes) {
+    			// encode each byte as a 2character hex with a one-space separation
+				sb.append((Integer.toString( ( b & 0xff ) + 0x100, 16).substring( 1 ) + " ").toUpperCase());
+			}
+    		return sb.toString();
+        
+    	}
+    	catch (InvalidLLRPMessageException e) {
+    		
+    		return e.getMessage();
+   
+    	}
+    }
+    
 }
