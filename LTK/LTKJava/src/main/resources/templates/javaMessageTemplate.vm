@@ -257,9 +257,11 @@ $utility.clearNumberOfReserved()
 ## constructor
 		
 /**
- * empty constructor to create new message.
+ * empty constructor to create new message 
+ * with LLRP version set to 1.0 (0x1).
  */
 	public $message.getName()(){
+		setVersion(new BitList(0,0,1));
 	}
 
 /**
