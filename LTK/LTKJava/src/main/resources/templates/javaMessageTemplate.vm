@@ -355,7 +355,7 @@ $utility.clearNumberOfReserved()
 		#elseif ($field.getRepeat()==$optionalListRepeat)
 			if ($curName$list== null){
 				//just warn - it is optional 
-				LOGGER.warn(" $curName$list not set");
+				LOGGER.info(" $curName$list not set");
 			} else {
 				for ($field.Type field : $curName$list){
 					resultBits.append(field$encode);
@@ -372,7 +372,7 @@ $utility.clearNumberOfReserved()
 		#elseif ($field.getRepeat()==$optionalRepeat)
 			if ($curName == null){
 				// optional parameter, may be null
-				LOGGER.warn(" $curName not set");
+				LOGGER.info(" $curName not set");
 			} else {
 				resultBits.append($curName$encode);
 			}
@@ -770,7 +770,7 @@ $utility.clearNumberOfReserved()
 					throw new InvalidLLRPMessageException("$message.getName() misses non optional parameter of type $field.getType()");
 					#else	
 						##if it is optional, just inform that it is not set
-						LOGGER.warn("encoded message misses non optional parameter $curName");
+						LOGGER.info("encoded message misses non optional parameter $curName");
 					#end
 				}
 			#elseif ($utility.isCustom($field.getType()))
