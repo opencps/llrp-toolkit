@@ -24,6 +24,7 @@ import jargs.gnu.CmdLineParser;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.FilenameFilter;
@@ -37,7 +38,8 @@ import org.jdom.Document;
 import org.jdom.JDOMException;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
-//import org.llrp.ltk.generated.messages.LLRPMessageFactory;
+import org.llrp.ltk.exceptions.InvalidLLRPMessageException;
+import org.llrp.ltk.generated.messages.LLRPMessageFactory;
 import org.llrp.ltk.types.LLRPBitList;
 import org.llrp.ltk.types.LLRPMessage;
 
@@ -58,6 +60,7 @@ import org.llrp.ltk.types.LLRPMessage;
  * java -jar LTKJava<Version>.jar -x -d messages/xml -t messages/bin");<p>
 	
 	}                                         
+ *
  *
  */
 public class LLRPConverter {
@@ -83,6 +86,7 @@ public class LLRPConverter {
 		FileWriter out;
 		String output;
 		FilenameFilter filter;
+		LLRPMessage message;
 
 		// converted files are written to the destination directory if 
 		// no other directory is specified
@@ -111,17 +115,27 @@ public class LLRPConverter {
 			
 			try {
 				if (xml == Boolean.TRUE) {
-					output = convertMessageToBinary(dir + "/" + filename);
+					message = (LLRPMessage) convertMessageFromXML(dir + "/" + filename); 
 					filename = filename.substring(0, dotPos) + ".bin" ;
+					FileOutputStream ous = new FileOutputStream(new File(targetDir + "/" + filename));
+					ous.write(message.encodeBinary());
+					ous.flush();
+					ous.close();
+					System.out.println("Successfully converted to " + filename);
+
 				}
 				else {
-					output = convertMessageToXML(dir + "/" + filename);
+					message = (LLRPMessage) convertMessageFromBinary(dir + "/" + filename); 
 					filename = filename.substring(0, dotPos) + ".xml" ;
+					out = new FileWriter(new File(targetDir + "/" + filename));
+					out.write(message.toXMLString());
+					out.close();
+					System.out.println("Successfully converted to " + filename);
 				}
-				
-				out = new FileWriter(new File(targetDir + "/" + filename));
-				out.write(output);
-				out.close();
+			}
+			catch (InvalidLLRPMessageException e) {
+				System.err.println("LLRP Message is not valid " + filename);
+				System.err.println(e.getMessage());
 			}
 			catch (FileNotFoundException e) {
 				System.err.println("File not found " + filename);
@@ -141,35 +155,37 @@ public class LLRPConverter {
 
 	}
 
-	private String convertMessageToXML(String file) throws FileNotFoundException, IOException {
+	private LLRPMessage convertMessageFromBinary(String file) throws FileNotFoundException, IOException, InvalidLLRPMessageException {
 
 		String bitstring = getFileContent(file);
 		LLRPBitList bits = new LLRPBitList(bitstring);
 		LOGGER.debug("Input binary message: " + bitstring);
-//		message = LLRPMessageFactory.createLLRPMessage(bits);
+		message = LLRPMessageFactory.createLLRPMessage(bits);
 
-		return message.toXMLString();
+		return message;
 	}
 
-	private String convertMessageToBinary(String file) throws FileNotFoundException, IOException, JDOMException {
+	private LLRPMessage convertMessageFromXML(String file) throws FileNotFoundException, IOException, JDOMException, InvalidLLRPMessageException {
 
 		Document doc = new org.jdom.input.SAXBuilder().build(new
 				FileReader(file));
 		XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat());
 		LOGGER.debug("Input XML Message: " + outputter.outputString(doc));
-//		message = LLRPMessageFactory.createLLRPMessage(doc);
+		message = LLRPMessageFactory.createLLRPMessage(doc);
 
-		return message.toBinaryString();
+		return message;
 	}
 
 
 	private void convert(Boolean xml, Boolean binary, String file, String dir, String targetDir) {
 
+		LLRPMessage message;
 
 		try {
 			if (binary != null) {
 				if (file != null) {
-					System.out.println(convertMessageToXML(file));
+					message = convertMessageFromBinary(file);
+					System.out.println(message.toXMLString());
 				}
 				else if (dir != null) {
 					convertFilesInDirectory(dir, targetDir, Boolean.FALSE);
@@ -181,7 +197,10 @@ public class LLRPConverter {
 			}
 			else if (xml != null) {
 				if (file != null) {
-					System.out.println(convertMessageToBinary(file));
+					
+					message = convertMessageFromXML(file);
+					System.out.println(message.toHexString());
+					
 				}
 				else if (dir != null) {
 					convertFilesInDirectory(dir, targetDir, Boolean.TRUE);
@@ -191,6 +210,10 @@ public class LLRPConverter {
 				}
 
 			}
+		}
+		catch (InvalidLLRPMessageException e) {
+			System.err.println("LLRP Message is not valid " + file);
+			System.err.println(e.getMessage());
 		}
 		catch (FileNotFoundException e) {
 			System.err.println("File not found");
