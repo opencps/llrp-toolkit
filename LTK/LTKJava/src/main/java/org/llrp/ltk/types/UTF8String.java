@@ -17,8 +17,10 @@ package org.llrp.ltk.types;
 
 import org.jdom.Content;
 import org.jdom.Element;
+import org.jdom.IllegalDataException;
 import org.jdom.Namespace;
 import org.jdom.Text;
+import org.jdom.Verifier;
 
 
 /**
@@ -138,10 +140,49 @@ public class UTF8String extends LLRPType {
         string = element.getText();
     }
 
-    @Override
+    /**
+     * create xml representation of this parameter. 
+     * 
+     * This method will check the supplied string to see if it only contains 
+     * characters allowed by the XML 1.0 specification. The C0 controls 
+     * (e.g. null, vertical tab, formfeed, etc.) are removed 
+     * except for carriage return, linefeed and the horizontal tab. 
+     * Surrogates will throw an IllegalDataException. 
+     * 
+     * Note that characters like " and 
+     * < are allowed in attribute values and element content. 
+     * They will simply be escaped when the value is serialized. 
+     *
+     * @param name returned content should have
+     * @param ns Namespace of elements
+     */
     public Content encodeXML(String name, Namespace ns) {
         Element element = new Element(name, ns);
-        element.setContent(new Text(string));
+        
+        // org.jdom.Text includes a method call to org.jdom.Verifier.checkCharacterData
+        // if this check fails, the IllegalDataException is thrown. 
+        // Our code then eliminates the illegal XML Character.
+
+        try {
+        	element.setContent(new Text(string));
+        }
+        catch (IllegalDataException e) {
+        	
+        	StringBuffer buffer = new StringBuffer();
+        	for (int i = 0, len = string.length(); i<len; i++) {
+
+                int ch = string.charAt(i);
+                
+                if (Verifier.isXMLCharacter(ch)) {
+                	buffer.append(string.charAt(i));
+                }
+                else {
+                	// non XML Characters are eliminated
+                }
+        	}
+        	element.setContent(new Text(buffer.toString()));
+        }
+        
 
         return element;
     }
