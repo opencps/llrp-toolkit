@@ -18,6 +18,7 @@
 
 package org.llrp.ltk.generated.messages;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -28,7 +29,6 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.Properties;
 
-import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import org.custommonkey.xmlunit.Diff;
@@ -40,6 +40,7 @@ import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 import org.junit.Before;
 import org.junit.Test;
+import org.llrp.ltk.exceptions.InvalidLLRPMessageException;
 import org.llrp.ltk.types.LLRPBitList;
 import org.llrp.ltk.types.LLRPMessage;
 import org.xml.sax.SAXException;
@@ -64,7 +65,7 @@ import org.xml.sax.SAXException;
  * (see http://xmlunit.sourceforge.org). The binary messages are using 
  * a string comparator.
  * 
- * 
+ * @author Christian Floerkemeier
  */
 public class LLRPMessageFactoryTest extends XMLTestCase{
 
@@ -102,20 +103,20 @@ public class LLRPMessageFactoryTest extends XMLTestCase{
 			filename = testDirName + "/" + filenames[i];
 
 			try {
-				String bitstring = getFileContent(filename);
-				LLRPBitList bits = new LLRPBitList(bitstring);
-				LOGGER.debug("Binary Message used to create Java message: " + bitstring);
+				LLRPBitList bits = getBinaryFileContent(filename);
+				LOGGER.debug("Binary Message used to create Java message: " + bits);
 				message = LLRPMessageFactory.createLLRPMessage(bits);
 				
 				// assert that the binary encoding of the java object is identical to the original binary message
-				LOGGER.debug("Binary Message after decoding/encoding: " + message.toBinaryString());
-				assertEquals("Binary Input not equal to Binary Output for " + message.getClass(), bitstring, message.toBinaryString());
+				LOGGER.debug("Binary Message after decoding/encoding: " + message.toHexString());
+				assertEquals("Binary Input not equal to Binary Output for " + message.getClass(), bits.toString(), message.toBinaryString());
 
+				
 				// assert that the xml encoding of the java object is "identical" to the control xml message		
 				
 			    int dotPos = filename.lastIndexOf(".");
 			    filename = filename.substring(0, dotPos) + ".xml" ;
-				String xmlstring = getFileContent(filename);
+				String xmlstring = getTextFileContent(filename);
 				LOGGER.debug("Expected XML representation: " + xmlstring);
 				LOGGER.debug("XML represenation generated: " + message.toXMLString());
 
@@ -130,6 +131,11 @@ public class LLRPMessageFactoryTest extends XMLTestCase{
 			catch (FileNotFoundException e) {
 				LOGGER.error("File not found " + filename);
 				fail("Could not open message:" + filename);
+			}
+			catch (InvalidLLRPMessageException e) {
+				LOGGER.error("LLRP message not valid " + filename);
+				LOGGER.error(e.getMessage());
+				fail("LLRP message not valid:" + filename);
 			}
 			catch (IOException e) {
 				LOGGER.error("Could not open file " + filename);
@@ -192,7 +198,7 @@ public class LLRPMessageFactoryTest extends XMLTestCase{
 				
 				int dotPos = filename.lastIndexOf(".");
 			    filename = filename.substring(0, dotPos) + ".bin" ;
-				String bitstring = getFileContent(filename);
+				String bitstring = getBinaryFileContent(filename).toString();
 				
 				LOGGER.debug("Expected binary representation: " + bitstring);
 				LOGGER.debug("Binary Message after decoding/encoding: " + message.toBinaryString());
@@ -203,6 +209,11 @@ public class LLRPMessageFactoryTest extends XMLTestCase{
 			catch (FileNotFoundException e) {
 				LOGGER.error("File not found " + filename);
 				fail("Could not open message:" + filename);
+			}
+			catch (InvalidLLRPMessageException e) {
+				LOGGER.error("LLRP message not valid " + filename);
+				LOGGER.error(e.getMessage());
+				fail("LLRP message not valid:" + filename);
 			}
 			catch (IOException e) {
 				LOGGER.error("Could not open file " + filename);
@@ -225,7 +236,29 @@ public class LLRPMessageFactoryTest extends XMLTestCase{
 		
 	}
 
-	private String getFileContent(String filename) throws IOException, FileNotFoundException{
+	protected LLRPBitList getBinaryFileContent(String filename) throws IOException, FileNotFoundException{
+
+		File file = new File(filename);
+		
+		FileInputStream fis = new FileInputStream(file);
+		BufferedInputStream bis = new BufferedInputStream(fis);
+		
+		
+		LLRPBitList bitlist = new LLRPBitList();
+		
+        while (bis.available() > 0) {
+        	byte[] bytes = new byte[bis.available()];
+        	int length = bis.read(bytes);
+        	bitlist.append(new LLRPBitList(bytes));
+        }
+    
+        fis.close();
+        bis.close();
+		return bitlist;
+        
+	}
+	
+	protected String getTextFileContent(String filename) throws IOException, FileNotFoundException{
 
 		File file = new File(filename);
 		FileReader fis = null;
@@ -248,6 +281,7 @@ public class LLRPMessageFactoryTest extends XMLTestCase{
 
 		return buffer.toString();
 	}
+
 
 	private void configure() {
 		
