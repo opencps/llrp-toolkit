@@ -277,11 +277,11 @@ $utility.clearNumberOfReserved()
 	}
 
 
-	public $message.getName()(LLRPBitList list){
+	public $message.getName()(LLRPBitList list) throws InvalidLLRPMessageException {
 		decodeBinary(list.toByteArray());
 	}
 
-	public $message.getName()(byte[] byteArray){
+	public $message.getName()(byte[] byteArray) throws InvalidLLRPMessageException {
 		decodeBinary(byteArray);
 	}
 		
@@ -544,7 +544,7 @@ $utility.clearNumberOfReserved()
 		/**
 	 * {@inheritDoc}
 	 */
-  	public void decodeXML(final Document document){
+  	public void decodeXML(final Document document) throws InvalidLLRPMessageException {
   		try{
   		
   		#set($path = "MESSAGESCHEMAPATH")
@@ -679,7 +679,7 @@ $utility.clearNumberOfReserved()
 		/**
 	 * {@inheritDoc}
 	 */
-	public Document encodeXML(){
+	public Document encodeXML() throws InvalidLLRPMessageException {
 	
 			try{
 	
