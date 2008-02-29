@@ -14,13 +14,13 @@ import java.util.Map;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
 import org.apache.velocity.exception.MethodInvocationException;
 import org.apache.velocity.exception.ParseErrorException;
 import org.apache.velocity.exception.ResourceNotFoundException;
-
 import org.llrp.ltkGenerator.generated.ChoiceDefinition;
 import org.llrp.ltkGenerator.generated.CustomChoiceDefinition;
 import org.llrp.ltkGenerator.generated.CustomEnumerationDefinition;
@@ -82,7 +82,7 @@ public class CodeGenerator {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
+		
 		parameters = new LinkedList<ParameterDefinition>();
 		messages = new LinkedList<MessageDefinition>();
 		enumerations = new LinkedList<EnumerationDefinition>();
@@ -784,6 +784,7 @@ public class CodeGenerator {
 					"usage: provide path to properties file as first and only parammeter");
 		}
 
+		PropertyConfigurator.configure(propertiesFile);
 		CodeGenerator cg = new CodeGenerator(propertiesFile);
 		cg.generate();
 	}
