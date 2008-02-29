@@ -294,6 +294,7 @@ public abstract class LLRPMessage {
      * create xml representation of this parameter.
      *
      * @return Dom Document
+     * @throws InvalidLLRPMessageException
      */
     public abstract Document encodeXML() throws InvalidLLRPMessageException;
 
@@ -301,6 +302,7 @@ public abstract class LLRPMessage {
      * create objects from xml.
      *
      * @param xml document as jdom document
+     * @throws InvalidLLRPMessageException
      *
      */
     public abstract void decodeXML(Document xml) throws InvalidLLRPMessageException;
@@ -311,6 +313,7 @@ public abstract class LLRPMessage {
      * @param schemaPath path to xml schema file
      *
      * @return boolean true if valid
+     * @throws InvalidLLRPMessageException
      */
     public boolean isValidXMLMessage(Document jdomDoc, String schemaPath) throws InvalidLLRPMessageException {
         try {
@@ -358,23 +361,16 @@ public abstract class LLRPMessage {
      * If there is an error during message encoding, the error message is returned.
      * 
      * @return LRRP message in LTK XML encoding
+     * @throws InvalidLLRPMessageException
      */
-    public String toXMLString() {
-    	
-    	try {
-        	
+    public String toXMLString() throws InvalidLLRPMessageException {
+    	       	
     		Document d = this.encodeXML();
             XMLOutputter outputter = new XMLOutputter();
             outputter.setFormat(Format.getPrettyFormat());
 
             return outputter.outputString(d);
-        
-    	}
-    	catch (InvalidLLRPMessageException e) {
-    		
-    		return e.getMessage();
-   
-    	}
+        	
     }
 
     /**
@@ -383,19 +379,12 @@ public abstract class LLRPMessage {
      * If there is an error during message encoding, the error message is returned.
      *
      * @return LRRP message in LLRP binary encoding
+     * @throws InvalidLLRPMessageException
      */
-    public String toBinaryString() {
+    public String toBinaryString() throws InvalidLLRPMessageException {
     	
-    	try {
-    	
-    		return new LLRPBitList(this.encodeBinary()).toString();
+    	return new LLRPBitList(this.encodeBinary()).toString();
         
-    	}
-    	catch (InvalidLLRPMessageException e) {
-    		
-    		return e.getMessage();
-   
-    	}
     }
     
     /**
@@ -404,12 +393,11 @@ public abstract class LLRPMessage {
      * If there is an error during message encoding, the error message is returned.
      *
      * @return LRRP message in LLRP binary encoding
+     * @throws InvalidLLRPMessageException
      */
-    public String toHexString() {
+    public String toHexString() throws InvalidLLRPMessageException {
     	
-    	try {
-    	
-    		byte[] bytes = this.encodeBinary();
+       		byte[] bytes = this.encodeBinary();
     		StringBuilder sb = new StringBuilder();
     		for(byte b: bytes) {
     			// encode each byte as a 2character hex with a one-space separation
@@ -417,12 +405,7 @@ public abstract class LLRPMessage {
 			}
     		return sb.toString();
         
-    	}
-    	catch (InvalidLLRPMessageException e) {
-    		
-    		return e.getMessage();
-   
-    	}
+    	
     }
     
 }
