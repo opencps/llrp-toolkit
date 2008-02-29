@@ -98,15 +98,18 @@ jargs 		1.0			http://sourceforge.net/project/showfiles.php?group_id=33024
 
 COMPILE DEPENDENCIES
 
-Name		Version		URL
+Name		Version			URL
 
-velocity-dep	1.5		http://velocity.apache.org	
-jaxb-xjc	2.0			https://jaxb.dev.java.net/
-jaxb-impl	2.0			https://jaxb.dev.java.net/
-jaxb-api	2.0			https://jaxb.dev.java.net/
-activation	2.0			https://jaxb.dev.java.net/
-jsr173_1.0_api	2.0		https://jaxb.dev.java.net/
-jalopy		0.3.1		http://jalopy.sourceforge.net
+velocity-dep	1.5			http://velocity.apache.org	
+jaxb-xjc		2.0			https://jaxb.dev.java.net/
+jaxb-impl	2.0				https://jaxb.dev.java.net/
+jaxb-api	2.0				https://jaxb.dev.java.net/
+activation	2.0				https://jaxb.dev.java.net/
+jsr173_1.0_api	2.0			https://jaxb.dev.java.net/
+jalopy		0.3.1			http://jalopy.sourceforge.net
+commons-collection 3.2		http://commons.apache.org
+commons-configuration 1.5	http://commons.apache.org
+commons-lang 2.3			http://commons.apache.org
 plus above runtime dependencies
 
 TEST DEPENDENCIES 
