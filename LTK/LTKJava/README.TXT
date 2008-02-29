@@ -100,16 +100,21 @@ COMPILE DEPENDENCIES
 
 Name		Version			URL
 
-velocity-dep	1.5			http://velocity.apache.org	
-jaxb-xjc		2.0			https://jaxb.dev.java.net/
-jaxb-impl	2.0				https://jaxb.dev.java.net/
-jaxb-api	2.0				https://jaxb.dev.java.net/
-activation	2.0				https://jaxb.dev.java.net/
-jsr173_1.0_api	2.0			https://jaxb.dev.java.net/
-jalopy		0.3.1			http://jalopy.sourceforge.net
-commons-collection 3.2		http://commons.apache.org
-commons-configuration 1.5	http://commons.apache.org
-commons-lang 2.3			http://commons.apache.org
+
+velocity-dep 		1.5 	http://velocity.apache.org
+jalopy 				0.3.1 	http://jalopy.sourceforge.net
+jdom 				1.0 	http://www.jdom.org
+log4j 				1.2.15 	http://logging.apache.org/log4j/1.2/download.html
+commons-collection 	3.2		http://commons.apache.org
+commons-configuration 1.5 	http://commons.apache.org
+commons-lang 		2.3 	http://commons.apache.org
+JAXB RI dependencies including:
+jaxb-xjc 			2.0 	https://jaxb.dev.java.net/
+jaxb-impl 			2.0 	https://jaxb.dev.java.net/
+jaxb-api 			2.0 	https://jaxb.dev.java.net/
+activation 			2.0 	https://jaxb.dev.java.net/
+jsr173_1.0_api 		2.0 	https://jaxb.dev.java.net/
+The five above jaxb dependencies are available in a single jar "JAXB RI" from https://jaxb.dev.java.net/. Execute this jar (doubleclick windows, "java -jar <name>" all other platforms) and copy the individual jars to the LTKJava/lib directory)
 plus above runtime dependencies
 
 TEST DEPENDENCIES 
