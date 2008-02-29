@@ -75,12 +75,7 @@ public class CodeFormatter {
         // create a new Jalopy instance with the currently active code convention settings
         Jalopy jalopy = new Jalopy();
 
-        try {
-            Jalopy.setConvention(properties.getProperty("formatDefinitions"));
-        } catch (IOException e1) {
-            // just catch - we just use default formatting
-            logger.warn("formatting file not correctly set");
-        }
+        
 
         logger.debug("formating " + file.getAbsolutePath());
 
