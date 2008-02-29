@@ -25,7 +25,7 @@ USER GUIDE
 1. Download the most recent version of the LLRP Tool Kit for Java and add it to your classpath. 
 Daily build are currently available from 
 
-	http://people.inf.ethz.ch/floerkem/ltk/
+	http://web.mit.edu/~floerkem/www/ltk/
 
 2. Add the runtime dependencies listed below to the classpath if you did not download the
 jar with the dependencies (LTKJava_with_dep_<version>.jar)
