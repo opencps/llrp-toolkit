@@ -51,9 +51,9 @@ public class CodeFormatter {
         if (children != null) {
             for (String name : children) {
                 logger.debug("looking at " + directory.getAbsolutePath() +
-                    "\\" + name);
+                    File.separator + name);
 
-                File temp = new File(directory.getAbsolutePath() + "\\" + name);
+                File temp = new File(directory.getAbsolutePath() + File.separator + name);
 
                 if (temp.isDirectory()) {
                     formatDirectory(temp);
@@ -85,8 +85,9 @@ public class CodeFormatter {
         } catch (FileNotFoundException e) {
             logger.debug("can not set input file: " + e.getLocalizedMessage());
         }
-
+		logger.debug("input file set");
         jalopy.setOutput(file);
+        logger.debug("output file set");
 
         // format and overwrite the given input file
         jalopy.format();
