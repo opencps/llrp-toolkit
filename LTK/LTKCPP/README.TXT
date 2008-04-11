@@ -221,7 +221,7 @@ Library/ltkcpp_gen_cpp.xslt
     Used to process ../../Definition/Core/llrp-1x0-def.xml
     into a transient file named out_ltkcpp.inc.
     Similarly used to process extension definitions.
-    Requires Linux xsltproc(1) or MSXSL.EXE (see gencode.bat)
+    Requires xsltproc(1) 
 
 Library/ltkcpp_gen_h.xslt
     XSLT code generator for C++ declarations (class declarations).
@@ -229,7 +229,7 @@ Library/ltkcpp_gen_h.xslt
     Used to process ../../Definition/Core/llrp-1x0-def.xml
     into a transient file named out_ltkcpp.h.
     Similarly used to process extension definitions.
-    Requires Linux xsltproc(1) or MSXSL.EXE (see gencode.bat)
+    Requires xsltproc(1) 
 
 Library/ltkcpp_genout.cpp
     Wrapper that combines platform headers, LTKCPP base headers,
