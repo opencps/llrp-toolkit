@@ -1339,6 +1339,27 @@ $utility.clearNumberOfReserved()
 		return TYPENUM;
 	}
 	
+		/**
+	* return string representation. All field values but no parameters are included
+	* @return String
+	*/
+	public String toString() {
+		String result = "$parameter.getName(): ";
+		#foreach($field in $parameter.getFieldOrReserved())
+			## reserved field
+			#if ($utility.hasType($field,$reservedDefinition))
+				
+			#elseif ($utility.hasType($field,$fieldDefinition))
+					result += ", $utility.firstToLowerCase($field.getName()): ";
+					result += $utility.firstToLowerCase($field.getName());
+			#else
+						//TODO 2 template wrote this - unexpected object $field
+			#end	
+		#end
+		result = result.replaceFirst(", ", "");
+		return result;
+	}
+	
 ## end of Class	
 }
 

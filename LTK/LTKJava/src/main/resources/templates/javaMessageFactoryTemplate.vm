@@ -29,12 +29,10 @@ import org.apache.log4j.Logger;
 import org.jdom.Document;
 import org.jdom.Element;
 import java.util.HashMap;
-import org.llrp.ltk.types.LLRPBitList;
-import org.llrp.ltk.types.LLRPMessage;
-import org.llrp.ltk.types.SignedShort;
+import org.llrp.ltk.types.*;
 import org.llrp.ltk.exceptions.InvalidLLRPMessageException;
 import org.llrp.ltk.generated.messages.*;
-
+import org.llrp.ltk.generated.custom.messages.*;
 
 /**
  * 
@@ -98,8 +96,20 @@ public class LLRPMessageFactory {
 		
 		// construct appropriate message object
 		#foreach($message in $messages)
-		if(messageType == $message.getTypeNum())
+			if(messageType == $message.getTypeNum()){
 					message = new $message.getName()(bits);
+					#set($subtypeString = ".subtype.intValue()")
+					#if ($message.getName() == "CUSTOM_MESSAGE")
+				        int subtype = ((CUSTOM_MESSAGE) message).getMessageSubtype().intValue();
+						#foreach($custom in $customs)
+				            if (subtype == $custom.getName()$subtypeString){
+            					message = new $custom.getName()(bits);
+            				}
+						#end
+						// end custom
+					#end
+					
+			}
 		#end
 
 		// check whether the message type exists
@@ -137,10 +147,20 @@ public class LLRPMessageFactory {
 		LLRPMessage message = null;
 
 		#foreach($message in $messages)
-		if(className.equals("$message.getName()"))
-				message = new $message.getName()(document);
+		
+		if(className.equals("$message.getName()")){
+					message = new $message.getName()(document);
+					#set($subtypeString = ".subtype.intValue()")
+					#if ($message.getName() == "CUSTOM_MESSAGE")
+				        int subtype = ((CUSTOM_MESSAGE) message).getMessageSubtype().intValue();
+						#foreach($custom in $customs)
+				            if (subtype == $custom.getName()$subtypeString){
+            					message = new $custom.getName()(document);
+            				}
+						#end
+					#end
+		}
 		#end
-
 		// check whether the message type exists
 		if(message == null){
 		    throw new InvalidLLRPMessageException("The message type (\"" + className + "\") specified in the LTK-XML message is not known.");

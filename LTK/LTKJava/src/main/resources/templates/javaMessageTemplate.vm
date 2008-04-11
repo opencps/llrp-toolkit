@@ -302,9 +302,9 @@ $utility.clearNumberOfReserved()
 		#set ($curName = $utility.firstToLowerCase($field.getType()))
 	#end 	
 	#if ($field.getRepeat()== $mustListRepeat  || $field.getRepeat()== $optionalListRepeat)
-		private List<$field.getType()> $curName$list = new LinkedList<$field.getType()>();
+		protected List<$field.getType()> $curName$list = new LinkedList<$field.getType()>();
 	#else
-		private $field.getType() $curName;
+		protected $field.getType() $curName;
 	#end
 #end
 
@@ -461,14 +461,16 @@ $utility.clearNumberOfReserved()
 				if ($curName == null){
 					LOGGER.info("$curName not set");
 				} else {
-					root.addContent($curName$encodeXML("$field.getType()",ns));
+					#set($getSimpleName = ".getClass().getSimpleName()")
+					root.addContent($curName$encodeXML($curName$getSimpleName,ns));
 				}
 			#elseif ($field.getRepeat()== $exactlyOnceRepeat)
 				if ($curName == null){
 					LOGGER.info("$curName not set");
 					throw new InvalidLLRPMessageException("$curName not set");
 				} else {
-					root.addContent($curName$encodeXML("$field.getType()",ns));
+					#set($getSimpleName = ".getClass().getSimpleName()")
+					root.addContent($curName$encodeXML($curName$getSimpleName,ns));
 				}
 			#else
 				// TODO field.getRepeat() = $field.getRepeat()
@@ -931,7 +933,7 @@ $utility.clearNumberOfReserved()
 				##check all subtypes
 				#foreach ($subtype in $utility.getSubTypes($field.getType()))
 					// try to get the element of name $field.getType()
-					temp = root.getChild("$field.getType()",root.getNamespace());
+					temp = root.getChild("$subtype",root.getNamespace());
 					// if it exists - we can instantiate it
 					if (temp != null){
 						$curName = new $subtype (temp);
@@ -1212,7 +1214,15 @@ $utility.clearNumberOfReserved()
 $utility.clearNumberOfReserved() 	
   		
 
+	@Override
+	public String getResponseType() {
+		return RESPONSETYPE;
+	}
 
+	@Override
+	public String getName() {
+		return "$message.getName()";
+	}
 
 	/**
 	* return uniuque type number.

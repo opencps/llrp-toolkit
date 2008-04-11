@@ -75,6 +75,9 @@ $utility.clearImports()
 	import org.llrp.ltk.generated.LLRPConstants;
 	$utility.addImport("LLRPConstants")
 
+
+	import org.llrp.ltk.types.LLRPInteger;
+	$utility.addImport("LLRPInteger")	
 	import org.llrp.ltk.types.LLRPBitList;
 	$utility.addImport("LLRPBitList")	
 	import org.llrp.ltk.types.LLRPMessage;
@@ -100,7 +103,9 @@ $utility.clearImports()
 	
 	import org.llrp.ltk.generated.parameters.Custom;
 	$utility.addImport("Custom")
-	
+	import org.llrp.ltk.generated.messages.CUSTOM_MESSAGE;
+	$utility.addImport("Custom_MESSAGE")
+		
 	##custom parameters
 	#foreach ($custom in $utility.allowedCustom($message.getName()))
 	import org.llrp.ltk.generated.custom.parameters.$custom;
@@ -229,12 +234,13 @@ $utility.clearImports()
 
 
 ## beginning of class
-public class $message.getName() extends LLRPMessage{						
+public class $message.getName() extends LLRPMessage {						
 
 ##typeNum is always needed
 	public static final UTF8String vendor = new UTF8String("$message.getVendor()");
 	public static final UnsignedByte subtype = new UnsignedByte((new Integer($message.getSubtype())).byteValue());
 	private static final Logger LOGGER = Logger.getLogger("$message.getName()");
+    protected UnsignedInteger vendorIdentifier;
 	#if ($message.getResponseType())
 		public static final String RESPONSETYPE = "$message.getResponseType()";
 	#else 
@@ -285,7 +291,9 @@ $utility.clearNumberOfReserved()
 		decodeBinary(byteArray);
 	}
 		
-
+	public $message.getName()(Document document) throws InvalidLLRPMessageException {
+		decodeXML(document);
+	}
 	
 ## parameter or choice
 #foreach($field in $message.getParameterOrChoice())
@@ -382,12 +390,13 @@ $utility.clearNumberOfReserved()
 		position+=UnsignedInteger.length();
 		messageID = new UnsignedInteger(binary.subList(position, UnsignedInteger.length()));
 		position+=UnsignedInteger.length();
-		//call decodeSpecific which is implemented by the class subtyping this one. 
-		// pass only data bits, not header
 		
-		// vendor and message subtype must not be decoded, they are already given by class
-		//jump over vendor and subtype
-		position+=40;
+		vendorIdentifier = new UnsignedInteger(binary.subList(position,
+                    UnsignedInteger.length()));
+        position += UnsignedInteger.length();
+        // subtype needs not to be assigned
+        position += LLRPInteger.length();
+ 
 		
 				
 		
@@ -557,6 +566,21 @@ $utility.clearNumberOfReserved()
         version.setValue(new Integer(root.getAttributeValue("Version")));
         messageID = new UnsignedInteger(root.getAttributeValue("MessageID"));
   		Element temp = null;
+  		## always decode vendor identifier and message subtype
+  		temp = root.getChild("VendorIdentifier", root.getNamespace());
+
+            //check if this element exist
+            if (temp != null) {
+                vendorIdentifier = new UnsignedInteger(temp);
+            } else {
+                LOGGER.warn(
+                    "Element vendorIdentifier not provided in xml as child of " +
+                    root.getName());
+                throw new MissingParameterException(
+                    "Element vendorIdentifier not provided");
+            }
+
+           
 		## field or reserved
 		#foreach($field in $message.getFieldOrReserved())
 			## reserved field
@@ -636,7 +660,7 @@ $utility.clearNumberOfReserved()
 				##check all subtypes
 				#foreach ($subtype in $utility.getSubTypes($field.getType()))
 					// try to get the element of name $field.getType()
-					temp = root.getChild("$field.getType()",root.getNamespace());
+					temp = root.getChild("$subtype",root.getNamespace());
 					// if it exists - we can instantiate it
 					if (temp != null){
 						$curName = new $subtype (temp);
@@ -702,6 +726,21 @@ $utility.clearNumberOfReserved()
 			} else {
 				root.setAttribute("MessageID", messageID.toString());
 			}
+		  if (vendorIdentifier == null) {
+                LOGGER.warn(" vendorIdentifier not set");
+                throw new InvalidLLRPMessageException(
+                    " vendorIdentifier not set");
+            } else {
+                root.addContent(vendorIdentifier.encodeXML("VendorIdentifier",
+                        ns));
+            }
+
+            if (subtype == null) {
+                LOGGER.warn(" messageSubtype not set");
+                throw new InvalidLLRPMessageException(" subtype not set");
+            } else {
+                root.addContent(subtype.encodeXML("subtype", ns));
+            }
 		
 		## field or reserved
 		#foreach($field in $message.getFieldOrReserved())
@@ -751,14 +790,16 @@ $utility.clearNumberOfReserved()
 				if ($curName == null){
 					LOGGER.info("$curName not set");
 				} else {
-					root.addContent($curName$encodeXML("$field.getType()",ns));
+					#set($getSimpleName = ".getClass().getSimpleName()")
+					root.addContent($curName$encodeXML($curName$getSimpleName,ns));
 				}
 			#elseif ($field.getRepeat()== $exactlyOnceRepeat)
 				if ($curName == null){
 					LOGGER.info("$curName not set");
 					throw new MissingParameterException("$curName not set");
 				} else {
-					root.addContent($curName$encodeXML("$field.getType()",ns));
+					#set($getSimpleName = ".getClass().getSimpleName()")
+					root.addContent($curName$encodeXML($curName$getSimpleName,ns));
 				}
 			#else
 				// TODO field.getRepeat() = $field.getRepeat()
@@ -1018,6 +1059,15 @@ $utility.clearNumberOfReserved()
 $utility.clearNumberOfReserved() 	
   		
 
+	@Override
+	public String getResponseType() {
+		return RESPONSETYPE;
+	}
+
+	@Override
+	public String getName() {
+		return "$message.getName()";
+	}
 	
 	@Override
 	public SignedShort getTypeNum() {

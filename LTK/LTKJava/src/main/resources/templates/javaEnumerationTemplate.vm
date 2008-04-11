@@ -54,6 +54,16 @@ public class $className extends $superType implements LLRPEnumeration{
 	#set($class = ".class")
 	Logger logger = Logger.getLogger($className$class);
 	
+	
+				#foreach ($entry in $enum.getEntry())
+					public static final int $entry.getName() = $entry.getValue();
+				#end
+	
+	public $className (){
+		super(0);
+	}
+	
+	
 	/**
 	 * Create new $className by passing integer value.
 	 *
@@ -62,12 +72,12 @@ public class $className extends $superType implements LLRPEnumeration{
 	 * @param value an Integer value allowed - might check first
 	 * with isValidValue it it is an allowed value
 	 */
-	public $className (final Integer value){
+	public $className (int	 value){
 		## arrays can not be created by calling the integer constructor as this would set the length of the array instead of
 		## interpreting it as a value
 		#if ($utility.isArray($utility.getSuperType($className)))
 			// Enumerations must use String constructor
-			super(value.toString());
+			        super(new Integer(value).toString());
 		#else
 			super(value);
 		#end
@@ -80,14 +90,14 @@ public class $className extends $superType implements LLRPEnumeration{
 	#if ($utility.isArray($utility.getSuperType($className)))
 	
 		/**
-		 * Create new AirProtocolsArray by passing jdom element.
+		 * Create new $className by passing jdom element.
 		 *
 		 * @throw IllegalArgumentException
 		 * String must be a concatenation of several enumeration strings seperated by whitespace
 		 * @param element - jdom element where the child is a string
 		 * that contains several names for values of the enumeration.
 		 */
-		public AirProtocolsArray (final Element element){
+		public $className (final Element element){
 			String[] items = element.getText().split(" ");
 			this.bytes = new $utility.getBaseType($superType)[items.length];
 			for (int i = 0; i< items.length;i++){
