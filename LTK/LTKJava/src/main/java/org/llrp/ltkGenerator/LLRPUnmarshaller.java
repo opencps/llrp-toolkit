@@ -64,7 +64,7 @@ public class LLRPUnmarshaller {
                 def = ((JAXBElement<LlrpDefinition>) o).getValue();
             }
         } catch (JAXBException e) {
-            // TODO Auto-generated catch block
+            LOGGER.warn("exception caught: "+e.getMessage());
             e.printStackTrace();
         } 
 
@@ -85,8 +85,9 @@ public class LLRPUnmarshaller {
 
             // if string is not empty or holding semicolon only
             if (xmlPaths.length() > 1) {
-                // ---- Modify XML data ----
                 String[] paths = xmlPaths.split(";");
+                // ---- Modify XML data ----
+            	LOGGER.debug("reading file "+paths[0]);
                 doc = builder.build(paths[0]);
                 // start at 1 as we already read the first
                 for (int i = 1; i < paths.length; i++) {

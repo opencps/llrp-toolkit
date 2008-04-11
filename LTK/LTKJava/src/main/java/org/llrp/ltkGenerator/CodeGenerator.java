@@ -113,9 +113,9 @@ public class CodeGenerator {
 		try {
 			jaxBPackage = properties.getString("jaxBPackage");
 			extensions = properties.getStringArray("definition");
-			logger.warn("*****"+extensions);
 			filePaths = "";
 			for (String s : extensions) {
+				logger.debug("extension: "+s);
 				String[] oneExt = s.split(";");
 				xmlFilePaths.put(oneExt[0], oneExt[1]);
 				schemaPaths.put(oneExt[0], oneExt[2]);
@@ -166,6 +166,9 @@ public class CodeGenerator {
 		logger.debug("finished generating custom choices");
 		logger.debug("start generating constants");
 		generateConstants();
+		logger.debug("finished object generator");
+		
+		generateObjectGenerator();
 		logger.debug("finished generatins constants");
 	}
 
@@ -180,7 +183,7 @@ public class CodeGenerator {
 		try {
 			VelocityContext context = new VelocityContext();
 			context.put("messages", messages);
-
+			context.put("customs",customMessages);
 			Template template = Velocity.getTemplate(properties
 					.getString("messageFactoryTemplate"));
 			BufferedWriter writer = new BufferedWriter(new FileWriter(
@@ -208,6 +211,50 @@ public class CodeGenerator {
 		}
 	}
 
+
+	/**
+	 * generates LLRPMessageFactory.java using the MessageFactoryTemplate.
+	 */
+	private void generateObjectGenerator() {
+		logger.debug("using template "
+				+ properties.getString("objectGeneratorTemplate"));
+		logger.debug("generating objectGenerator");
+
+		try {
+			VelocityContext context = new VelocityContext();
+			context.put("messages", messages);
+			context.put("parameters", parameters);
+			context.put("choices", choices);
+			context.put("enumerations", enumerations);
+			context.put("utility", utility);
+			Template template = Velocity.getTemplate(properties
+					.getString("objectGeneratorTemplate"));
+			BufferedWriter writer = new BufferedWriter(new FileWriter(
+					properties.getString("generateConstantsPackage")
+							+ "LLRPObjectGenerator"
+							+ properties.getString("fileEnding")));
+			template.merge(context, writer);
+			writer.flush();
+			writer.close();
+		} catch (ResourceNotFoundException e) {
+			logger.error("Exception while generating code: "
+					+ e.getLocalizedMessage() + " caused by " + e.getCause());
+		} catch (ParseErrorException e) {
+			logger.error("Exception while generating code: "
+					+ e.getLocalizedMessage() + " caused by " + e.getCause());
+		} catch (MethodInvocationException e) {
+			logger.error("Exception while generating code: "
+					+ e.getLocalizedMessage() + " caused by " + e.getCause());
+		} catch (IOException e) {
+			logger.error("Exception while generating code: "
+					+ e.getLocalizedMessage() + " caused by " + e.getCause());
+		} catch (Exception e) {
+			logger.error("Exception while generating code: "
+					+ e.getLocalizedMessage() + " caused by " + e.getCause());
+		}
+	}
+
+	
 	/**
 	 * generates LLRP Messages using the MessageTemplate and the definitions in
 	 * llrpdef.xml.
@@ -701,8 +748,6 @@ public class CodeGenerator {
 
 		try {
 			VelocityContext context = new VelocityContext();
-			context.put("schemaPath", properties
-					.getString("XMLEncodingSchemaPath"));
 			context.put("XMLEncodingSchema", properties
 					.getString("XMLEncodingSchema"));
 			context.put("extensionSchemas", schemaPaths);

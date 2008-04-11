@@ -20,8 +20,6 @@ import org.llrp.ltkGenerator.generated.Documentation;
 import org.llrp.ltkGenerator.generated.MessageDefinition;
 import org.llrp.ltkGenerator.generated.ParameterDefinition;
 
-import com.sun.org.apache.xerces.internal.dom.ElementNSImpl;
-
 public class Utility {
 	private Map<String, String> superTypes;
 	private List<ChoiceDefinition> choices;
@@ -98,7 +96,9 @@ public class Utility {
 	public String convertType(String xmlType, boolean isEnum) {
 		// two bit enumerations must be handled seperately
 		logger.debug("Utility.convertType: get llrp type for " + xmlType);
-
+		if (xmlType == null){
+			return "null";
+		}
 		if (isEnum) {
 			if (xmlType.equalsIgnoreCase("u2")) {
 				return "TwoBitEnumeration";
@@ -426,12 +426,12 @@ public class Utility {
 					Object x = ((Description) ob).getContent().get(0);
 
 					// allowed are only Element or String
-					if (x instanceof ElementNSImpl) {
-						ElementNSImpl el = (ElementNSImpl) x;
-						doc += el.getTextContent();
-					} else {
+//					if (x instanceof ElementNSImpl) {
+//						ElementNSImpl el = (ElementNSImpl) x;
+//						doc += el.getTextContent();
+//					} else {
 						doc += x.toString();
-					}
+//					}
 				}
 
 				doc += '\n';
@@ -454,12 +454,12 @@ public class Utility {
 					Object x = ((Description) ob).getContent().get(0);
 
 					// allowed are only Element or String
-					if (x instanceof ElementNSImpl) {
-						ElementNSImpl el = (ElementNSImpl) x;
-						doc += el.getTextContent();
-					} else {
+//					if (x instanceof ElementNSImpl) {
+//						ElementNSImpl el = (ElementNSImpl) x;
+//						doc += el.getTextContent();
+//					} else {
 						doc += x.toString();
-					}
+//					}
 				}
 
 				doc += '\n';
