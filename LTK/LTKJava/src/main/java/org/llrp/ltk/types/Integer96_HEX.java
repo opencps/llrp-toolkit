@@ -8,8 +8,12 @@ import org.jdom.Text;
 import java.math.BigInteger;
 
 
-public class Integer96_HEX extends Integer96 {
-    public Integer96_HEX(LLRPBitList list) {
+public class Integer96_HEX extends UnsignedInteger96 {
+    public Integer96_HEX() {
+        super();
+    }
+
+	public Integer96_HEX(LLRPBitList list) {
         super(list);
     }
 
@@ -19,6 +23,10 @@ public class Integer96_HEX extends Integer96 {
 
     public Integer96_HEX(String string) {
         super(new BigInteger(string, 16));
+    }
+    
+    public Integer96_HEX(String string, int radix){
+    	super(new BigInteger(string, radix));
     }
 
     /**

@@ -114,7 +114,7 @@ public class BytesToEnd extends LLRPType {
      *
      * @return Integer
      */
-    public Integer getByteLength() {
+    public int getByteLength() {
         return bytes.size();
     }
 
@@ -132,7 +132,7 @@ public class BytesToEnd extends LLRPType {
      *
      * @return number of elements
      */
-    public Integer size() {
+    public int size() {
         return bytes.size();
     }
 

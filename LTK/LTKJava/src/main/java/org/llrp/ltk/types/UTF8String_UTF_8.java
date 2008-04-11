@@ -4,7 +4,7 @@ import org.jdom.Element;
 
 
 public class UTF8String_UTF_8 extends UTF8String {
-    protected UTF8String_UTF_8() {
+    public UTF8String_UTF_8() {
         string = "";
     }
 

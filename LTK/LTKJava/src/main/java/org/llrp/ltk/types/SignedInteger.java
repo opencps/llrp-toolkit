@@ -15,6 +15,8 @@
  */
 package org.llrp.ltk.types;
 
+import java.math.BigInteger;
+
 import org.jdom.Content;
 import org.jdom.Element;
 import org.jdom.Namespace;
@@ -28,7 +30,7 @@ import org.jdom.Text;
  */
 public class SignedInteger extends LLRPNumberType {
     private static final Integer LENGTH = 32;
-    protected Integer value;
+    protected int value;
 
     /**
          * Creates a new SignedInteger object.
@@ -48,6 +50,10 @@ public class SignedInteger extends LLRPNumberType {
         signed = true;
     }
 
+    
+    public SignedInteger(int value) {
+       this(new Integer(value));
+    }
     /**
          * Creates a new SignedInteger object.
          *
@@ -57,7 +63,13 @@ public class SignedInteger extends LLRPNumberType {
         decodeBinary(bitList);
     }
     
-
+    /**
+     * String representation in specified radix.
+     *
+     */
+    public SignedInteger(String valueString, int radix) {
+        this(new BigInteger(valueString, radix).intValue());
+    }
     /**
      * Creates a new UnsignedInteger object from jdom element - used for xml decoding
      *
@@ -129,7 +141,7 @@ public class SignedInteger extends LLRPNumberType {
     @Override
     public Content encodeXML(String name, Namespace ns) {
         Element element = new Element(name, ns);
-        element.setContent(new Text(value.toString()));
+        element.setContent(new Text(new Integer(value).toString()));
 
         return element;
     }

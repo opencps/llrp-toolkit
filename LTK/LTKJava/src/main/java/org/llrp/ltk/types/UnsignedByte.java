@@ -15,6 +15,8 @@
  */
 package org.llrp.ltk.types;
 
+import java.math.BigInteger;
+
 import org.jdom.Content;
 import org.jdom.Element;
 import org.jdom.Namespace;
@@ -28,14 +30,14 @@ import org.jdom.Text;
  */
 public class UnsignedByte extends LLRPNumberType {
     private static final Integer LENGTH = 8;
-    protected Integer value;
+    protected int value;
 
     /**
          * Creates a new UnsignedByte object.
          *
          * @param value to set
          */
-    public UnsignedByte(Integer value) {
+    public UnsignedByte(int value) {
         this.value = value;
         signed = false;
     }
@@ -78,6 +80,13 @@ public class UnsignedByte extends LLRPNumberType {
     }
 
     /**
+     * String representation in specified radix.
+     *
+     */
+    public UnsignedByte(String valueString, int radix) {
+        this(new BigInteger(valueString, radix).intValue());
+    }
+    /**
      * number of bits used to represent this type
      *
      * @return Integer
@@ -92,7 +101,7 @@ public class UnsignedByte extends LLRPNumberType {
      * @return byte
      */
     public byte toByte() {
-        return value.byteValue();
+        return (byte) value;
     }
 
     /**
@@ -128,7 +137,7 @@ public class UnsignedByte extends LLRPNumberType {
     @Override
     public Content encodeXML(String name, Namespace ns) {
         Element element = new Element(name, ns);
-        element.setContent(new Text(value.toString()));
+        element.setContent(new Text(Integer.toString(value)));
 
         return element;
     }

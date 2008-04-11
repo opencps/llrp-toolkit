@@ -15,6 +15,8 @@
  */
 package org.llrp.ltk.types;
 
+import java.math.BigInteger;
+
 import org.jdom.Content;
 import org.jdom.Element;
 import org.jdom.Namespace;
@@ -59,6 +61,18 @@ public class SignedShort extends LLRPNumberType {
         signed = true;
     }
 
+    /**
+     * String representation in specified radix.
+     *
+     */
+    public SignedShort(String valueString, int radix) {
+        this(new BigInteger(valueString, radix).intValue());
+    }
+
+    public SignedShort(int value) {
+       this(new Integer(value));
+    }
+    
     /**
      * Creates a new SignedShort object.
      */

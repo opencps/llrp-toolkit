@@ -32,7 +32,7 @@ public class UnsignedByteArray_HEX extends UnsignedByteArray {
          * all values initially set to 0
          * @param length of array
          */
-    public UnsignedByteArray_HEX(Integer length) {
+    public UnsignedByteArray_HEX(int length) {
         super(length);
     }
 
@@ -93,7 +93,7 @@ public class UnsignedByteArray_HEX extends UnsignedByteArray {
 
         int length = byteString.length();
 
-        for (Integer i = 0; i < length; i = i + UnsignedByte.length()) {
+        for (int i = 0; i < length; i = i + UnsignedByte.length()) {
         	String temp = byteString.substring(i,UnsignedByte.length());
         	Integer ti = Integer.decode("0x"+temp);
         	tempList.add(new UnsignedByte(ti));

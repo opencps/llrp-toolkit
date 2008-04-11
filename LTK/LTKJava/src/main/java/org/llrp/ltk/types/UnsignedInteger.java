@@ -35,12 +35,31 @@ public class UnsignedInteger extends LLRPNumberType {
     protected BigInteger value;
 
     /**
-     * Creates a new UnsignedInteger object from Java Integer - might loose precision
+     * Creates a new UnsignedInteger object from Java Integer - interpreting signed bit as value
      *
      * @param value to set
      */
     public UnsignedInteger(Integer value) {
-        this.value = new BigInteger(value.toString());
+    	this.value = new BigInteger(Integer.toBinaryString(value.intValue()),2);
+        signed = false;
+    }
+    
+    /**
+     * Creates a new UnsignedInteger object from Java Integer - interpreting signed bit as value
+     *
+     * @param value to set
+     */
+    public UnsignedInteger(int value){
+    	this(new Integer(value));
+    }
+    
+    /**
+     * Creates a new UnsignedInteger object from Java long
+     *
+     * @param value to set
+     */
+    public UnsignedInteger(long value){
+    	this.value = BigInteger.valueOf(value);
         signed = false;
     }
 
@@ -53,6 +72,13 @@ public class UnsignedInteger extends LLRPNumberType {
         value = new BigInteger(valueString);
     }
 
+    /**
+     * String representation in specified radix.
+     *
+     */
+    public UnsignedInteger(String valueString, int radix) {
+        this(new BigInteger(valueString, radix).intValue());
+    }
     /**
      * Creates a new UnsignedInteger object.
      */

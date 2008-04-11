@@ -55,7 +55,7 @@ public class UnsignedShortArray extends LLRPType {
 	 * @param length
 	 *            of array
 	 */
-	public UnsignedShortArray(Integer length) {
+	public UnsignedShortArray(int length) {
 		shorts = new UnsignedShort[length];
 	}
 
@@ -121,7 +121,7 @@ public class UnsignedShortArray extends LLRPType {
 	public boolean equals(LLRPType other) {
 		UnsignedShortArray ba = (UnsignedShortArray) other;
 
-		if (!ba.size().equals(this.size())) {
+		if (ba.size()!=(this.size())) {
 			return false;
 		}
 
@@ -142,7 +142,7 @@ public class UnsignedShortArray extends LLRPType {
 	 * 
 	 * @return UnsignedShort
 	 */
-	public UnsignedShort get(Integer i) {
+	public UnsignedShort get(int i) {
 		return shorts[i];
 	}
 
@@ -151,7 +151,7 @@ public class UnsignedShortArray extends LLRPType {
 	 * 
 	 * @return Integer
 	 */
-	public Integer getBitLength() {
+	public int getBitLength() {
 		return shorts.length * UnsignedShort.length();
 	}
 
@@ -160,7 +160,7 @@ public class UnsignedShortArray extends LLRPType {
 	 * 
 	 * @return Integer
 	 */
-	public Integer getByteLength() {
+	public int getByteLength() {
 		return shorts.length * 2;
 	}
 
@@ -181,7 +181,7 @@ public class UnsignedShortArray extends LLRPType {
 	 * @param b
 	 *            UnsignedShort to be set
 	 */
-	public void set(Integer i, UnsignedShort b) {
+	public void set(int i, UnsignedShort b) {
 		if ((i < 0) || (i > shorts.length)) {
 			return;
 		} else {
@@ -194,7 +194,7 @@ public class UnsignedShortArray extends LLRPType {
 	 * 
 	 * @return
 	 */
-	public Integer size() {
+	public int size() {
 		return shorts.length;
 	}
 

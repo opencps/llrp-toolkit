@@ -217,6 +217,19 @@ public abstract class LLRPMessage {
     public abstract SignedShort getTypeNum();
 
     /**
+     * response message type awaited
+     *
+     * @return SignedShort
+     */
+    public abstract String getResponseType();
+    
+    /**
+     * name of message (same as class name)
+     *
+     * @return SignedShort
+     */
+    public abstract String getName();
+    /**
      * version of llrp.
      *
      * @return BitList
@@ -339,6 +352,7 @@ public abstract class LLRPMessage {
         } catch (SAXException e) {
             XMLOutputter output = new XMLOutputter();
             output.setFormat(Format.getPrettyFormat());
+           
             if (e.getCause() != null){	
             	LOGGER.warn("LTK XML message can not be validated against schema " + schemaPath + output.outputString(jdomDoc)+"because "+e.getCause().getMessage());
             	throw new InvalidLLRPMessageException("LTK XML message can not be validated against schema " + schemaPath + output.outputString(jdomDoc)+"because "+e.getCause().getMessage());

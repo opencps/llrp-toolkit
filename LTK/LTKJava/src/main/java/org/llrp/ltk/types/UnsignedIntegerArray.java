@@ -52,7 +52,7 @@ public class UnsignedIntegerArray extends LLRPType {
          *
          * @param length of array
          */
-    public UnsignedIntegerArray(Integer length) {
+    public UnsignedIntegerArray(int length) {
         integers = new UnsignedInteger[length];
     }
 
@@ -139,7 +139,7 @@ public class UnsignedIntegerArray extends LLRPType {
      * @param i position
      * @param b unsignedInteger to be set
      */
-    public void set(Integer i, UnsignedInteger b) {
+    public void set(int i, UnsignedInteger b) {
         if ((i < 0) || (i > integers.length)) {
             return;
         } else {
@@ -152,7 +152,7 @@ public class UnsignedIntegerArray extends LLRPType {
      *
      * @return
      */
-    public Integer size() {
+    public int size() {
         return integers.length;
     }
 

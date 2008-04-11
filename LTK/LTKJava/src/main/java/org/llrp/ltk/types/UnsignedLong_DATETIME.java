@@ -21,7 +21,7 @@ public class UnsignedLong_DATETIME extends UnsignedLong {
         super(aLong);
     }
 
-    protected UnsignedLong_DATETIME() {
+    public UnsignedLong_DATETIME() {
         this.value = BigInteger.ZERO;
     }
 

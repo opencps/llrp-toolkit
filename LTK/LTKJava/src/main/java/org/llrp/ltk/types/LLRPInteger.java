@@ -15,6 +15,8 @@
  */
 package org.llrp.ltk.types;
 
+import java.math.BigInteger;
+
 import org.jdom.Content;
 import org.jdom.Element;
 import org.jdom.Namespace;
@@ -58,6 +60,20 @@ public class LLRPInteger extends LLRPNumberType {
         this(value.byteValue());
     }
 
+    
+    public LLRPInteger(int value){
+    	this(new Integer(value));
+    }
+
+    /**
+     * String representation in specified radix.
+     *
+     */
+    public LLRPInteger(String valueString, int radix) {
+        this(new BigInteger(valueString, radix).intValue());
+    }
+
+    
     /**
      * Creates a new LLRPInteger object.
      *

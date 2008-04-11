@@ -28,7 +28,7 @@ import java.math.BigInteger;
  *
  * @author Basil Gasser - ETH Zurich
  */
-public class Integer96 extends LLRPNumberType {
+public class UnsignedInteger96 extends LLRPNumberType {
     protected static final Integer LENGTH = 96;
     protected BigInteger value;
 
@@ -37,7 +37,7 @@ public class Integer96 extends LLRPNumberType {
          *
          * @param value to set
          */
-    public Integer96(BigInteger value) {
+    public UnsignedInteger96(BigInteger value) {
         this.value = value;
         signed = true;
     }
@@ -45,7 +45,7 @@ public class Integer96 extends LLRPNumberType {
     /**
          * Creates a new Integer96 object.
          */
-    public Integer96() {
+    public UnsignedInteger96() {
         signed = true;
     }
 
@@ -54,7 +54,7 @@ public class Integer96 extends LLRPNumberType {
          *
          * @param bitList to be decoded
          */
-    public Integer96(LLRPBitList bitList) {
+    public UnsignedInteger96(LLRPBitList bitList) {
         decodeBinary(bitList);
         signed = true;
     }
@@ -64,7 +64,7 @@ public class Integer96 extends LLRPNumberType {
      *
      * @param element to be decoded
      */
-    public Integer96(Element element) {
+    public UnsignedInteger96(Element element) {
         decodeXML(element);
     }
 
@@ -73,7 +73,7 @@ public class Integer96 extends LLRPNumberType {
      *
      * @param string in decimal representation
      */
-    public Integer96(String string) {
+    public UnsignedInteger96(String string) {
         this(new BigInteger(string));
     }
 
@@ -84,22 +84,7 @@ public class Integer96 extends LLRPNumberType {
      */
     public void decodeBinary(LLRPBitList bitList) {
         String bitString = bitList.toString();
-
-        //if first bit is set and list is exactly length bits long, its negative
-        // number is in 2's complement format
-        if ((bitString.length() == LENGTH) && (bitString.charAt(0) == '1')) {
-            //flip all bits
-            // add one
-            bitString = bitString.replaceAll("0", "#");
-            bitString = bitString.replaceAll("1", "0");
-            bitString = bitString.replaceAll("#", "1");
-            bitString = bitString.replaceFirst("0", "");
-            value = new BigInteger(bitString, 2);
-            value = value.add(new BigInteger("1"));
-            value = value.negate();
-        } else {
-            value = new BigInteger(bitString, 2);
-        }
+        value = new BigInteger(bitString,2);
     }
 
     @Override

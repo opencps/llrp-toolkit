@@ -18,7 +18,7 @@ public class UnsignedShortArray_HEX extends UnsignedShortArray {
          *
          * @param length of array
          */
-    public UnsignedShortArray_HEX(Integer length) {
+    public UnsignedShortArray_HEX(int length) {
         super(length);
     }
 

@@ -15,6 +15,8 @@
  */
 package org.llrp.ltk.types;
 
+import java.math.BigInteger;
+
 import org.jdom.Content;
 import org.jdom.Element;
 import org.jdom.Namespace;
@@ -40,6 +42,9 @@ public class UnsignedShort extends LLRPNumberType {
         signed = false;
     }
 
+    public UnsignedShort(int value) {
+       this(new Integer(value));
+    }
     /**
      * Creates a new UnsignedShort object from jdom element - used for xml decoding
      *
@@ -57,6 +62,14 @@ public class UnsignedShort extends LLRPNumberType {
         signed = false;
     }
 
+    /**
+     * String representation in specified radix.
+     *
+     */
+    public UnsignedShort(String valueString, int radix) {
+        this(new BigInteger(valueString, radix).intValue());
+    }
+    
     /**
      * Creates a new UnsignedShort object.
      *

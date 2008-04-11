@@ -15,6 +15,8 @@
  */
 package org.llrp.ltk.types;
 
+import java.math.BigInteger;
+
 import org.jdom.Content;
 import org.jdom.Element;
 import org.jdom.Namespace;
@@ -135,6 +137,18 @@ public class TwoBitField extends LLRPType {
         return bits[i];
     }
 
+    /**
+     * two bit field interpreted as two bit number
+     *
+     * @return int
+     */
+    public int intValue() {
+        String s = bits[1].toString()+""+bits[0].toString();
+        return new BigInteger(s,2).intValue();    
+    }
+    
+    
+    
     /**
      * set Bit at specified position to 1
      *

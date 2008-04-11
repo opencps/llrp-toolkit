@@ -32,7 +32,7 @@ public class UnsignedLong extends LLRPNumberType {
     protected static final Integer LENGTH = 64;
     protected BigInteger value;
 
-    protected UnsignedLong() {
+    public UnsignedLong() {
         this.value = BigInteger.ZERO;
     }
 
@@ -53,6 +53,14 @@ public class UnsignedLong extends LLRPNumberType {
      */
     public UnsignedLong(Element element) {
         decodeXML(element);
+    }
+    
+    /**
+     * String representation in specified radix.
+     *
+     */
+    public UnsignedLong(String valueString, int radix) {
+        this(new BigInteger(valueString, radix).longValue());
     }
 
     /**

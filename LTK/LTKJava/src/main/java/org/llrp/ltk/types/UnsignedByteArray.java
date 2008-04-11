@@ -61,7 +61,7 @@ public class UnsignedByteArray extends LLRPType {
 	 * @param length
 	 *            of array
 	 */
-	public UnsignedByteArray(Integer length) {
+	public UnsignedByteArray(int length) {
 		bytes = new UnsignedByte[length];
 	}
 
@@ -131,7 +131,7 @@ public class UnsignedByteArray extends LLRPType {
 	 * 
 	 * @return Integer
 	 */
-	public Integer getByteLength() {
+	public int getByteLength() {
 		return bytes.length;
 	}
 
@@ -157,7 +157,7 @@ public class UnsignedByteArray extends LLRPType {
 		bytes = new UnsignedByte[length];
 
 		for (Integer i = 1; i <= length; i++) {
-			bytes[i - 1] = new UnsignedByte(list.subList(i
+			bytes[i - 1] = new UnsignedByte(list.subList((i+1)
 					* UnsignedByte.length(), UnsignedByte.length()));
 		}
 	}
@@ -182,7 +182,7 @@ public class UnsignedByteArray extends LLRPType {
 	 * @param b
 	 *            byte to be set
 	 */
-	public void set(Integer i, UnsignedByte b) {
+	public void set(int i, UnsignedByte b) {
 		if ((i < 0) || (i > bytes.length)) {
 			return;
 		} else {
@@ -195,7 +195,7 @@ public class UnsignedByteArray extends LLRPType {
 	 * 
 	 * @return
 	 */
-	public Integer size() {
+	public int size() {
 		return bytes.length;
 	}
 

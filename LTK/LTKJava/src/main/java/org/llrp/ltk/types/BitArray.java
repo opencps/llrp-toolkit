@@ -53,7 +53,7 @@ public class BitArray extends LLRPType {
          * Initially all bits set to 0
          * @param length of array
          */
-    public BitArray(Integer length) {
+    public BitArray(int length) {
         bits = new Bit[length];
 
         for (Integer i = 0; i < length; i++) {
@@ -145,7 +145,6 @@ public class BitArray extends LLRPType {
     public void decodeBinary(LLRPBitList list) {
         Integer length = new SignedInteger(list.subList(0, SignedShort.length())).toInteger();
         bits = new Bit[length];
-
         for (Integer i = 1; i <= length; i++) {
             bits[i - 1] = new Bit(list.get(15 + i));
         }
@@ -158,7 +157,7 @@ public class BitArray extends LLRPType {
      *
      * @return Bit
      */
-    public Bit get(Integer i) {
+    public Bit get(int i) {
         return bits[i];
     }
 
@@ -167,7 +166,7 @@ public class BitArray extends LLRPType {
      *
      * @param i to be set to 1
      */
-    public void set(Integer i) {
+    public void set(int i) {
         if ((i < 0) || (i > bits.length)) {
             return;
         } else {
@@ -180,7 +179,7 @@ public class BitArray extends LLRPType {
      *
      * @return number of elements in array
      */
-    public Integer size() {
+    public int size() {
         return bits.length;
     }
 
@@ -217,4 +216,5 @@ public class BitArray extends LLRPType {
         newBits[bits.length] = aBit;
         bits = newBits;
     }
+    
 }

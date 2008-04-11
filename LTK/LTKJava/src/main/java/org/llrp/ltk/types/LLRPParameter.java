@@ -73,7 +73,7 @@ public abstract class LLRPParameter {
      *
      * @return length of message in bytes (octet)
      */
-    public Integer getByteLength() {
+    public int getByteLength() {
         if ((bitLength == null) || bitLength.equals(new UnsignedShort(0))) {
             bitLength = new UnsignedShort(encodeBinary().length());
         }

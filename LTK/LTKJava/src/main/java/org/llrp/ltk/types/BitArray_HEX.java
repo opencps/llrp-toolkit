@@ -38,7 +38,7 @@ public class BitArray_HEX extends BitArray {
 	 * @param length
 	 *            of array
 	 */
-	public BitArray_HEX(Integer length) {
+	public BitArray_HEX(int length) {
 		super(length);
 	}
 
@@ -56,6 +56,7 @@ public class BitArray_HEX extends BitArray {
 	public BitArray_HEX(Element element) {
 		super(element);
 	}
+
 
     /**
      * @param binary String in Hexadecimal format
