@@ -32,8 +32,9 @@ import java.util.HashMap;
 import org.llrp.ltk.types.*;
 import org.llrp.ltk.exceptions.InvalidLLRPMessageException;
 import org.llrp.ltk.generated.messages.*;
-import org.llrp.ltk.generated.custom.messages.*;
-
+#if (!$customs.isEmpty())
+	import org.llrp.ltk.generated.custom.messages.*;
+#end
 /**
  * 
  * LLRPMessageFactory generates LLRPMessage objects from LLRP Messages
