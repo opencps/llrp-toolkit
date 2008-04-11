@@ -55,7 +55,7 @@ WINDOWS PREREQUISITES
 You need:
     Widows XP or later
     Visual Studio 2003 or later
-    MSXSL.EXE, available free of charge from Microsoft.com
+    xlstproc.exe (http://www.zlatkovic.com/libxml.en.html)
     The LTK distribution
 
 
@@ -124,8 +124,8 @@ BUILD ON WINDOWS VISUAL STUDIO
 
 Start a command (DOS prompt) Window
 
-Run the script that generates code. This needs MSXML.EXE.
-See notes inside of gencode.bat for obtaining MSXSL.EXE.
+Run the script that generates code. This needs xsltproc.exe.
+See notes inside of gencode.bat for obtaining xsltproc.exe.
 It's easy and free of charge.
 
     cd LTK\LTKCPP\Library

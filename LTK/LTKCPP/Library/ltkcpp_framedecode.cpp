@@ -1041,7 +1041,7 @@ CFrameDecoderStream::getParameter (void)
     if(1023u == Type)
     {
         llrp_u32_t              VendorPEN;
-        llrp_u8_t               Subtype;
+        llrp_u32_t               Subtype;
 
         VendorPEN = get_u32(&g_fdParameterHeader_VendorPEN);
         Subtype   = get_u32(&g_fdParameterHeader_Subtype);

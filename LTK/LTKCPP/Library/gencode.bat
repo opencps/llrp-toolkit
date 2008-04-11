@@ -1,19 +1,14 @@
-rem THIS IS NOT WORKING AND I CAN NOT FIGURE OUT WHY
-
 rem #
-rem # This runs MSXSL.EXE to generate two files used by LTKCPP.
+rem # This runs xsltproc.exe to generate two files used by LTKCPP.
 rem #
-rem # You can download MSXSL.EXE from this URL
-rem #   http://www.microsoft.com/downloads/details.aspx?FamilyId=2FB55371-C94E-4373-B0E9-DB4816552E41&displaylang=en
+rem # You can download xsltproc.EXE from this URL
+rem # http://www.zlatkovic.com/libxml.en.html
 rem #
-rem # Or do a websearch for
-rem #   MXSXL.EXE download
-rem # and choose the Microsoft site
 rem #
-rem # This BAT script assumes that MSXSL.EXE is in the current directory
+rem # This BAT script assumes that xsltproc is in the system path
 
 set LLRPDEF=..\..\Definitions\Core\llrp-1x0-def.xml
 
-.\msxsl.exe -o out_ltkcpp.h %LLRPDEF% ltkcpp_gen_h.xslt RegistryName='Core'
-.\msxsl.exe -o out_ltkcpp.inc %LLRPDEF% ltkcpp_gen_cpp.xslt RegistryName='Core'
-
+xsltproc --stringparam RegistryName Core -o out_ltkcpp.h ltkcpp_gen_h.xslt %LLRPDEF%
+xsltproc --stringparam RegistryName Core -o out_ltkcpp.inc ltkcpp_gen_cpp.xslt %LLRPDEF% 
+
