@@ -859,8 +859,8 @@
 
 	<xs:complexType name="C1G2TagInventoryStateAwareSingulationAction">
 		<xs:sequence>
-			<xs:element name="I" type="xs:boolean" />
-			<xs:element name="S" type="xs:boolean" />
+			<xs:element name="I" type="llrp:C1G2TagInventoryStateAwareI" />
+			<xs:element name="S" type="llrp:C1G2TagInventoryStateAwareS" />
 		</xs:sequence>
 		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
@@ -1855,6 +1855,20 @@
 			<xs:enumeration value="AssertSLOrA_DeassertSLOrB"/>
 			<xs:enumeration value="DeassertSLOrB_AssertSLOrA"/>
 			<xs:enumeration value="AssertSLOrA_Noop"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="C1G2TagInventoryStateAwareI">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="State_A"/>
+			<xs:enumeration value="State_B"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="C1G2TagInventoryStateAwareS">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="SL"/>
+			<xs:enumeration value="Not_SL"/>
 		</xs:restriction>
 	</xs:simpleType>
 
