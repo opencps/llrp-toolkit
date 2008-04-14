@@ -18,8 +18,6 @@
 
 package org.llrp.ltk.generated.messages;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -38,11 +36,12 @@ import org.jdom.Document;
 import org.jdom.JDOMException;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.llrp.ltk.exceptions.InvalidLLRPMessageException;
 import org.llrp.ltk.types.LLRPBitList;
 import org.llrp.ltk.types.LLRPMessage;
+import org.llrp.ltk.util.Util;
 import org.xml.sax.SAXException;
 
 
@@ -77,20 +76,41 @@ public class LLRPMessageFactoryTest extends XMLTestCase{
 
 	String testDirName;
 
-
-	@Before
-	public void setUp() throws Exception {
-
+	/**
+	 * load path from System to propertiesFile, set logger and get directory with test cases
+	 * @throws Exception
+	 */
+	
+	
+	private void configure() {
 		
-
+		
+		String propertiesFile = System.getProperty("propertiesFile");
+		
+		try {
+            properties = new Properties();
+            properties.load(new FileInputStream(propertiesFile));
+            PropertyConfigurator.configure(properties);
+            testDirName = properties.getProperty("testDirectory", "src/test/resources");
+            LOGGER.debug("Directory with xml and binary test messages set to: " + testDirName);
+            
+        } catch (FileNotFoundException e) {
+            throw new IllegalArgumentException("file " + propertiesFile +
+                " not found");
+        } catch (IOException e) {
+            throw new IllegalArgumentException("file " + propertiesFile +
+                " can not be read");
+        }
+		
+		
 	}
+	
+
 
 	@Test
 	public final void testCreateLLRPMessageLLRPBitList() {
-
        
-        configure();
-        
+		configure();
 		String filename; 
 		File testDir = new File(testDirName);
 
@@ -101,9 +121,9 @@ public class LLRPMessageFactoryTest extends XMLTestCase{
 		filenames != null && i < filenames.length; i++) {
 
 			filename = testDirName + "/" + filenames[i];
-
+			LOGGER.debug("File name loaded: " + filename);
 			try {
-				LLRPBitList bits = getBinaryFileContent(filename);
+				LLRPBitList bits = Util.getBinaryFileContent(new File (filename));
 				LOGGER.debug("Binary Message used to create Java message: " + bits);
 				message = LLRPMessageFactory.createLLRPMessage(bits);
 				
@@ -116,7 +136,7 @@ public class LLRPMessageFactoryTest extends XMLTestCase{
 				
 			    int dotPos = filename.lastIndexOf(".");
 			    filename = filename.substring(0, dotPos) + ".xml" ;
-				String xmlstring = getTextFileContent(filename);
+				String xmlstring = Util.getTextFileContent(new File (filename));
 				LOGGER.debug("Expected XML representation: " + xmlstring);
 				LOGGER.debug("XML represenation generated: " + message.toXMLString());
 
@@ -198,7 +218,7 @@ public class LLRPMessageFactoryTest extends XMLTestCase{
 				
 				int dotPos = filename.lastIndexOf(".");
 			    filename = filename.substring(0, dotPos) + ".bin" ;
-				String bitstring = getBinaryFileContent(filename).toString();
+				String bitstring = Util.getBinaryFileContent(new File(filename)).toString();
 				
 				LOGGER.debug("Expected binary representation: " + bitstring);
 				LOGGER.debug("Binary Message after decoding/encoding: " + message.toBinaryString());
@@ -236,74 +256,10 @@ public class LLRPMessageFactoryTest extends XMLTestCase{
 		
 	}
 
-	protected LLRPBitList getBinaryFileContent(String filename) throws IOException, FileNotFoundException{
-
-		File file = new File(filename);
-		
-		FileInputStream fis = new FileInputStream(file);
-		BufferedInputStream bis = new BufferedInputStream(fis);
-		
-		
-		LLRPBitList bitlist = new LLRPBitList();
-		
-        while (bis.available() > 0) {
-        	byte[] bytes = new byte[bis.available()];
-        	int length = bis.read(bytes);
-        	bitlist.append(new LLRPBitList(bytes));
-        }
-    
-        fis.close();
-        bis.close();
-		return bitlist;
-        
-	}
-	
-	protected String getTextFileContent(String filename) throws IOException, FileNotFoundException{
-
-		File file = new File(filename);
-		FileReader fis = null;
-		BufferedReader bis = null;
-		StringBuffer buffer = new StringBuffer();
-		String line; 
-
-		fis = new FileReader(file);
-
-		// Here BufferedReader is added for fast reading.
-		bis = new BufferedReader(fis);
-		line = bis.readLine();
-		while ( line != null ) { // co
-
-			// this statement reads the line from the file and print it to
-			// the console.
-			buffer.append(line);
-			line = bis.readLine();
-		}
-
-		return buffer.toString();
-	}
 
 
-	private void configure() {
-		
-		String propertiesFile = System.getProperty("propertiesFile");
-		
-		try {
-            properties = new Properties();
-            properties.load(new FileInputStream(propertiesFile));
-            PropertyConfigurator.configure(properties);
-            testDirName = properties.getProperty("testDirectory", "src/test/resources");
-            LOGGER.debug("Directory with xml and binary test messages set to: " + testDirName);
-            
-        } catch (FileNotFoundException e) {
-            throw new IllegalArgumentException("file " + propertiesFile +
-                " not found");
-        } catch (IOException e) {
-            throw new IllegalArgumentException("file " + propertiesFile +
-                " can not be read");
-        }
-		
-		
-	}
+
+
 	
 	
 	class BinaryFilter implements FilenameFilter {
