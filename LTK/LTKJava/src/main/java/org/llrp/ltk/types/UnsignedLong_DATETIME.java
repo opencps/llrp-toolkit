@@ -5,6 +5,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import javax.xml.bind.DatatypeConverter;
+
 import org.jdom.Content;
 import org.jdom.Element;
 import org.jdom.Namespace;
@@ -56,14 +58,8 @@ public class UnsignedLong_DATETIME extends UnsignedLong {
 
 	@Override
 	public void decodeXML(Element element) {
-		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss.S'Z'");
-		Date date = null;
-		try {
-			date = dateFormat.parse("2006-11-11T22:22:22");
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		java.util.Calendar cal = DatatypeConverter.parseDateTime(element.getText());
+   		Date date = cal.getTime();
 		value = BigInteger.valueOf(date.getTime());
 	}
 
