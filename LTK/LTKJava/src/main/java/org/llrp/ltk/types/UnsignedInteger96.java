@@ -42,6 +42,9 @@ public class UnsignedInteger96 extends LLRPNumberType {
         signed = true;
     }
 
+    public UnsignedInteger96(long value){
+    	this(BigInteger.valueOf(value));
+    }
     /**
          * Creates a new Integer96 object.
          */

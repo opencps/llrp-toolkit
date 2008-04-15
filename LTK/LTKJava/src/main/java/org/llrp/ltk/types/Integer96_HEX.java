@@ -16,6 +16,10 @@ public class Integer96_HEX extends UnsignedInteger96 {
 	public Integer96_HEX(LLRPBitList list) {
         super(list);
     }
+	
+	public Integer96_HEX(long value){
+		super(value);
+	}
 
     public Integer96_HEX(Element element) {
         super(element);
