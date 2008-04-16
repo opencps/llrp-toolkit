@@ -32,14 +32,14 @@ public class LLRPProtocolCodecFactory implements ProtocolCodecFactory {
 	private final ProtocolEncoder encoder;
 	private final ProtocolDecoder decoder;
 
-	
+
 	/**
 	 * LLRPProtocolCodecFactory supports a single encoder/decoder type only: 
 	 * The binary message binding in the LLRP specification.
 	 * 
 	 * @param type Codec to be used (currently only LLRPProtocolCodecFactory.BINARY_ENCODING is supported)
 	 */
-	
+
 	public LLRPProtocolCodecFactory(int type) {
 		switch (type) {
 		case BINARY_ENCODING:
@@ -49,7 +49,7 @@ public class LLRPProtocolCodecFactory implements ProtocolCodecFactory {
 			break;
 		default:
 			throw new IllegalArgumentException(
-					"only BINARY_ENCODING type supported");
+			"only BINARY_ENCODING type supported");
 		}
 	}
 

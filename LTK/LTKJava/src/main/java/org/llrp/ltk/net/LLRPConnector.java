@@ -46,55 +46,55 @@ public class LLRPConnector implements LLRPConnection{
 	public static final int CONNECT_TIMEOUT = 3000;
 	private static final String SYNC_MESSAGE_ANSWER = "synchronousMessageAnswer";
 	private Logger log = Logger.getLogger(LLRPConnector.class);
-    private String host;
+	private String host;
 	private int port = 5084;
-    private org.apache.mina.transport.socket.SocketConnector connector;
+	private org.apache.mina.transport.socket.SocketConnector connector;
 	private LLRPIoHandlerAdapter handler;
 
 	private ConnectFuture future;
 	private LLRPEndpoint endpoint;
 
-    public LLRPConnector(LLRPEndpoint endpoint, String host, int port) {
-        this.host = host;
-        this.port = port;
-        this.endpoint = endpoint;
-        handler = new LLRPIoHandlerAdapterImpl(this);
-    }
+	public LLRPConnector(LLRPEndpoint endpoint, String host, int port) {
+		this.host = host;
+		this.port = port;
+		this.endpoint = endpoint;
+		handler = new LLRPIoHandlerAdapterImpl(this);
+	}
 
-    public LLRPConnector(LLRPEndpoint endpoint, String host) {
-        this.host = host;
-        this.endpoint = endpoint;
-        handler = new LLRPIoHandlerAdapterImpl(this);
-    }    
-    public void connect(){
-    	connector = new NioSocketConnector();
-        connector.getFilterChain().addLast("codec", new ProtocolCodecFilter(new LLRPProtocolCodecFactory(LLRPProtocolCodecFactory.BINARY_ENCODING)));
-        connector.setHandler(handler);
-        InetSocketAddress add = new InetSocketAddress(host, port);
-        future = connector.connect(add);
-        future.awaitUninterruptibly();
-    }
-    
-    public void disconnect(){
-    	IoSession session = future.getSession();
-    	if (session != null && session.isConnected()){
-    		CloseFuture future = session.close();
-    		future.awaitUninterruptibly();
-    	}
-    }
+	public LLRPConnector(LLRPEndpoint endpoint, String host) {
+		this.host = host;
+		this.endpoint = endpoint;
+		handler = new LLRPIoHandlerAdapterImpl(this);
+	}    
+	public void connect(){
+		connector = new NioSocketConnector();
+		connector.getFilterChain().addLast("codec", new ProtocolCodecFilter(new LLRPProtocolCodecFactory(LLRPProtocolCodecFactory.BINARY_ENCODING)));
+		connector.setHandler(handler);
+		InetSocketAddress add = new InetSocketAddress(host, port);
+		future = connector.connect(add);
+		future.awaitUninterruptibly();
+	}
+
+	public void disconnect(){
+		IoSession session = future.getSession();
+		if (session != null && session.isConnected()){
+			CloseFuture future = session.close();
+			future.awaitUninterruptibly();
+		}
+	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-    public void messageReceived(IoSession session, LLRPMessage message){
-    	String expectedSyncMessage = (String) session.getAttribute(SYNC_MESSAGE_ANSWER);
-    	// send message only if not already handled by synchronous call
-    	if (!message.getName().equals(expectedSyncMessage)){
-        	log.debug("message "+message.getClass()+" received in session "+session);
-        	endpoint.messageReceived(message);
-    	}
-    }
-    
+	public void messageReceived(IoSession session, LLRPMessage message){
+		String expectedSyncMessage = (String) session.getAttribute(SYNC_MESSAGE_ANSWER);
+		// send message only if not already handled by synchronous call
+		if (!message.getName().equals(expectedSyncMessage)){
+			log.debug("message "+message.getClass()+" received in session "+session);
+			endpoint.messageReceived(message);
+		}
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -107,30 +107,30 @@ public class LLRPConnector implements LLRPConnection{
 		}
 		session.setAttribute(SYNC_MESSAGE_ANSWER, returnMessageType);
 		LLRPMessage returnMessage = null;
-		 if (!future.isConnected()){
+		if (!future.isConnected()){
 			future = connector.connect();
 			future.awaitUninterruptibly();
 			session = future.getSession();
 			log.info("new session created");
-		 }
-		 // useReadOperation must be enabled to use read operation.
-		 session.getConfig().setUseReadOperation(true);
-		 session.write(message);
-		 ReadFuture future = session.read();
-		 // Wait until a message is received.
-		 try {
-			 future.await();
-			 returnMessage = (LLRPMessage) future.getMessage();
-			 while(!returnMessage.getName().equals(returnMessageType)){
-				 future = session.read();
-				 future.await();
-				 returnMessage = (LLRPMessage) future.getMessage();
-			 }
-			 session.removeAttribute(SYNC_MESSAGE_ANSWER);
-		 } catch (Exception e) {
-		     e.printStackTrace();
-		 }
-		 return returnMessage;
+		}
+		// useReadOperation must be enabled to use read operation.
+		session.getConfig().setUseReadOperation(true);
+		session.write(message);
+		ReadFuture future = session.read();
+		// Wait until a message is received.
+		try {
+			future.await();
+			returnMessage = (LLRPMessage) future.getMessage();
+			while(!returnMessage.getName().equals(returnMessageType)){
+				future = session.read();
+				future.await();
+				returnMessage = (LLRPMessage) future.getMessage();
+			}
+			session.removeAttribute(SYNC_MESSAGE_ANSWER);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return returnMessage;
 	}
 
 	/**
@@ -143,7 +143,7 @@ public class LLRPConnector implements LLRPConnection{
 			future.awaitUninterruptibly();
 			session = future.getSession();
 			log.info("new session created");
-		 }
+		}
 		session.write(message);
 	}
 

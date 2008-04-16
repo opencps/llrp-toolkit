@@ -57,7 +57,7 @@ public class LLRPAcceptor extends IoHandlerAdapter implements LLRPConnection  {
 	private IoSession session;
 
 
-	
+
 	public LLRPAcceptor(LLRPEndpoint endpoint){
 		handler = new LLRPIoHandlerAdapterImpl(this);
 		this.endpoint = endpoint;
@@ -68,43 +68,43 @@ public class LLRPAcceptor extends IoHandlerAdapter implements LLRPConnection  {
 		this.port = port;
 		handler = new LLRPIoHandlerAdapterImpl(this);
 	}
-	
+
 	public LLRPAcceptor(LLRPEndpoint endpoint, int port, LLRPIoHandlerAdapter handler){
 		this.endpoint = endpoint;
 		this.port = port;
 		this.handler = handler;
 	}
-	
+
 	public LLRPAcceptor(LLRPEndpoint endpoint, LLRPIoHandlerAdapter handler){
 		this.endpoint = endpoint;
 		this.handler = handler;
 	}
-	
+
 	public void bind(){
-        acceptor = new NioSocketAcceptor();
+		acceptor = new NioSocketAcceptor();
 		acceptor.getFilterChain().addLast( "logger", new LoggingFilter() );
-        acceptor.getFilterChain().addLast("codec", new ProtocolCodecFilter(new LLRPProtocolCodecFactory(LLRPProtocolCodecFactory.BINARY_ENCODING)));
-        acceptor.setHandler(handler);
-        acceptor.getSessionConfig().setReadBufferSize( 2048 );
-        acceptor.getSessionConfig().setIdleTime( IdleStatus.BOTH_IDLE, IDLE_TIME );
-        try {        
-        	socketAddress = new InetSocketAddress(port);
-        	acceptor.bind(socketAddress);
+		acceptor.getFilterChain().addLast("codec", new ProtocolCodecFilter(new LLRPProtocolCodecFactory(LLRPProtocolCodecFactory.BINARY_ENCODING)));
+		acceptor.setHandler(handler);
+		acceptor.getSessionConfig().setReadBufferSize( 2048 );
+		acceptor.getSessionConfig().setIdleTime( IdleStatus.BOTH_IDLE, IDLE_TIME );
+		try {        
+			socketAddress = new InetSocketAddress(port);
+			acceptor.bind(socketAddress);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		log.info("server listening on port "+port);
 	}
-    
+
 	/**
 	 * {@inheritDoc}
 	 */
-    public void messageReceived(IoSession session, LLRPMessage message) {
-    	log.debug("message "+message.getClass()+" received in session "+session);
-    	this.session = session;
-    	endpoint.messageReceived(message);
-    }
+	public void messageReceived(IoSession session, LLRPMessage message) {
+		log.debug("message "+message.getClass()+" received in session "+session);
+		this.session = session;
+		endpoint.messageReceived(message);
+	}
 
 
 	public void close(){
@@ -142,29 +142,29 @@ public class LLRPAcceptor extends IoHandlerAdapter implements LLRPConnection  {
 		}
 		session.setAttribute(SYNC_MESSAGE_ANSWER, returnMessageType);
 		LLRPMessage returnMessage = null;
-		 if (!session.isConnected()){
+		if (!session.isConnected()){
 			log.info("new session created");
 			endpoint.errorOccured("new session created");
-		 }
-		 // useReadOperation must be enabled to use read operation.
-		 session.getConfig().setUseReadOperation(true);
-		 session.write(message);
-		 ReadFuture future = session.read();
-		 // Wait until a message is received.
-		 try {
-			 future.await();
-			 returnMessage = (LLRPMessage) future.getMessage();
-			 while(!returnMessage.getName().equals(returnMessageType)){
-				 log.info("message received does not match expected type; received "+returnMessage.getName()+", expected "+returnMessageType);
-				 future = session.read();
-				 future.await();
-				 returnMessage = (LLRPMessage) future.getMessage();
-			 }
-			 session.removeAttribute(SYNC_MESSAGE_ANSWER);
-		 } catch (Exception e) {
-		     e.printStackTrace();
-		 }
-		 return returnMessage;
+		}
+		// useReadOperation must be enabled to use read operation.
+		session.getConfig().setUseReadOperation(true);
+		session.write(message);
+		ReadFuture future = session.read();
+		// Wait until a message is received.
+		try {
+			future.await();
+			returnMessage = (LLRPMessage) future.getMessage();
+			while(!returnMessage.getName().equals(returnMessageType)){
+				log.info("message received does not match expected type; received "+returnMessage.getName()+", expected "+returnMessageType);
+				future = session.read();
+				future.await();
+				returnMessage = (LLRPMessage) future.getMessage();
+			}
+			session.removeAttribute(SYNC_MESSAGE_ANSWER);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return returnMessage;
 	}
 
 	/**
