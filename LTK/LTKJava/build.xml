@@ -145,6 +145,7 @@
 				<zipfileset src="lib/log4j-1.2.14.jar" />
 				<zipfileset src="lib/jdom.jar" />
 				<zipfileset src="lib/jargs.jar" />
+				<zipfileset src="lib/jaxb-api.jar" />
 				<zipfileset dir="." includes="NOTICE.TXT" prefix="" />
 				<zipfileset dir="." includes="README.TXT" prefix="" />
 				<zipfileset dir="." includes="LICENSE.txt" prefix="" />
