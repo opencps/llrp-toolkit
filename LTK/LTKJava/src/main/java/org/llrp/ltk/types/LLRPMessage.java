@@ -27,6 +27,7 @@ import org.llrp.ltk.exceptions.MissingParameterException;
 
 import org.xml.sax.SAXException;
 
+import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -341,9 +342,10 @@ public abstract class LLRPMessage {
             // create a SchemaFactory capable of understanding WXS schemas
             SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
             // load a WXS schema, represented by a Schema instance
-            File schemaFile = new File(schemaPath);
-            Schema schema = factory.newSchema(schemaFile);
-
+            ClassLoader cl = getClass().getClassLoader();
+            InputStream s = new BufferedInputStream(cl.getResourceAsStream(schemaPath));
+            Schema schema = factory.newSchema(new StreamSource(s));
+            		
             // create a Validator instance, which can be used to validate an instance document
             Validator validator = schema.newValidator();
 
