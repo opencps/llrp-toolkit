@@ -78,7 +78,7 @@ public class BytesToEnd extends LLRPType {
         Integer length = new SignedInteger(list.subList(0, 16)).toInteger();
         bytes = new LinkedList<LLRPInteger>();
 
-        for (Integer i = 16; i < length; i = i + LLRPInteger.length()) {
+        for (int i = 16; i < length; i = i + LLRPInteger.length()) {
             bytes.add(new LLRPInteger(list.subList(i, LLRPInteger.length())));
         }
     }
@@ -168,4 +168,18 @@ public class BytesToEnd extends LLRPType {
                         LLRPInteger.length())));
         }
     }
+    
+	
+	public String toString() {
+		return toString(2);
+	}
+	
+	public String toString(int radix){
+        String s = "";
+
+        for (LLRPInteger b : bytes) {
+            s += b.toString(radix);
+        }
+        return s;
+	}
 }

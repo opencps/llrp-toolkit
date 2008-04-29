@@ -67,5 +67,10 @@ public abstract class LLRPType {
         d.addContent(c);
         return outputter.outputString(d);
     }
+    
+    public String toString(){
+		return toString(2);
+	}
+    public abstract String toString(int radix);
 
 }

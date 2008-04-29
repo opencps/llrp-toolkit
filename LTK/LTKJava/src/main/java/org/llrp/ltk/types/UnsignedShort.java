@@ -132,6 +132,10 @@ public class UnsignedShort extends LLRPNumberType {
     public Integer toInteger() {
         return value;
     }
+    
+    public int intValue(){
+    	return value.intValue();
+    }
 
     /**
      * this might return a false value. Java short are signed and therefore
@@ -159,5 +163,9 @@ public class UnsignedShort extends LLRPNumberType {
         element.setContent(new Text(value.toString()));
 
         return element;
+    }
+    
+    public String toString(int radix){
+    	return Integer.toString(value, radix);
     }
 }

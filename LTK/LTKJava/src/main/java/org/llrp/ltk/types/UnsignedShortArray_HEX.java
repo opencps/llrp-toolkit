@@ -21,6 +21,13 @@ public class UnsignedShortArray_HEX extends UnsignedShortArray {
     public UnsignedShortArray_HEX(int length) {
         super(length);
     }
+    
+    public UnsignedShortArray_HEX(short[] data){
+    	this.shorts = new UnsignedShort[data.length];
+    	for (int i = 0; i<data.length;i++){
+    		shorts[i] = new UnsignedShort(data[i]);
+    	}
+    }
 
     /**
          * first 16 bits of LLRPBitlist must indicate number of entries that follow
@@ -29,6 +36,7 @@ public class UnsignedShortArray_HEX extends UnsignedShortArray {
     public UnsignedShortArray_HEX(LLRPBitList bits) {
         super(bits);
     }
+  
 
     /**
          * Creates a new UnsignedShortArray_HEX object.
@@ -43,8 +51,10 @@ public class UnsignedShortArray_HEX extends UnsignedShortArray {
         int i = 0;
         for (UnsignedShort b : shorts) {
         	if (b != null) {
-            	s+=" ";
-                s += Integer.toHexString(b.value);
+        		if (i%4==0){
+        			s+=" ";
+        		}
+            	s += Integer.toHexString(b.value);
             	i++;
                 
             } 
@@ -71,4 +81,7 @@ public class UnsignedShortArray_HEX extends UnsignedShortArray {
         }
     }
     
+    public String toString(){
+    	return toString(16);
+    }
 }

@@ -12,7 +12,7 @@ public interface LLRPEnumeration {
     * @param value  to set
      * @return boolean
     */
-    public boolean isValidValue(final Integer value);
+    public boolean isValidValue(final int value);
 
     /**
      * get value of a name representing a value

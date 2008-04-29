@@ -101,4 +101,8 @@ public class UnsignedByteArray_HEX extends UnsignedByteArray {
         UnsignedByte[] bs = new UnsignedByte[length];
         bytes = tempList.toArray(bs);
     }
+    
+    public String toString(){
+    	return toString(16);
+    }
 }

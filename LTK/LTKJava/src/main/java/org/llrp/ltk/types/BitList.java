@@ -31,7 +31,7 @@ import java.util.ArrayList;
  * @author gasserb
  */
 public class BitList extends LLRPType {
-    private Integer length;
+    private int length;
     private Bit[] bits;
 
     /**
@@ -91,10 +91,10 @@ public class BitList extends LLRPType {
          * All bits initially set to 0
          * @param l length
          */
-    public BitList(Integer l) {
+    public BitList(int l) {
         bits = new Bit[l];
 
-        for (Integer i = 0; i < l; i++) {
+        for (int i = 0; i < l; i++) {
             bits[i] = new Bit(false);
         }
 
@@ -109,7 +109,7 @@ public class BitList extends LLRPType {
         length = 1;
     }
 
-    public void setValue(Integer value) {
+    public void setValue(int value) {
         String bitString = Integer.toBinaryString(value);
         int diff = 0;
 
@@ -132,7 +132,7 @@ public class BitList extends LLRPType {
      *
      * @param i position to clear
      */
-    public void clear(Integer i) {
+    public void clear(int i) {
         if ((i < 0) || (i > bits.length)) {
             return;
         } else {
@@ -148,7 +148,7 @@ public class BitList extends LLRPType {
     public LLRPBitList encodeBinary() {
         LLRPBitList result = new LLRPBitList(bits.length);
 
-        for (Integer i = 0; i < bits.length; i++) {
+        for (int i = 0; i < bits.length; i++) {
             if (bits[i].toBoolean()) {
                 result.set(i);
             } else {
@@ -177,7 +177,7 @@ public class BitList extends LLRPType {
     public void decodeBinary(LLRPBitList list) {
         bits = new Bit[list.length()];
 
-        for (Integer i = 0; i < list.length(); i++) {
+        for (int i = 0; i < list.length(); i++) {
             bits[i] = new Bit(list.get(i));
         }
     }
@@ -189,7 +189,7 @@ public class BitList extends LLRPType {
      *
      * @return Bit
      */
-    public Bit get(Integer i) {
+    public Bit get(int i) {
         return bits[i];
     }
 
@@ -198,7 +198,7 @@ public class BitList extends LLRPType {
      *
      * @param i position to be set
      */
-    public void set(Integer i) {
+    public void set(int i) {
         if ((i < 0) || (i > bits.length)) {
             return;
         } else {
@@ -234,21 +234,28 @@ public class BitList extends LLRPType {
         }
     }
 
-    public BigInteger toInteger() {
-        return new BigInteger(toBinaryString(), 2);
+    public Integer toInteger() {
+        return Integer.parseInt(toString(), 2);
     }
+    
+    public int intValue(){
+    	return toInteger().intValue();
+    }
+    
 
-    public String toBinaryString() {
+
+
+	public String toString() {
+		return toString(2);
+	}
+	
+	public String toString(int radix){
         String s = "";
 
         for (Bit b : bits) {
-            s += b.toInteger().toString();
+            s += Integer.toString(b.toInteger(),radix);
         }
-
         return s;
-    }
-
-    public String toString() {
-        return toInteger().toString();
-    }
+	}
+ 
 }

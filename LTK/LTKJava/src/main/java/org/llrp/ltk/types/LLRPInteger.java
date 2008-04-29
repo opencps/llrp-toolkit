@@ -129,6 +129,10 @@ public class LLRPInteger extends LLRPNumberType {
     public Integer toInteger() {
         return Integer.valueOf(toByte());
     }
+    
+    public int intValue(){
+    	return toInteger().intValue();
+    }
 
     @Override
     public void decodeXML(Element element) {
@@ -178,5 +182,9 @@ public class LLRPInteger extends LLRPNumberType {
 
     public String toString() {
         return Integer.toString(value);
+    }
+    
+    public String toString(int radix){
+    	return Integer.toString(value, radix);
     }
 }

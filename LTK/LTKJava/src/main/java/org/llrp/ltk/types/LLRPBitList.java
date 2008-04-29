@@ -46,12 +46,12 @@ public class LLRPBitList {
         length = bytes.length * 8;
 
         // iterate over all bytes
-        for (Integer i = 0; i < bytes.length; i++) {
+        for (int i = 0; i < bytes.length; i++) {
             Integer position = 8 * (i + 1);
             byte b = bytes[i];
 
             // iterate over each bit of one byte
-            for (Integer j = 0; j < 8; j++) {
+            for (int j = 0; j < 8; j++) {
                 // use bitarithmetic to set (1) or clear (0) a bit
                 if ((b & (1 << j)) > 0) {
                     bits.set(position - j - 1);
@@ -71,7 +71,7 @@ public class LLRPBitList {
         bits = new BitSet(bitString.length());
         length = bitString.length();
 
-        for (Integer i = 0; i < bitString.length(); i++) {
+        for (int i = 0; i < bitString.length(); i++) {
             if (bitString.charAt(i) == '0') {
                 bits.clear(i);
             } else {
@@ -86,7 +86,7 @@ public class LLRPBitList {
      * @param n
      *            length of bit list
      */
-    public LLRPBitList(Integer n) {
+    public LLRPBitList(int n) {
         bits = new BitSet(n);
         length = n;
     }
@@ -113,9 +113,9 @@ public class LLRPBitList {
      *            bit list
      */
     public void append(LLRPBitList other) {
-        Integer oldLength = length;
+        int oldLength = length;
 
-        for (Integer i = 0; i < other.length; i++) {
+        for (int i = 0; i < other.length; i++) {
             length++;
 
             // the used BiSet adjust the length of the underlying BitSet
@@ -133,7 +133,7 @@ public class LLRPBitList {
      *
      * @param position to clear
      */
-    public void clear(Integer position) {
+    public void clear(int position) {
         bits.clear(position);
     }
 
@@ -168,7 +168,7 @@ public class LLRPBitList {
             return false;
         }
 
-        for (Integer i = 0; i < length; i++) {
+        for (int i = 0; i < length; i++) {
             if (this.get(i) ^ other.get(i)) {
                 return false;
             }
@@ -185,7 +185,7 @@ public class LLRPBitList {
      *
      * @return returns true (bit set) or false
      */
-    public boolean get(Integer position) {
+    public boolean get(int position) {
         return bits.get(position);
     }
 
@@ -204,11 +204,11 @@ public class LLRPBitList {
      * @param number
      *            of bits to add at front
      */
-    public void pad(Integer number) {
+    public void pad(int number) {
         // new bitset of length number
         BitSet n = new BitSet(number);
 
-        for (Integer i = 0; i < length; i++) {
+        for (int i = 0; i < length; i++) {
             if (bits.get(i)) {
                 n.set(number + i);
             } else {
@@ -226,7 +226,7 @@ public class LLRPBitList {
      * @param position
      *            start at index 0
      */
-    public void set(Integer position) {
+    public void set(int position) {
         if (position > length) {
             length = position + 1;
         }
@@ -245,7 +245,7 @@ public class LLRPBitList {
      *
      * @return LLRPBitList sublist starting at from and total length sublength
      */
-    public LLRPBitList subList(Integer from, Integer subLength) {
+    public LLRPBitList subList(int from, int subLength) {
         if (from < 0) {
             // logger.error("try to start sublist at negative position - this is
             // not possible");
@@ -262,7 +262,7 @@ public class LLRPBitList {
         // return a new bitlist containing copies of the elements
         LLRPBitList b = new LLRPBitList(subLength);
 
-        for (Integer i = 0; i < subLength; i++) {
+        for (int i = 0; i < subLength; i++) {
             if (bits.get(from + i)) {
                 b.set(i);
             } else {
@@ -282,7 +282,7 @@ public class LLRPBitList {
         Integer nOFb = (length / 8);
         byte[] result = new byte[nOFb];
 
-        for (Integer i = 0; i < nOFb; i++) {
+        for (int i = 0; i < nOFb; i++) {
             result[i] = new Byte(new LLRPInteger(subList(8 * i, 8)).toByte());
         }
 
@@ -297,7 +297,7 @@ public class LLRPBitList {
     public String toString() {
         String s = "";
 
-        for (Integer i = 0; i < length; i++) {
+        for (int i = 0; i < length; i++) {
             if (bits.get(i)) {
                 s = s + "1";
             } else {

@@ -26,7 +26,7 @@ import org.jdom.Namespace;
  * @author gasserb
  */
 public class BitArray extends LLRPType {
-    protected static final Integer LENGTH = 1;
+    protected static final int LENGTH = 1;
     protected Bit[] bits;
 
     /**
@@ -56,7 +56,7 @@ public class BitArray extends LLRPType {
     public BitArray(int length) {
         bits = new Bit[length];
 
-        for (Integer i = 0; i < length; i++) {
+        for (int i = 0; i < length; i++) {
             bits[i] = new Bit(false);
         }
     }
@@ -90,7 +90,7 @@ public class BitArray extends LLRPType {
      *
      * @param i to be cleared
      */
-    public void clear(Integer i) {
+    public void clear(int i) {
         if ((i < 0) || (i > bits.length)) {
             return;
         } else {
@@ -117,7 +117,7 @@ public class BitArray extends LLRPType {
         int len = bits.length+padding.length()/8;
         LLRPBitList result = new UnsignedShort(len).encodeBinary();
 
-        for (Integer i = 0; i < bits.length; i++) {
+        for (int i = 0; i < bits.length; i++) {
             result.add(bits[i].toBoolean());
         }
 
@@ -216,5 +216,18 @@ public class BitArray extends LLRPType {
         newBits[bits.length] = aBit;
         bits = newBits;
     }
+    
+	public String toString() {
+		return toString(2);
+	}
+	
+	public String toString(int radix){
+        String s = "";
+
+        for (Bit b : bits) {
+            s += Integer.toString(b.toInteger(),radix);
+        }
+        return s;
+	}
     
 }

@@ -38,6 +38,13 @@ public class UnsignedShortArray extends LLRPType {
 		this.shorts = shorts.clone();
 	}
 
+	  
+    public UnsignedShortArray(short[] data){
+    	this.shorts = new UnsignedShort[data.length];
+    	for (int i = 0; i<data.length;i++){
+    		shorts[i] = new UnsignedShort(data[i]);
+    	}
+    }
 	/**
 	 * Creates a new UnsignedShortArray object from jdom element - used for xml
 	 * decoding
@@ -88,7 +95,7 @@ public class UnsignedShortArray extends LLRPType {
                    SignedShort.length())).toInteger();
        shorts = new UnsignedShort[length];
 
-       for (Integer i = 0; i < length; i++) {
+       for (int i = 0; i < length; i++) {
            shorts[i] = new UnsignedShort(list.subList(
                        i * UnsignedShort.length()+SignedShort.length(), UnsignedShort.length()));
        }
@@ -103,7 +110,7 @@ public class UnsignedShortArray extends LLRPType {
 		LLRPBitList result = new LLRPBitList();
 		result.append(new UnsignedShort(shorts.length).encodeBinary());
 
-		for (Integer i = 0; i < shorts.length; i++) {
+		for (int i = 0; i < shorts.length; i++) {
 			result.append(shorts[i].encodeBinary());
 		}
 
@@ -125,7 +132,7 @@ public class UnsignedShortArray extends LLRPType {
 			return false;
 		}
 
-		for (Integer i = 0; i < shorts.length; i++) {
+		for (int i = 0; i < shorts.length; i++) {
 			if (!ba.get(i).equals(this.get(i))) {
 				return false;
 			}
@@ -237,5 +244,24 @@ public class UnsignedShortArray extends LLRPType {
 
 	public int hashCode() {
 		return shorts.hashCode();
+	}
+	
+	public short[] toShortArray(){
+		short[] result = new short[shorts.length];
+		for (int i = 0; i<shorts.length;i++){
+			result[i] = shorts[i].toShort();
+		}
+		return result;
+	}
+
+	@Override
+	public String toString(int radix) {
+		String s = "";
+		for (UnsignedShort b : shorts) {
+			if (b != null) {
+				s += " "+b.toString(radix);
+			}
+		}
+		return s;
 	}
 }

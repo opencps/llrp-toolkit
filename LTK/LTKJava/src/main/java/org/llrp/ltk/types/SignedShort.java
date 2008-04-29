@@ -60,6 +60,8 @@ public class SignedShort extends LLRPNumberType {
         this.value = value;
         signed = true;
     }
+    
+   
 
     /**
      * String representation in specified radix.
@@ -132,6 +134,10 @@ public class SignedShort extends LLRPNumberType {
     public Integer toInteger() {
         return new Integer(toShort());
     }
+    
+    public int intValue(){
+    	return toInteger().intValue();
+    }
 
     /**
      * short representation - no loss in precision
@@ -164,5 +170,13 @@ public class SignedShort extends LLRPNumberType {
         element.setContent(new Text(value.toString()));
 
         return element;
+    }
+    
+    public String toString() {
+        return Integer.toString(value);
+    }
+    
+    public String toString(int radix){
+    	return Integer.toString(value, radix);
     }
 }

@@ -134,6 +134,9 @@ public class UnsignedInteger extends LLRPNumberType {
         return value.intValue();
     }
 
+    public int intValue(){
+    	return value.intValue();
+    }
     /**
      * Unsigned Integer wrapped Integero java long
      *
@@ -167,7 +170,7 @@ public class UnsignedInteger extends LLRPNumberType {
         return element;
     }
 
-    public String toString() {
-        return toLong().toString();
+    public String toString(int radix) {
+        return value.toString(radix);
     }
 }

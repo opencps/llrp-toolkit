@@ -92,7 +92,7 @@ public class UnsignedByteArray extends LLRPType {
 	public UnsignedByteArray(byte[] bytes) {
 		this.bytes = new UnsignedByte[bytes.length];
 
-		for (Integer i = 0; i < bytes.length; i++) {
+		for (int i = 0; i < bytes.length; i++) {
 			this.bytes[i] = new UnsignedByte(bytes[i]);
 		}
 	}
@@ -119,7 +119,7 @@ public class UnsignedByteArray extends LLRPType {
 		LLRPBitList result = new LLRPBitList();
 		result.append(new UnsignedShort(bytes.length).encodeBinary());
 
-		for (Integer i = 0; i < bytes.length; i++) {
+		for (int i = 0; i < bytes.length; i++) {
 			result.append(bytes[i].encodeBinary());
 		}
 
@@ -156,7 +156,7 @@ public class UnsignedByteArray extends LLRPType {
 				.toInteger();
 		bytes = new UnsignedByte[length];
 
-		for (Integer i = 1; i <= length; i++) {
+		for (int i = 1; i <= length; i++) {
 			bytes[i - 1] = new UnsignedByte(list.subList((i+1)
 					* UnsignedByte.length(), UnsignedByte.length()));
 		}
@@ -170,7 +170,7 @@ public class UnsignedByteArray extends LLRPType {
 	 * 
 	 * @return LLRPInteger
 	 */
-	public UnsignedByte get(Integer i) {
+	public UnsignedByte get(int i) {
 		return bytes[i];
 	}
 
@@ -243,9 +243,20 @@ public class UnsignedByteArray extends LLRPType {
 	public Integer toInteger() {
 		String s = "";
 		for (UnsignedByte b : bytes) {
-			s += b.toHexString();
+			s += b.toString(16);
 		}
-		BigInteger big = new BigInteger(s);
+		BigInteger big = new BigInteger(s,16);
 		return big.intValue();
 	}
+	
+	
+	public String toString(int radix) {
+		String s = "";
+		for (UnsignedByte b : bytes) {
+			s += b.toString(radix);
+		}
+		return s;
+	}
+	
+	
 }

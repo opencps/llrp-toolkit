@@ -84,4 +84,10 @@ public class BytesToEnd_HEX extends BytesToEnd {
 			bytes.add(new LLRPInteger(hexInt));
 		}
 	}
+	
+	public String toString() {
+		return toString(16);
+	}
+	
+ 
 }

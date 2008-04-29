@@ -29,7 +29,7 @@ import java.math.BigInteger;
  * @author Basil Gasser - ETH Zurich
  */
 public class UnsignedInteger96 extends LLRPNumberType {
-    protected static final Integer LENGTH = 96;
+    protected static final int LENGTH = 96;
     protected BigInteger value;
 
     /**
@@ -141,7 +141,7 @@ public class UnsignedInteger96 extends LLRPNumberType {
         return element;
     }
 
-    public String toString() {
-        return value.toString();
+    public String toString(int radix) {
+        return value.toString(radix);
     }
 }

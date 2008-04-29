@@ -29,7 +29,7 @@ import org.jdom.Text;
  * @author gasserb
  */
 public class TwoBitField extends LLRPType {
-    private static Integer length = 2;
+    private static int length = 2;
     private Bit[] bits;
 
     /**
@@ -198,5 +198,13 @@ public class TwoBitField extends LLRPType {
         	// TODO: this should never happen since the XML schema checks the range of allowable integers
         }
         
+    }
+    
+    public String toString() {
+        return Integer.toString(intValue());
+    }
+    
+    public String toString(int radix){
+    	return Integer.toString(intValue(), radix);
     }
 }

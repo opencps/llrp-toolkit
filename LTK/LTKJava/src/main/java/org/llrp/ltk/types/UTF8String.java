@@ -190,6 +190,10 @@ public class UTF8String extends LLRPType {
     public String toString() {
         return string;
     }
+    
+    public String toString(int radix){
+    	return toString();
+    }
 
     public int hashCode() {
         return string.hashCode();

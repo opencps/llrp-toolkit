@@ -149,4 +149,8 @@ public class SignedInteger extends LLRPNumberType {
     public String toString() {
         return Integer.toString(value);
     }
+    
+    public String toString(int radix){
+    	return Integer.toString(value, radix);
+    }
 }

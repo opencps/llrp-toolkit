@@ -20,175 +20,194 @@ import org.jdom.Element;
 import org.jdom.Namespace;
 import org.jdom.Text;
 
-
 /**
  * UnsignedIntegerArray - length encoded as first 16 bits!
- *
+ * 
  * @author gasserb
  */
 public class UnsignedIntegerArray extends LLRPType {
-    private UnsignedInteger[] integers;
-
-    /**
-         * Creates a new UnsignedIntegerArray object.
-         *
-         * @param ints to create UsnignedIntegerArray from
-         */
-    public UnsignedIntegerArray(UnsignedInteger[] ints) {
-        this.integers = ints.clone();
-    }
-
-    /**
-     * Creates a new UnsignedIntegerArray object from jdom element - used for xml decoding
-     *
-     * @param element to be decoded
-     */
-    public UnsignedIntegerArray(Element element) {
-        decodeXML(element);
-    }
-
-    /**
-         * Creates a new UnsignedIntegerArray object.
-         *
-         * @param length of array
-         */
-    public UnsignedIntegerArray(int length) {
-        integers = new UnsignedInteger[length];
-    }
-
-    /**
-         * first 16 bits of LLRPBitlist must indicate number of entries that follow
-         * @param bits  to be decoded
-         */
-    public UnsignedIntegerArray(LLRPBitList bits) {
-        decodeBinary(bits);
-    }
+	private UnsignedInteger[] integers;
 
 	/**
-	 * Creates an empty UnsignedIntegerArray. Do not call methood 'set' on an empty array.
-	 * Add UnsignedInteger by calling the add method
+	 * Creates a new UnsignedIntegerArray object.
+	 * 
+	 * @param ints
+	 *            to create UsnignedIntegerArray from
 	 */
-    public UnsignedIntegerArray() {
-        integers = new UnsignedInteger[0];
-    }
+	public UnsignedIntegerArray(UnsignedInteger[] ints) {
+		this.integers = ints.clone();
+	}
 
-    /**
-     * encodes length before encoding containing values
-     *
-     * @return
-     */
-    public LLRPBitList encodeBinary() {
-        LLRPBitList result = new LLRPBitList();
-        result.append(new UnsignedShort(integers.length).encodeBinary());
+	/**
+	 * Creates a new UnsignedIntegerArray object from jdom element - used for
+	 * xml decoding
+	 * 
+	 * @param element
+	 *            to be decoded
+	 */
+	public UnsignedIntegerArray(Element element) {
+		decodeXML(element);
+	}
 
-        for (Integer i = 0; i < integers.length; i++) {
-            result.append(integers[i].encodeBinary());
-        }
+	/**
+	 * Creates a new UnsignedIntegerArray object.
+	 * 
+	 * @param length
+	 *            of array
+	 */
+	public UnsignedIntegerArray(int length) {
+		integers = new UnsignedInteger[length];
+	}
 
-        return result;
-    }
+	/**
+	 * first 16 bits of LLRPBitlist must indicate number of entries that follow
+	 * 
+	 * @param bits
+	 *            to be decoded
+	 */
+	public UnsignedIntegerArray(LLRPBitList bits) {
+		decodeBinary(bits);
+	}
 
-    /**
-     * number of bytes used to represent this type
-     *
-     * @return Integer
-     */
-    public Integer getByteLength() {
-        return integers.length * 2;
-    }
+	/**
+	 * Creates an empty UnsignedIntegerArray. Do not call methood 'set' on an
+	 * empty array. Add UnsignedInteger by calling the add method
+	 */
+	public UnsignedIntegerArray() {
+		integers = new UnsignedInteger[0];
+	}
 
-    /**
-     * length of BaseType not array - for array length call size()
-     *
-     * @return
-     */
-    public static int length() {
-        return UnsignedInteger.length();
-    }
+	/**
+	 * encodes length before encoding containing values
+	 * 
+	 * @return
+	 */
+	public LLRPBitList encodeBinary() {
+		LLRPBitList result = new LLRPBitList();
+		result.append(new UnsignedShort(integers.length).encodeBinary());
 
-    /**
-     * first 16 bits of LLRPBitlist must indicate number of entries that follow
-     *
-     * @param list to be decoded
-     */
-    public void decodeBinary(LLRPBitList list) {
-        Integer length = new SignedShort(list.subList(0,
-                    SignedShort.length())).toInteger();
-        integers = new UnsignedInteger[length];
+		for (int i = 0; i < integers.length; i++) {
+			result.append(integers[i].encodeBinary());
+		}
 
-        for (Integer i = 0; i < length; i++) {
-            integers[i] = new UnsignedInteger(list.subList(
-                        i * UnsignedInteger.length()+SignedShort.length(), SignedInteger.length()));
-        }
-    }
+		return result;
+	}
 
-    /**
-     * get UnsignedInteger at specified position
-     *
-     * @param i position
-     *
-     * @return UnsignedInteger
-     */
-    public UnsignedInteger get(Integer i) {
-        return integers[i];
-    }
+	/**
+	 * number of bytes used to represent this type
+	 * 
+	 * @return Integer
+	 */
+	public int getByteLength() {
+		return integers.length * 2;
+	}
 
-    /**
-     * set UnsignedInteger at i to b
-     *
-     * @param i position
-     * @param b unsignedInteger to be set
-     */
-    public void set(int i, UnsignedInteger b) {
-        if ((i < 0) || (i > integers.length)) {
-            return;
-        } else {
-            integers[i] = b;
-        }
-    }
+	/**
+	 * length of BaseType not array - for array length call size()
+	 * 
+	 * @return
+	 */
+	public static int length() {
+		return UnsignedInteger.length();
+	}
 
-    /**
-     * number of elements in array
-     *
-     * @return
-     */
-    public int size() {
-        return integers.length;
-    }
+	/**
+	 * first 16 bits of LLRPBitlist must indicate number of entries that follow
+	 * 
+	 * @param list
+	 *            to be decoded
+	 */
+	public void decodeBinary(LLRPBitList list) {
+		Integer length = new SignedShort(list.subList(0, SignedShort.length()))
+				.toInteger();
+		integers = new UnsignedInteger[length];
 
-    @Override
-    public Content encodeXML(String name, Namespace ns) {
-        String s = "";
+		for (int i = 0; i < length; i++) {
+			integers[i] = new UnsignedInteger(list.subList(i
+					* UnsignedInteger.length() + SignedShort.length(),
+					SignedInteger.length()));
+		}
+	}
 
-        for (UnsignedInteger b : integers) {
-            s += " ";
-            s += b.toLong();
-        }
+	/**
+	 * get UnsignedInteger at specified position
+	 * 
+	 * @param i
+	 *            position
+	 * 
+	 * @return UnsignedInteger
+	 */
+	public UnsignedInteger get(int i) {
+		return integers[i];
+	}
 
-        s = s.replaceFirst(" ", "");
+	/**
+	 * set UnsignedInteger at i to b
+	 * 
+	 * @param i
+	 *            position
+	 * @param b
+	 *            unsignedInteger to be set
+	 */
+	public void set(int i, UnsignedInteger b) {
+		if ((i < 0) || (i > integers.length)) {
+			return;
+		} else {
+			integers[i] = b;
+		}
+	}
 
-        Element element = new Element(name, ns);
-        element.setContent(new Text(s));
+	/**
+	 * number of elements in array
+	 * 
+	 * @return
+	 */
+	public int size() {
+		return integers.length;
+	}
 
-        return element;
-    }
+	@Override
+	public Content encodeXML(String name, Namespace ns) {
+		String s = "";
 
-    @Override
-    public void decodeXML(Element element) {
-        String text = element.getText();
-        String[] strings = text.split(" ");
-        integers = new UnsignedInteger[strings.length];
+		for (UnsignedInteger b : integers) {
+			s += " ";
+			s += b.toLong();
+		}
 
-        for (int i = 0; i < strings.length; i++) {
-            integers[i] = new UnsignedInteger(strings[i]);
-        }
-    }
+		s = s.replaceFirst(" ", "");
 
-    public void add(UnsignedInteger aInteger) {
-        UnsignedInteger[] newIntegers = new UnsignedInteger[integers.length +
-            1];
-        System.arraycopy(integers, 0, newIntegers, 0, integers.length);
-        newIntegers[integers.length] = aInteger;
-        integers = newIntegers;
-    }
+		Element element = new Element(name, ns);
+		element.setContent(new Text(s));
+
+		return element;
+	}
+
+	@Override
+	public void decodeXML(Element element) {
+		String text = element.getText();
+		String[] strings = text.split(" ");
+		integers = new UnsignedInteger[strings.length];
+
+		for (int i = 0; i < strings.length; i++) {
+			integers[i] = new UnsignedInteger(strings[i]);
+		}
+	}
+
+	public void add(UnsignedInteger aInteger) {
+		UnsignedInteger[] newIntegers = new UnsignedInteger[integers.length + 1];
+		System.arraycopy(integers, 0, newIntegers, 0, integers.length);
+		newIntegers[integers.length] = aInteger;
+		integers = newIntegers;
+	}
+
+	public String toString(int radix) {
+		String s = "";
+
+		for (UnsignedInteger b : integers) {
+			s += b.toString(radix);
+		}
+		return s;
+
+	}
 }

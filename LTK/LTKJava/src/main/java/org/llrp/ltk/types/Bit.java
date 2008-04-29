@@ -40,7 +40,7 @@ public class Bit extends LLRPNumberType {
 	 * create a bit.
 	 * 
 	 * @param x -
-	 *            everything but 0 is Integererpreted as 1
+	 *            everything but 0 is interpreted as 1
 	 */
 	public Bit(int x) {
 		if (x != 0) {
@@ -74,7 +74,7 @@ public class Bit extends LLRPNumberType {
 	 * create a bit.
 	 * 
 	 * @param x -
-	 *            everything but 0 is Integererpreted as 1
+	 *            everything but 0 is interpreted as 1
 	 */
 	public Bit(String x) {
 		if (x.equalsIgnoreCase("0")) {
@@ -90,7 +90,7 @@ public class Bit extends LLRPNumberType {
 	 * create a bit. Look at first bit of list only.
 	 * 
 	 * @param bitList -
-	 *            everything but 0 is Integererpreted as 1
+	 *            everything but 0 is interpreted as 1
 	 */
 	public Bit(LLRPBitList bitList) {
 		if (bitList.get(0)) {
@@ -103,7 +103,7 @@ public class Bit extends LLRPNumberType {
 	}
 
 	/**
-	 * everything but 0 is Integererpreted as 1.
+	 * everything but 0 is interpreted as 1.
 	 * 
 	 * @param bool
 	 *            initial value
@@ -163,6 +163,10 @@ public class Bit extends LLRPNumberType {
 	public Integer toInteger() {
 		return new Integer(toByte());
 	}
+	
+	public int intValue(){
+		return toInteger().intValue();
+	}
 
 	@Override
 	public void decodeXML(Element element) {
@@ -209,5 +213,9 @@ public class Bit extends LLRPNumberType {
 		} else {
 			return "1";
 		}
+	}
+	
+	public String toString(int radix){
+		return toString();
 	}
 }

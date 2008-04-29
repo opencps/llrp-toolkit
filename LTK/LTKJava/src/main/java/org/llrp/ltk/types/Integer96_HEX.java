@@ -62,4 +62,11 @@ public class Integer96_HEX extends UnsignedInteger96 {
     public void decodeXML(Element element) {
         this.value = new BigInteger(element.getText(), 16);
     }
+    
+	
+	public String toString() {
+		return toString(16);
+	}
+	
+
 }

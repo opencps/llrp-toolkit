@@ -24,7 +24,7 @@ import org.jdom.Element;
  * @author Basil Gasser - ETH Zurich
  */
 public class TwoBitEnumeration extends LLRPInteger {
-    private static final Integer LENGTH = 2;
+    private static final int LENGTH = 2;
 
     /**
          * Creates a new TwoBitEnumeration object.
@@ -47,7 +47,7 @@ public class TwoBitEnumeration extends LLRPInteger {
          *
          * @param value to set
          */
-    public TwoBitEnumeration(Integer value) {
+    public TwoBitEnumeration(int value) {
         super(value);
     }
 
