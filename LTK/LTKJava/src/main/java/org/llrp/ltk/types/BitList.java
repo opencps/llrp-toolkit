@@ -100,6 +100,16 @@ public class BitList extends LLRPType {
 
         length = l;
     }
+    
+    public BitList(Integer l) {
+        bits = new Bit[l];
+
+        for (int i = 0; i < l; i++) {
+            bits[i] = new Bit(false);
+        }
+
+        length = l;
+    }
 
     /**
          * Creates a new BitList object.
@@ -138,6 +148,10 @@ public class BitList extends LLRPType {
         } else {
             bits[i] = new Bit(false);
         }
+    }
+    
+    public void clear(Integer i){
+    	clear(i.intValue());
     }
 
     /**
@@ -192,6 +206,10 @@ public class BitList extends LLRPType {
     public Bit get(int i) {
         return bits[i];
     }
+    
+    public Bit get(Integer i){
+    	return get(i.intValue());
+    }
 
     /**
      * set Bit at specified position to 1.
@@ -205,7 +223,10 @@ public class BitList extends LLRPType {
             bits[i] = new Bit(true);
         }
     }
-
+    
+    public void set(Integer i){
+    	set(i.intValue());
+    }
     @Override
     public Content encodeXML(String name, Namespace ns) {
         String s = "";

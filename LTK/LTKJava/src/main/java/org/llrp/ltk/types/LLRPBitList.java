@@ -136,6 +136,10 @@ public class LLRPBitList {
     public void clear(int position) {
         bits.clear(position);
     }
+    
+    public void clear(Integer i){
+    	clear(i.intValue());
+    }
 
     /**
      * clone.
@@ -189,6 +193,9 @@ public class LLRPBitList {
         return bits.get(position);
     }
 
+    public boolean get(Integer i){
+    	return get(i.intValue());
+    }
     /**
      * returns number of bits in this list.
      *
@@ -219,6 +226,10 @@ public class LLRPBitList {
         length += number;
         bits = n;
     }
+    
+    public void pad(Integer i){
+    	pad(i.intValue());
+    }
 
     /**
      * set bit at specified position to true.
@@ -234,6 +245,9 @@ public class LLRPBitList {
         bits.set(position);
     }
 
+    public void set(Integer i){
+    	set(i.intValue());
+    }
     /**
      * return a list containing a copy of the elements starting at from, having
      * length length.
@@ -273,6 +287,9 @@ public class LLRPBitList {
         return b;
     }
 
+    public LLRPBitList subList(Integer from, Integer subLength) {
+    	return subList(from.intValue(), subLength.intValue());
+    }
     /**
      * 8 bits bundled Integero one byte.
      *
