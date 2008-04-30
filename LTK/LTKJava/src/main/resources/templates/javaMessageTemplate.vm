@@ -405,12 +405,12 @@ $utility.clearNumberOfReserved()
 			if (version == null){
 				throw new InvalidLLRPMessageException("Version not set");
 			} else {
-				root.setAttribute("Version", version.toString());
+				root.setAttribute("Version", version.toInteger().toString());
 			}
 			if (messageID == null){
 				throw new InvalidLLRPMessageException("MessageID not set");
 			} else {
-				root.setAttribute("MessageID", messageID.toString());
+				root.setAttribute("MessageID", messageID.toString(10));
 			}
 		
 		## field or reserved
