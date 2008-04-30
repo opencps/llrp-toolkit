@@ -61,7 +61,7 @@ public class $className extends $superType implements LLRPEnumeration{
 	 * @param value an Integer value allowed - might check first
 	 * with isValidValue it it is an allowed value
 	 */
-	public $className (final Integer value){
+	public $className (final int value){
 		## arrays can not be created by calling the integer constructor as this would set the length of the array instead of
 		## interpreting it as a value
 		#if ($utility.isArray($utility.getSuperType($className)))
@@ -219,7 +219,7 @@ public class $className extends $superType implements LLRPEnumeration{
 		 * for this enumeration.
 		 * @param name set this enumeration to hold one of the allowed values
 		 */
-		public final void set(final Integer value, int position){
+		public final void set(final int value, int position){
 			if (!isValidValue(value)) throw new IllegalArgumentException("name not allowed");
 			if (position > this.bytes.length) throw new IllegalArgumentException("position is bigger than array size");
 			bytes[position] = new  $utility.getBaseType($superType)(value);
@@ -236,7 +236,7 @@ public class $className extends $superType implements LLRPEnumeration{
 		 * for this enumeration.
 		 * @param value to be set 
 		 */	
-		public final void set(final Integer value){
+		public final void set(final int value){
 			if (!isValidValue(value)) throw new IllegalArgumentException("value not allowed");
 			#if ($utility.getSuperType($className) == "UnsignedInteger")
 	        	this.value = BigInteger.valueOf(value);
@@ -280,9 +280,9 @@ public class $className extends $superType implements LLRPEnumeration{
 
 	/**
 		* {@inheritDoc}
-            * @implements LLRPEnumeration.isValidValue(Integer value)
+            * @implements LLRPEnumeration.isValidValue(int value)
 	 */	
-		public boolean isValidValue(final Integer value){
+		public boolean isValidValue(final int value){
 			switch (value){
 				#foreach ($entry in $enum.getEntry())
 				case $entry.getValue(): return true;
@@ -292,17 +292,6 @@ public class $className extends $superType implements LLRPEnumeration{
 		}
 
 
-	/**
-		* {@inheritDoc}
-            * @implements LLRPEnumeration.getName(int value)
-	 */	
-		public final String getName(int value){
-			#foreach ($entry in $enum.getEntry())
-				if ($entry.getValue() == value ) return "$entry.getName()";
-			#end
-			return "";
-		}
-		
 		
 	/**
 		* {@inheritDoc}
@@ -317,9 +306,9 @@ public class $className extends $superType implements LLRPEnumeration{
 		
     /**
              * {@inheritDoc}
-    * @implements LLRPEnumeration.getName(Integer value)
+    * @implements LLRPEnumeration.getName(int value)
      */
-    public final String getName(final Integer value) {
+    public final String getName(final int value) {
 			#foreach ($entry in $enum.getEntry())
 				if ($entry.getValue() == value ) return "$entry.getName()";
 			#end
@@ -337,6 +326,27 @@ public class $className extends $superType implements LLRPEnumeration{
 			return false;
 		}
 		
+		/**
+		* return a list of Strings holding all names of allowed values
+	 */	
+		public static List<String> getAllowedNames(){
+			LinkedList<String> allowedNames = new LinkedList<String>();
+			#foreach ($entry in $enum.getEntry())
+				allowedNames.add("$entry.getName()");
+			#end
+			return allowedNames;
+		}
+		
+		/**
+		* return a list of allowed values  
+	 */	
+		public static List<Integer> getAllowedValues(){
+			LinkedList<Integer> allowedValues = new LinkedList<Integer>();
+			#foreach ($entry in $enum.getEntry())
+				allowedValues.add(new Integer($entry.getValue()));
+			#end
+			return allowedValues;
+		}
 	 
 		
 		    /**

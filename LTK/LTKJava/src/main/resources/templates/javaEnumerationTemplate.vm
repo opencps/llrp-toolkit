@@ -44,6 +44,8 @@ import org.jdom.Namespace;
 import org.apache.log4j.Logger;
 import java.math.BigInteger;
 import java.lang.IllegalArgumentException;
+import java.util.LinkedList;
+import java.util.List;
 
 
 /**
@@ -230,7 +232,7 @@ public class $className extends $superType implements LLRPEnumeration{
 		 * for this enumeration.
 		 * @param name set this enumeration to hold one of the allowed values
 		 */
-		public final void set(final Integer value, int position){
+		public final void set(final int value, int position){
 			if (!isValidValue(value)) throw new IllegalArgumentException("name not allowed");
 			if (position > this.bytes.length) throw new IllegalArgumentException("position is bigger than array size");
 			bytes[position] = new  $utility.getBaseType($superType)(value);
@@ -247,7 +249,7 @@ public class $className extends $superType implements LLRPEnumeration{
 		 * for this enumeration.
 		 * @param value to be set 
 		 */	
-		public final void set(final Integer value){
+		public final void set(final int value){
 			if (!isValidValue(value)) throw new IllegalArgumentException("value not allowed");
 			#if ($utility.getSuperType($className) == "UnsignedInteger")
 	        	this.value = BigInteger.valueOf(value);
@@ -291,9 +293,9 @@ public class $className extends $superType implements LLRPEnumeration{
 
 	/**
 		* {@inheritDoc}
-            * @implements LLRPEnumeration.isValidValue(Integer value)
+            * @implements LLRPEnumeration.isValidValue(int value)
 	 */	
-		public boolean isValidValue(final Integer value){
+		public boolean isValidValue(final int value){
 			switch (value){
 				#foreach ($entry in $enum.getEntry())
 				case $entry.getValue(): return true;
@@ -303,16 +305,28 @@ public class $className extends $superType implements LLRPEnumeration{
 		}
 
 
-	/**
-		* {@inheritDoc}
-            * @implements LLRPEnumeration.getName(int value)
+			/**
+		* return a list of Strings holding all names of allowed values
 	 */	
-		public final String getName(int value){
+		public static List<String> getAllowedNames(){
+			LinkedList<String> allowedNames = new LinkedList<String>();
 			#foreach ($entry in $enum.getEntry())
-				if ($entry.getValue() == value ) return "$entry.getName()";
+				allowedNames.add("$entry.getName()");
 			#end
-			return "";
+			return allowedNames;
 		}
+		
+		/**
+		* return a list of allowed values  
+	 */	
+		public static List<Integer> getAllowedValues(){
+			LinkedList<Integer> allowedValues = new LinkedList<Integer>();
+			#foreach ($entry in $enum.getEntry())
+				allowedValues.add(new Integer($entry.getValue()));
+			#end
+			return allowedValues;
+		}
+
 		
 		
 	/**
@@ -328,9 +342,9 @@ public class $className extends $superType implements LLRPEnumeration{
 		
     /**
              * {@inheritDoc}
-    * @implements LLRPEnumeration.getName(Integer value)
+    * @implements LLRPEnumeration.getName(int value)
      */
-    public final String getName(final Integer value) {
+    public final String getName(final int value) {
 			#foreach ($entry in $enum.getEntry())
 				if ($entry.getValue() == value ) return "$entry.getName()";
 			#end
