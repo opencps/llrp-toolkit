@@ -259,8 +259,9 @@ public class LLRPBitList {
      *
      * @return LLRPBitList sublist starting at from and total length sublength
      */
-    public LLRPBitList subList(int from, int subLength) {
-        if (from < 0) {
+
+    public LLRPBitList subList(Integer from, Integer subLength) {
+    	if (from < 0) {
             // logger.error("try to start sublist at negative position - this is
             // not possible");
             throw new IllegalArgumentException(
@@ -287,9 +288,6 @@ public class LLRPBitList {
         return b;
     }
 
-    public LLRPBitList subList(Integer from, Integer subLength) {
-    	return subList(from.intValue(), subLength.intValue());
-    }
     /**
      * 8 bits bundled Integero one byte.
      *
