@@ -38,7 +38,8 @@ public class LLRPConstants {
 	#set($ns = "NAMESPACE")
 	#set($path = "MESSAGESCHEMAPATH")
 	#foreach ($namespace in $namespaces)
+		// $namespace.getPrefix().toLowerCase()
 		public static final String $namespace.getPrefix().toUpperCase()$ns = "$namespace.getURI()";
-		public static final String $namespace.getPrefix().toUpperCase()$path = "$extensionSchemas.get($namespace.getPrefix())";
+		public static final String $namespace.getPrefix().toUpperCase()$path = "$extensionSchemas.get($namespace.getPrefix().toLowerCase())";
 	#end
 }

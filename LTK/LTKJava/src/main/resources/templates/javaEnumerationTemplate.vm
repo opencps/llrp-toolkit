@@ -132,13 +132,13 @@ public class $className extends $superType implements LLRPEnumeration{
 	#if ($utility.isArray($utility.getSuperType($className)))
 	
 		/**
-		 * Create new AirProtocolsArray by passing a string
+		 * Create new $className by passing a string
 		 *
 		 * @throw IllegalArgumentException
 		 * String must be a concatenation of several enumeration strings seperated by whitespace
 		 * @param element - string that contains several names for values of the enumeration.
 		 */
-		public AirProtocolsArray (final String element){
+		public $className (final String element){
 			String[] items = element.split(" ");
 			this.bytes = new  $utility.getBaseType($superType)[items.length];
 			for (int i = 0; i< items.length;i++){
