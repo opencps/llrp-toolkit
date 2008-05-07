@@ -726,21 +726,7 @@ $utility.clearNumberOfReserved()
 			} else {
 				root.setAttribute("MessageID", messageID.toString(10));
 			}
-		  if (vendorIdentifier == null) {
-                LOGGER.warn(" vendorIdentifier not set");
-                throw new InvalidLLRPMessageException(
-                    " vendorIdentifier not set");
-            } else {
-                root.addContent(vendorIdentifier.encodeXML("VendorIdentifier",
-                        ns));
-            }
-
-            if (subtype == null) {
-                LOGGER.warn(" messageSubtype not set");
-                throw new InvalidLLRPMessageException(" subtype not set");
-            } else {
-                root.addContent(subtype.encodeXML("subtype", ns));
-            }
+		  
 		
 		## field or reserved
 		#foreach($field in $message.getFieldOrReserved())
