@@ -110,15 +110,20 @@ public class CodeGenerator {
 		String jaxBPackage = "";
 		String[] extensions;
 		String filePaths = "";
+		String jarSchema;
 		try {
 			jaxBPackage = properties.getString("jaxBPackage");
 			extensions = properties.getStringArray("definition");
+			jarSchema = properties.getString("JarSchemaPath");
 			filePaths = "";
 			for (String s : extensions) {
 				logger.debug("extension: "+s);
 				String[] oneExt = s.split(";");
-				xmlFilePaths.put(oneExt[0], oneExt[1]);
-				schemaPaths.put(oneExt[0], oneExt[2]);
+				xmlFilePaths.put(oneExt[0].toLowerCase(), oneExt[1]);
+				String path = oneExt[2];
+				String[] splitted = path.split("/");
+				schemaPaths.put(oneExt[0].toLowerCase(), jarSchema+splitted[splitted.length-1]);
+				logger.debug("adding: "+oneExt[0].toLowerCase()+", "+oneExt[1]+", "+oneExt[2]);
 				filePaths += oneExt[1] + ";";
 			}
 		} catch (Exception e) {
