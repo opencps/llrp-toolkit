@@ -14,7 +14,10 @@
      <property name="llrpdef_xsd" value="${def}/llrpdef.xsd"/>
      <property name="llrpdef_xml" value="${def}/Core/llrp-1x0-def.xml"/>
      <property name="llrp_xsd" value="${def}/Core/llrp-1x0.xsd"/>
-     <taskdef name="xjc" classname="com.sun.tools.xjc.XJCTask">
+	 <!-- configure the property below with the path to the extension XSD, if applicable -->
+	 <!-- <property name="extension_xsd" value="Impinj.xsd"/> -->
+     
+	<taskdef name="xjc" classname="com.sun.tools.xjc.XJCTask">
              <classpath>
 	        <fileset dir="lib" includes="*.jar" />
   	     </classpath>
@@ -101,7 +104,12 @@
 		<copy file="${llrp_xsd}" todir="${build}/classes/org/llrp/ltk"/>	
 	</target>
 	
-	<target name="compile" depends="format,copyLLRP.xsd"> 
+	<target name="copyExtension.xsd" >  
+			<echo message="Copy ${extension_xsd} to org.llrp.ltk so it can be loaded as a resource"/>
+			<copy file="${extension_xsd}" todir="${build}/classes/org/llrp/ltk" failonerror="false"/>	
+	</target>
+	
+	<target name="compile" depends="format,copyLLRP.xsd,copyExtension.xsd"> 
           <!-- Compile the java code -->
           	<echo message="Compiling LTKJava (generated classes and non-generated classes)..."/>
 		  <javac srcdir="${src}" 
@@ -122,7 +130,7 @@
     <!-- ===================================== -->
 	<!-- Jar Generation -->
 	<!-- ===================================== -->
-        
+      
         
 	<target name="jar" depends="compile"> 
 	 <echo message="Creating binary jar without dependencies..."/>
