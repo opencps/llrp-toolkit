@@ -9,8 +9,10 @@ All the projects will be loaded through LTKNet.sln.
 
 1. To build the LLRP project, you need copy the llrp-1x0-def.xml or latest verion to LLRP directory
 2. To build the LLRPVendorExt project, you need to copy a LLRP schema compatible vendor extesion 
-   definition file to LLRPVendorExt directory. The namespace of the vendor extension is LLRP.xxxxxx. The dll file
-   name should be LLRP.xxxxxx.dll accordingly.
+   definition file to LLRPVendorExt directory to a file called VendorExt.xml. 
+   The namespace of the vendor extension is LLRP.xxxxxx. The dll file
+   name should be LLRP.xxxxxx.dll accordingly. xxxxxx is set via the assembly name accesible from the 
+   application tab in the properties window for the LLRPVendorExt project. 
 3. When load the solution file in Visual Studio, there might be an alert. You need to choose "Load Normally".
 4. The IDE shows several missed files. They will be generated once you build the project.
 5. LLRPTest project XML parser parses single message
