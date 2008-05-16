@@ -304,29 +304,6 @@ public class $className extends $superType implements LLRPEnumeration{
 			}
 		}
 
-
-			/**
-		* return a list of Strings holding all names of allowed values
-	 */	
-		public static List<String> getAllowedNames(){
-			LinkedList<String> allowedNames = new LinkedList<String>();
-			#foreach ($entry in $enum.getEntry())
-				allowedNames.add("$entry.getName()");
-			#end
-			return allowedNames;
-		}
-		
-		/**
-		* return a list of allowed values  
-	 */	
-		public static List<Integer> getAllowedValues(){
-			LinkedList<Integer> allowedValues = new LinkedList<Integer>();
-			#foreach ($entry in $enum.getEntry())
-				allowedValues.add(new Integer($entry.getValue()));
-			#end
-			return allowedValues;
-		}
-
 		
 		
 	/**
