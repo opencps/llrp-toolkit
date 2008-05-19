@@ -22,12 +22,13 @@ import org.jdom.Namespace;
 
 /**
  * Representing an LLRPParameter uniquely identified by its type number.
- * call empty constructor to create new parameter. Use constructor taking
- * LLRPBitList or byte[] to create parameter from binary encoded parameter. Use
- * constructor taking JDOM element to create parameter from XML encoding
+ * Call empty constructor to create new parameter. Use constructor taking
+ * LLRPBitList or byte[] as a parameter to instantiate parameter from binary encoding. 
+ * Use constructor taking JDOM element (www.jdom.org) to create parameter from XML encoding
  * See also TLVParameter and TVParameter
  *
  * @author Basil Gasser - ETH Zurich
+ * @author Christian Floerkemeier - MIT
  */
 public abstract class LLRPParameter {
     protected UnsignedShort bitLength = new UnsignedShort();

@@ -19,9 +19,10 @@ package org.llrp.ltk.exceptions;
 
 /**
  * IllegalBitList Exception is thrown whenever a LLRPBitList is not in
- * an expected format - this mainly happens during decoding.
+ * the expected format - this typically happens during binary decoding.
  *
  * @author Basil Gasser - ETH Zurich
+ * @author Christian Floerkemeier - MIT
  */
 public class MissingParameterException extends RuntimeException {
     /**
