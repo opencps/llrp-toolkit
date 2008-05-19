@@ -95,6 +95,9 @@ Name		Version		URL
 jdom		1.0			http://www.jdom.org	
 log4j		1.2.15		http://logging.apache.org/log4j/1.2/download.html
 jargs 		1.0			http://sourceforge.net/project/showfiles.php?group_id=33024
+mina 		2.0.0M 		http://mina.apache.org
+slf4j-log4j12 1.5.0 	http://www.slf4j.org
+slf4j-api 1.5.0 		http://www.slf4j.org
 
 COMPILE DEPENDENCIES
 
