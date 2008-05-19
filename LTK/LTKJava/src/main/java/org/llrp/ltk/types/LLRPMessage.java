@@ -44,6 +44,8 @@ import org.xml.sax.SAXException;
  * LLRPBitList or Byte[] to create message from binary encoded message. Use
  * constructor taking JDOM document to create message from XML encoding
  * 
+ * @author Basil Gasser - ETH Zurich
+ * @author Christian Floerkemeier - MIT
  */
 public abstract class LLRPMessage {
 	private static final Logger LOGGER = Logger.getLogger(LLRPMessage.class);
