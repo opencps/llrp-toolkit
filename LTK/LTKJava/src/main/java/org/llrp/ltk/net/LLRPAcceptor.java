@@ -50,9 +50,9 @@ import org.llrp.ltk.types.LLRPMessage;
  */
 public class LLRPAcceptor extends IoHandlerAdapter implements LLRPConnection  {
 
-	public static int IDLE_TIME = 20;
+	public static final int IDLE_TIME = 20;
 	private static final String SYNC_MESSAGE_ANSWER = "synchronousMessageAnswer";
-	private Logger log = Logger.getLogger(LLRPAcceptor.class);
+	private static final Logger log = Logger.getLogger(LLRPAcceptor.class);
 	private LLRPIoHandlerAdapter handler;
 	private int port = 5084;
 	private IoAcceptor acceptor;
