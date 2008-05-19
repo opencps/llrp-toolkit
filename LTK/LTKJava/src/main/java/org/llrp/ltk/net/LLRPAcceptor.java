@@ -43,6 +43,10 @@ import org.llrp.ltk.types.LLRPMessage;
  * <code> c.send(llrpmessage); </code> <p>
  * <code> // send message synchronously </code> <p>
  * <code> LLRPMessage m = c.transact(llrpmessage); </code>
+ * 
+ * @author Basil Gasser - ETH Zurich
+ * @author Christian Floerkemeier - MIT
+ * 
  */
 public class LLRPAcceptor extends IoHandlerAdapter implements LLRPConnection  {
 
@@ -56,12 +60,28 @@ public class LLRPAcceptor extends IoHandlerAdapter implements LLRPConnection  {
 	private LLRPEndpoint endpoint;
 	private IoSession session;
 
+	public LLRPAcceptor() {
+		super();
+	}
 
-
+	/**
+	 * creates a remotely initiated LLRP connection on default PORT 5084 
+	 * and uses LLRPIoHandlerAdapterImpl by default
+	 * 
+	 * @param LLRPEndpoint endpoint that handles incoming, asynchronous LLRP messages
+	 */
+	
 	public LLRPAcceptor(LLRPEndpoint endpoint){
 		handler = new LLRPIoHandlerAdapterImpl(this);
 		this.endpoint = endpoint;
 	}
+	
+	/**
+	 * creates a remotely initiated LLRP connection and uses LLRPIoHandlerAdapterImpl by default
+	 * 
+	 * @param LLRPEndpoint endpoint that handles incoming, asynchronous LLRP messages
+	 * @param Port on which LLRPAcceptor is waiting for incoming connections
+	 */
 
 	public LLRPAcceptor(LLRPEndpoint endpoint, int port){
 		this.endpoint = endpoint;
@@ -172,6 +192,48 @@ public class LLRPAcceptor extends IoHandlerAdapter implements LLRPConnection  {
 	 */
 	public void send(LLRPMessage message) {
 		handler.send(message);
+	}
+
+	/**
+	 * @return the endpoint
+	 */
+	public LLRPEndpoint getEndpoint() {
+		return endpoint;
+	}
+
+	/**
+	 * @param endpoint the endpoint to set
+	 */
+	public void setEndpoint(LLRPEndpoint endpoint) {
+		this.endpoint = endpoint;
+	}
+
+	/**
+	 * @return the handler
+	 */
+	public LLRPIoHandlerAdapter getHandler() {
+		return handler;
+	}
+
+	/**
+	 * @param handler the handler to set
+	 */
+	public void setHandler(LLRPIoHandlerAdapter handler) {
+		this.handler = handler;
+	}
+
+	/**
+	 * @return the port
+	 */
+	public int getPort() {
+		return port;
+	}
+
+	/**
+	 * @param port the port to set
+	 */
+	public void setPort(int port) {
+		this.port = port;
 	}
 
 

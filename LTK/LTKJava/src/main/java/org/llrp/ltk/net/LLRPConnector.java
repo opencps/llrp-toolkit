@@ -54,6 +54,10 @@ public class LLRPConnector implements LLRPConnection{
 	private ConnectFuture future;
 	private LLRPEndpoint endpoint;
 
+	public LLRPConnector() {
+		super();
+	}
+
 	public LLRPConnector(LLRPEndpoint endpoint, String host, int port) {
 		this.host = host;
 		this.port = port;
@@ -65,7 +69,21 @@ public class LLRPConnector implements LLRPConnection{
 		this.host = host;
 		this.endpoint = endpoint;
 		handler = new LLRPIoHandlerAdapterImpl(this);
-	}    
+	}
+	
+	public LLRPConnector(LLRPEndpoint endpoint, String host, LLRPIoHandlerAdapter handler) {
+		this.host = host;
+		this.endpoint = endpoint;
+		this.handler = handler;
+	} 
+	
+	public LLRPConnector(LLRPEndpoint endpoint, String host, int port, LLRPIoHandlerAdapter handler) {
+		this.host = host;
+		this.port = port;
+		this.endpoint = endpoint;
+		this.handler = handler;
+	} 
+	
 	public void connect(){
 		connector = new NioSocketConnector();
 		connector.getFilterChain().addLast("codec", new ProtocolCodecFilter(new LLRPProtocolCodecFactory(LLRPProtocolCodecFactory.BINARY_ENCODING)));
@@ -159,6 +177,62 @@ public class LLRPConnector implements LLRPConnection{
 	 */
 	public void messageSent() {
 		log.debug("message transmitted");
+	}
+
+	/**
+	 * @return the endpoint
+	 */
+	public LLRPEndpoint getEndpoint() {
+		return endpoint;
+	}
+
+	/**
+	 * @param endpoint the endpoint to set
+	 */
+	public void setEndpoint(LLRPEndpoint endpoint) {
+		this.endpoint = endpoint;
+	}
+
+	/**
+	 * @return the handler
+	 */
+	public LLRPIoHandlerAdapter getHandler() {
+		return handler;
+	}
+
+	/**
+	 * @param handler the handler to set
+	 */
+	public void setHandler(LLRPIoHandlerAdapter handler) {
+		this.handler = handler;
+	}
+
+	/**
+	 * @return the host
+	 */
+	public String getHost() {
+		return host;
+	}
+
+	/**
+	 * @param host the host to set
+	 */
+	public void setHost(String host) {
+		this.host = host;
+	}
+
+	/**
+	 * @return the port
+	 */
+	public int getPort() {
+		return port;
+	}
+
+	/**
+	 * @param port the port to set
+	 */
+	public void setPort(int port) {
+		this.port = port;
 	}
 
 }
