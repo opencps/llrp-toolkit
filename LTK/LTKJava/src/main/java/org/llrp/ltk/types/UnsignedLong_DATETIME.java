@@ -18,7 +18,7 @@ public class UnsignedLong_DATETIME extends UnsignedLong {
 	 * 
 	 * @param aLong
 	 */
-	public UnsignedLong_DATETIME(Long aLong) {
+	public UnsignedLong_DATETIME(long aLong) {
 		super(aLong);
 	}
 

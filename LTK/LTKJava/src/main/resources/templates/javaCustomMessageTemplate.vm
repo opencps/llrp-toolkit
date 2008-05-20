@@ -239,8 +239,8 @@ public class $message.getName() extends LLRPMessage {
 ##typeNum is always needed
 	public static final UTF8String vendor = new UTF8String("$message.getVendor()");
 	public static final UnsignedByte subtype = new UnsignedByte((new Integer($message.getSubtype())).byteValue());
+	public static final UnsignedInteger vendorIdentifier = new UnsignedInteger($vendorID);
 	private static final Logger LOGGER = Logger.getLogger("$message.getName()");
-    protected UnsignedInteger vendorIdentifier;
 	#if ($message.getResponseType())
 		public static final String RESPONSETYPE = "$message.getResponseType()";
 	#else 
@@ -319,7 +319,7 @@ $utility.clearNumberOfReserved()
 	LLRPBitList resultBits = new LLRPBitList();
 	
 	//vendor and type encoded first
-	resultBits.append(vendor.encodeBinary());
+	resultBits.append(vendorIdentifier.encodeBinary());
 	resultBits.append(subtype.encodeBinary());
 	## field or reserved
 	#foreach($field in $message.getFieldOrReserved())
@@ -391,9 +391,7 @@ $utility.clearNumberOfReserved()
 		messageID = new UnsignedInteger(binary.subList(position, UnsignedInteger.length()));
 		position+=UnsignedInteger.length();
 		
-		vendorIdentifier = new UnsignedInteger(binary.subList(position,
-                    UnsignedInteger.length()));
-        position += UnsignedInteger.length();
+		position += UnsignedInteger.length();
         // subtype needs not to be assigned
         position += LLRPInteger.length();
  
@@ -566,19 +564,8 @@ $utility.clearNumberOfReserved()
         version.setValue(new Integer(root.getAttributeValue("Version")));
         messageID = new UnsignedInteger(root.getAttributeValue("MessageID"));
   		Element temp = null;
-  		## always decode vendor identifier and message subtype
-  		temp = root.getChild("VendorIdentifier", root.getNamespace());
-
-            //check if this element exist
-            if (temp != null) {
-                vendorIdentifier = new UnsignedInteger(temp);
-            } else {
-                LOGGER.warn(
-                    "Element vendorIdentifier not provided in xml as child of " +
-                    root.getName());
-                throw new MissingParameterException(
-                    "Element vendorIdentifier not provided");
-            }
+  		## vendor Identifier has not to be decoded
+  		
 
            
 		## field or reserved
@@ -1043,10 +1030,7 @@ $utility.clearNumberOfReserved()
 ## end add	
 ##must clear numbers of reserved definitons found
 $utility.clearNumberOfReserved() 	
-  		
-  	public void setVendorIdentifier(UnsignedInteger vendorIdentifier){
-  		this.vendorIdentifier = vendorIdentifier;
-  	}
+
 
 	@Override
 	public String getResponseType() {

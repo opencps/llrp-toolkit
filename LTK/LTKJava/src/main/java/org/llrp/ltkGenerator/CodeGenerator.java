@@ -18,6 +18,7 @@ import org.apache.log4j.PropertyConfigurator;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
+import org.apache.velocity.context.AbstractContext;
 import org.apache.velocity.exception.MethodInvocationException;
 import org.apache.velocity.exception.ParseErrorException;
 import org.apache.velocity.exception.ResourceNotFoundException;
@@ -31,6 +32,7 @@ import org.llrp.ltkGenerator.generated.LlrpDefinition;
 import org.llrp.ltkGenerator.generated.MessageDefinition;
 import org.llrp.ltkGenerator.generated.NamespaceDefinition;
 import org.llrp.ltkGenerator.generated.ParameterDefinition;
+import org.llrp.ltkGenerator.generated.VendorDefinition;
 
 /**
  * generates LLRP messages, parameters, enumeration from the definitions in
@@ -63,6 +65,7 @@ public class CodeGenerator {
 	private Map<String, String> schemaPaths;
 	private Map<String, String> xmlFilePaths;
 	private Utility utility;
+	private Map<String, Long> vendorDefinitions;
 
 	/**
 	 * instantiate new code generator - probably want to call generate after.
@@ -82,7 +85,7 @@ public class CodeGenerator {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
+		vendorDefinitions = new HashMap<String, Long>();
 		parameters = new LinkedList<ParameterDefinition>();
 		messages = new LinkedList<MessageDefinition>();
 		enumerations = new LinkedList<EnumerationDefinition>();
@@ -672,6 +675,7 @@ public class CodeGenerator {
 				VelocityContext context = new VelocityContext();
 				context.put("custom", cd);
 				context.put("utility", utility);
+				context.put("vendorID", vendorDefinitions.get(cd.getVendor().toLowerCase()));
 
 				Template template = Velocity.getTemplate(properties
 						.getString("customParameterTemplate"));
@@ -724,7 +728,7 @@ public class CodeGenerator {
 				context.put("message", cd);
 				context.put("namespaces", namespaces);
 				context.put("utility", utility);
-
+				context.put("vendorID", vendorDefinitions.get(cd.getVendor().toLowerCase()));
 				Template template = Velocity.getTemplate(properties
 						.getString("customMessageTemplate"));
 				BufferedWriter writer = new BufferedWriter(new FileWriter(
@@ -836,6 +840,9 @@ public class CodeGenerator {
 			} else if (o instanceof NamespaceDefinition) {
 				NamespaceDefinition nsDef = (NamespaceDefinition) o;
 				namespaces.add(nsDef);
+			} else if (o instanceof VendorDefinition) {
+				VendorDefinition vd = (VendorDefinition) o;
+				vendorDefinitions.put(vd.getName().toLowerCase(), vd.getVendorID());
 			} else {
 				logger.warn("type not used: " + o.getClass()
 						+ " in CodeGenerator.fillObjects");

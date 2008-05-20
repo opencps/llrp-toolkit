@@ -302,6 +302,7 @@ $utility.clearNumberOfReserved()
  * empty constructor to create new parameter.
  */
 	public $custom.getName()(){
+		vendorIdentifier = new UnsignedInteger($vendorID);
 	}
 
 /**
