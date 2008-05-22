@@ -19,6 +19,7 @@ import org.jdom.Content;
 import org.jdom.Element;
 import org.jdom.Namespace;
 import org.jdom.Text;
+import org.llrp.ltk.generated.LLRPConstants;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -71,14 +72,10 @@ public class BytesToEnd extends LLRPType {
      * @param list to be decoded
      */
     public void decodeBinary(LLRPBitList list) {
-        if (list.length() <= 16) {
-            return;
-        }
+        
+        int length = list.length();
 
-        Integer length = new SignedInteger(list.subList(0, 16)).toInteger();
-        bytes = new LinkedList<LLRPInteger>();
-
-        for (int i = 16; i < length; i = i + LLRPInteger.length()) {
+        for (int i = 0; i < length; i = i + LLRPInteger.length()) {
             bytes.add(new LLRPInteger(list.subList(i, LLRPInteger.length())));
         }
     }
@@ -141,13 +138,13 @@ public class BytesToEnd extends LLRPType {
      * {@inheritDoc}
      */
     public Content encodeXML(String name, Namespace ns) {
-        String s = "";
+       String s = "";
 
         for (LLRPInteger b : bytes) {
             s += b.toString();
         }
 
-        Element element = new Element(name, ns);
+        Element element = new Element(name,ns);
         element.setContent(new Text(s));
 
         return element;

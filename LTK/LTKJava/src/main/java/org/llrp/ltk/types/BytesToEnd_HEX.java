@@ -6,6 +6,7 @@ import org.jdom.Content;
 import org.jdom.Element;
 import org.jdom.Namespace;
 import org.jdom.Text;
+import org.llrp.ltk.generated.LLRPConstants;
 
 /**
  * class representing BytesToEnd in Hex format.
@@ -60,7 +61,7 @@ public class BytesToEnd_HEX extends BytesToEnd {
 
         s = s.replaceFirst(" ", "");
 
-        Element element = new Element(name, ns);
+        Element element = new Element(name,ns);
         element.setContent(new Text(s));
 
         return element;
