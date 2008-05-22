@@ -400,20 +400,23 @@ $utility.clearNumberOfReserved()
 	 * {@inheritDoc}
 	 */
 	public Content encodeXML(String name, Namespace ns){
-		//Element xmlElement = new Element(name,Namespace.getNamespace("rp"));
-		// custom parameters need their own namespaces
-		Element xmlElement = new Element(name,Namespace.getNamespace("$custom.getVendor().toUpperCase()"));
+		#set($ns = "NAMESPACE")
+		// element in namespace defined by parents
+        Element element = new Element(name, ns);
+        // child elements may be in another namespace
+		ns = Namespace.getNamespace("$custom.getNamespace()",LLRPConstants.$custom.getNamespace().toUpperCase()$ns);
 		## field or reserved
+		// fileds are alway in parent namespace 
 		#foreach($field in $custom.getFieldOrReserved())
 			#if ($utility.hasType($field,$reservedDefinition))
-				//xmlElement.addContent($resName$utility.getCurrentNumerOfReserved()$encodeXML("reserved",ns));
+				//element.addContent($resName$utility.getCurrentNumerOfReserved()$encodeXML("reserved",ns));
 			#elseif ($utility.hasType($field,$fieldDefinition))
 				## FieldDefinition
 				if ($utility.firstToLowerCase($field.getName())== null){
 					LOGGER.warn(" $utility.firstToLowerCase($field.getName()) not set");
 					throw new MissingParameterException(" $utility.firstToLowerCase($field.getName()) not set");
 				} else {
-					xmlElement.addContent($utility.firstToLowerCase($field.getName())$encodeXML("$field.getName()",ns));
+					element.addContent($utility.firstToLowerCase($field.getName())$encodeXML("$field.getName()",ns));
 				}
 			#else
 				//TODO 4 template parameter encode wrote this - unexpected object $field $field.getName()
@@ -438,14 +441,24 @@ $utility.clearNumberOfReserved()
 				} 
 				for ($field.getType() field : $curName$list){
 					##choices have to be set by the actual name - not the name of the interface
-					xmlElement.addContent(field$encodeXML(field.getClass().getName().replaceAll(field.getClass().getPackage().getName()+".", ""),ns));
+					#if ($field.getNamespace())				
+						Namespace ns2 = Namespace.getNamespace("$field.getNamespace()",LLRPConstants.$field.getNamespace().toUpperCase()$ns));
+						element.addContent(field$encodeXML(field.getClass().getName().replaceAll(field.getClass().getPackage().getName()+".", ""),ns2));
+					#else 
+						element.addContent(field$encodeXML(field.getClass().getName().replaceAll(field.getClass().getPackage().getName()+".", ""),ns));
+					#end
 				}
 			#elseif ($field.getRepeat()== $optionalListRepeat)
 				if ($curName$list == null){
 					LOGGER.info("$curName$list not set");
 				} else {
 					for ($field.getType() field : $curName$list){
-						xmlElement.addContent(field$encodeXML(field.getClass().getName().replaceAll(field.getClass().getPackage().getName()+".", ""),ns));
+					#if ($field.getNamespace())				
+						Namespace ns2 = Namespace.getNamespace("$field.getNamespace()",LLRPConstants.$field.getNamespace().toUpperCase()$ns));
+						element.addContent(field$encodeXML(field.getClass().getName().replaceAll(field.getClass().getPackage().getName()+".", ""),ns2));
+					#else 
+						element.addContent(field$encodeXML(field.getClass().getName().replaceAll(field.getClass().getPackage().getName()+".", ""),ns));
+					#end
 					}
 				}
 			#elseif ($field.getRepeat()== $optionalRepeat)
@@ -454,9 +467,19 @@ $utility.clearNumberOfReserved()
 				} else {
 					#if ($field.getName())
 							// name was defined for this parameter - must use it to avoid confusion with parameters of same type
-							xmlElement.addContent($curName$encodeXML("$curName",ns));
+						#if ($field.getNamespace())				
+							Namespace ns2 = Namespace.getNamespace("$field.getNamespace()",LLRPConstants.$field.getNamespace().toUpperCase()$ns));
+							element.addContent($curName$encodeXML("$curName",ns2));
+						#else 
+							element.addContent($curName$encodeXML("$curName",ns));
+						#end
 					#else
-							xmlElement.addContent($curName$encodeXML($curName$getClassName,ns));
+						#if ($field.getNamespace())				
+							Namespace ns2 = Namespace.getNamespace("$field.getNamespace()",LLRPConstants.$field.getNamespace().toUpperCase()$ns));
+							element.addContent($curName$encodeXML($curName$getClassName,ns2));
+						#else 
+							element.addContent($curName$encodeXML($curName$getClassName,ns));
+						#end
 					#end
 				}
 			#elseif ($field.getRepeat()== $exactlyOnceRepeat)
@@ -466,16 +489,26 @@ $utility.clearNumberOfReserved()
 				} else {
 					#if ($field.getName())
 							// name was defined for this parameter - must use it to avoid confusion with parameters of same type
-							xmlElement.addContent($curName$encodeXML("$curName",ns));
+						#if ($field.getNamespace())				
+							Namespace ns2 = Namespace.getNamespace("$field.getNamespace()",LLRPConstants.$field.getNamespace().toUpperCase()$ns));
+							element.addContent($curName$encodeXML("$curName",ns2));
+						#else 
+							element.addContent($curName$encodeXML("$curName",ns));
+						#end
 					#else
-							xmlElement.addContent($curName$encodeXML($curName$getClassName,ns));
+						#if ($field.getNamespace())				
+							Namespace ns2 = Namespace.getNamespace("$field.getNamespace()",LLRPConstants.$field.getNamespace().toUpperCase()$ns));
+							element.addContent($curName$encodeXML($curName$getClassName,ns2));
+						#else 
+							element.addContent($curName$encodeXML($curName$getClassName,ns));
+						#end
 					#end					
 				}
 			#else
 				// TODO field.getRepeat() = $field.getRepeat()
 			#end
 		#end
-		return xmlElement;
+		return element;
 	}
 
 ##must clear numbers of reserved definitons found

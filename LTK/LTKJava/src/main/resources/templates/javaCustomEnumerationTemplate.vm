@@ -34,6 +34,7 @@ package org.llrp.ltk.generated.custom.enumerations;
 import org.llrp.ltk.types.$utility.getSuperType($className);
 import org.llrp.ltk.types.LLRPEnumeration;
 import org.llrp.ltk.types.$utility.getBaseType($superType);
+import org.llrp.ltk.generated.LLRPConstants;
 
 			
 import org.jdom.Element;
@@ -55,7 +56,9 @@ import java.math.BigInteger;
 public class $className extends $superType implements LLRPEnumeration{
 	#set($class = ".class")
 	Logger logger = Logger.getLogger($className$class);
-	
+	#foreach ($entry in $enum.getEntry())
+		public static final int $entry.getName() = $entry.getValue();
+	#end
 	/**
 	 * Create new $className by passing integer value.
 	 *
@@ -253,8 +256,9 @@ public class $className extends $superType implements LLRPEnumeration{
 		* {@inheritDoc}
 	 */	
     public Content encodeXML(final String name, Namespace ns) {
-
-    	Element element = new Element(name,ns);
+		#set($ns = "NAMESPACE")
+        Element element = new Element(name, ns);
+    	//Element element = new Element(name, Namespace.getNamespace("$vendor",LLRPConstants.$vendor.toUpperCase()$ns));
     	element.setContent(new Text(toString()));
         return element;
     }

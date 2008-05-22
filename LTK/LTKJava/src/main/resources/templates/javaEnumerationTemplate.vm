@@ -34,6 +34,7 @@ package org.llrp.ltk.generated.enumerations;
 import org.llrp.ltk.types.$utility.getSuperType($className);
 import org.llrp.ltk.types.LLRPEnumeration;
 import org.llrp.ltk.types.$utility.getBaseType($superType);
+import org.llrp.ltk.generated.LLRPConstants;
 
 			
 import org.jdom.Element;
@@ -263,8 +264,10 @@ public class $className extends $superType implements LLRPEnumeration{
 		* {@inheritDoc}
 	 */	
     public Content encodeXML(final String name, Namespace ns) {
+		#set($ns = "NAMESPACE")
 
-    	Element element = new Element(name,ns);
+        Element element = new Element(name, ns);
+    	//Element element = new Element(name, Namespace.getNamespace("$vendor",LLRPConstants.$vendor.toUpperCase()$ns));
     	element.setContent(new Text(toString()));
         return element;
     }

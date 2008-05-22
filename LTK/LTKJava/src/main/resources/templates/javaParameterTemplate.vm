@@ -55,6 +55,7 @@ package org.llrp.ltk.generated.parameters;
 #set ($exactlyOnceRepeat = "1")
 #set ($optionalRepeat = "0-1")
 #set ($optionalListRepeat = "0-N")
+#set($ns = "NAMESPACE")
 	
 	
 ##imports
@@ -406,19 +407,23 @@ $utility.clearNumberOfReserved()
 	 * {@inheritDoc}
 	 */
 	public Content encodeXML(String name, Namespace ns){
-		//Element xmlElement = new Element(name,Namespace.getNamespace("rp"));
-		Element xmlElement = new Element(name,ns);
+		#set($ns = "NAMESPACE")
+		// element in namespace defined by parent element
+        Element element = new Element(name, ns);
+        // child element are always in default LLRP namespace
+    	ns = Namespace.getNamespace("llrp",LLRPConstants.LLRPNAMESPACE);
+    	
 		## field or reserved
 		#foreach($field in $parameter.getFieldOrReserved())
 			#if ($utility.hasType($field,$reservedDefinition))
-				//xmlElement.addContent($resName$utility.getCurrentNumerOfReserved()$encodeXML("reserved",ns));
+				//element.addContent($resName$utility.getCurrentNumerOfReserved()$encodeXML("reserved",ns));
 			#elseif ($utility.hasType($field,$fieldDefinition))
 				## FieldDefinition
 				if ($utility.firstToLowerCase($field.getName())== null){
 					LOGGER.warn(" $utility.firstToLowerCase($field.getName()) not set");
 					throw new MissingParameterException(" $utility.firstToLowerCase($field.getName()) not set");
 				} else {
-					xmlElement.addContent($utility.firstToLowerCase($field.getName())$encodeXML("$field.getName()",ns));
+					element.addContent($utility.firstToLowerCase($field.getName())$encodeXML("$field.getName()",ns));
 				}
 			#else
 				//TODO 4 template parameter encode wrote this - unexpected object $field $field.getName()
@@ -443,14 +448,14 @@ $utility.clearNumberOfReserved()
 				} 
 				for ($field.getType() field : $curName$list){
 					##choices have to be set by the actual name - not the name of the interface
-					xmlElement.addContent(field$encodeXML(field.getClass().getName().replaceAll(field.getClass().getPackage().getName()+".", ""),ns));
+					element.addContent(field$encodeXML(field.getClass().getName().replaceAll(field.getClass().getPackage().getName()+".", ""),ns));
 				}
 			#elseif ($field.getRepeat()== $optionalListRepeat)
 				if ($curName$list == null){
 					LOGGER.info("$curName$list not set");
 				} else {
 					for ($field.getType() field : $curName$list){
-						xmlElement.addContent(field$encodeXML(field.getClass().getName().replaceAll(field.getClass().getPackage().getName()+".", ""),ns));
+						element.addContent(field$encodeXML(field.getClass().getName().replaceAll(field.getClass().getPackage().getName()+".", ""),ns));
 					}
 				}
 			#elseif ($field.getRepeat()== $optionalRepeat)
@@ -459,9 +464,9 @@ $utility.clearNumberOfReserved()
 				} else {
 					#if ($field.getName())
 							// name was defined for this parameter - must use it to avoid confusion with parameters of same type
-							xmlElement.addContent($curName$encodeXML("$curName",ns));
+							element.addContent($curName$encodeXML("$curName",ns));
 					#else
-							xmlElement.addContent($curName$encodeXML($curName$getClassName,ns));
+							element.addContent($curName$encodeXML($curName$getClassName,ns));
 					#end
 				}
 			#elseif ($field.getRepeat()== $exactlyOnceRepeat)
@@ -471,16 +476,16 @@ $utility.clearNumberOfReserved()
 				} else {
 					#if ($field.getName())
 							// name was defined for this parameter - must use it to avoid confusion with parameters of same type
-							xmlElement.addContent($curName$encodeXML("$curName",ns));
+							element.addContent($curName$encodeXML("$curName",ns));
 					#else
-							xmlElement.addContent($curName$encodeXML($curName$getClassName,ns));
+							element.addContent($curName$encodeXML($curName$getClassName,ns));
 					#end					
 				}
 			#else
 				// TODO field.getRepeat() = $field.getRepeat()
 			#end
 		#end
-		return xmlElement;
+		return element;
 	}
 
 ##must clear numbers of reserved definitons found
