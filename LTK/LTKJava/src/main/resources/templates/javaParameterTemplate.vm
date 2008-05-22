@@ -338,7 +338,7 @@ $utility.clearNumberOfReserved()
 		#elseif ($utility.hasType($field,$fieldDefinition))
 			if ($utility.firstToLowerCase($field.getName())== null){
 				LOGGER.warn(" $utility.firstToLowerCase($field.getName()) not set");
-				throw new MissingParameterException(" $utility.firstToLowerCase($field.getName()) not set  for Parameter of Type $parameter.getType()");
+				throw new MissingParameterException(" $utility.firstToLowerCase($field.getName()) not set  for Parameter of Type $parameter.getName()");
 			} 
 			resultBits.append($utility.firstToLowerCase($field.getName())$encode);
 		## FieldDefinition
