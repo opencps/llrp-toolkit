@@ -8,7 +8,9 @@ import org.apache.log4j.PropertyConfigurator;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 
 import java.util.Properties;
 
@@ -74,7 +76,6 @@ public class CodeFormatter {
     private void formatFile(File file) {
         // create a new Jalopy instance with the currently active code convention settings
         Jalopy jalopy = new Jalopy();
-
         
 
         logger.debug("formating " + file.getAbsolutePath());
@@ -90,8 +91,18 @@ public class CodeFormatter {
         logger.debug("output file set");
 
         // format and overwrite the given input file
+//        PrintStream orig = System.out;
+//        File f = new File("foo.bar");
+//        PrintStream fo = null;
+//        try {
+//			fo = new PrintStream(f);
+//		} catch (FileNotFoundException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		System.setOut(fo);
         jalopy.format();
-
+//        System.setOut(orig);
         if (jalopy.getState() == Jalopy.State.OK) {
             logger.debug(file + " successfully formatted");
         } else if (jalopy.getState() == Jalopy.State.WARN) {
