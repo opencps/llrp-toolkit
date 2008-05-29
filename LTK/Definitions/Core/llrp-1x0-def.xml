@@ -1696,7 +1696,7 @@
           <h:p>Compliant Readers and Clients that do not have UTC clocks <h:b>SHALL</h:b> implement this parameter. Compliant Readers and Clients that have UTC clocks <h:b>MAY</h:b> implement this parameter.</h:p>
       </description>
     </annotation>
-    <field     type="u64"   name="Microseconds" format="Datetime"/>
+    <field     type="u64"   name="Microseconds" />
   </parameterDefinition>
 
   <parameterDefinition name="LastSeenTimestampUTC" typeNum="4" required="false">
@@ -1709,7 +1709,7 @@
           <h:p>This is the time elapsed since boot, measured in microseconds.</h:p>
       </description>
     </annotation>
-    <field     type="u64"   name="Microseconds"/>
+    <field     type="u64"   name="Microseconds" format="Datetime"/>
   </parameterDefinition>
 
   <parameterDefinition name="LastSeenTimestampUptime" typeNum="5" required="false">
