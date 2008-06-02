@@ -199,6 +199,13 @@ public class $className extends $superType implements LLRPEnumeration{
 			if (position > this.bytes.length) throw new IllegalArgumentException("position is bigger than array size");
 			bytes[position] = new $utility.getBaseType($superType)(getValue(name));
 		}
+		
+		/** 
+		* if no position is provided, the first element is set
+		**/
+		public final void set(final String name){
+			set(name, 0);
+		}
 	#else
 		/**
 		 * set the current value of this enumeration to the 
@@ -238,6 +245,13 @@ public class $className extends $superType implements LLRPEnumeration{
 			if (position > this.bytes.length) throw new IllegalArgumentException("position is bigger than array size");
 			bytes[position] = new  $utility.getBaseType($superType)(value);
 
+		}
+		
+		/** 
+		* if no position is provided, the first element is set
+		**/
+		public final void set(final int value){
+			set(value, 0);
 		}
 		
 	#else
