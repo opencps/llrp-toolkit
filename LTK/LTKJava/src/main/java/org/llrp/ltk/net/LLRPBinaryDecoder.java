@@ -62,7 +62,7 @@ public class LLRPBinaryDecoder extends CumulativeProtocolDecoder {
 			session.setAttribute(MESSAGE_LENGTH_KEY, new Integer(length));
 			session.setAttribute(MESSAGE_VERSION_KEY, version);
 			// if the entire message is already available, call doDecode again.
-			return (in.remaining()==length-6);
+			return (in.remaining()>=length-6);
 		} else if (session.getAttribute(MESSAGE_LENGTH_KEY) != null) {
 			log.debug("length already determined, see if enough bytes are available");
 			length = ((Integer)session.getAttribute(MESSAGE_LENGTH_KEY)).intValue();
