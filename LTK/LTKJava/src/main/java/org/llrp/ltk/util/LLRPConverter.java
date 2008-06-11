@@ -215,8 +215,8 @@ public class LLRPConverter {
 				"                      [{-d,--dir} directory path] directory with messages\n" +
 				"                      [{-f,--file} file path] single message to be converted\n" +
 		"                      [{-t,--targetDir} targetDirectory path] target directory for converted messages\n\n" +
-	    "Example binary->xml file conversion to console:\n java -jar LTKJava<Version>.jar -b ADD_ROSPEC.bin\n" +
-	    "Example xml->binary file conversion to console:\n java -jar LTKJava<Version>.jar -x ADD_ROSPEC.xml\n" +
+	    "Example binary->xml file conversion to console:\n java -jar LTKJava<Version>.jar -b -f ADD_ROSPEC.bin\n" +
+	    "Example xml->binary file conversion to console:\n java -jar LTKJava<Version>.jar -x -f ADD_ROSPEC.xml\n" +
 	    "Example xml->binary file conversion of all files in a dir:\n" +
 	    "       java -jar LTKJava<Version>.jar -x -d messages/xml -t messages/bin\n");
 	
