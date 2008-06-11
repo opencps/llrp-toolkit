@@ -8,11 +8,38 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
+import org.apache.log4j.Logger;
+import org.jdom.Document;
+import org.jdom.JDOMException;
+import org.jdom.output.Format;
+import org.jdom.output.XMLOutputter;
+import org.llrp.ltk.exceptions.InvalidLLRPMessageException;
+import org.llrp.ltk.generated.messages.LLRPMessageFactory;
 import org.llrp.ltk.types.LLRPBitList;
+import org.llrp.ltk.types.LLRPMessage;
+
+/**
+ * Util.java provides a number of utility methods such 
+ * loading a binary message or XML message from a file.
+ */
+
 
 public class Util {
 
-	public static LLRPBitList getBinaryFileContent(File file) throws IOException, FileNotFoundException{
+	
+	static final Logger LOGGER = Logger.getLogger("Util.class");
+	
+	
+	/**
+	 * loads a binary file from the file system and returns a LLRPBitList object
+	 * 
+	 * @param file
+	 * @return LLRPBitList containing file contents
+	 * @throws IOException
+	 * @throws FileNotFoundException
+	 */
+	
+	public static LLRPBitList loadBinaryFileContent(File file) throws IOException, FileNotFoundException{
 
 		
 		FileInputStream fis = new FileInputStream(file);
@@ -33,7 +60,17 @@ public class Util {
         
 	}
 	
-	public static String getTextFileContent(File file) throws IOException, FileNotFoundException{
+	
+	/**
+	 * loads a text file from the file system and returns the contents as a string
+	 * 
+	 * @param file
+	 * @return string containing file contents
+	 * @throws IOException
+	 * @throws FileNotFoundException
+	 */
+	
+	public static String loadTextFileContent(File file) throws IOException, FileNotFoundException{
 
 		FileReader fis = null;
 		BufferedReader bis = null;
@@ -55,7 +92,47 @@ public class Util {
 
 		return buffer.toString();
 	}
+
+	/**
+	 * loads a binary LLRPMessage from the file system and returns an LLRPMessage object
+	 * 
+	 * @param file
+	 * @return LLRPMessage 
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 * @throws InvalidLLRPMessageException
+	 */
 	
+	public static LLRPMessage loadBinaryLLRPMessage(File file) throws FileNotFoundException, IOException, InvalidLLRPMessageException {
 	
+		
+		LLRPBitList bits = loadBinaryFileContent(file);
+		LOGGER.debug("Loaded binary message: " + bits);
+		LLRPMessage message = LLRPMessageFactory.createLLRPMessage(bits);
+	
+		return message;
+	}
+
+	/**
+	 * loads a LLRPMessage in LTK-XML format from the file system and returns an LLRPMessage object
+	 * 
+	 * @param file
+	 * @return LLRPMessage
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 * @throws InvalidLLRPMessageException
+	 */
+	
+	public static LLRPMessage loadXmlLLRPMessage(File file) throws FileNotFoundException, IOException, JDOMException, InvalidLLRPMessageException {
+	
+		Document doc = new org.jdom.input.SAXBuilder().build(new
+				FileReader(file));
+		XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat());
+		LOGGER.debug("Loaded XML Message: " + outputter.outputString(doc));
+		LLRPMessage message = LLRPMessageFactory.createLLRPMessage(doc);
+	
+		return message;
+	}
+
 	
 }
