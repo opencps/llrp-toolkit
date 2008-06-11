@@ -538,12 +538,17 @@ $utility.clearNumberOfReserved()
   		Element root = document.getRootElement();
   		List<Element> tempList = null;
   		
-  		// the version field is always 3 bit long
-        version = new BitList(3);
+ 	    // the version field is always 3 bit long 
+  	    // if the version attribute is not set in the LTK-XML message,
+  	    // it is set to version 001
         String versionAttribute = root.getAttributeValue("Version");
-            if (versionAttribute != null){
-            	version.setValue(new Integer(versionAttribute));
-            }
+                if (versionAttribute != null){
+                    version = new BitList(3);
+                	version.setValue(new Integer(versionAttribute));
+                }
+                else {
+                    version = new BitList(0,0,1);
+                }
 
         messageID = new UnsignedInteger(root.getAttributeValue("MessageID"));
   		Element temp = null;
