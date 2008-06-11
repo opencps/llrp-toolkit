@@ -123,7 +123,7 @@ public class Util {
 	 * @throws InvalidLLRPMessageException
 	 */
 	
-	public static LLRPMessage loadXmlLLRPMessage(File file) throws FileNotFoundException, IOException, JDOMException, InvalidLLRPMessageException {
+	public static LLRPMessage loadXMLLLRPMessage(File file) throws FileNotFoundException, IOException, JDOMException, InvalidLLRPMessageException {
 	
 		Document doc = new org.jdom.input.SAXBuilder().build(new
 				FileReader(file));
