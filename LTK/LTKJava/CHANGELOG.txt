@@ -1,6 +1,6 @@
 Changes with LTKJava 0.1.1 Snapshot (latest in version control)
 
-* Resolved "Version attribute" issue that was raised in Paul Dietrich's email to the mailing list on 06/09/2008. LTKJava wrongly assumed that the Version attribute was required. 
+* Resolved "Version attribute" issue that was raised in Paul Dietrich's email to the mailing list on 06/09/2008. LTKJava wrongly assumed that the Version attribute was required. If version attribute is not set in LTL-XML message, the version is set to "001" by default.   
 
 * Corrected mistake in org.llrp.ltk.util.LLRPConverter.java command line documentation
 
