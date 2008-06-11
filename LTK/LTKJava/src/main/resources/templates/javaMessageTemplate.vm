@@ -849,9 +849,14 @@ $utility.clearNumberOfReserved()
   		
   		Element root = document.getRootElement();
   		List<Element> tempList = null;
-  		// the version field is always 3 bit long
+  	
+  	    // the version field is always 3 bit long
         version = new BitList(3);
-        version.setValue(new Integer(root.getAttributeValue("Version")));
+        String versionAttribute = root.getAttributeValue("Version");
+            if (versionAttribute != null){
+            	version.setValue(new Integer(versionAttribute));
+            }
+        
         messageID = new UnsignedInteger(root.getAttributeValue("MessageID"));
   		Element temp = null;
 		## field or reserved
