@@ -1,0 +1,17 @@
+Changes with LTKJava 0.1.1 Snapshot (latest in version control)
+
+* Resolved "Version attribute" issue that was raised in Paul Dietrich's email to the mailing list on 06/09/2008. LTKJava wrongly assumed that the Version attribute was required. 
+
+* Corrected mistake in org.llrp.ltk.util.LLRPConverter.java command line documentation
+
+* Fixed bug 1849514 (Timestamp problem) after inconsistency between llrpdef.xml and LLRP.xsd was resolved (Bug 1974880)
+
+* Resolved LLRPBinaryDecoder issue in the messaging package of LTKJava. See email and patch by Li Cuizhu from 06/05/2008.
+
+* Refactored org.llrp.ltk.util.LLRPConverter.java and org.llrp.ltk.util.Util.java
+
+
+
+
+
+
