@@ -59,17 +59,24 @@ public class UnsignedLong_DATETIME extends UnsignedLong {
 	@Override
 	public void decodeXML(Element element) {
 		java.util.Calendar cal = DatatypeConverter.parseDateTime(element.getText());
-   		Date date = cal.getTime();
-		value = BigInteger.valueOf(date.getTime());
+		value = BigInteger.valueOf(cal.getTimeInMillis());
 	}
 
 	@Override
 	public Content encodeXML(String name, Namespace ns) {
 		SimpleDateFormat dateFormat = new SimpleDateFormat(
-				"yyyy-MM-dd'T'hh:mm:ss.S'Z'");
+				"yyyy-MM-dd'T'hh:mm:ss.SZ");
 		Date date = new Date(value.longValue());
 		Element element = new Element(name, ns);
-		element.setContent(new Text(dateFormat.format(date)));
+		
+		// to convert to xsd:dateTime it is necessary to insert a ":" 
+		// in the timezone generated using the "Z" in the 
+		// SimpleDateFormat expression above
+		StringBuffer sb = new StringBuffer();
+		sb.append(dateFormat.format(date));
+		sb.insert(sb.length()-2, ":");
+		
+		element.setContent(new Text(sb.toString()));
 
 		return element;
 	}
