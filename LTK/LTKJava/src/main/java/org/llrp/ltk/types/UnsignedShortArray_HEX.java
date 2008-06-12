@@ -47,23 +47,18 @@ public class UnsignedShortArray_HEX extends UnsignedShortArray {
     
     @Override
     public Content encodeXML(String name, Namespace ns) {
-        String s = "";
-        int i = 0;
+        StringBuffer sb = new StringBuffer();
         for (UnsignedShort b : shorts) {
         	if (b != null) {
-        		if (i%4==0){
-        			s+=" ";
-        		}
-            	s += Integer.toHexString(b.value);
-            	i++;
-                
+        		sb.append(" ");
+            	sb.append(Integer.toHexString(b.value)); 
             } 
         }
-
-        s = s.replaceFirst(" ", "");
+        // remove initial " " in the string 
+        sb.deleteCharAt(0);
 
         Element element = new Element(name, ns);
-        element.setContent(new Text(s));
+        element.setContent(new Text(sb.toString()));
 
         return element;
     }
