@@ -489,6 +489,18 @@ QualifyCore => 0 or 1
 
 See the description of QualifyCore given for C<transact()>.
 
+MaxQueue => 0 or more
+
+Depending on the Timeout and TimeFence limits, and the ReturnUpon and
+ErrorUpon rules you set, C<monitor()> could block for a long time.
+
+If provided and greater than zero, the MaxQueue parameter is used to
+determine the maximum number of recent messages up to and including
+the timeout or rule match that will be retained (and returned).
+
+0 or not present means "keep all messages"
+1 or more means "keep at most MaxQueue count of messages."
+
 Monitor returns:
 
 =over 8
@@ -525,6 +537,7 @@ sub monitor {
 	my $return_upon;
 	my $error_upon;
 	my $perl_queue;
+	my $max_queue;
 	my $remaining = 0;
 	my $qualify_core = 1;
 	my @ntf;
@@ -538,7 +551,8 @@ sub monitor {
 		'ErrorUpon'	, \$error_upon	,
 		'PerlQueue'	, \$perl_queue	,
 		'QualifyCore'	, \$qualify_core,
-		'Count'		, \$counters
+		'Count'		, \$counters,
+		'MaxQueue'	, \$max_queue
 	);
 
 	while (my ($key, $value) = each (%param_tbl)) {
@@ -633,6 +647,9 @@ sub monitor {
 				}
 			}
 		}
+
+		# enforce queue size limit
+		shift @ntf while ($max_queue && @ntf > $max_queue);
 	}
 
 	# return results depending on wantarray
@@ -650,7 +667,6 @@ sub monitor {
 
 	return @ntf;
 }
-
 
 =item C<transact ($socket, $doc, %encode_params)>
 
@@ -763,65 +779,6 @@ sub transact {
 			delete $encode_params{$key};
 		}
 	}
-
-	my $token = $encode_params{AuditToken};
-
-	# add the encode callback so we an enforce tag access safety
-	my $safety = sub {
-
-		# determine the type of access implied by the request
-		my ($node) = @_;
-		$node->getName() =~ /C1G2(Write|Lock|BlockWrite|BlockErase|Kill)/;
-		my $access = $1;
-		$access = 'Write' if ($access eq 'BlockWrite' or $access eq 'BlockErase');
-
-		# fail if no token or token is invalid
-		ref $token || die "SKIPPED: $access access attempted, but no AuditToken provided";
-
-		($token->{Station}->{PeerHost} eq $sock->peerhost) || die "Wrong context for AuditToken";
-		($token->{TimeFence} > time()) || die "The provided AuditToken has expired";
-		my @antennas = ($node->findvalue ('//*[local-name()="AntennaID"]'));
-		if (defined $antennas[0] && ($antennas[0] eq '' || $antennas[0] == 0)) {
-			@antennas = (0..3);
-		} else {
-			$antennas[0]--;
-		}
-
-		ANTENNA: foreach $antenna_id (@antennas) {
-
-			# look up the rule
-			my $rule = $token->{Station}->op_rule_by_antenna ($access, $antenna_id);
-
-			# enforce the rule (return, or die)
-			next if ($rule eq 'always');
-			my $accessor = join ('_', 'Affirmed', $access, $antenna_id);
-			my $resp = $token->{$accessor} || '';
-			while ($rule eq 'prompt') {
-				if ($force_audit_yes) { $resp = 'yes' };
-				next ANTENNA if ($resp eq 'yes');
-				$resp eq 'no' and
-					die "SKIPPED: User request to enable a required feature was denied";
-				while ($resp ne 'yes' && $resp ne 'no') {
-					print "\n" . '='x75 . "\n";
-					print "Do you agree to allow $access access on Ant" .
-						($antenna_id + 1) . " (yes or no)?\n";
-					$resp = <STDIN>;
-					chomp $resp;
-				}
-				$token->{$accessor} = $resp;
-				print '='x75 . "\n";
-			}
-			$rule eq 'never' and
-				die "SKIPPED: the required $access access is never allowed on Ant" .
-					($antenna_id + 1) . "\n";
-
-			die "SKIPPED: unknown rule $access ($rule)";
-		}
-		return;
-	};
-	$encode_params{EncodeCallback} = { 
-		qr/C1G2(Write|Kill|Lock|BlockErase|BlockWrite)/ => $safety
-	};
 
 	# print the document in string form if requested
 	print "$doc\n" if $dump_string;
