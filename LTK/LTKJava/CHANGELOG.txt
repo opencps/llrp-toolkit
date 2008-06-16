@@ -1,5 +1,7 @@
 Changes with LTKJava 0.1.1 Snapshot (latest in version control)
 
+* Changed LLRPMessage to throw an InvalidLLRPMessageException if the length of the message received is not equal to the length indicated in the message's length field
+
 * Fixed bug in xsd:dateTime encoding (time zone was not set correctly)
 
 * Fixed u16v XML encoding bug which caused a XSD validation error for example for "WriteData" element
