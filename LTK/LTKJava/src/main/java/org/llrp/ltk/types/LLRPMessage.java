@@ -15,13 +15,14 @@
  */
 package org.llrp.ltk.types;
 
-import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
 import javax.xml.XMLConstants;
+import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
@@ -178,8 +179,12 @@ public abstract class LLRPMessage {
 			// this
 			// one.
 			// pass only data bits, not header
+			if (messageLength.intValue()==byteArray.length){
 			decodeBinarySpecific(bits.subList(position, bits.length()
 					- position));
+			} else {
+				throw new InvalidLLRPMessageException("message length not equal to length given in message ");
+			}
 
 		} catch (IllegalArgumentException e) {
 			throw new InvalidLLRPMessageException(e.getMessage());
@@ -349,14 +354,14 @@ public abstract class LLRPMessage {
 			SchemaFactory factory = SchemaFactory
 					.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
 			// load a WXS schema, represented by a Schema instance
-			ClassLoader cl = getClass().getClassLoader();
-			InputStream s = new BufferedInputStream(cl
-					.getResourceAsStream(schemaPath));
-			Schema schema = factory.newSchema(new StreamSource(s));
+//			ClassLoader cl = getClass().getClassLoader();
+//			InputStream s = new BufferedInputStream(cl
+//					.getResourceAsStream(schemaPath));
+//			Schema schema = factory.newSchema(new StreamSource(s));
 			//           
 			// load a WXS schema, represented by a Schema instance
-//			 Source schemaFile = new StreamSource(new File(schemaPath));
-//			 Schema schema = factory.newSchema(schemaFile);
+			 Source schemaFile = new StreamSource(new File(schemaPath));
+			 Schema schema = factory.newSchema(schemaFile);
 
 			// create a Validator instance, which can be used to validate an
 			// instance document
