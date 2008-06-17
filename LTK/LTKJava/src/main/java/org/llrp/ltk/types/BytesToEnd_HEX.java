@@ -41,10 +41,7 @@ public class BytesToEnd_HEX extends BytesToEnd {
         String s = "";
         int i = 0;
         for (LLRPInteger b : bytes) {
-        	if (i%4==0){
-        		// add space every 4th element
-        		s+=" ";
-        	}
+
         	if (b != null) {
         		// a byte must always consitst of two hexadecimal digits. If
 				// integer is smaller than 16 and therefore only needs one hex
@@ -59,7 +56,6 @@ public class BytesToEnd_HEX extends BytesToEnd {
             } 
         }
 
-        s = s.replaceFirst(" ", "");
 
         Element element = new Element(name,ns);
         element.setContent(new Text(s));
