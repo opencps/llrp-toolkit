@@ -22,12 +22,10 @@ package org.llrp.ltk.util;
 import jargs.gnu.CmdLineParser;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -36,13 +34,8 @@ import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jdom.Document;
 import org.jdom.JDOMException;
-import org.jdom.output.Format;
-import org.jdom.output.XMLOutputter;
 import org.llrp.ltk.exceptions.InvalidLLRPMessageException;
-import org.llrp.ltk.generated.messages.LLRPMessageFactory;
-import org.llrp.ltk.types.LLRPBitList;
 import org.llrp.ltk.types.LLRPMessage;
 
 /**
@@ -69,7 +62,7 @@ public class LLRPConverter {
 
 	LLRPMessage message;
 
-	private static final Logger LOGGER = Logger.getLogger("LLRPMessageFactoryTest.class");
+	static final Logger LOGGER = Logger.getLogger("LLRPMessageFactoryTest.class");
 
 	public LLRPConverter(){
 		super();
@@ -117,7 +110,7 @@ public class LLRPConverter {
 			
 			try {
 				if (xml == Boolean.TRUE) {
-					message = (LLRPMessage) convertMessageFromXML(dir + "/" + filename); 
+					message = (LLRPMessage) Util.loadXMLLLRPMessage(new File(dir + "/" + filename)); 
 					filename = filename.substring(0, dotPos) + ".bin" ;
 					FileOutputStream ous = new FileOutputStream(new File(targetDir + "/" + filename));
 					ous.write(message.encodeBinary());
@@ -127,7 +120,7 @@ public class LLRPConverter {
 
 				}
 				else {
-					message = (LLRPMessage) convertMessageFromBinary(dir + "/" + filename); 
+					message = (LLRPMessage) Util.loadBinaryLLRPMessage(new File(dir + "/" + filename)); 
 					filename = filename.substring(0, dotPos) + ".xml" ;
 					out = new FileWriter(new File(targetDir + "/" + filename));
 					out.write(message.toXMLString());
@@ -157,28 +150,6 @@ public class LLRPConverter {
 
 	}
 
-	private LLRPMessage convertMessageFromBinary(String file) throws FileNotFoundException, IOException, InvalidLLRPMessageException {
-
-		String bitstring = getFileContent(file);
-		LLRPBitList bits = new LLRPBitList(bitstring);
-		LOGGER.debug("Input binary message: " + bitstring);
-		message = LLRPMessageFactory.createLLRPMessage(bits);
-
-		return message;
-	}
-
-	public LLRPMessage convertMessageFromXML(String file) throws FileNotFoundException, IOException, JDOMException, InvalidLLRPMessageException {
-
-		Document doc = new org.jdom.input.SAXBuilder().build(new
-				FileReader(file));
-		XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat());
-		LOGGER.debug("Input XML Message: " + outputter.outputString(doc));
-		message = LLRPMessageFactory.createLLRPMessage(doc);
-
-		return message;
-	}
-
-
 	private void convert(Boolean xml, Boolean binary, String file, String dir, String targetDir) {
 
 		LLRPMessage message;
@@ -186,7 +157,7 @@ public class LLRPConverter {
 		try {
 			if (binary != null) {
 				if (file != null) {
-					message = convertMessageFromBinary(file);
+					message = Util.loadBinaryLLRPMessage(new File(file));
 					System.out.println(message.toXMLString());
 				}
 				else if (dir != null) {
@@ -200,7 +171,7 @@ public class LLRPConverter {
 			else if (xml != null) {
 				if (file != null) {
 					
-					message = convertMessageFromXML(file);
+					message = Util.loadXMLLLRPMessage(new File(file));
 					System.out.println(message.toHexString());
 					
 				}
@@ -244,8 +215,8 @@ public class LLRPConverter {
 				"                      [{-d,--dir} directory path] directory with messages\n" +
 				"                      [{-f,--file} file path] single message to be converted\n" +
 		"                      [{-t,--targetDir} targetDirectory path] target directory for converted messages\n\n" +
-	    "Example binary->xml file conversion to console:\n java -jar LTKJava<Version>.jar -b ADD_ROSPEC.bin\n" +
-	    "Example xml->binary file conversion to console:\n java -jar LTKJava<Version>.jar -x ADD_ROSPEC.xml\n" +
+	    "Example binary->xml file conversion to console:\n java -jar LTKJava<Version>.jar -b -f ADD_ROSPEC.bin\n" +
+	    "Example xml->binary file conversion to console:\n java -jar LTKJava<Version>.jar -x -f ADD_ROSPEC.xml\n" +
 	    "Example xml->binary file conversion of all files in a dir:\n" +
 	    "       java -jar LTKJava<Version>.jar -x -d messages/xml -t messages/bin\n");
 	
@@ -350,30 +321,6 @@ public class LLRPConverter {
 
 	}
 
-
-	private String getFileContent(String filename) throws IOException, FileNotFoundException{
-
-		File file = new File(filename);
-		FileReader fis = null;
-		BufferedReader bis = null;
-		StringBuffer buffer = new StringBuffer();
-		String line; 
-
-		fis = new FileReader(file);
-
-		// Here BufferedReader is added for fast reading.
-		bis = new BufferedReader(fis);
-		line = bis.readLine();
-		while ( line != null ) { // co
-
-			// this statement reads the line from the file and print it to
-			// the console.
-			buffer.append(line);
-			line = bis.readLine();
-		}
-
-		return buffer.toString();
-	}	
 
 	class BinaryFilter implements FilenameFilter {
 		public boolean accept(File dir, String name) {
