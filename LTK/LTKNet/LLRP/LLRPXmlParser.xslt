@@ -57,9 +57,19 @@
 
     using LLRP;
     using LLRP.DataType;
-
+    
+    /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>summary<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
+    /// LLRP XML Parser
+    /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>/summary<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
     public class LLRPXmlParser
     {
+
+    /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>summary<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
+    /// Parse XML string to LLRP message
+    /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>/summary<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
+    /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>param name="xmlstr"<xsl:text disable-output-escaping="yes">&gt;</xsl:text>XML string to be parsed.<xsl:text disable-output-escaping="yes">&lt;</xsl:text>/param<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
+    /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>param name="msg"<xsl:text disable-output-escaping="yes">&gt;</xsl:text>LLRP message. output<xsl:text disable-output-escaping="yes">&lt;</xsl:text>/param<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
+    /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>param name="type"<xsl:text disable-output-escaping="yes">&gt;</xsl:text>LLRP message type. output<xsl:text disable-output-escaping="yes">&lt;</xsl:text>/param<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
     public static void ParseXMLToLLRPMessage(string xmlstr, out object msg, out ENUM_LLRP_MSG_TYPE type)
     {
     XmlDocument xdoc = new XmlDocument();

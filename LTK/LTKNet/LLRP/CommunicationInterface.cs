@@ -87,12 +87,21 @@ namespace LLRP
         }
 
         /// <summary>
-        /// Open the communication interface.
+        /// Open the communication interface. Block operation
         /// </summary>
         /// <param name="client">Name or address of the device</param>
         /// <param name="port">port number of device. if the device does not support port, this parameter is ignored.</param>
         /// <returns>True if the the device is opened successfully.</returns>
         public virtual bool Open(string device_name, int port) { return false; }
+
+        /// <summary>
+        /// Open the communication interface. Non-Block operation
+        /// </summary>
+        /// <param name="client">Name or address of the device</param>
+        /// <param name="port">port number of device. if the device does not support port, this parameter is ignored.</param>
+        /// <returns>True if the the device is opened successfully.</returns>
+        /// <exception cref="LLRPNetworkException">Throw LLRPNetworkException when the network is unreable</exception>
+        public virtual bool Open(string device_name, int port, int timeout) { return false; }
         
         /// <summary>
         /// Close the communication interface

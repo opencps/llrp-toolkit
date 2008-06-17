@@ -24,7 +24,7 @@
  * 
  * Author:          Impinj
  * Organization:    Impinj
- * Date:            September, 2007
+ * Date:            June, 2008
  * 
  * Description:     This file contains data convertion and data operattion 
  *                  methods
@@ -714,6 +714,346 @@ namespace LLRP.DataType
             return strConverted;
         }
 
+        /// <summary>
+        /// Parse value type supported by LLRP protocol
+        /// </summary>
+        /// <param name="val">input string value</param>
+        /// <param name="type">data type (string), defined in LLRP protocol</param>
+        /// <param name="format">format (string), defined in LLRP protocol</param>
+        /// <returns></returns>
+        public static object ParseValueTypeFromString(string val, string type, string format)
+        {
+            try
+            {
+                switch (type)
+                {
+                    case "u1":
+                        return Convert.ToBoolean(val);
+                    case "u8":
+                        switch (format)
+                        {
+
+                            case "Hex":
+                                return Convert.ToByte(val, 16);
+                            case "Dec":
+                            default:
+                                return Convert.ToByte(val, 10);
+                        }
+                        break;
+                    case "s8":
+                        switch (format)
+                        {
+                            case "Hex":
+                                return Convert.ToSByte(val, 16);
+                            case "Dec":
+                            default:
+                                return Convert.ToSByte(val, 10);
+                        }
+                        break;
+                    case "u16":
+                        switch (format)
+                        {
+
+                            case "Hex":
+                                return Convert.ToUInt16(val, 16);
+                            case "Dec":
+                            default:
+                                return Convert.ToUInt16(val, 10);
+                        }
+                        break;
+                    case "s16":
+                        switch (format)
+                        {
+
+                            case "Hex":
+                                return Convert.ToInt16(val, 16);
+                            case "Dec":
+                            default:
+                                return Convert.ToInt16(val, 10);
+                        }
+                        break;
+                    case "u32":
+                        switch (format)
+                        {
+
+                            case "Hex":
+                                return Convert.ToUInt32(val, 16);
+                            case "Dec":
+                            default:
+                                return Convert.ToUInt32(val, 10);
+                        }
+                        break;
+                    case "s32":
+                        switch (format)
+                        {
+
+                            case "Hex":
+                                return Convert.ToInt32(val, 16);
+                            case "Dec":
+                            default:
+                                return Convert.ToInt32(val, 10);
+                        }
+                        break;
+                    case "u64":
+                        switch (format)
+                        {
+                            case "Hex":
+                                return Convert.ToUInt64(val, 16);
+                            case "Datetime":
+                                return Convert.ToUInt64(DateTime.Parse(val));
+                            case "Dec":
+                            default:
+                                return Convert.ToUInt64(val, 10);
+                        }
+                        break;
+                    default:
+                        throw new Exception(string.Format("Can't parse {0} to {1} as format {2}", val, type, format));
+                }
+            }
+            catch
+            {
+                throw new Exception(string.Format("Can't parse {0} to {1} as format {2}", val, type, format));
+            }
+        }
+
+        /// <summary>
+        /// Convert value type to string
+        /// </summary>
+        /// <param name="val">data to be converted</param>
+        /// <param name="type">data type (string), defined in LLRP protocol</param>
+        /// <param name="format">format (string), defined in LLRP protocol</param>
+        /// <returns></returns>
+        public static string ConvertValueTypeToString(object val, string type, string format)
+        {
+            try
+            {
+                switch (type)
+                {
+                    case "u1":
+                        return Convert.ToString((Boolean)val);
+                    case "u8":
+                        switch (format)
+                        {
+                            case "Hex":
+                                return Convert.ToString((byte)val, 16);
+                            case "Dec":
+                            default:
+                                return ((byte)val).ToString();
+                        }
+                        break;
+                    case "s8":
+                        switch (format)
+                        {
+                            case "Hex":
+                                return Convert.ToString((sbyte)val, 16);
+                            case "Dec":
+                            default:
+                                return ((sbyte)val).ToString();
+
+                        }
+                        break;
+                    case "u16":
+                        switch (format)
+                        {
+                            case "Hex":
+                                return Convert.ToString((UInt16)val, 16);
+                            case "Dec":
+                            default:
+                                return ((UInt16)val).ToString();
+                        }
+                        break;
+                    case "s16":
+                        switch (format)
+                        {
+
+                            case "Hex":
+                                return Convert.ToString((Int16)val, 16);
+                            case "Dec":
+                            default:
+                                return ((Int16)val).ToString();
+                        }
+                        break;
+                    case "u32":
+                        switch (format)
+                        {
+                            case "Hex":
+                                return Convert.ToString((UInt32)val, 16);
+                            case "Dec":
+                            default:
+                                return ((UInt32)val).ToString();
+                        }
+                        break;
+                    case "s32":
+                        switch (format)
+                        {
+
+                            case "Hex":
+                                return Convert.ToString((Int32)val, 16);
+                            case "Dec":
+                            default:
+                                return ((Int32)val).ToString();
+                        }
+                        break;
+                    case "u64":
+                        switch (format)
+                        {
+                            case "Hex":
+                                return Convert.ToString((long)(ulong)val, 16);
+                            case "Datetime":
+                                return ConvertMicrosecondsToUTCTime((ulong)val).ToString();
+                            case "Dec":
+                            default:
+                              return ((UInt64)val).ToString();
+                        }
+                        break;
+                    default:
+                        throw new Exception(string.Format("Can't parse {0} to {1} as format {2}", val, type, format));
+                }
+            }
+            catch
+            {
+                throw new Exception(string.Format("Can't parse {0} to {1} as format {2}", val, type, format));
+            }
+        }
+
+
+        /// <summary>
+        /// Convert array type to string
+        /// </summary>
+        /// <param name="val">array to be converted</param>
+        /// <param name="type">array type (string), defined in LLRP protocol</param>
+        /// <param name="format">format (string), defined in LLRP protocol</param>
+        /// <returns></returns>
+        public static string ConvertArrayTypeToString(object val, string type, string format)
+        {
+            try
+            {
+                switch (type)
+                {
+                    case "u1v":
+                    case "u96":
+                        switch (format)
+                        {
+                            case "Hex":
+                                return ((LLRPBitArray)val).ToHexString();
+                            case "Dec":
+                            default:
+                                return ((LLRPBitArray)val).ToString();
+                        }
+                        break;
+                    case "bytesToEnd":
+                    case "u8v":
+                        switch (format)
+                        {
+                            case "Hex":
+                                return ((ByteArray)val).ToHexString();
+                            case "Dec":
+                            default:
+                                return ((ByteArray)val).ToString();
+                        }
+                        break;
+                    case "u16v":
+                        switch (format)
+                        {
+                            case "Hex":
+                                return ((UInt16Array)val).ToHexString();
+                            case "Dec":
+                            default:
+                                return ((UInt16Array)val).ToString();
+
+                        }
+                        break;
+                    case "u32v":
+                        switch (format)
+                        {
+                            case "Hex":
+                                return ((UInt32Array)val).ToHexString();
+                            case "Dec":
+                            default:
+                                return ((UInt32Array)val).ToString();
+                        }
+                        break;
+                    case "utf8v":
+                        return (string)val;
+                        break;
+                    default:
+                        throw new Exception(string.Format("Can't parse {0} to {1} as format {2}", val, type, format));
+                }
+            }
+            catch
+            {
+                throw new Exception(string.Format("Can't parse {0} to {1} as format {2}", val, type, format));
+            }
+        }
+        /// <summary>
+        /// Parse array type supported by LLRP protocol
+        /// </summary>
+        /// <param name="val">input string value</param>
+        /// <param name="type">array type (string), defined in LLRP protocol</param>
+        /// <param name="format">format (string), defined in LLRP protocol</param>
+        /// <returns></returns>
+        public static object ParseArrayTypeFromString(string val, string type, string format)
+        {
+            try
+            {
+                switch (type)
+                {
+                    case "u1v":
+                    case "u96":
+                        switch (format)
+                        {
+                            case "Hex":
+                                return LLRPBitArray.FromHexString(val);
+                            case "Dec":
+                            default:
+                                return LLRPBitArray.FromString(val);
+                        }
+                        break;
+                    case "bytesToEnd":
+                    case "u8v":
+                        switch (format)
+                        {
+                            case "Hex":
+                                return ByteArray.FromHexString(val);
+                            case "Dec":
+                            default:
+                                return ByteArray.FromString(val);
+                        }
+                        break;
+                    case "u16v":
+                        switch (format)
+                        {
+                            case "Hex":
+                                return UInt16Array.FromHexString(val);
+                            case "Dec":
+                            default:
+                                return UInt16Array.FromString(val);
+
+                        }
+                        break;
+                    case "u32v":
+                        switch (format)
+                        {
+                            case "Hex":
+                                return UInt32Array.FromHexString(val);
+                            case "Dec":
+                            default:
+                                return UInt32Array.FromString(val);
+                        }
+                        break;
+                    case "utf8v":
+                        return val;
+                        break;
+                    default:
+                        throw new Exception(string.Format("{0} is unsupported type.", type));
+                }
+            }
+            catch
+            {
+                throw new Exception(string.Format("Can't parse {0} to {1} as format {2}", val, type, format));
+            }
+        }
+
         private static string CharToBinaryString(char c)
         {
             switch (c)
@@ -759,6 +1099,14 @@ namespace LLRP.DataType
                 default:
                     throw new Exception("Input is not a  Hex. string");
             }
+        }
+
+        private static DateTime ConvertMicrosecondsToUTCTime(ulong microseconds)
+        {
+            DateTime dt = new DateTime(1970,1,1,0,0,0, DateTimeKind.Utc);
+            long ticks_utc = dt.Ticks + (long)(10*microseconds);
+
+            return new DateTime(ticks_utc, DateTimeKind.Utc);
         }
     }
 

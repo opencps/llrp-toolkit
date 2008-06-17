@@ -141,7 +141,7 @@ namespace LLRP.DataType
         }
 
         /// <summary>
-        /// Convert to bit array to Hex string in word order
+        /// Convert to Hex string in word order
         /// </summary>
         /// <returns></returns>
         public string ToHexWordString()
@@ -158,7 +158,7 @@ namespace LLRP.DataType
         }
 
         /// <summary>
-        /// Convert to dec. based string
+        /// Convert to decimal-based string
         /// </summary>
         /// <returns></returns>
         public override string ToString()
@@ -263,7 +263,7 @@ namespace LLRP.DataType
         /// </summary>
         /// <param name="str">Hex string. For example: "EE FF" or "EEFF" or "EE,FF"</param>
         /// <returns></returns>
-        public static ByteArray FromString(string str)
+        public static ByteArray FromHexString(string str)
         {
             ByteArray bA = new ByteArray();
             str = str.Trim();
@@ -276,6 +276,29 @@ namespace LLRP.DataType
             {
                 try { bA.Add((byte)Byte.Parse(s[i], System.Globalization.NumberStyles.HexNumber)); }
                 catch{bA.Add(0);}
+            }
+
+            return bA;
+        }
+
+        /// <summary>
+        /// Convert a Dec string to byte array.
+        /// </summary>
+        /// <param name="str">Dec string. For example: "0 255" or "12,111"</param>
+        /// <returns></returns>
+        public static ByteArray FromString(string str)
+        {
+            ByteArray bA = new ByteArray();
+            str = str.Trim();
+
+            string[] s = str.Split(new char[] { ',', ' ' });
+
+            byte[] bD = new byte[s.Length];
+
+            for (int i = 0; i < s.Length; i++)
+            {
+                try { bA.Add((byte)Byte.Parse(s[i], System.Globalization.NumberStyles.Integer)); }
+                catch { bA.Add(0); }
             }
 
             return bA;
@@ -399,7 +422,7 @@ namespace LLRP.DataType
         /// </summary>
         /// <param name="str">Hex string. For example: "EEFFEEFF" or "EEFF EEFF" or "EEFF,EEFF"</param>
         /// <returns></returns>
-        public static UInt16Array FromString(string str)
+        public static UInt16Array FromHexString(string str)
         {
             str = str.Trim();
             UInt16Array Arr = new UInt16Array();
@@ -422,7 +445,34 @@ namespace LLRP.DataType
 
             return Arr;
         }
+        /// <summary>
+        /// Convert Dec string to UInt16Array.
+        /// </summary>
+        /// <param name="str">dec string. For example: "12333 12334" or "23333,12331"</param>
+        /// <returns></returns>
+        public static UInt16Array FromString(string str)
+        {
+            str = str.Trim();
+            UInt16Array Arr = new UInt16Array();
 
+            if (str != string.Empty)
+            {
+                string[] s = str.Split(new char[] { ',', ' ' });
+                for (int i = 0; i < s.Length; i++)
+                {
+                    try
+                    {
+                        if (s[i] != string.Empty)
+                            Arr.Add(Convert.ToUInt16(s[i], 16));
+                    }
+                    catch
+                    {
+                    }
+                }
+            }
+
+            return Arr;
+        }
     }
 
     /// <summary>
@@ -437,6 +487,7 @@ namespace LLRP.DataType
         {
             data.Add(val);
         }
+
         public UInt32 this[int index]
         {
             get { return data[index]; }
@@ -498,7 +549,7 @@ namespace LLRP.DataType
         /// </summary>
         /// <param name="str">Hex string. For example: "EEFFEEFFEEFFEEFF" or "EEFFEEFF EEFFEEFF" or "EEFFEEFF, EEFFEEFF"</param>
         /// <returns></returns>
-        public static UInt32Array FromString(string str)
+        public static UInt32Array FromHexString(string str)
         {
             str = str.Trim();
             UInt32Array Arr = new UInt32Array();
@@ -517,10 +568,35 @@ namespace LLRP.DataType
 
             return Arr;
         }
+
+        /// <summary>
+        /// Convert Dec string to UInt32Array
+        /// </summary>
+        /// <param name="str">Dec string. For example: "1233214234 1234234234" or "21342222, 1234234234"</param>
+        /// <returns></returns>
+        public static UInt32Array FromString(string str)
+        {
+            str = str.Trim();
+            UInt32Array Arr = new UInt32Array();
+            string[] s = str.Split(new char[] { ',', ' ' });
+
+            for (int i = 0; i < s.Length; i++)
+            {
+                try
+                {
+                    Arr.Add(Convert.ToUInt32(s[i], 16));
+                }
+                catch
+                {
+                }
+            }
+
+            return Arr;
+        }
     }
 
     /// <summary>
-    /// Not used
+    /// For future use
     /// </summary>
     public class U96
     {
@@ -549,7 +625,7 @@ namespace LLRP.DataType
         }
 
         /// <summary>
-        /// 
+        /// Construct a TwoBits from high bit and low bit.
         /// </summary>
         /// <param name="bit1">High bit</param>
         /// <param name="bit2">Low bit</param>
@@ -712,11 +788,6 @@ namespace LLRP.DataType
             data.Add(val);
         }
 
-        /// <summary>
-        /// Indexer
-        /// </summary>
-        /// <param name="index"></param>
-        /// <returns></returns>
         public IParameter this[int index]
         {
             get { return data[index]; }

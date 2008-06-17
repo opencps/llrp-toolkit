@@ -58,16 +58,16 @@
     //LLRP Enumeration definitions
 
     <!--This portion defines the common enumerators used by LLRP-->
-  <xsl:for-each select="llrp:enumerationDefinition">
-    /// <xsl:text disable-output-escaping="yes">&lt;summary</xsl:text><xsl:text disable-output-escaping="yes">&gt;</xsl:text>
+    <xsl:for-each select="llrp:enumerationDefinition">
+    /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>summary<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
     /// <xsl:for-each select ="llrp:annotation/llrp:description/h:p"><xsl:value-of select="."/></xsl:for-each>
-    /// <xsl:text disable-output-escaping="yes">&lt;/summary</xsl:text><xsl:text disable-output-escaping="yes">&gt;</xsl:text>
+    /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>/summary<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
     [Serializable]
     public enum ENUM_<xsl:value-of select="@name"/>
-  {<xsl:for-each select="llrp:entry">
-    [XmlEnum(Name="<xsl:value-of select="@name"/>")]<xsl:value-of select="@name"/> = <xsl:value-of select="@value"/>,</xsl:for-each>
-  }
-</xsl:for-each>
+    {<xsl:for-each select="llrp:entry">
+      [XmlEnum(Name="<xsl:value-of select="@name"/>")]<xsl:value-of select="@name"/> = <xsl:value-of select="@value"/>,</xsl:for-each>
+    }
+    </xsl:for-each>
     
 
   [Serializable]

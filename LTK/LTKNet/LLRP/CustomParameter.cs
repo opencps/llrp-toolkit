@@ -46,7 +46,7 @@ namespace LLRP
     public interface ICustom_Parameter : IParameter { }
 
     /// <summary>
-    /// Custom parameter class
+    /// Custom Parameter Class
     /// </summary>
     public class PARAM_Custom : Parameter, ICustom_Parameter
     {
@@ -63,20 +63,26 @@ namespace LLRP
             typeID = 1023;
         }
 
+        /// <summary>
+        /// Vendor ID
+        /// </summary>
         public UInt32 VendorID
         {
             get { return VendorIdentifier; }
         }
 
+        /// <summary>
+        /// Sub type
+        /// </summary>
         public UInt32 SubType
         {
             get { return ParameterSubtype; }
         }
         
         /// <summary>
-        /// Convert to string
+        /// Convert to XML string
         /// </summary>
-        /// <returns></returns>
+        /// <returns>XML string</returns>
         public override string ToString()
         {
             string xml_str = "<Custom>";
@@ -151,11 +157,11 @@ namespace LLRP
         }
 
         /// <summary>
-        /// Convert from a BitArray
+        /// Decode a BitArray to Custom Parameter
         /// </summary>
-        /// <param name="bit_array"></param>
-        /// <param name="cursor"></param>
-        /// <param name="length"></param>
+        /// <param name="bit_array">BitArray to be decoded.</param>
+        /// <param name="cursor">Current bit position to be processed.</param>
+        /// <param name="length">Total length of the BitArray.</param>
         /// <returns></returns>
         public new static PARAM_Custom FromBitArray(ref BitArray bit_array, ref int cursor, int length)
         {
@@ -220,10 +226,10 @@ namespace LLRP
         }
 
         /// <summary>
-        /// Convert from a xml node
+        /// Deserialize a XmlNode to custom parameter
         /// </summary>
-        /// <param name="node"></param>
-        /// <returns></returns>
+        /// <param name="node">Xml node to be deserialized</param>
+        /// <returns>Custom Parameter</returns>
         public static PARAM_Custom FromXmlNode(XmlNode node)
         {
             string val;
@@ -257,9 +263,9 @@ namespace LLRP
         /// <summary>
         /// Create vendor extended paramters from BitArray
         /// </summary>
-        /// <param name="bit_array"></param>
-        /// <param name="cursor"></param>
-        /// <param name="length"></param>
+        /// <param name="bit_array">BitArray. Input</param>
+        /// <param name="cursor">The current bit position to be processed.</param>
+        /// <param name="length">Total length of the array</param>
         /// <returns></returns>
         public static ICustom_Parameter DecodeCustomParameter(ref BitArray bit_array, ref int cursor, int length)
         {
@@ -334,8 +340,8 @@ namespace LLRP
         /// <summary>
         /// Decode a general Xml node to vendor extended parameters.
         /// </summary>
-        /// <param name="node"></param>
-        /// <returns></returns>
+        /// <param name="node">Xml node to be decoded.</param>
+        /// <returns>Custom Parameter</returns>
         public static ICustom_Parameter DecodeXmlNodeToCustomParameter(XmlNode node)
         {
             if (vendorExtensionIDTypeHash == null || vendorExtensionNameTypeHash == null)
@@ -343,12 +349,17 @@ namespace LLRP
                 vendorExtensionIDTypeHash = new Hashtable();
                 vendorExtensionNameTypeHash = new Hashtable();
 
-                DirectoryInfo di = new DirectoryInfo(Environment.CurrentDirectory);
+                Assembly asm = Assembly.GetCallingAssembly();
+
+                string fullName = asm.ManifestModule.FullyQualifiedName;
+                string path = fullName.Substring(0, fullName.LastIndexOf("\\"));
+
+                DirectoryInfo di = new DirectoryInfo(path);
                 FileInfo[] f_infos = di.GetFiles("LLRP.*.dll");
 
                 foreach (FileInfo fi in f_infos)
                 {
-                    Assembly asm = Assembly.LoadFile(fi.FullName);
+                    asm = Assembly.LoadFile(fi.FullName);
                     Type[] types = asm.GetTypes();
                     foreach (Type tp in types)
                     {

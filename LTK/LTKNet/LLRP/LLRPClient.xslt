@@ -67,7 +67,7 @@
     public delegate void delegateReaderEventNotification(MSG_READER_EVENT_NOTIFICATION msg);
     public delegate void delegateRoAccessReport(MSG_RO_ACCESS_REPORT msg);
     public delegate void delegateKeepAlive(MSG_KEEPALIVE msg);
-    
+
     //Delegates for sending encapsulated asyn. messages
     public delegate void delegateEncapReaderEventNotification(ENCAPED_READER_EVENT_NOTIFICATION msg);
     public delegate void delegateEncapRoAccessReport(ENCAPED_RO_ACCESS_REPORT msg);
@@ -86,7 +86,9 @@
     }
     }
 
-    //add comments
+    /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>summary<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
+  /// Device proxy for host application to connect with LLRP reader
+  /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>/summary<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
     public class LLRPClient : IDisposable
     {
     #region Network Parameters
@@ -99,6 +101,7 @@
     private ManualResetEvent conn_evt;
     private ENUM_ConnectionAttemptStatusType conn_status_type;
     private string reader_name;
+    private bool connected = false;
     #endregion
 
 
@@ -158,18 +161,36 @@
     }
 
     #region Properties
+    /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>summary<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
+  /// Reader name.
+  /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>/summary<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
     public string ReaderName
     {
     get{return reader_name;}
     }
+    
+    public bool IsConnected
+    {
+     get{return connected;}
+    }
+
+
+
     #endregion
 
     #region Assistance Functions
+
+    /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>summary<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
+    /// Set LLRP message time out
+    /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>/summary<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
     public void SetMessageTimeOut(int time_out)
     {
     this.MSG_TIME_OUT = time_out;
     }
 
+    /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>summary<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
+  /// Get LLRP message time out.
+  /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>/summary<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
     public int GetMessageTimeOut()
     {
     return MSG_TIME_OUT;
@@ -184,27 +205,56 @@
     #endregion
 
     #region Methods
+
+    /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>summary<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
+    /// LLRPClient constructor using default TCP port.
+    /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>/summary<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
     public LLRPClient()
     {
     cI = new TCPIPClient();
     }
 
+    /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>summary<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
+    /// LLRPClient constructor with specified TCP port.
+    /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>/summary<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
+    /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>param name="port"<xsl:text disable-output-escaping="yes">&gt;</xsl:text>TCP communication port. int<xsl:text disable-output-escaping="yes">&lt;</xsl:text>/param<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
+    public LLRPClient(int port)
+    {
+    this.LLRP_TCP_PORT = port;
+    cI = new TCPIPClient();
+    }
+
+    /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>summary<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
+    /// Open connection to LLRP reader.
+    /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>/summary<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
+    /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>param name="llrp_reader_name"<xsl:text disable-output-escaping="yes">&gt;</xsl:text>Reader name, could either be IP address or DNS name. string<xsl:text disable-output-escaping="yes">&lt;</xsl:text>/param<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
+    /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>param name="timeout"<xsl:text disable-output-escaping="yes">&gt;</xsl:text>Time out in millisecond for trying to connect to reader. int<xsl:text disable-output-escaping="yes">&lt;</xsl:text>/param<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
+    /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>param name="status"<xsl:text disable-output-escaping="yes">&gt;</xsl:text>Connection attempt status.<xsl:text disable-output-escaping="yes">&lt;</xsl:text>/param<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
+    /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>returns<xsl:text disable-output-escaping="yes">&gt;</xsl:text>True if the reader is opened without error.<xsl:text disable-output-escaping="yes">&lt;</xsl:text>/returns<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
+    /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>exception cref="LLRPNetworkException"<xsl:text disable-output-escaping="yes">&gt;</xsl:text>Throw LLRPNetworkException when the network is unreable<xsl:text disable-output-escaping="yes">&lt;</xsl:text>/exception<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
     public bool Open(string llrp_reader_name, int timeout, out ENUM_ConnectionAttemptStatusType status)
     {
     reader_name = llrp_reader_name;
-    
-    status = ENUM_ConnectionAttemptStatusType.Failed_Reason_Other_Than_A_Connection_Already_Exists;
+
+    status = (ENUM_ConnectionAttemptStatusType)(-1);
     cI.OnMessageReceived += new delegateMessageReceived(ProcesssMessage);
 
-    try{ cI.Open(llrp_reader_name, LLRP_TCP_PORT);}
-    catch{cI.OnMessageReceived -= new delegateMessageReceived(ProcesssMessage);return false;}
-
+    try{ cI.Open(llrp_reader_name, LLRP_TCP_PORT, timeout);}
+    catch (Exception e)
+    {
+    cI.OnMessageReceived -= new delegateMessageReceived(ProcesssMessage);
+    throw e;
+    }
 
     conn_evt = new ManualResetEvent(false);
     if (conn_evt.WaitOne(timeout, false))
     {
     status = conn_status_type;
-    if(status== ENUM_ConnectionAttemptStatusType.Success)return true;
+    if(status== ENUM_ConnectionAttemptStatusType.Success)
+    {
+    connected = true;
+    return connected;
+    }
     }
 
     reader_name = llrp_reader_name;
@@ -217,9 +267,15 @@
     catch
     {
     }
-    return false;
+
+    connected  = false;
+    return connected;
     }
 
+    /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>summary<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
+    /// Close LLRP connection.
+    /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>/summary<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
+    /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>returns<xsl:text disable-output-escaping="yes">&gt;</xsl:text>True if the connection is closed successfully.<xsl:text disable-output-escaping="yes">&lt;</xsl:text>/returns<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
     public bool Close()
     {
     try
@@ -241,6 +297,9 @@
     }
     }
 
+    /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>summary<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
+    /// Implement IDisposible interface.
+    /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>/summary<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
     public void Dispose()
     {
     this.Close();
@@ -339,6 +398,14 @@
         </xsl:if>
       </xsl:variable>
       <xsl:if test ="contains($msgName, '_RESPONSE')">
+
+        /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>summary<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
+        /// <xsl:value-of select="$shorten_msgName"/> message call.
+        /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>/summary<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
+        /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>param name="msg"<xsl:text disable-output-escaping="yes">&gt;</xsl:text>MSG_<xsl:value-of select="$shorten_msgName"/> to send to reader.<xsl:text disable-output-escaping="yes">&lt;</xsl:text>/param<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
+        /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>param name="msg_err"<xsl:text disable-output-escaping="yes">&gt;</xsl:text>MSG_ERROR_MESSAGE. output.<xsl:text disable-output-escaping="yes">&lt;</xsl:text>/param<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
+        /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>param name="time_out"<xsl:text disable-output-escaping="yes">&gt;</xsl:text>Fuction call time out in millisecond.<xsl:text disable-output-escaping="yes">&lt;</xsl:text>/param<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
+        /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>returns<xsl:text disable-output-escaping="yes">&gt;</xsl:text>If the function is called successfully, return MSG_<xsl:value-of select="@name"/>. Otherwise, null is returned.<xsl:text disable-output-escaping="yes">&lt;</xsl:text>/returns<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
         public MSG_<xsl:value-of select="@name"/><xsl:text> </xsl:text> <xsl:value-of select="$shorten_msgName"/>(MSG_<xsl:value-of select="$shorten_msgName"/> msg, out MSG_ERROR_MESSAGE msg_err, int time_out)
         {
          msg_err = null;
@@ -387,6 +454,13 @@
         }
       </xsl:if>
       <xsl:if test="contains($msgName, 'ENABLE_EVENTS_AND_REPORTS')">
+
+        /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>summary<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
+        /// Enable events and reports
+        /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>/summary<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
+        /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>param name="msg"<xsl:text disable-output-escaping="yes">&gt;</xsl:text>Message to be sent to reader.<xsl:text disable-output-escaping="yes">&lt;</xsl:text>/param<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
+        /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>param name="msg_err"<xsl:text disable-output-escaping="yes">&gt;</xsl:text>Error message.<xsl:text disable-output-escaping="yes">&lt;</xsl:text>/param<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
+        /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>param name="time_out"<xsl:text disable-output-escaping="yes">&gt;</xsl:text>Command time out in millisecond.<xsl:text disable-output-escaping="yes">&lt;</xsl:text>/param<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
         public void <xsl:value-of select="$msgName"/>(MSG_<xsl:value-of select="$msgName"/> msg, out MSG_ERROR_MESSAGE msg_err, int time_out)
         {
         msg_err = null;
@@ -409,6 +483,12 @@
         }
       </xsl:if>
       <xsl:if test="contains($msgName, 'KEEPALIVE_ACK')">
+        /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>summary<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
+        /// Keep alive acknowledgement
+        /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>/summary<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
+        /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>param name="msg"<xsl:text disable-output-escaping="yes">&gt;</xsl:text>Message to be sent to reader.<xsl:text disable-output-escaping="yes">&lt;</xsl:text>/param<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
+        /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>param name="msg_err"<xsl:text disable-output-escaping="yes">&gt;</xsl:text>Error message. Output<xsl:text disable-output-escaping="yes">&lt;</xsl:text>/param<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
+        /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>param name="time_out"<xsl:text disable-output-escaping="yes">&gt;</xsl:text>Command timeout in millisecond.<xsl:text disable-output-escaping="yes">&lt;</xsl:text>/param<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
         public void <xsl:value-of select="$msgName"/>(MSG_<xsl:value-of select="$msgName"/> msg, out MSG_ERROR_MESSAGE msg_err, int time_out)
         {
         msg_err = null;
@@ -431,6 +511,12 @@
         }
       </xsl:if>
       <xsl:if test="@name='GET_REPORT'">
+        /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>summary<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
+        /// Get LLRP report
+        /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>/summary<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
+        /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>param name="msg"<xsl:text disable-output-escaping="yes">&gt;</xsl:text>Message to be sent to reader.<xsl:text disable-output-escaping="yes">&lt;</xsl:text>/param<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
+        /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>param name="msg_err"<xsl:text disable-output-escaping="yes">&gt;</xsl:text>Error Message. output<xsl:text disable-output-escaping="yes">&lt;</xsl:text>/param<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
+        /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>param name="time_out"<xsl:text disable-output-escaping="yes">&gt;</xsl:text>Timeout in millisecond.<xsl:text disable-output-escaping="yes">&lt;</xsl:text>/param<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
         public void <xsl:value-of select="$msgName"/>(MSG_<xsl:value-of select="$msgName"/> msg, out MSG_ERROR_MESSAGE msg_err, int time_out)
         {
         msg_err = null;
@@ -453,6 +539,13 @@
         }
       </xsl:if>
       <xsl:if test="contains($msgName, 'CUSTOM_MESSAGE')">
+        /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>summary<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
+        /// Send Customized Message to Reader
+        /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>/summary<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
+        /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>param name="msg"<xsl:text disable-output-escaping="yes">&gt;</xsl:text>Message to be sent to reader.<xsl:text disable-output-escaping="yes">&lt;</xsl:text>/param<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
+        /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>param name="msg_err"<xsl:text disable-output-escaping="yes">&gt;</xsl:text>Error message. output<xsl:text disable-output-escaping="yes">&lt;</xsl:text>/param<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
+        /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>param name="time_out"<xsl:text disable-output-escaping="yes">&gt;</xsl:text>Timeout in millisecond.<xsl:text disable-output-escaping="yes">&lt;</xsl:text>/param<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
+        /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>returns<xsl:text disable-output-escaping="yes">&gt;</xsl:text>Custom Message<xsl:text disable-output-escaping="yes">&lt;</xsl:text>/returns<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
         public MSG_CUSTOM_MESSAGE<xsl:text>  </xsl:text><xsl:value-of select="$msgName"/>(MSG_<xsl:value-of select="$msgName"/> msg, out MSG_ERROR_MESSAGE msg_err, int time_out)
         {
         msg_err = null;

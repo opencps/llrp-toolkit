@@ -68,6 +68,8 @@ namespace LLRP
 
         private object syn_msg = new object();
 
+        private ManualResetEvent non_block_tcp_connection_evt;
+
         /// <summary>
         /// Message received event.
         /// </summary>
@@ -78,35 +80,87 @@ namespace LLRP
         }
 
         /// <summary>
-        /// Open network connection
+        /// Open block network connection
         /// </summary>
         /// <param name="device_name">Device name or IP address</param>
         /// <param name="port">TCP port</param>
         /// <returns>true if opened succefully, otherwise false</returns>
+        /// <exception cref="LLRPNetworkException">Throw LLRPNetworkException when the network is unreable</exception>
         public override bool Open(string device_name, int port)
         {
-            try
+            //Estabilish connection, get network stream for reading and writing
+            tcp_client = new TcpClient(device_name, port);
+
+            if (tcp_client != null)
             {
-                //Estabilish connection, get network stream for reading and writing
-                tcp_client = new TcpClient(device_name, port);
                 ns = tcp_client.GetStream();
+                if (ns != null)
+                {
+                    trying_to_close = false;
+                    ns.Flush();
 
-                if (ns == null) return false;
+                    //Start asyn-read
+                    ns.BeginRead(state.data, 0, BUFFER_SIZE, new AsyncCallback(OnDataRead), state);
 
-                trying_to_close = false;
+                    return true;
+                }
+                else
+                {
+                    tcp_client.Close();
+                    throw new LLRPNetworkException("Unale to obtain NetStream for read/write");
+                }
             }
-            catch 
-            {
-                return false;
-            }
 
-            ns.Flush();
-
-            //Start asyn-read
-            ns.BeginRead(state.data, 0, BUFFER_SIZE, new AsyncCallback(OnDataRead), state);
-
-            return true;
+            throw new LLRPNetworkException("Unable to connect to specified reader in specified time period.");
         }
+
+
+        /// <summary>
+        /// Open non-block network connection. 
+        /// </summary>
+        /// <param name="device_name">Device name or IP address</param>
+        /// <param name="port">TCP port</param>
+        /// <returns>true if opened succefully, otherwise false</returns>
+        /// <exception cref="LLRPNetworkException">Throw LLRPNetworkException when the network is unreable</exception>
+        public override bool Open(string device_name, int port, int timeout)
+        {
+            //Estabilish connection, get network stream for reading and writing
+            tcp_client = new TcpClient(AddressFamily.InterNetwork);
+            non_block_tcp_connection_evt = new ManualResetEvent(false);
+
+            tcp_client.BeginConnect(device_name, port, new AsyncCallback(NonBlockTCPConnectionCallback), tcp_client);
+
+            ns = null;
+            if (non_block_tcp_connection_evt.WaitOne(timeout, false)) ns = tcp_client.GetStream();
+            else
+            {
+                tcp_client.Close();
+                throw new LLRPNetworkException("Unable to connect to specified reader in specified time period.");
+            }
+
+            if (ns != null)
+            {
+                trying_to_close = false;
+                ns.Flush();
+
+                //Start asyn-read
+                ns.BeginRead(state.data, 0, BUFFER_SIZE, new AsyncCallback(OnDataRead), state);
+
+                return true;
+            }
+
+            throw new LLRPNetworkException("Unale to obtain NetStream for read/write");
+        }
+
+        private void NonBlockTCPConnectionCallback(IAsyncResult ar)
+        {
+            TcpClient tcpClient = ar.AsyncState as TcpClient;
+            if (tcpClient.Connected)
+            {
+                non_block_tcp_connection_evt.Set();
+            }
+        }
+
         /// <summary>
         /// Asyn read result process
         /// </summary>
@@ -392,7 +446,7 @@ namespace LLRP
         /// <summary>
         /// Receive data
         /// </summary>
-        /// <param name="buffer"></param>
+        /// <param name="buffer">buffer received from the network IO.</param>
         /// <returns></returns>
         public override int Receive(out byte[] buffer)
         {
@@ -441,7 +495,8 @@ namespace LLRP
         private void OnDataRead(IAsyncResult ar)
         {
             int offset = 0;                     //used to keep the start position of a LLRP message in 
-            //byte array returned from the read
+                                                //byte array returned from the read
+            
             AsynReadState ss = (AsynReadState)ar.AsyncState;    //used to keep data
             int nReads = ns.EndRead(ar);
 

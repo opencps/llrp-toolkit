@@ -15,6 +15,7 @@ or LLRP drivers for other languages, Please check http://sourceforge.net/project
    > Support Xml serialization. Xml serialization is enforced by the LTK XML Schema
    > Support type checking or promtion at compile time
    > Support multiple vendor extensions
+   > Support multiple date format
 
 4. Bugs fixed and Feature added
 
@@ -30,6 +31,14 @@ or LLRP drivers for other languages, Please check http://sourceforge.net/project
    Feb 5, 2008
    7). Bug fixed. Description: (Decoder error when LLRP message is at certain length. 
        Reason is that the actual data length read from socket was not used for reform the LLRP packet )
-   Feb 13, 2008
-   8). Allowed multiple types of "choice" parameter to exist in a single LLRP parameter.
-   
+  
+   June 9, 2008
+ 
+   8). Added IsConnected in LLRPClient class
+   9). Re-arranged the xsl templates
+   10). Added datetime format when output to xml string
+   11). Added non-block tcp/ip connection with timeout support
+   12). Added LLRPNetworkExeception class 
+
+
+  
