@@ -842,7 +842,11 @@ $utility.clearNumberOfReserved()
 	 * {@inheritDoc}
 	 */
   	public void decodeXML(final Document document) throws InvalidLLRPMessageException {
-
+		Element temp = null;
+        Custom custom;
+		// child element are always in default LLRP namespace
+    	Namespace ns = Namespace.getNamespace(LLRPConstants.LLRPNAMESPACE);
+		
 		try {
 
   		isValidXMLMessage(document,LLRPConstants.LLRPMESSAGESCHEMAPATH);
@@ -863,7 +867,6 @@ $utility.clearNumberOfReserved()
                 }
         
         messageID = new UnsignedInteger(root.getAttributeValue("MessageID"));
-  		Element temp = null;
 		## field or reserved
 		#foreach($field in $message.getFieldOrReserved())
 			## reserved field
@@ -903,73 +906,169 @@ $utility.clearNumberOfReserved()
 		
 		## parameter or choice
 		#foreach($field in $message.getParameterOrChoice())
-		## get name first, not all have a name attribute
-		#if ($field.getName())
-			#set ($curName = $field.getName())
-		#else
-			#set ($curName = $utility.firstToLowerCase($field.getType()))
-		#end
-		
-		## check if it is a list 	
-		#if ($field.getRepeat()==$mustListRepeat  || $field.getRepeat()== $optionalListRepeat)
-			$curName$list = new LinkedList<$field.getType()>();
-			tempList = root.getChildren("$field.getType()",root.getNamespace());
-			for (Element e : tempList){
-				#if ($utility.hasType($field,$choiceReference))
-					//choiceRef
-					##check all subtypes
-					#foreach ($subtype in $utility.getSubTypes($field.getType()))
-						if (e.getName().equalsIgnoreCase("$subtype")){
-							$curName$list$add (new $subtype (e));
-							continue;
-						}
-					#end
-					//if no parameter matched, jump out of while loop
-					break;
-				#elseif ($utility.hasType($field,$parameterReference))
-					//paramRef
-					$curName$list$add (new $field.getType() (e));	
-				#else
-					//TODO template wrote this in decode > list- unexpected object $field in while
-				#end
-			}
-			
-
-
-		#elseif ($field.getRepeat()==$exactlyOnceRepeat || $field.getRepeat()==$optionalRepeat)
-			##may be optional or exactly once
-			// may be optional or exactly once
-			#if ($utility.hasType($field,$choiceReference))
-				##check all subtypes
-				#foreach ($subtype in $utility.getSubTypes($field.getType()))
-					// try to get the element of name $field.getType()
-					temp = root.getChild("$subtype",root.getNamespace());
-					// if it exists - we can instantiate it
-					if (temp != null){
-						$curName = new $subtype (temp);
-					}
-				#end
-			
-			#elseif ($utility.hasType($field,$parameterReference))
-				temp = root.getChild("$field.getType()",root.getNamespace());
-				if(temp != null){
-					$curName = new $field.getType()(temp);
-				} else {
-				## if it is an optional parameter it is ok to come to here. Therefor only print an error message if it is not optional
-					#if ($field.getRepeat()==$exactlyOnceRepeat )
-						// its an error - parameter must be here
-						throw new InvalidLLRPMessageException("parameter expected: $field.getType() but received $field.getType()");
-					#else
-						LOGGER.info("parameter "+$curName +" not set");
-					#end
-				}	
+			## get name first, not all have a name attribute
+			#if ($field.getName())
+				#set ($curName = $field.getName())
 			#else
-				//TODO template wrote this - unexpected object $field
+				#set ($curName = $utility.firstToLowerCase($field.getType()))
 			#end
-		#else
-			// TODO repeat is $field.getRepeat() but this is not yet implemented
+			#if ($utility.hasType($field,$parameterReference))
+				//parameter - not choices - no special actions needed
+				## check if it is a list 	
+				#if ($field.getRepeat()==$mustListRepeat  || $field.getRepeat()== $optionalListRepeat)
+					//we expect a list of parameters
+					$curName$list = new LinkedList<$field.getType()>();
+					tempList = root.getChildren("$field.getType()",ns);
+					#if ( $field.getRepeat() == $mustListRepeat)
+						if (tempList == null || tempList.isEmpty() ){
+							LOGGER.warn("$message.getName() misses non optional parameter of type $curName$list");
+							throw new MissingParameterException("$message.getName() misses non optional parameter of type $curName$list");
+					#else
+						##if it is optional, just inform that it is not set
+						if (tempList == null || tempList.isEmpty() ){
+							LOGGER.info("$message.getName() misses optional parameter of type $curName$list");
+					#end						
+					} else {
+						for (Element e : tempList){
+							$curName$list$add (new $field.getType()(e));
+							LOGGER.debug("adding $field.getType() to $curName$list ");			
+						}	
+					}
+					#if ($utility.isCustom($field.getType()))
+						//custom parameter
+						#foreach ($custom in $utility.allowedCustom($message.getName()))
+							tempList = root.getChildren("$custom",ns);
+							for (Element e: tempList){
+								custom = new Custom(e); 
+								$curName$list$add (new $custom (custom));
+								LOGGER.debug("adding $custom to $curName$list ");
+							}
+						#end
+					//end custom
+					#end					
+				#else
+					temp = root.getChild("$field.getType()",ns);
+					#if ($utility.isCustom($field.getType()))
+						// custom parameter may be null, check allowed types
+						if (temp == null){
+						//check allowed types
+						#foreach ($custom in $utility.allowedCustom($message.getName()))
+							temp = root.getChild("$custom",ns);
+							if (temp != null){
+								$curName =  new $custom (custom);
+							}
+						#end
+						}
+						// end custom
+		             #end
+		             if (temp != null){
+		                 $curName = new $field.getType()(temp);
+		                 LOGGER.info("setting parameter $curName for parameter $message.getName()");
+		             } else {
+		                  #if ( $field.getRepeat() == $exactlyOnceRepeat)
+		                      LOGGER.warn("$message.getName() misses non optional parameter of type $curName");
+		                      throw new MissingParameterException("$message.getName() misses non optional parameter of type $curName");
+		                  #else
+		                      ##if it is optional, just inform that it is not set
+		                      LOGGER.info("$message.getName() misses optional parameter of type $curName");
+		                  #end
+		             }          		
+				#end
+			#elseif ($utility.hasType($field,$choiceReference))
+				//choices - must check all possible subtypes
+				#if ($field.getRepeat()==$mustListRepeat  || $field.getRepeat()== $optionalListRepeat)
+					//list of Choice Type Parameter
+					$curName$list = new LinkedList<$field.getType()>();
+					// for each possible subtype get all childs
+						##check all subtypes
+						#foreach ($subtype in $utility.getSubTypes($field.getType()))
+							#if ($utility.isCustom($subtype))
+								## custom parameter need separate treatment
+								// check for all custom parameters allowed for this parameter 
+								#set($hasAllowed = "false")
+								#foreach ($custom in $utility.allowedCustom($message.getName()))
+									#set($hasAllowed = "true")
+									tempList = root.getChildren("$custom",ns);
+									for (Element e: tempList){
+										custom = new Custom(e); 
+										$curName$list$add (new $custom (custom));
+										atLeastOnce = true;
+										LOGGER.debug("adding $custom to $curName$list ");
+									}
+								#end
+								#if ($hasAllowed == "false")
+									tempList = root.getChildren("Custom",ns);
+									for (Element e: tempList){
+										$curName$list$add (new Custom(e));
+										LOGGER.debug("adding $field.getType() to $curName$list ");
+									}
+									
+								#end
+								//end allowed parameters
+							#else
+								tempList = root.getChildren("$subtype",ns);
+								for (Element e : tempList){
+									$curName$list$add (new $subtype(e));
+									LOGGER.debug("adding $subtype to $curName$list ");
+									atLeastOnce = true;
+								}
+								
+							#end
+							
+						#end
+						if (!atLeastOnce){
+							#if ( $field.getRepeat() == $mustListRepeat)
+								LOGGER.warn("$message.getName() misses non optional parameter of type $curName$list");
+								throw new MissingParameterException("$message.getName() misses non optional parameter of type $curName$list");
+							#else
+								LOGGER.info("$message.getName() misses optional parameter of type $curName$list");
+							#end	
+						}
+						atLeastOnce = false;		
+				#else
+				
+					##check all subtypes
+					boolean found = false;
+					LOGGER.debug("decoding choice type $field.getType() ");
+					#foreach ($subtype in $utility.getSubTypes($field.getType()))
+						#if ($utility.isCustom($subtype))
+							## custom parameter need separate treatment
+							// custom
+							temp = element.getChild("$subtype",ns);
+							if (temp != null){
+								custom = new $field.getType() (temp));	
+								#foreach ($custom in $utility.allowedCustom($field.getType()))
+									if (temp.getName().equalsIgnoreCase("$custom")){ 
+										$curName =new $custom (custom) ;
+										LOGGER.debug(" $curName is instantiated with $custom ");
+									}
+								#end
+							}
+						#else		
+							// try to get child for each possible subtype
+							temp = root.getChild("$subtype",ns);			
+							if (temp != null){
+								$curName = new $subtype (temp);
+								LOGGER.debug(" $curName instatiated to $subtype with");
+								found = true;
+							} 
+						#end
+					#end
+					if (!found){
+						#if ( $field.getRepeat() == $mustListRepeat)
+							LOGGER.warn("$message.getName() misses non optional parameter of type $curName$list");
+							throw new MissingParameterException("$message.getName() misses non optional parameter of type $curName$list");
+						#else
+						##if it is optional, just inform that it is not set
+							LOGGER.info("$message.getName() misses optional parameter of type $curName$list");
+						#end	
+					}				
+				
+				#end
+			#else
+				//TODO 9 template wrote this in decode > list- unexpected object $field in while
+			#end
 		#end
-	#end
 	
 	
 	}

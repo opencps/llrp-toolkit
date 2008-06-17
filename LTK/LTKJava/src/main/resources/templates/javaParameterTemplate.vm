@@ -828,10 +828,11 @@ $utility.clearNumberOfReserved()
 	 * {@inheritDoc}
 	 */
 	public void decodeXML(Element element){
-		Element temp = null;
 		List<Element> tempList = null;
 		boolean atLeastOnce = false;
+        Custom custom;
 		
+		Element temp = null;
 		// child element are always in default LLRP namespace
     	Namespace ns = Namespace.getNamespace(LLRPConstants.LLRPNAMESPACE);
 		
@@ -885,82 +886,58 @@ $utility.clearNumberOfReserved()
 						if (tempList == null || tempList.isEmpty() ){
 							LOGGER.warn("$parameter.getName() misses non optional parameter of type $curName$list");
 							throw new MissingParameterException("$parameter.getName() misses non optional parameter of type $curName$list");
-						} else {
-							for (Element e : tempList){
-								#if ($utility.isCustom($field.getType()))
-									//custom parameter
-									#set($hasAllowed = "false")
-									#foreach ($custom in $utility.allowedCustom($custom))
-										#set($hasAllowed = "true")
-										tempList = element.getChildren("$custom",ns);
-										for Element e: tempList){
-											custom = new Custom(e); 
-											$curName$list$add (new $custom (custom));
-											atLeastOnce = true;
-											LOGGER.debug("adding $custom to $curName$list ");
-											
-										}
-									#end
-									#if ($hasAllowed == "false")
-											$curName$list$add (new $field.getType()(e));
-											LOGGER.debug("adding $field.getType() to $curName$list ");
-									#end
-									//end custom
-								#else 
-									$curName$list$add (new $field.getType()(e));
-									LOGGER.debug("adding $field.getType() to $curName$list ");
-								#end
-							}	
-						}
 					#else
-					##if it is optional, just inform that it is not set
+						##if it is optional, just inform that it is not set
 						if (tempList == null || tempList.isEmpty() ){
 							LOGGER.info("$parameter.getName() misses optional parameter of type $curName$list");
-						} else {
-							for (Element e : tempList){
-								#if ($utility.isCustom($field.getType()))
-									//custom parameter
-									#set($hasAllowed = "false")
-									#foreach ($custom in $utility.allowedCustom($custom))
-										#set($hasAllowed = "true")
-										tempList = element.getChildren("$custom",element.getNamespace());
-										for Element e: tempList){
-											custom = new Custom(e); 
-											$curName$list$add (new $custom (custom));
-											atLeastOnce = true;
-											LOGGER.debug("adding $custom to $curName$list ");
-										}
-									#end
-									#if ($hasAllowed == "false")
-											$curName$list$add (new $field.getType()(e));
-											LOGGER.debug("adding $field.getType() to $curName$list ");
-									#end
-									//end custom
-								#else 
-									$curName$list$add (new $field.getType()(e));
-									LOGGER.debug("adding $field.getType() to $curName$list ");
-								#end
-							}	
-						}
-					#end
-					
-			
-				#else
-					// single parameter
-					temp = element.getChild("$field.getType()",ns);
-					if (temp != null){
-						$curName = new $field.getType()(temp);
-						LOGGER.info("setting parameter $curName for parameter $parameter.getName()");
+					#end						
 					} else {
-						#if ( $field.getRepeat() == $exactlyOnceRepeat)
-							LOGGER.warn("$parameter.getName() misses non optional parameter of type $curName");
-							throw new MissingParameterException("$parameter.getName() misses non optional parameter of type $curName");
-						#else
-							##if it is optional, just inform that it is not set
-							LOGGER.info("$parameter.getName() misses optional parameter of type $curName");
-						#end
+						for (Element e : tempList){
+							$curName$list$add (new $field.getType()(e));
+							LOGGER.debug("adding $field.getType() to $curName$list ");			
+						}	
 					}
-				#end		
+					#if ($utility.isCustom($field.getType()))
+						//custom parameter
+						#foreach ($custom in $utility.allowedCustom($parameter.getName()))
+							tempList = element.getChildren("$custom",ns);
+							for (Element e: tempList){
+								custom = new Custom(e); 
+								$curName$list$add (new $custom (custom));
+								LOGGER.debug("adding $custom to $curName$list ");
+							}
+						#end
+					//end custom
+					#end					
+				#else
+					temp = element.getChild("$field.getType()",ns);
+					#if ($utility.isCustom($field.getType()))
+						// custom parameter may be null, check allowed types
+						if (temp == null){
+						//check allowed types
+						#foreach ($custom in $utility.allowedCustom($parameter.getName()))
+							temp = element.getChild("$custom",ns);
+							if (temp != null){
+								$curName =  new $custom (custom);
+							}
+						#end
+						}
+						// end custom
+                    #end
+                    if (temp != null){
+                       $curName = new $field.getType()(temp);
+                       LOGGER.info("setting parameter $curName for parameter $parameter.getName()");
+                    }
+                    if (temp == null){
+                       #if ( $field.getRepeat() == $exactlyOnceRepeat)
+                           LOGGER.warn("$parameter.getName() misses non optional parameter of type $curName");
+                           throw new MissingParameterException("$parameter.getName() misses non optional parameter of type $curName");
+                       #else
+                           ##if it is optional, just inform that it is not set
+                           LOGGER.info("$parameter.getName() misses optional parameter of type $curName");
+                       #end
+                    }
+               #end          				
 			#elseif ($utility.hasType($field,$choiceReference))
 				//choices - must check all possible subtypes
 				#if ($field.getRepeat()==$mustListRepeat  || $field.getRepeat()== $optionalListRepeat)
@@ -973,9 +950,9 @@ $utility.clearNumberOfReserved()
 								## custom parameter need separate treatment
 								// check for all custom parameters allowed for this parameter 
 								#set($hasAllowed = "false")
-								#foreach ($custom in $utility.allowedCustom($custom))
+								#foreach ($custom in $utility.allowedCustom($parameter.getName()))
 									#set($hasAllowed = "true")
-									tempList = element.getChildren("$custom",element.getNamespace());
+									tempList = element.getChildren("$custom",ns);
 									for (Element e: tempList){
 										custom = new Custom(e); 
 										$curName$list$add (new $custom (custom));
@@ -984,7 +961,7 @@ $utility.clearNumberOfReserved()
 									}
 								#end
 								#if ($hasAllowed == "false")
-									tempList = element.getChildren("Custom",element.getNamespace());
+									tempList = element.getChildren("Custom",ns);
 									for (Element e: tempList){
 										$curName$list$add (new Custom(e));
 										LOGGER.debug("adding $field.getType() to $curName$list ");
@@ -993,7 +970,7 @@ $utility.clearNumberOfReserved()
 								#end
 								//end allowed parameters
 							#else
-								tempList = element.getChildren("$subtype",element.getNamespace());
+								tempList = element.getChildren("$subtype",ns);
 								for (Element e : tempList){
 									$curName$list$add (new $subtype(e));
 									LOGGER.debug("adding $subtype to $curName$list ");
@@ -1021,7 +998,7 @@ $utility.clearNumberOfReserved()
 						#if ($utility.isCustom($subtype))
 							## custom parameter need separate treatment
 							// custom
-							temp = element.getChild("$subtype",element.getNamespace());
+							temp = element.getChild("$subtype",ns);
 							if (temp != null){
 								custom = new $field.getType() (temp));	
 								#foreach ($custom in $utility.allowedCustom($field.getType()))
@@ -1033,7 +1010,7 @@ $utility.clearNumberOfReserved()
 							}
 						#else		
 							// try to get child for each possible subtype
-							temp = element.getChild("$subtype",element.getNamespace());			
+							temp = element.getChild("$subtype",ns);			
 							if (temp != null){
 								$curName = new $subtype (temp);
 								LOGGER.debug(" $curName instatiated to $subtype with");
