@@ -118,6 +118,7 @@ log4j 				1.2.15 	http://logging.apache.org/log4j/1.2/download.html
 commons-collection 	3.2		http://commons.apache.org
 commons-configuration 1.5 	http://commons.apache.org
 commons-lang 		2.3 	http://commons.apache.org
+common-logging 		1.1.1   http://commons.apache.org (check)
 JAXB RI dependencies including:
 jaxb-xjc 			2.0 	https://jaxb.dev.java.net/
 jaxb-impl 			2.0 	https://jaxb.dev.java.net/
