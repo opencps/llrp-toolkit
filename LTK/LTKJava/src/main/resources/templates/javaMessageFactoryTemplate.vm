@@ -59,6 +59,7 @@ import org.llrp.ltk.generated.messages.*;
  *
  *
  * @author Andreas Huebner - andreas@pramari.com
+ * @author Christian Floerkemeier - floerkem@mit.edu
  *
  */
 public class LLRPMessageFactory {
@@ -68,15 +69,6 @@ public class LLRPMessageFactory {
 
 	public static final int reservedLength = 3;
 	public static final int versionLength = 3;
-
-	public static HashMap<Integer,String> getMessageTypeMap()
-	{
-		HashMap<Integer, String> messageList = new HashMap<Integer, String>();
-		#foreach($message in $messages)
-		messageList.put($message.getTypeNum(), "$message.getName()");
-		#end
-		return messageList;
-	}
 
 	/**
 	 * Generates a LLRPMessage out of the given LLRPBitList. 
@@ -97,7 +89,8 @@ public class LLRPMessageFactory {
 		
 		// construct appropriate message object
 		#foreach($message in $messages)
-			if(messageType == $message.getTypeNum()){
+		    #set($typenumString = ".TYPENUM.intValue()")
+			if(messageType == $message.getName()$typenumString){
 					message = new $message.getName()(bits);
 					#set($subtypeString = ".subtype.intValue()")
 					#if ($message.getName() == "CUSTOM_MESSAGE")
@@ -151,17 +144,18 @@ public class LLRPMessageFactory {
 		
 		if(className.equals("$message.getName()")){
 					message = new $message.getName()(document);
-					#set($subtypeString = ".subtype.intValue()")
-					#if ($message.getName() == "CUSTOM_MESSAGE")
-				        int subtype = ((CUSTOM_MESSAGE) message).getMessageSubtype().intValue();
-						#foreach($custom in $customs)
-				            if (subtype == $custom.getName()$subtypeString){
-            					message = new $custom.getName()(document);
-            				}
-						#end
-					#end
+					
 		}
 		#end
+		
+		#foreach($custom in $customs)
+		
+		if(className.equals("$custom.getName()")){
+				    message = new $custom.getName()(document);
+        
+        }    				
+		#end
+		
 		// check whether the message type exists
 		if(message == null){
 		    throw new InvalidLLRPMessageException("The message type (\"" + className + "\") specified in the LTK-XML message is not known.");
