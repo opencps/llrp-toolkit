@@ -89,6 +89,9 @@ $utility.clearImports()
 	$utility.addImport("SignedShort")
 	import org.llrp.ltk.types.UnsignedShort;
 	$utility.addImport("UnsignedShort")
+	
+	import org.llrp.ltk.exceptions.InvalidLLRPMessageException;
+	$utility.addImport("InvalidLLRPMessageException")
 	import org.llrp.ltk.exceptions.MissingParameterException;
 	$utility.addImport("MissingParameterException")
 	import org.llrp.ltk.types.TLVParameter;
@@ -100,7 +103,7 @@ import org.llrp.ltk.generated.LLRPConstants;
 	
 	
 	##custom parameters
-	#foreach ($custom in $utility.allowedCustom($parameter.getName()))
+	#foreach ($custom in $utility.Custom($parameter.getName()))
 	import org.llrp.ltk.generated.custom.parameters.$custom;
 	$utility.addImport($custom)
 	#end
@@ -208,6 +211,11 @@ import org.llrp.ltk.generated.LLRPConstants;
 				import org.llrp.ltk.generated.interfaces.$interface;
 				$utility.addImport($interface)
 			#end
+	#end
+	
+	#foreach ($custom in $utility.allowedCustom($parameter.getName()))
+	import org.llrp.ltk.generated.custom.parameters.$custom;
+	$utility.addImport($custom)
 	#end
 ##end imports
 	
@@ -321,7 +329,7 @@ $utility.clearNumberOfReserved()
  * calls decodeXML to decode parameter.
  * @param element to be decoded
  */	
-	public $parameter.getName()(Element element){
+	public $parameter.getName()(Element element)  throws InvalidLLRPMessageException {
 		decodeXML(element);
 	}
 	
@@ -590,8 +598,8 @@ $utility.clearNumberOfReserved()
 							// custom
 							if(type != null && type.equals(Custom$typeNum)){
 								Custom cus = new Custom(binary.subList(position,tempLength)); 
-								//allowed custom parameters for this parameter	
-								#foreach ($custom in $utility.allowedCustom($parameter.getName()))
+								// custom parameters for this parameter	
+								#foreach ($custom in $utility.Custom($parameter.getName()))
 									if (cus.getParameterSubtype().equals($custom$subtypeNr)){ 
 										$curName$list$add (new $custom (cus));
 										LOGGER.debug("adding $custom to $curName$list ");	
@@ -600,7 +608,7 @@ $utility.clearNumberOfReserved()
 										continue;
 									}
 								#end	
-								//end allowed parameters
+								//end  parameters
 								//if none matched continue wasn't called and we add just cus as we found no specific vendor implementation
 								$curName$list$add (cus);
 								position+=tempLength;
@@ -627,8 +635,8 @@ $utility.clearNumberOfReserved()
 							// custom
 						if(type != null && type.equals(Custom$typeNum)){
 							Custom cus = new Custom(binary.subList(position,tempLength)); 
-							//allowed custom parameters for this parameter	
-							#foreach ($custom in $utility.allowedCustom($parameter.getName()))
+							// custom parameters for this parameter	
+							#foreach ($custom in $utility.Custom($parameter.getName()))
 								if (cus.getParameterSubtype().equals($custom$subtypeNr)){ 
 									$curName$list$add (new $custom (cus));
 									atLeastOnce = true;
@@ -638,7 +646,7 @@ $utility.clearNumberOfReserved()
 									continue;
 								}
 							#end	
-							//end allowed parameters
+							//end  parameters
 							//if none matched continue wasn't called and we add just cus as we found no specific vendor implementation
 							$curName$list$add (cus);
 							position+=tempLength;
@@ -725,7 +733,7 @@ $utility.clearNumberOfReserved()
 					// custom
 						if(type != null && type.equals(Custom$typeNum)){
 							Custom cus = new Custom(binary.subList(position,tempLength)); 
-							//allowed custom parameters for this parameter	
+							// custom parameters for this parameter	
 							#foreach ($custom in $utility.allowedCustom($parameter.getName()))
 								if (cus.getParameterSubtype().equals($custom$subtypeNr)){ 
 									$curName=new $custom (cus);
@@ -736,7 +744,7 @@ $utility.clearNumberOfReserved()
 									continue;
 								}
 							#end	
-							//end allowed parameters
+							//end  parameters
 							//if none matched continue wasn't called and we add just use cus as custom parameter as we found no specific vendor implementation
 							$curName =cus;
 							position+=tempLength;
@@ -765,7 +773,7 @@ $utility.clearNumberOfReserved()
 					## custom parameter need separate treatment
 					// custom
 					Custom cus = new Custom(binary.subList(position,tempLength)); 
-					//allowed custom parameters for this parameter	
+					// custom parameters for this parameter	
 					#foreach ($custom in $utility.allowedCustom($parameter.getName()))
 						if (cus.getParameterSubtype().equals($custom$subtypeNr)){ 
 							$curName=new $custom (cus);
@@ -774,7 +782,7 @@ $utility.clearNumberOfReserved()
 							continue;
 						}
 					#end	
-					//end allowed parameters
+					//end  parameters
 					//if none matched continue wasn't called and we add just use cus as custom parameter as we found no specific vendor implementation
 					if ($curName == null){
 						$curName =cus;
@@ -827,7 +835,7 @@ $utility.clearNumberOfReserved()
 		/**
 	 * {@inheritDoc}
 	 */
-	public void decodeXML(Element element){
+	public void decodeXML(Element element)  throws InvalidLLRPMessageException {
 		List<Element> tempList = null;
 		boolean atLeastOnce = false;
         Custom custom;
@@ -863,6 +871,7 @@ $utility.clearNumberOfReserved()
 				if (temp != null){
 					$curName = new $curType (temp);
 				}
+				element.removeChild("$field.getName()",ns);
 			#else
 						//TODO 8 template wrote this - unexpected object $field
 			#end
@@ -900,26 +909,32 @@ $utility.clearNumberOfReserved()
 					#if ($utility.isCustom($field.getType()))
 						//custom parameter
 						#foreach ($custom in $utility.allowedCustom($parameter.getName()))
-							tempList = element.getChildren("$custom",ns);
+						// $utility.getPrefixForParameter($custom)
+							Namespace ns$custom = Namespace.getNamespace("$utility.getPrefixForParameter($custom)",LLRPConstants.$utility.getPrefixForParameter($custom).toUpperCase()$ns);
+							tempList = element.getChildren("$custom",ns$custom);
 							for (Element e: tempList){
-								custom = new Custom(e); 
-								$curName$list$add (new $custom (custom));
+								$curName$list$add (new $custom (e));
 								LOGGER.debug("adding $custom to $curName$list ");
 							}
+							element.removeChildren("$custom",ns$custom);
 						#end
-					//end custom
+						//end custom
+					element.removeChildren("$field.getType()",ns);
 					#end					
 				#else
 					temp = element.getChild("$field.getType()",ns);
 					#if ($utility.isCustom($field.getType()))
-						// custom parameter may be null, check allowed types
+						// custom parameter may be null, check  types
 						if (temp == null){
-						//check allowed types
+						//check  types
 						#foreach ($custom in $utility.allowedCustom($parameter.getName()))
-							temp = element.getChild("$custom",ns);
+							// $utility.getPrefixForParameter($custom)
+							Namespace ns$custom = Namespace.getNamespace("$utility.getPrefixForParameter($custom)",LLRPConstants.$utility.getPrefixForParameter($custom).toUpperCase()$ns);
+							temp = element.getChild("$custom",ns$custom);
 							if (temp != null){
 								$curName =  new $custom (custom);
 							}
+							element.removeChild("$custom",ns$custom);
 						#end
 						}
 						// end custom
@@ -937,6 +952,7 @@ $utility.clearNumberOfReserved()
                            LOGGER.info("$parameter.getName() misses optional parameter of type $curName");
                        #end
                     }
+					element.removeChild("$field.getType()",ns);
                #end          				
 			#elseif ($utility.hasType($field,$choiceReference))
 				//choices - must check all possible subtypes
@@ -948,17 +964,19 @@ $utility.clearNumberOfReserved()
 						#foreach ($subtype in $utility.getSubTypes($field.getType()))
 							#if ($utility.isCustom($subtype))
 								## custom parameter need separate treatment
-								// check for all custom parameters allowed for this parameter 
-								#set($hasAllowed = "false")
+								// check for all custom parameters  for this parameter 
+								#set($has = "false")
 								#foreach ($custom in $utility.allowedCustom($parameter.getName()))
 									#set($hasAllowed = "true")
-									tempList = element.getChildren("$custom",ns);
+									// $utility.getPrefixForParameter($custom)
+									Namespace ns$custom = Namespace.getNamespace("$utility.getPrefixForParameter($custom)",LLRPConstants.$utility.getPrefixForParameter($custom).toUpperCase()$ns);		
+									tempList = element.getChildren("$custom",ns$custom);
 									for (Element e: tempList){
-										custom = new Custom(e); 
-										$curName$list$add (new $custom (custom));
+										$curName$list$add (new $custom (e));
 										atLeastOnce = true;
 										LOGGER.debug("adding $custom to $curName$list ");
 									}
+									element.removeChildren("$custom",ns$custom);
 								#end
 								#if ($hasAllowed == "false")
 									tempList = element.getChildren("Custom",ns);
@@ -966,6 +984,7 @@ $utility.clearNumberOfReserved()
 										$curName$list$add (new Custom(e));
 										LOGGER.debug("adding $field.getType() to $curName$list ");
 									}
+									element.removeChildren("Custom",ns);
 									
 								#end
 								//end allowed parameters
@@ -976,6 +995,7 @@ $utility.clearNumberOfReserved()
 									LOGGER.debug("adding $subtype to $curName$list ");
 									atLeastOnce = true;
 								}
+								element.removeChildren("$subtype",ns);
 								
 							#end
 							
@@ -1008,19 +1028,21 @@ $utility.clearNumberOfReserved()
 									}
 								#end
 							}
+							element.removeChild("$subtype",ns);
 						#else		
 							// try to get child for each possible subtype
-							temp = element.getChild("$subtype",ns);			
+							temp = element.getChild("$subtype",ns);		
 							if (temp != null){
 								$curName = new $subtype (temp);
 								LOGGER.debug(" $curName instatiated to $subtype with");
 								found = true;
 							} 
+							element.removeChild("$subtype",ns);		
 						#end
 					#end
 					if (!found){
 						#if ( $field.getRepeat() == $mustListRepeat)
-							LOGGER.warn("$parameter.getName() misses non optional parameter of type $curName$list");
+							LOGGER.warn("$parameter.getName() misses non optional parameter $curName$list");
 							throw new MissingParameterException("$parameter.getName() misses non optional parameter of type $curName$list");
 						#else
 						##if it is optional, just inform that it is not set
@@ -1033,6 +1055,10 @@ $utility.clearNumberOfReserved()
 				//TODO 9 template wrote this in decode > list- unexpected object $field in while
 			#end	
 		#end
+		if (element.getChildren().size()>0){
+			String message = "$parameter.getName() has unknown element "+((Element) element.getChildren().get(0)).getName();
+			throw new InvalidLLRPMessageException(message);
+		}
   	}
   	
 

@@ -33,6 +33,7 @@ public class Utility {
 	private Map<String, String> customChoicesMap;
 	private Map<String, String> customParameterMap;
 	private Map<String, String> customMessageMap;
+	private Map<String, String> prefixForParameterMap;
 	private static final String NOTYPE = "NoType";
 
 	public Utility(PropertiesConfiguration properties) {
@@ -42,6 +43,7 @@ public class Utility {
 		allowedIn = new HashMap<String, List<String>>();
 		this.properties = properties;
 		customEnumerationsMap = new HashMap<String, String>();
+		prefixForParameterMap = new HashMap<String, String>();
 		customChoicesMap = new HashMap<String, String>();
 		customParameterMap = new HashMap<String, String>();
 		customMessageMap = new HashMap<String, String>();
@@ -524,5 +526,15 @@ public class Utility {
 	public boolean isCustomMessage(String name) {
 		return customMessageMap.containsKey(name.toLowerCase());
 	}
-
+	public void addPrefixForParameter(String parameter, String ns){
+		prefixForParameterMap.put(parameter, ns);
+	}
+	
+	public String getPrefixForParameter(String parameter){
+		if (prefixForParameterMap.containsKey(parameter)){
+			return prefixForParameterMap.get(parameter);
+		} else {
+			return "";
+		}
+	}
 }

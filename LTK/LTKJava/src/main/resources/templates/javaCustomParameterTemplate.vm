@@ -30,6 +30,7 @@ package org.llrp.ltk.generated.custom.parameters;
 ## remember where this parameter is allowed in - use utility to store this information
 	#foreach ($allowedIn in $custom.getAllowedIn())
 		$utility.addAllowedIn($allowedIn.getType(), $custom.getName())
+		$utility.addPrefixForParameter($custom.getName(), $custom.getNamespace())
 	#end
 
 	
@@ -95,6 +96,8 @@ $utility.clearImports()
 	$utility.addImport("UnsignedShort")
 	import org.llrp.ltk.types.UnsignedInteger;
 	$utility.addImport("UnsignedInteger")
+import org.llrp.ltk.exceptions.InvalidLLRPMessageException;
+	$utility.addImport("InvalidLLRPMessageException")
 	import org.llrp.ltk.exceptions.MissingParameterException;
 	$utility.addImport("MissingParameterException")
 	import org.llrp.ltk.types.TLVParameter;
@@ -319,7 +322,7 @@ $utility.clearNumberOfReserved()
  * calls decodeXML to decode parameter.
  * @param xml element to be decoded
  */
-	public $custom.getName()(Element element){
+	public $custom.getName()(Element element)  throws InvalidLLRPMessageException {
 		decodeXML(element);
 	}
 	
@@ -401,11 +404,10 @@ $utility.clearNumberOfReserved()
 	 */
 	public Content encodeXML(String name, Namespace ns){
 		#set($ns = "NAMESPACE")
-		// element in namespace defined by parents
-        Element element = new Element(name, ns);
-        // child elements may be in another namespace
+		// element not in namespace defined by parents
 		ns = Namespace.getNamespace("$custom.getNamespace()",LLRPConstants.$custom.getNamespace().toUpperCase()$ns);
-		## field or reserved
+		Element element = new Element(name, ns);
+        ## field or reserved
 		// fileds are alway in parent namespace 
 		#foreach($field in $custom.getFieldOrReserved())
 			#if ($utility.hasType($field,$reservedDefinition))
@@ -760,7 +762,7 @@ $utility.clearNumberOfReserved()
 		/**
 	 * {@inheritDoc}
 	 */
-	public void decodeXML(Element element){
+	public void decodeXML(Element element)  throws InvalidLLRPMessageException {
 		Element temp = null;
 		List<Element> tempList = null;
 		boolean atLeastOnce = false;

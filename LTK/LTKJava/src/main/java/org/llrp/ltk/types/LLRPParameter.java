@@ -18,6 +18,7 @@ package org.llrp.ltk.types;
 import org.jdom.Content;
 import org.jdom.Element;
 import org.jdom.Namespace;
+import org.llrp.ltk.exceptions.InvalidLLRPMessageException;
 
 
 /**
@@ -67,7 +68,7 @@ public abstract class LLRPParameter {
      *
      * @param element to be decoded
      */
-    public abstract void decodeXML(Element element);
+    public abstract void decodeXML(Element element)  throws InvalidLLRPMessageException ;
 
     /**
      * length in bytes.

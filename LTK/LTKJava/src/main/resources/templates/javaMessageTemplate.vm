@@ -415,17 +415,18 @@ $utility.clearNumberOfReserved()
 		
 		## field or reserved
 		#foreach($field in $message.getFieldOrReserved())
-			## "reserved" does not get encoded as elements in LTK-XML only fields
-			#if ($utility.hasType($field,$fieldDefinition))
+			#if ($utility.hasType($field,$reservedDefinition))
+				//root.addContent($resName$utility.getCurrentNumerOfReserved()$encodeXML("reserved",ns));
+			#elseif ($utility.hasType($field,$fieldDefinition))
 				## FieldDefinition
 				if ($utility.firstToLowerCase($field.getName())== null){
 					LOGGER.warn(" $utility.firstToLowerCase($field.getName()) not set");
-					throw new InvalidLLRPMessageException(" $utility.firstToLowerCase($field.getName()) not set");
+					throw new MissingParameterException(" $utility.firstToLowerCase($field.getName()) not set");
 				} else {
 					root.addContent($utility.firstToLowerCase($field.getName())$encodeXML("$field.getName()",ns));
 				}
 			#else
-				// $field has been skipped
+				//TODO 4 template parameter encode wrote this - unexpected object $field $field.getName()
 			#end
 		#end
 		## parameter or choice
@@ -443,7 +444,7 @@ $utility.clearNumberOfReserved()
 			#if ($field.getRepeat()==$mustListRepeat)
 				if ($curName$list== null){
 					LOGGER.warn(" $curName$list not set");
-					throw new InvalidLLRPMessageException("  $curName$list not set");
+					throw new MissingParameterException("  $curName$list not set");
 				} 
 				for ($field.getType() field : $curName$list){
 					##choices have to be set by the actual name - not the name of the interface
@@ -461,16 +462,24 @@ $utility.clearNumberOfReserved()
 				if ($curName == null){
 					LOGGER.info("$curName not set");
 				} else {
-					#set($getSimpleName = ".getClass().getSimpleName()")
-					root.addContent($curName$encodeXML($curName$getSimpleName,ns));
+					#if ($field.getName())
+							// name was defined for this parameter - must use it to avoid confusion with parameters of same type
+							root.addContent($curName$encodeXML("$curName",ns));
+					#else
+							root.addContent($curName$encodeXML($curName$getClassName,ns));
+					#end
 				}
 			#elseif ($field.getRepeat()== $exactlyOnceRepeat)
 				if ($curName == null){
 					LOGGER.info("$curName not set");
-					throw new InvalidLLRPMessageException("$curName not set");
+					throw new MissingParameterException("$curName not set");
 				} else {
-					#set($getSimpleName = ".getClass().getSimpleName()")
-					root.addContent($curName$encodeXML($curName$getSimpleName,ns));
+					#if ($field.getName())
+							// name was defined for this parameter - must use it to avoid confusion with parameters of same type
+							root.addContent($curName$encodeXML("$curName",ns));
+					#else
+							root.addContent($curName$encodeXML($curName$getClassName,ns));
+					#end					
 				}
 			#else
 				// TODO field.getRepeat() = $field.getRepeat()
@@ -851,7 +860,7 @@ $utility.clearNumberOfReserved()
 
   		isValidXMLMessage(document,LLRPConstants.LLRPMESSAGESCHEMAPATH);
   		
-  		Element root = document.getRootElement();
+        Element root = (Element) document.getRootElement().clone();
   		List<Element> tempList = null;
   	
   	    // the version field is always 3 bit long 
@@ -898,6 +907,7 @@ $utility.clearNumberOfReserved()
 					LOGGER.warn("Element $curName not provided in xml as child of "+root.getName());
 					throw new MissingParameterException("Element $curName not provided");
 				}
+				root.removeChild("$utility.firstToUpperCase($curName)",root.getNamespace());
 			#else
 						//TODO template wrote this - unexpected object $field
 			#end
@@ -919,6 +929,7 @@ $utility.clearNumberOfReserved()
 					//we expect a list of parameters
 					$curName$list = new LinkedList<$field.getType()>();
 					tempList = root.getChildren("$field.getType()",ns);
+					
 					#if ( $field.getRepeat() == $mustListRepeat)
 						if (tempList == null || tempList.isEmpty() ){
 							LOGGER.warn("$message.getName() misses non optional parameter of type $curName$list");
@@ -934,6 +945,7 @@ $utility.clearNumberOfReserved()
 							LOGGER.debug("adding $field.getType() to $curName$list ");			
 						}	
 					}
+					root.removeChildren("$field.getType()",ns);
 					#if ($utility.isCustom($field.getType()))
 						//custom parameter
 						#foreach ($custom in $utility.allowedCustom($message.getName()))
@@ -943,6 +955,7 @@ $utility.clearNumberOfReserved()
 								$curName$list$add (new $custom (custom));
 								LOGGER.debug("adding $custom to $curName$list ");
 							}
+							root.removeChildren("$custom",ns);
 						#end
 					//end custom
 					#end					
@@ -957,6 +970,7 @@ $utility.clearNumberOfReserved()
 							if (temp != null){
 								$curName =  new $custom (custom);
 							}
+							root.removeChild("$custom",ns);
 						#end
 						}
 						// end custom
@@ -972,7 +986,8 @@ $utility.clearNumberOfReserved()
 		                      ##if it is optional, just inform that it is not set
 		                      LOGGER.info("$message.getName() misses optional parameter of type $curName");
 		                  #end
-		             }          		
+		             }          
+					root.removeChild("$field.getType()",ns);		
 				#end
 			#elseif ($utility.hasType($field,$choiceReference))
 				//choices - must check all possible subtypes
@@ -988,13 +1003,14 @@ $utility.clearNumberOfReserved()
 								#set($hasAllowed = "false")
 								#foreach ($custom in $utility.allowedCustom($message.getName()))
 									#set($hasAllowed = "true")
-									tempList = root.getChildren("$custom",ns);
+									tempList = root.getChildren("$custom",Namespace);
 									for (Element e: tempList){
 										custom = new Custom(e); 
 										$curName$list$add (new $custom (custom));
 										atLeastOnce = true;
 										LOGGER.debug("adding $custom to $curName$list ");
 									}
+									root.removeChildren("$custom",ns);
 								#end
 								#if ($hasAllowed == "false")
 									tempList = root.getChildren("Custom",ns);
@@ -1002,6 +1018,7 @@ $utility.clearNumberOfReserved()
 										$curName$list$add (new Custom(e));
 										LOGGER.debug("adding $field.getType() to $curName$list ");
 									}
+									root.removeChildren("Custom",ns);
 									
 								#end
 								//end allowed parameters
@@ -1012,6 +1029,7 @@ $utility.clearNumberOfReserved()
 									LOGGER.debug("adding $subtype to $curName$list ");
 									atLeastOnce = true;
 								}
+								root.removeChildren("$subtype",ns);
 								
 							#end
 							
@@ -1034,7 +1052,7 @@ $utility.clearNumberOfReserved()
 						#if ($utility.isCustom($subtype))
 							## custom parameter need separate treatment
 							// custom
-							temp = element.getChild("$subtype",ns);
+							temp = root.getChild("$subtype",ns);
 							if (temp != null){
 								custom = new $field.getType() (temp));	
 								#foreach ($custom in $utility.allowedCustom($field.getType()))
@@ -1044,6 +1062,7 @@ $utility.clearNumberOfReserved()
 									}
 								#end
 							}
+							root.removeChild("$subtype",ns);
 						#else		
 							// try to get child for each possible subtype
 							temp = root.getChild("$subtype",ns);			
@@ -1052,6 +1071,7 @@ $utility.clearNumberOfReserved()
 								LOGGER.debug(" $curName instatiated to $subtype with");
 								found = true;
 							} 
+							root.removeChild("$subtype",ns);	
 						#end
 					#end
 					if (!found){
@@ -1070,7 +1090,10 @@ $utility.clearNumberOfReserved()
 			#end
 		#end
 	
-	
+		if (root.getChildren().size()>0){
+			String message = "$message.getName() has unknown element "+((Element) root.getChildren().get(0)).getName();
+			throw new InvalidLLRPMessageException(message);
+		}
 	}
 	    	catch (IllegalArgumentException e) {
 	    		throw new InvalidLLRPMessageException(e.getMessage());

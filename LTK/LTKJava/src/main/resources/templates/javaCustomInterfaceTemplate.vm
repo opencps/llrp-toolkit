@@ -64,7 +64,7 @@ public interface $interface.getName() {
 	 * decode parameter from xml.
 	 * @param element to be decoded
 	 */
-	public void decodeXML(Element element);
+	public void decodeXML(Element element)  throws InvalidLLRPMessageException ;
 
 
 }
