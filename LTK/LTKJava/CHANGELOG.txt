@@ -1,21 +1,34 @@
 Changes with LTKJava 0.1.1 Snapshot (latest in version control)
 
+* resolved issue with decoding of LTK-XML extension messages which was caused by a bug in LLRPMessageFactory and namespace error in all parameter decodeXML methods
+[Christian Floerkemeier]
+
+* fixed bug in BytesToEnd_HEX which did not encode xsd:hexBinary correctly
+[Christian Floerkemeier]
+
 * Changed LLRPMessage to throw an InvalidLLRPMessageException if the length of the message received is not equal to the length indicated in the message's length field
+[Basil Gasser]
 
 * Fixed bug in xsd:dateTime encoding (time zone was not set correctly)
+[Christian Floerkemeier]
 
 * Fixed u16v XML encoding bug which caused a XSD validation error for example for "WriteData" element
+[Christian Floerkemeier]
 
 * Resolved "Version attribute" issue that was raised in Paul Dietrich's email to the mailing list on 06/09/2008. LTKJava wrongly assumed that the Version attribute was required. If version attribute is not set in LTL-XML message, the version is set to "001" by default.   
+[Christian Floerkemeier]
 
 * Corrected mistake in org.llrp.ltk.util.LLRPConverter.java command line documentation
+[Christian Floerkemeier]
 
 * Fixed bug 1849514 (Timestamp problem) after inconsistency between llrpdef.xml and LLRP.xsd was resolved (Bug 1974880)
+[Christian Floerkemeier]
 
 * Resolved LLRPBinaryDecoder issue in the messaging package of LTKJava. See email and patch by Li Cuizhu from 06/05/2008.
+[Christian Floerkemeier]
 
 * Refactored org.llrp.ltk.util.LLRPConverter.java and org.llrp.ltk.util.Util.java
-
+[Christian Floerkemeier]
 
 
 
