@@ -906,6 +906,7 @@ $utility.clearNumberOfReserved()
 							LOGGER.debug("adding $field.getType() to $curName$list ");			
 						}	
 					}
+					element.removeChildren("$field.getType()",ns);	
 					#if ($utility.isCustom($field.getType()))
 						//custom parameter
 						#foreach ($custom in $utility.allowedCustom($parameter.getName()))
@@ -919,8 +920,7 @@ $utility.clearNumberOfReserved()
 							element.removeChildren("$custom",ns$custom);
 						#end
 						//end custom
-					element.removeChildren("$field.getType()",ns);
-					#end					
+					#end				
 				#else
 					temp = element.getChild("$field.getType()",ns);
 					#if ($utility.isCustom($field.getType()))
