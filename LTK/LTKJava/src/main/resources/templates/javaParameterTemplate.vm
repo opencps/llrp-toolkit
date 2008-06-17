@@ -831,6 +831,10 @@ $utility.clearNumberOfReserved()
 		Element temp = null;
 		List<Element> tempList = null;
 		boolean atLeastOnce = false;
+		
+		// child element are always in default LLRP namespace
+    	Namespace ns = Namespace.getNamespace(LLRPConstants.LLRPNAMESPACE);
+		
 		## field or reserved
 		#foreach($field in $parameter.getFieldOrReserved())
 			## reserved field
@@ -854,7 +858,7 @@ $utility.clearNumberOfReserved()
 				#else
 					#set ($curType = $utility.convertType($field.getType().value()))
 				#end
-				temp = element.getChild("$field.getName()",element.getNamespace());
+				temp = element.getChild("$field.getName()",ns);
 				if (temp != null){
 					$curName = new $curType (temp);
 				}
@@ -876,7 +880,7 @@ $utility.clearNumberOfReserved()
 				#if ($field.getRepeat()==$mustListRepeat  || $field.getRepeat()== $optionalListRepeat)
 					//we expect a list of parameters
 					$curName$list = new LinkedList<$field.getType()>();
-					tempList = element.getChildren("$field.getType()",element.getNamespace());
+					tempList = element.getChildren("$field.getType()",ns);
 					#if ( $field.getRepeat() == $mustListRepeat)
 						if (tempList == null || tempList.isEmpty() ){
 							LOGGER.warn("$parameter.getName() misses non optional parameter of type $curName$list");
@@ -888,7 +892,7 @@ $utility.clearNumberOfReserved()
 									#set($hasAllowed = "false")
 									#foreach ($custom in $utility.allowedCustom($custom))
 										#set($hasAllowed = "true")
-										tempList = element.getChildren("$custom",element.getNamespace());
+										tempList = element.getChildren("$custom",ns);
 										for Element e: tempList){
 											custom = new Custom(e); 
 											$curName$list$add (new $custom (custom));
@@ -943,7 +947,7 @@ $utility.clearNumberOfReserved()
 			
 				#else
 					// single parameter
-					temp = element.getChild("$field.getType()",element.getNamespace());
+					temp = element.getChild("$field.getType()",ns);
 					if (temp != null){
 						$curName = new $field.getType()(temp);
 						LOGGER.info("setting parameter $curName for parameter $parameter.getName()");
