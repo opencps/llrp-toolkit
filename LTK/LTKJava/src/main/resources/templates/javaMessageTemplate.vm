@@ -40,7 +40,7 @@ package org.llrp.ltk.generated.messages;
 #set($typeNum = ".TYPENUM")
 #set($add = ".add")
 #set($emptyBrack = "()")
-#set($subtypeNr = ".subtype")
+#set($subtypeNr = "getParameterSubtype()")
 #set($getClassName = ".getClass().getSimpleName()")
 #set($ns = "NAMESPACE")
 
@@ -613,7 +613,7 @@ $utility.clearNumberOfReserved()
 								Custom cus = new Custom(binary.subList(position,tempLength)); 
 								//allowed custom parameters for this parameter	
 								#foreach ($custom in $utility.allowedCustom($message.getName()))
-									if (cus.getParameterSubtype().equals($custom$subtypeNr)){ 
+									if (cus.getParameterSubtype().equals(new $custom ().$subtypeNr)){ 
 										$curName$list$add (new $custom (cus));
 										atLeastOnce = true;
 										LOGGER.debug("adding $custom to $curName$list ");	
@@ -652,7 +652,7 @@ $utility.clearNumberOfReserved()
 							Custom cus = new Custom(binary.subList(position,tempLength)); 
 							//allowed custom parameters for this parameter	
 							#foreach ($custom in $utility.allowedCustom($message.getName()))
-								if (cus.getParameterSubtype().equals($custom$subtypeNr)){ 
+								if (cus.getParameterSubtype().equals(new $custom ().$subtypeNr)){ 
 									$curName$list$add (new $custom (cus));
 									atLeastOnce = true;
 									LOGGER.debug("adding $custom to $curName$list ");	
@@ -751,7 +751,7 @@ $utility.clearNumberOfReserved()
 							Custom cus = new Custom(binary.subList(position,tempLength)); 
 							//allowed custom parameters for this parameter	
 							#foreach ($custom in $utility.allowedCustom($message.getName()))
-								if (cus.getParameterSubtype().equals($custom$subtypeNr)){ 
+								if (cus.getParameterSubtype().equals(new $custom ().$subtypeNr)){ 
 									$curName=new $custom (cus);
 									atLeastOnce = true;
 									LOGGER.debug("adding $custom to $curName$list ");	
@@ -791,7 +791,7 @@ $utility.clearNumberOfReserved()
 					Custom cus = new Custom(binary.subList(position,tempLength)); 
 					//allowed custom parameters for this parameter	
 					#foreach ($custom in $utility.allowedCustom($message.getName()))
-						if (cus.getParameterSubtype().equals($custom$subtypeNr)){ 
+						if (cus.getParameterSubtype().equals(new $custom ().$subtypeNr)){ 
 							$curName=new $custom (cus);
 							atLeastOnce = true;
 							position+=tempLength;

@@ -39,7 +39,7 @@ package org.llrp.ltk.generated.parameters;
 #set($resName = "reserved")
 #set($resType = "BitList")
 #set($typeNum = ".TYPENUM")
-#set($subtypeNr = ".subtype")
+#set($subtypeNr = "getParameterSubtype()")
 #set($add = ".add")
 #set($emptyBrack = "()")
 #set($getClassName = ".getClass().getSimpleName()")
@@ -600,7 +600,7 @@ $utility.clearNumberOfReserved()
 								Custom cus = new Custom(binary.subList(position,tempLength)); 
 								// custom parameters for this parameter	
 								#foreach ($custom in $utility.Custom($parameter.getName()))
-									if (cus.getParameterSubtype().equals($custom$subtypeNr)){ 
+									if (cus.getParameterSubtype().equals(new $custom ().$subtypeNr)){ 
 										$curName$list$add (new $custom (cus));
 										LOGGER.debug("adding $custom to $curName$list ");	
 										position+=tempLength;
@@ -637,7 +637,7 @@ $utility.clearNumberOfReserved()
 							Custom cus = new Custom(binary.subList(position,tempLength)); 
 							// custom parameters for this parameter	
 							#foreach ($custom in $utility.Custom($parameter.getName()))
-								if (cus.getParameterSubtype().equals($custom$subtypeNr)){ 
+								if (cus.getParameterSubtype().equals(new $custom ().$subtypeNr)){ 
 									$curName$list$add (new $custom (cus));
 									atLeastOnce = true;
 									LOGGER.debug("adding $custom to $curName$list ");	
@@ -735,7 +735,7 @@ $utility.clearNumberOfReserved()
 							Custom cus = new Custom(binary.subList(position,tempLength)); 
 							// custom parameters for this parameter	
 							#foreach ($custom in $utility.allowedCustom($parameter.getName()))
-								if (cus.getParameterSubtype().equals($custom$subtypeNr)){ 
+								if (cus.getParameterSubtype().equals(new $custom ().$subtypeNr)){ 
 									$curName=new $custom (cus);
 									atLeastOnce = true;
 									LOGGER.debug("adding $custom to $curName$list ");	
@@ -775,7 +775,7 @@ $utility.clearNumberOfReserved()
 					Custom cus = new Custom(binary.subList(position,tempLength)); 
 					// custom parameters for this parameter	
 					#foreach ($custom in $utility.allowedCustom($parameter.getName()))
-						if (cus.getParameterSubtype().equals($custom$subtypeNr)){ 
+						if (cus.getParameterSubtype().equals(new $custom ().$subtypeNr)){ 
 							$curName=new $custom (cus);
 							atLeastOnce = true;
 							position+=tempLength;
