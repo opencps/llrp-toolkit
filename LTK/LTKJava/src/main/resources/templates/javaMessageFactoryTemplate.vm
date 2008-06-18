@@ -23,7 +23,7 @@
  *
 */
 
-package org.llrp.ltk.generated.messages;
+package org.llrp.ltk.generated;
 
 import org.apache.log4j.Logger;
 import org.jdom.Document;
