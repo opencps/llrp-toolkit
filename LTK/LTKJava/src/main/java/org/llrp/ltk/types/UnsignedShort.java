@@ -166,6 +166,6 @@ public class UnsignedShort extends LLRPNumberType {
     }
     
     public String toString(int radix){
-    	return Integer.toString(value, radix);
+    	return Integer.toString(value & 0xFFFF, radix);
     }
 }

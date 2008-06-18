@@ -7,78 +7,79 @@ import org.jdom.Element;
 import org.jdom.Namespace;
 import org.jdom.Text;
 
-
 public class UnsignedShortArray_HEX extends UnsignedShortArray {
-    public UnsignedShortArray_HEX(Element element) {
-        super(element);
-    }
+	public UnsignedShortArray_HEX(Element element) {
+		super(element);
+	}
 
-    /**
-         * Creates a new UnsignedShortArray object.
-         *
-         * @param length of array
-         */
-    public UnsignedShortArray_HEX(int length) {
-        super(length);
-    }
-    
-    public UnsignedShortArray_HEX(short[] data){
-    	this.shorts = new UnsignedShort[data.length];
-    	for (int i = 0; i<data.length;i++){
-    		shorts[i] = new UnsignedShort(data[i]);
-    	}
-    }
+	/**
+	 * Creates a new UnsignedShortArray object.
+	 * 
+	 * @param length
+	 *            of array
+	 */
+	public UnsignedShortArray_HEX(int length) {
+		super(length);
+	}
 
-    /**
-         * first 16 bits of LLRPBitlist must indicate number of entries that follow
-         * @param bits  to be decoded
-         */
-    public UnsignedShortArray_HEX(LLRPBitList bits) {
-        super(bits);
-    }
-  
+	public UnsignedShortArray_HEX(short[] data) {
+		this.shorts = new UnsignedShort[data.length];
+		for (int i = 0; i < data.length; i++) {
+			shorts[i] = new UnsignedShort(data[i]);
+		}
+	}
 
-    /**
-         * Creates a new UnsignedShortArray_HEX object.
-         */
-    public UnsignedShortArray_HEX() {
-        super();
-    }
-    
-    @Override
-    public Content encodeXML(String name, Namespace ns) {
-        StringBuffer sb = new StringBuffer();
-        for (UnsignedShort b : shorts) {
-        	if (b != null) {
-        		sb.append(" ");
-            	sb.append(Integer.toHexString(b.value)); 
-            } 
-        }
-        // remove initial " " in the string 
-        if (sb.length()>0 && sb.toString().startsWith(" ")){
-        sb.deleteCharAt(0);
-        }
+	/**
+	 * first 16 bits of LLRPBitlist must indicate number of entries that follow
+	 * 
+	 * @param bits
+	 *            to be decoded
+	 */
+	public UnsignedShortArray_HEX(LLRPBitList bits) {
+		super(bits);
+	}
 
-        Element element = new Element(name, ns);
-        element.setContent(new Text(sb.toString()));
+	/**
+	 * Creates a new UnsignedShortArray_HEX object.
+	 */
+	public UnsignedShortArray_HEX() {
+		super();
+	}
 
-        return element;
-    }
+	@Override
+	public Content encodeXML(String name, Namespace ns) {
+		StringBuffer sb = new StringBuffer();
+		for (UnsignedShort b : shorts) {
+			if (b != null) {
+				sb.append(" ");
+				sb.append(b.toString(16));
+			}
+		}
+		// remove initial " " in the string
+		if (sb.length() > 0 && sb.toString().startsWith(" ")) {
+			sb.deleteCharAt(0);
+		}
 
+		Element element = new Element(name, ns);
+		element.setContent(new Text(sb.toString()));
 
-    
-    @Override
-    public void decodeXML(Element element) {
-        String text = element.getText();
-        String[] strings = text.split(" ");
-        shorts = new UnsignedShort[strings.length];
+		return element;
+	}
 
-        for (int i = 0; i < strings.length; i++) {
-            shorts[i] = new UnsignedShort(Integer.parseInt(strings[i],16));
-        }
-    }
-    
-    public String toString(){
-    	return toString(16);
-    }
+	@Override
+	public void decodeXML(Element element) {
+		String text = element.getText();
+		String[] strings = text.split(" ");
+		shorts = new UnsignedShort[strings.length];
+
+		for (int i = 0; i < strings.length; i++) {
+			if (!strings[i].equals("")) {
+				shorts[i] = new UnsignedShort(Integer.parseInt(strings[i], 16));
+			} 
+		}
+	}
+
+	public String toString() {
+		return toString(16);
+	}
 }
