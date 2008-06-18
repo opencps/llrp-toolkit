@@ -43,7 +43,7 @@ package org.llrp.ltk.generated.custom.parameters;
 #set($resName = "reserved")
 #set($resType = "BitList")
 #set($typeNum = ".TYPENUM")
-#set($subtypeNr = ".subtype")
+#set($subtypeNr = ".parameterSubtype")
 #set($add = ".add")
 #set($emptyBrack = "()")
 #set($getClassName = ".getClass().getSimpleName()")
@@ -243,9 +243,6 @@ public class $custom.getName() extends Custom $interfaces{
 
 
 
-
-##subtype is always needed
-	public static final UnsignedInteger subtype = new UnsignedInteger($custom.getSubtype());
 ##need always a logging
 	private static final Logger LOGGER = Logger.getLogger("$custom.getName()");
 
@@ -305,7 +302,10 @@ $utility.clearNumberOfReserved()
  * empty constructor to create new parameter.
  */
 	public $custom.getName()(){
+	
+## vendorIdentifier and parameterSubtype do get encoded by default	
 		vendorIdentifier = new UnsignedInteger($vendorID);
+		parameterSubtype = new UnsignedInteger($custom.getSubtype());
 	}
 
 /**
@@ -323,6 +323,8 @@ $utility.clearNumberOfReserved()
  * @param xml element to be decoded
  */
 	public $custom.getName()(Element element)  throws InvalidLLRPMessageException {
+	    vendorIdentifier = new UnsignedInteger($vendorID);
+	    parameterSubtype = new UnsignedInteger($custom.getSubtype());
 		decodeXML(element);
 	}
 	
