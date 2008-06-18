@@ -14,7 +14,7 @@ import org.jdom.JDOMException;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 import org.llrp.ltk.exceptions.InvalidLLRPMessageException;
-import org.llrp.ltk.generated.messages.LLRPMessageFactory;
+import org.llrp.ltk.generated.LLRPMessageFactory;
 import org.llrp.ltk.types.LLRPBitList;
 import org.llrp.ltk.types.LLRPMessage;
 

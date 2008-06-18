@@ -24,7 +24,7 @@ import org.apache.mina.common.IoBuffer;
 import org.apache.mina.common.IoSession;
 import org.apache.mina.filter.codec.CumulativeProtocolDecoder;
 import org.apache.mina.filter.codec.ProtocolDecoderOutput;
-import org.llrp.ltk.generated.messages.LLRPMessageFactory;
+import org.llrp.ltk.generated.LLRPMessageFactory;
 import org.llrp.ltk.types.LLRPMessage;
 
 public class LLRPBinaryDecoder extends CumulativeProtocolDecoder {
