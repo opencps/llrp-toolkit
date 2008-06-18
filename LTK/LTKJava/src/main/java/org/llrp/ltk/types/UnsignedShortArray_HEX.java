@@ -55,7 +55,9 @@ public class UnsignedShortArray_HEX extends UnsignedShortArray {
             } 
         }
         // remove initial " " in the string 
+        if (sb.length()>0 && sb.toString().startsWith(" ")){
         sb.deleteCharAt(0);
+        }
 
         Element element = new Element(name, ns);
         element.setContent(new Text(sb.toString()));
