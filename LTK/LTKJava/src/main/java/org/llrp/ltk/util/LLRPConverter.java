@@ -62,7 +62,7 @@ public class LLRPConverter {
 
 	LLRPMessage message;
 
-	static final Logger LOGGER = Logger.getLogger("LLRPMessageFactoryTest.class");
+	static final Logger LOGGER = Logger.getLogger("LLRPConverter.class");
 
 	public LLRPConverter(){
 		super();
