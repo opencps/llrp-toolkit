@@ -42,6 +42,13 @@ public abstract class LLRPParameter {
     public abstract SignedShort getTypeNum();
 
     /**
+	 * name of parameter (same as class name)
+	 * 
+	 * @return String
+	 */
+	public abstract String getName();
+    
+    /**
      * create objects from binary.
      *
      * @param list - created by calling encodeBinary()
