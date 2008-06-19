@@ -23,7 +23,7 @@
  * 
  * Author:          Impinj
  * Organization:    Impinj
- * Date:            18 Jan, 2008
+ * Date:            18 June, 2008
  * 
  * Description:     This file contains implementation of TCPIP communication
  *                  classes including client and server
@@ -299,6 +299,9 @@ namespace LLRP
         public override void Close()
         {
             trying_to_close = true;
+
+            ManualResetEvent waitEvt = new ManualResetEvent(false);
+            waitEvt.WaitOne(100, false);  //Wait for 100 milisecond for stopping read data from NetworkStream
 
             if (ns!=null)ns.Close();
             if (tcp_client != null)tcp_client.Close();
