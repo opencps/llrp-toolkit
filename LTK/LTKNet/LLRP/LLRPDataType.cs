@@ -24,7 +24,7 @@
  * 
  * Author:          Impinj
  * Organization:    Impinj
- * Date:            September, 2007
+ * Date:            18 June, 2008
  * 
  * Description:     This file contains supporting data types for encoding/
  *                  decoding LLRP messages/parameters          
