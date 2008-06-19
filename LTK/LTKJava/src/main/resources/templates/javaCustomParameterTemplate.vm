@@ -376,7 +376,7 @@ $utility.clearNumberOfReserved()
 		## check if it is a list 	
 		#if ($field.getRepeat()==$mustListRepeat  || $field.getRepeat()== $optionalListRepeat)
 			if ($curName$list== null){
-				LOGGER.warn(" $curName$list not set");
+				LOGGER.info(" $curName$list not set");
 			} 
 			for ($field.Type field : $curName$list){
 				resultBits.append(field$encode);
@@ -384,7 +384,7 @@ $utility.clearNumberOfReserved()
 		#elseif ($field.getRepeat()==$optionalRepeat)
 			if ($curName != null){
 				// optional parameter, may be null
-				LOGGER.warn(" $curName not set");
+				LOGGER.info(" $curName not set");
 				resultBits.append($curName$encode);
 			} 
 		#else
