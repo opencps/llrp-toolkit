@@ -222,14 +222,14 @@ public abstract class LLRPMessage {
 	/**
 	 * response message type awaited
 	 * 
-	 * @return SignedShort
+	 * @return String
 	 */
 	public abstract String getResponseType();
 
 	/**
 	 * name of message (same as class name)
 	 * 
-	 * @return SignedShort
+	 * @return String
 	 */
 	public abstract String getName();
 
