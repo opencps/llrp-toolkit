@@ -1344,12 +1344,20 @@ $utility.clearNumberOfReserved()
 #end
 
 	/**
-	* return uniuque type number.
-	* @return SignedShort holding unique type number
-	*/
+    * {@inheritDoc}
+    */
 	public SignedShort getTypeNum() {
 		return TYPENUM;
 	}
+	
+	/**
+    * {@inheritDoc}
+    */
+	public String getName() {
+		return "$parameter.Name";
+	
+	}
+	
 	
 		/**
 	* return string representation. All field values but no parameters are included

@@ -1275,5 +1275,14 @@ $utility.clearNumberOfReserved()
 	}
 #end
 	
+	/**
+    * {@inheritDoc}
+    */
+	public String getName() {
+		return "$parameter.Name";
+	
+	}
+	
+	
 ## end of Class	
 }
