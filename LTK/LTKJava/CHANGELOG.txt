@@ -1,5 +1,11 @@
 Changes with LTKJava 0.1.1 Snapshot (latest in version control)
 
+* added getName method to all LLRP and custom parameters
+[Christian Floerkemeier]
+
+* changed log level when optional parameters are not used at binary encoding (was WARN is now INFO)
+[Christian Floerkemeier]
+
 * LTKJava now throws an InvalidLLRPMessageException when a LTK-XML message which can be validated against LLRP.xsd (due to the xsd:other) but which uses an extension that has not been defined in the corresponding ExtensionDef.xml
 [Basil Gasser]
 
