@@ -221,7 +221,7 @@ public class CodeGenerator {
 			Template template = Velocity.getTemplate(properties
 					.getString("messageFactoryTemplate"));
 			BufferedWriter writer = new BufferedWriter(new FileWriter(
-					properties.getString("generatedMessagePackage")
+					properties.getString("generatedBase")
 							+ "LLRPMessageFactory"
 							+ properties.getString("fileEnding")));
 			template.merge(context, writer);
