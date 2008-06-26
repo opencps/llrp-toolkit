@@ -298,6 +298,14 @@ public class $className extends $superType implements LLRPEnumeration{
 			}
 			return s.replaceFirst(" ", "");
 		}
+		
+				/**
+			* There is no reasonable representation as int
+			* return 0
+		 */	
+	public int intValue() {
+		return 0;
+	}
 	#else
 		/**
 			* {@inheritDoc}
