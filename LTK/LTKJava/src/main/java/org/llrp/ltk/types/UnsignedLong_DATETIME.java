@@ -92,4 +92,8 @@ public class UnsignedLong_DATETIME extends UnsignedLong {
 
 		return element;
 	}
+	
+	public String toString(){
+		return encodeXML("foo", Namespace.getNamespace("foo")).getValue();
+	}
 }

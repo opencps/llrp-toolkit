@@ -35,42 +35,24 @@ public class BytesToEnd_HEX extends BytesToEnd {
 	public BytesToEnd_HEX(Element element) {
 		super(element);
 	}
-	
-    /**
-     * @param binary String in Hexadecimal format
-     */
-    public BytesToEnd_HEX(String hexString) {
-    	Element element = new Element("foo","ns");
-    	element.setText(hexString);
-        decodeXML(element);
-    }
+
+	/**
+	 * @param binary
+	 *            String in Hexadecimal format
+	 */
+	public BytesToEnd_HEX(String hexString) {
+		Element element = new Element("foo", "ns");
+		element.setText(hexString);
+		decodeXML(element);
+	}
 
 	@Override
-    public Content encodeXML(String name, Namespace ns) {
-        String s = "";
-        int i = 0;
-        for (LLRPInteger b : bytes) {
+	public Content encodeXML(String name, Namespace ns) {
+		Element element = new Element(name, ns);
+		element.setContent(new Text(toString()));
 
-        	if (b != null) {
-        		// a byte must always consitst of two hexadecimal digits. If
-				// integer is smaller than 16 and therefore only needs one hex
-				// digit,add 0
-                String t = Integer.toHexString(b.value);
-                if (t.length()<2){
-                	t="0"+t;
-                }
-                s+=t;
-            	i++;
-                
-            } 
-        }
-
-
-        Element element = new Element(name,ns);
-        element.setContent(new Text(s));
-
-        return element;
-    }
+		return element;
+	}
 
 	/**
 	 * @Override {@inheritDoc}
@@ -90,10 +72,26 @@ public class BytesToEnd_HEX extends BytesToEnd {
 			bytes.add(new LLRPInteger(hexInt));
 		}
 	}
-	
+
 	public String toString() {
-		return toString(16);
+		String s = "";
+		int i = 0;
+		for (LLRPInteger b : bytes) {
+
+			if (b != null) {
+				// a byte must always consitst of two hexadecimal digits. If
+				// integer is smaller than 16 and therefore only needs one hex
+				// digit,add 0
+				String t = Integer.toHexString(b.value);
+				if (t.length() < 2) {
+					t = "0" + t;
+				}
+				s += t;
+				i++;
+
+			}
+		}
+		return s;
 	}
-	
- 
+
 }

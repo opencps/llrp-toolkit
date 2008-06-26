@@ -209,19 +209,9 @@ public class UnsignedShortArray extends LLRPType {
 
 	@Override
 	public Content encodeXML(String name, Namespace ns) {
-		String s = "";
-
-		for (UnsignedShort b : shorts) {
-
-			if (b != null) {
-				s += " "+b.toInteger().toString();
-			}
-		}
-
-		s = s.replaceFirst(" ", "");
-
+		
 		Element element = new Element(name, ns);
-		element.setContent(new Text(s));
+		element.setContent(new Text(toString()));
 
 		return element;
 	}
@@ -264,6 +254,20 @@ public class UnsignedShortArray extends LLRPType {
 				s += " "+b.toString(radix);
 			}
 		}
+		return s;
+	}
+	
+	public String toString(){
+		String s = "";
+
+		for (UnsignedShort b : shorts) {
+
+			if (b != null) {
+				s += " "+b.toInteger().toString();
+			}
+		}
+
+		s = s.replaceFirst(" ", "");
 		return s;
 	}
 }

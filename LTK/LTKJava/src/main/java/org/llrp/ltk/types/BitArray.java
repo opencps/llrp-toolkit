@@ -185,17 +185,8 @@ public class BitArray extends LLRPType {
 
     @Override
     public Content encodeXML(String name, Namespace ns) {
-        String s = "";
-
-        for (Bit b : bits) {
-            s += b.toInteger().toString();
-        }
-
-        s = s.replaceFirst(" ", "");
-
         Element element = new Element(name, ns);
-        element.setText(s);
-
+        element.setText(toString());
         return element;
     }
 
@@ -218,7 +209,14 @@ public class BitArray extends LLRPType {
     }
     
 	public String toString() {
-		return toString(2);
+		 String s = "";
+
+	        for (Bit b : bits) {
+	            s += b.toInteger().toString();
+	        }
+
+	        s = s.replaceFirst(" ", "");
+	       return s;
 	}
 	
 	public String toString(int radix){

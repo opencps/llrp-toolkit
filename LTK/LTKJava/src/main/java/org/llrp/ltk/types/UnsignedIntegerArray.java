@@ -177,17 +177,9 @@ public class UnsignedIntegerArray extends LLRPType {
 
 	@Override
 	public Content encodeXML(String name, Namespace ns) {
-		String s = "";
-
-		for (UnsignedInteger b : integers) {
-			s += " ";
-			s += b.toLong();
-		}
-
-		s = s.replaceFirst(" ", "");
-
+		
 		Element element = new Element(name, ns);
-		element.setContent(new Text(s));
+		element.setContent(new Text(toString()));
 
 		return element;
 	}
@@ -218,5 +210,17 @@ public class UnsignedIntegerArray extends LLRPType {
 		}
 		return s;
 
+	}
+	
+	public String toString(){
+		String s = "";
+
+		for (UnsignedInteger b : integers) {
+			s += " ";
+			s += b.toLong();
+		}
+
+		s = s.replaceFirst(" ", "");
+		return s;
 	}
 }

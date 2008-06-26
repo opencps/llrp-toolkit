@@ -229,17 +229,10 @@ public class BitList extends LLRPType {
     }
     @Override
     public Content encodeXML(String name, Namespace ns) {
-        String s = "";
-
-        for (Bit b : bits) {
-            s += " ";
-            s += b.toInteger().toString();
-        }
-
-        s = s.replaceFirst(" ", "");
+       
 
         Element element = new Element(name, ns);
-        element.setContent(new Text(s));
+        element.setContent(new Text(toString()));
 
         return element;
     }
@@ -267,7 +260,15 @@ public class BitList extends LLRPType {
 
 
 	public String toString() {
-		return toString(2);
+		 String s = "";
+
+	        for (Bit b : bits) {
+	            s += " ";
+	            s += b.toInteger().toString();
+	        }
+
+	        s = s.replaceFirst(" ", "");
+	        return s;
 	}
 	
 	public String toString(int radix){

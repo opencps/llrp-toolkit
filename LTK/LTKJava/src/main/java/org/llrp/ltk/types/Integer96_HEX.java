@@ -46,14 +46,8 @@ public class Integer96_HEX extends UnsignedInteger96 {
     public Content encodeXML(String name, Namespace ns) {
         Element element = new Element(name, ns);
 
-        // need even number of digits
-        String s = value.toString(16);
-
-        if ((s.length() % 2) != 0) {
-            s = "0" + s;
-        }
-
-        element.setContent(new Text(s));
+      
+        element.setContent(new Text(toString()));
 
         return element;
     }
@@ -65,7 +59,13 @@ public class Integer96_HEX extends UnsignedInteger96 {
     
 	
 	public String toString() {
-		return toString(16);
+		  // need even number of digits
+        String s = value.toString(16);
+
+        if ((s.length() % 2) != 0) {
+            s = "0" + s;
+        }
+        return s;
 	}
 	
 

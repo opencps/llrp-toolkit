@@ -147,14 +147,10 @@ public class BytesToEnd extends LLRPType {
      * {@inheritDoc}
      */
     public Content encodeXML(String name, Namespace ns) {
-       String s = "";
-
-        for (LLRPInteger b : bytes) {
-            s += b.toString();
-        }
+      
 
         Element element = new Element(name,ns);
-        element.setContent(new Text(s));
+        element.setContent(new Text(toString()));
 
         return element;
     }
@@ -177,7 +173,12 @@ public class BytesToEnd extends LLRPType {
     
 	
 	public String toString() {
-		return toString(2);
+		 String s = "";
+
+	        for (LLRPInteger b : bytes) {
+	            s += b.toString();
+	        }
+	        return s;
 	}
 	
 	public String toString(int radix){

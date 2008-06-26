@@ -8,110 +8,115 @@ import org.jdom.Element;
 import org.jdom.Namespace;
 import org.jdom.Text;
 
-
 public class UnsignedByteArray_HEX extends UnsignedByteArray {
-    /**
-    * Creates a new UnsignedByteArray object.
-    *
-    * @param bytes to create UnsignedByteArray
-    */
-    public UnsignedByteArray_HEX(UnsignedByte[] bytes) {
-        super(bytes);
-    }
+	/**
+	 * Creates a new UnsignedByteArray object.
+	 * 
+	 * @param bytes
+	 *            to create UnsignedByteArray
+	 */
+	public UnsignedByteArray_HEX(UnsignedByte[] bytes) {
+		super(bytes);
+	}
 
-    /**
-     * Creates a new UnsignedByteArray object from jdom element - used for xml decoding
-     *
-     * @param element to be decoded
-     */
-    public UnsignedByteArray_HEX(Element element) {
-        super(element);
-    }
-    
-    /**
-     * @param binary String in Hexadecimal format
-     */
-    public UnsignedByteArray_HEX(String string) {
-    	Element element = new Element("foo","ns");
-    	element.setText(string);
-        decodeXML(element);
-    }
+	/**
+	 * Creates a new UnsignedByteArray object from jdom element - used for xml
+	 * decoding
+	 * 
+	 * @param element
+	 *            to be decoded
+	 */
+	public UnsignedByteArray_HEX(Element element) {
+		super(element);
+	}
 
-    /**
-         * all values initially set to 0
-         * @param length of array
-         */
-    public UnsignedByteArray_HEX(int length) {
-        super(length);
-    }
+	/**
+	 * @param binary
+	 *            String in Hexadecimal format
+	 */
+	public UnsignedByteArray_HEX(String string) {
+		Element element = new Element("foo", "ns");
+		element.setText(string);
+		decodeXML(element);
+	}
 
-    /**
-         * Creates a new UnsignedByteArray object.
-         */
-    public UnsignedByteArray_HEX() {
-        super();
-    }
+	/**
+	 * all values initially set to 0
+	 * 
+	 * @param length
+	 *            of array
+	 */
+	public UnsignedByteArray_HEX(int length) {
+		super(length);
+	}
 
-    /**
-         * create ByteArray from BitList. First 16 Bits must be length of ByteArray
-         * @param list to be decoded
-         */
-    public UnsignedByteArray_HEX(LLRPBitList list) {
-        super(list);
-    }
+	/**
+	 * Creates a new UnsignedByteArray object.
+	 */
+	public UnsignedByteArray_HEX() {
+		super();
+	}
 
-    /**
-         * Creates a new UnsignedByteArray object.
-         *
-         * @param bytes to create UnsignedByteArray
-         */
-    public UnsignedByteArray_HEX(byte[] bytes) {
-        super(bytes);
-    }
-    
-    @Override
-    public Content encodeXML(String name, Namespace ns) {
-        String s = "";
-        int i = 0;
-        for (UnsignedByte b : bytes) {
-        	// U8v does not have spaces - this is a special case
-        	if (b != null) {
-                s += Integer.toHexString(b.value);
-            	i++;
-                
-            } 
-        }
+	/**
+	 * create ByteArray from BitList. First 16 Bits must be length of ByteArray
+	 * 
+	 * @param list
+	 *            to be decoded
+	 */
+	public UnsignedByteArray_HEX(LLRPBitList list) {
+		super(list);
+	}
 
-        s = s.replaceFirst(" ", "");
+	/**
+	 * Creates a new UnsignedByteArray object.
+	 * 
+	 * @param bytes
+	 *            to create UnsignedByteArray
+	 */
+	public UnsignedByteArray_HEX(byte[] bytes) {
+		super(bytes);
+	}
 
-        Element element = new Element(name, ns);
-        element.setContent(new Text(s));
+	@Override
+	public Content encodeXML(String name, Namespace ns) {
 
-        return element;
-    }
-    
-    
-    
-    /**
-     * @Override
-     * {@inheritDoc}
-     */
-    public void decodeXML(Element element) {
-        String byteString = element.getText();
-        LinkedList<UnsignedByte> tempList = new LinkedList<UnsignedByte>();
+		Element element = new Element(name, ns);
+		element.setContent(new Text(toString()));
 
-        int length = byteString.length();
+		return element;
+	}
 
-        for (int i = 0; i < length; i = i + UnsignedByte.length()) {
-        	String temp = byteString.substring(i,UnsignedByte.length());
-        	Integer ti = Integer.decode("0x"+temp);
-        	tempList.add(new UnsignedByte(ti));
-        }
-        UnsignedByte[] bs = new UnsignedByte[length];
-        bytes = tempList.toArray(bs);
-    }
-    
-    public String toString(){
-    	return toString(16);
-    }
+	/**
+	 * @Override {@inheritDoc}
+	 */
+	public void decodeXML(Element element) {
+		String byteString = element.getText();
+		LinkedList<UnsignedByte> tempList = new LinkedList<UnsignedByte>();
+
+		int length = byteString.length();
+
+		for (int i = 0; i < length; i = i + UnsignedByte.length()) {
+			String temp = byteString.substring(i, UnsignedByte.length());
+			Integer ti = Integer.decode("0x" + temp);
+			tempList.add(new UnsignedByte(ti));
+		}
+		UnsignedByte[] bs = new UnsignedByte[length];
+		bytes = tempList.toArray(bs);
+	}
+
+	public String toString() {
+		String s = "";
+		int i = 0;
+		for (UnsignedByte b : bytes) {
+			// U8v does not have spaces - this is a special case
+			if (b != null) {
+				s += Integer.toHexString(b.value);
+				i++;
+
+			}
+		}
+
+		s = s.replaceFirst(" ", "");
+		return s;
+	}
 }

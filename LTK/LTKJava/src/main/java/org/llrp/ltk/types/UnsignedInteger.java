@@ -173,4 +173,8 @@ public class UnsignedInteger extends LLRPNumberType {
     public String toString(int radix) {
         return value.toString(radix);
     }
+    
+    public String toString(){
+    	return value.toString();
+    }
 }

@@ -174,10 +174,9 @@ public class TwoBitField extends LLRPType {
     @Override
     public Content encodeXML(String name, Namespace ns) {
         
-    	Integer s = bits[0].toInteger() + (bits[1].toInteger() * 2);
-
+    	
         Element element = new Element(name, ns);
-        element.setContent(new Text(s.toString()));
+        element.setContent(new Text(toString()));
 
         return element;
     }
@@ -210,7 +209,9 @@ public class TwoBitField extends LLRPType {
     }
     
     public String toString() {
-        return Integer.toString(intValue());
+    	Integer s = bits[0].toInteger() + (bits[1].toInteger() * 2);
+    	return s.toString();
+
     }
     
     public String toString(int radix){

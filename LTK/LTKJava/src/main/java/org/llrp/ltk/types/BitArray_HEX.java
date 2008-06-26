@@ -78,27 +78,7 @@ public class BitArray_HEX extends BitArray {
 	@Override
 	public Content encodeXML(String name, Namespace ns) {
 		Element element = new Element(name, ns);
-		// xs:hexBinary only lets you define a number of bits evenly divisible
-		// by 8
-		// if you don't have a number of bits evenly divisible by 8, then put a
-		// Count attribute to indicate the actual total number of bits you are
-		// attempting to represent.
-		String bitString = "";
-		for (int i=0;i<bits.length;i++){
-			bitString += bits[i];
-		}
-		int mod = bitString.length() % 8;
-		if (mod != 0) {
-			element.setAttribute("Count", new Integer(bitString.length()).toString());
-			//add zeros to front
-			for (int a = 0;a<8-mod;a++){
-				bitString = "0"+bitString;
-			}
-		}
-		String result = "";
-		for (int i=0;i<bitString.length();i=i+4){
-			result += Integer.toHexString(Integer.parseInt(bitString.substring(i, i+4), 2));
-		}
+		
 		element.setContent(new Text(result));
 
 		return element;
@@ -139,5 +119,9 @@ public class BitArray_HEX extends BitArray {
 		List<Bit> shortenedList = tempList.subList(tempList.size()-count, tempList.size());
 		Bit[] bs = new Bit[shortenedList.size()];
 		bits = shortenedList.toArray(bs);
+	}
+	
+	public String toString(){
+		return encodeXML("foo", Namespace.getNamespace("foo")).getValue();
 	}
 }
