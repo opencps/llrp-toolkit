@@ -29,6 +29,15 @@ public class UnsignedShortArray_HEX extends UnsignedShortArray {
 		}
 	}
 
+    /**
+     * @param String
+     */
+    public UnsignedShortArray_HEX(String string) {
+    	Element element = new Element("foo","ns");
+    	element.setText(string);
+        decodeXML(element);
+    }
+    
 	/**
 	 * first 16 bits of LLRPBitlist must indicate number of entries that follow
 	 * 

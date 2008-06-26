@@ -41,6 +41,15 @@ public class BytesToEnd extends LLRPType {
     }
 
     /**
+     * @param binary String in Hexadecimal format
+     */
+    public BytesToEnd(String hexString) {
+    	Element element = new Element("foo","ns");
+    	element.setText(hexString);
+        decodeXML(element);
+    }
+    
+    /**
          * basically an endless array of bytes.
          * @param bits Integererpredet as block of bytes
          */

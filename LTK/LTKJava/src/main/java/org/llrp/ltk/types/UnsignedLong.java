@@ -63,6 +63,13 @@ public class UnsignedLong extends LLRPNumberType {
         this(new BigInteger(valueString, radix).longValue());
     }
 
+
+    /**
+     * @param String radix 10
+     */
+    public UnsignedLong(String string) {
+    	this(string,10);
+    }
     /**
          * Creates a new UnsignedLong object.
          *

@@ -35,6 +35,15 @@ public class BytesToEnd_HEX extends BytesToEnd {
 	public BytesToEnd_HEX(Element element) {
 		super(element);
 	}
+	
+    /**
+     * @param binary String in Hexadecimal format
+     */
+    public BytesToEnd_HEX(String hexString) {
+    	Element element = new Element("foo","ns");
+    	element.setText(hexString);
+        decodeXML(element);
+    }
 
 	@Override
     public Content encodeXML(String name, Namespace ns) {

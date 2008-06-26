@@ -94,6 +94,14 @@ public class SignedShort extends LLRPNumberType {
     }
 
     /**
+     * String representation in radix 10.
+     *
+     */
+    public SignedShort(String valueString) {
+        this(valueString,10);
+    }
+    
+    /**
      * decode from binary
      *
      * @param bitList to be decoded

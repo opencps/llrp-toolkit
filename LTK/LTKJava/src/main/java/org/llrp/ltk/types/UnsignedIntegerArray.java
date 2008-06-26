@@ -69,6 +69,15 @@ public class UnsignedIntegerArray extends LLRPType {
 		decodeBinary(bits);
 	}
 
+    /**
+     * @param String
+     */
+    public UnsignedIntegerArray(String string) {
+    	Element element = new Element("foo","ns");
+    	element.setText(string);
+        decodeXML(element);
+    }
+	
 	/**
 	 * Creates an empty UnsignedIntegerArray. Do not call methood 'set' on an
 	 * empty array. Add UnsignedInteger by calling the add method

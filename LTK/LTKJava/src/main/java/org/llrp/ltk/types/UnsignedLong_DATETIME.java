@@ -25,6 +25,18 @@ public class UnsignedLong_DATETIME extends UnsignedLong {
 	public UnsignedLong_DATETIME() {
 		this.value = BigInteger.ZERO;
 	}
+	
+
+    /**
+     * @param String
+     */
+    public UnsignedLong_DATETIME(String string) {
+    	Element element = new Element("foo","ns");
+    	element.setText(string);
+        decodeXML(element);
+    }
+    
+    
 
 	/**
 	 * Creates a new UnsignedLong_DATETIME object from jdom element - used for

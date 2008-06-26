@@ -53,7 +53,7 @@ public class Bit extends LLRPNumberType {
 	}
 
 	/**
-	 * create a bit.
+	 * create a 7bit.
 	 * 
 	 * @param x
 	 */

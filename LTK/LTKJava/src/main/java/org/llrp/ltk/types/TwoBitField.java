@@ -55,6 +55,15 @@ public class TwoBitField extends LLRPType {
     }
 
     /**
+     * @param String
+     */
+    public TwoBitField(String string) {
+    	Element element = new Element("foo","ns");
+    	element.setText(string);
+        decodeXML(element);
+    }
+    
+    /**
          * Creates a new TwoBitField object.
          */
     public TwoBitField() {

@@ -60,5 +60,9 @@ public interface LLRPEnumeration {
      * @param value to be set
      */
      public void set(final int value);
+     
+     public String toString();
+     
+     public int intValue();
 
 }

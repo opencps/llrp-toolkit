@@ -62,6 +62,13 @@ public class SignedInteger extends LLRPNumberType {
     public SignedInteger(LLRPBitList bitList) {
         decodeBinary(bitList);
     }
+    /**
+     * String representation in radix 10.
+     *
+     */
+    public SignedInteger(String valueString) {
+        this(valueString,10);
+    }
     
     /**
      * String representation in specified radix.

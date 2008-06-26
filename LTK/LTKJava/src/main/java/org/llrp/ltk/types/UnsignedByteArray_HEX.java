@@ -27,6 +27,15 @@ public class UnsignedByteArray_HEX extends UnsignedByteArray {
     public UnsignedByteArray_HEX(Element element) {
         super(element);
     }
+    
+    /**
+     * @param binary String in Hexadecimal format
+     */
+    public UnsignedByteArray_HEX(String string) {
+    	Element element = new Element("foo","ns");
+    	element.setText(string);
+        decodeXML(element);
+    }
 
     /**
          * all values initially set to 0
