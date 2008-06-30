@@ -38,6 +38,19 @@ public class UnsignedShortArray extends LLRPType {
 		this.shorts = shorts.clone();
 	}
 
+	/**
+	 * Creates a new UnsignedShortArray object.
+	 * 
+	 * @param string of shorts
+	 */
+	public UnsignedShortArray(String shortString) {
+		String[] strings = shortString.split(" ");
+		shorts = new UnsignedShort[strings.length];
+
+		for (int i = 0; i < strings.length; i++) {
+			shorts[i] = new UnsignedShort(strings[i]);
+		}
+	}
 	  
     public UnsignedShortArray(short[] data){
     	this.shorts = new UnsignedShort[data.length];
