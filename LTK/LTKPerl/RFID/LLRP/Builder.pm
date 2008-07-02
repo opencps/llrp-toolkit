@@ -688,7 +688,7 @@ sub format_text {
 		return uc(join ($sep, (map (sprintf ($fmt, $_), @$values))));
 	} elsif ($format eq 'decimal') {
 		if ($bits != 64) {
-			return join (' ', (map (sprintf ("%d", $_), @$values)));
+			return join (' ', (map (sprintf (($desc->{Signed} ? "%d" : "%u"), $_), @$values)));
 		} else {
 			return sprintf ("%.0f", $values->[0] * (2.0**32) + $values->[1]);
 		}
@@ -704,7 +704,7 @@ sub format_text {
 		my $usecs = (($values->[0] * 1.0) * (2.0**32) + ($values->[1] * 1.0));
 		my $dtime = $usecs / 1000000.0;
 		my $decimal = sprintf ("%020.0f", $usecs);
-		return time2str ("%Y:%m:%dT%T", $dtime, 'utc') .
+		return time2str ("%Y-%m-%dT%T", $dtime, 'utc') .
 			'.' . substr ($decimal, -6, 6);
 	} else {
 		die "Unknown format descriptor $format";
