@@ -211,7 +211,12 @@ sub gen_format_leaf {
 		my $byte_str = "";
 		my %decode_xml = (
 			'Hex'		=> sub { return hex (shift); },
-			'Datetime'	=> sub { return str2time ((shift), 'utc') * 1000000.0 },
+			'Datetime'	=> sub { 
+				my $dt = shift;
+				if (is_numeric ($dt)) {
+					return $dt + 0.0;
+				}
+				return str2time ($dt, 'utc') * 1000000.0 },
 			'Boolean'	=> sub { 
 				return ((shift) =~ /^\s*(true|yes|1)\s*$/i)
 			},
