@@ -95,8 +95,8 @@ public class UnsignedByteArray_HEX extends UnsignedByteArray {
 
 		int length = byteString.length();
 
-		for (int i = 0; i < length; i = i + UnsignedByte.length()) {
-			String temp = byteString.substring(i, UnsignedByte.length());
+		for (int i = 0; i < length; i = i + 2) {
+			String temp = byteString.substring(i, i+2);
 			Integer ti = Integer.decode("0x" + temp);
 			tempList.add(new UnsignedByte(ti));
 		}
@@ -110,7 +110,12 @@ public class UnsignedByteArray_HEX extends UnsignedByteArray {
 		for (UnsignedByte b : bytes) {
 			// U8v does not have spaces - this is a special case
 			if (b != null) {
-				s += Integer.toHexString(b.value);
+				String t = Integer.toHexString(b.value);
+				if (t.length()==1){
+					t = "0"+t;
+				}
+				s += t;
+				
 				i++;
 
 			}

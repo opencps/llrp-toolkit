@@ -249,14 +249,7 @@ public class BitList extends LLRPType {
     }
 
     public Integer toInteger() {
-    	
-    	String s = "";
-
-        for (Bit b : bits) {
-            s += Integer.toString(b.toInteger(),2);
-        }
-        
-        return Integer.parseInt(s, 2);
+        return Integer.parseInt(toString(), 2);
     }
     
     public int intValue(){
@@ -270,7 +263,6 @@ public class BitList extends LLRPType {
 		 String s = "";
 
 	        for (Bit b : bits) {
-	            s += " ";
 	            s += b.toInteger().toString();
 	        }
 
