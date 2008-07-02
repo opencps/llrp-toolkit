@@ -1,0 +1,85 @@
+#!/usr/bin/env perl
+# vim60:fdm=marker:
+
+#############################################################################
+#                                                                           #
+#  Copyright 2008 Impinj, Inc.                                              #
+#                                                                           #
+#  Licensed under the Apache License, Version 2.0 (the "License");          #
+#  you may not use this file except in compliance with the License.         #
+#  You may obtain a copy of the License at                                  #
+#                                                                           #
+#      http://www.apache.org/licenses/LICENSE-2.0                           #
+#                                                                           #
+#  Unless required by applicable law or agreed to in writing, software      #
+#  distributed under the License is distributed on an "AS IS" BASIS,        #
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. #
+#  See the License for the specific language governing permissions and      #
+#  limitations under the License.                                           #
+#                                                                           #
+#                                                                           #
+#############################################################################
+# $$
+#
+# This is a simple example of using of the Perl-LLRP Builder.pm
+#
+# Generate Perl "POD" documentation using the pod generator of your choice
+#
+#############################################################################
+
+use lib "..";
+
+
+use XML::LibXML;
+use XML::LibXML::Reader;
+
+use RFID::LLRP::Builder qw(encode_message decode_message);
+
+use RFID::LLRP::Helper qw(are_identical);
+
+use diagnostics;
+
+sub xml2llrp {
+
+	my $xml_reader = XML::LibXML::Reader->new(IO => STDIN);
+
+	# read the root node
+	$xml_reader->nextElement() == 1 || die "Failed to read root node.";
+
+	# move on to the first LTK-XML subdoc
+	$xml_reader->nextElement();
+	while (1) {
+
+		# read full subdoc, encode and dump bin to STDOUT
+		my $root_elem = $xml_reader->copyCurrentNode(1);
+		my $doc = XML::LibXML::Document->new();
+		$doc->setDocumentElement ($root_elem);
+
+		my $encoded_message;
+		eval {
+			$encoded_message = encode_message ($doc);
+		};
+		if ($@) {
+			$encoded_message = encode_message (
+"<ERROR_MESSAGE MessageID=\"0\" Version=\"0\">
+  <LLRPStatus>
+    <StatusCode>M_Success</StatusCode>
+    <ErrorDescription>$@</ErrorDescription>
+  </LLRPStatus>
+</ERROR_MESSAGE>"
+);
+			
+		}
+
+		print $encoded_message;
+
+		#my $decoded_message = decode_message ($encoded_message);
+		#print $decoded_message->toString(1);
+
+		# quit unless there's a Sibling document to progress to
+		last unless $xml_reader->nextSiblingElement() == 1;
+	}
+
+}
+
+xml2llrp;
