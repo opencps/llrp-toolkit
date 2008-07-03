@@ -168,7 +168,14 @@ namespace LLRP.DataType
                 byte[] bD = Util.ConvertBitArrayToByteArray(data.ToArray());
 
                 string s = string.Empty;
-                for (int i = 0; i < bD.Length; i++) s += Convert.ToInt16(bD[i]).ToString() + " ";
+                for (int i = 0; i < bD.Length; i++)
+                {
+                    if (i > 0)
+                    {
+                        s += " ";
+                    }
+                    s += Convert.ToInt16(bD[i]).ToString();
+                }
 
                 return s;
             }
@@ -315,7 +322,14 @@ namespace LLRP.DataType
                 byte[] bD = data.ToArray();
 
                 string s = string.Empty;
-                for (int i = 0; i < bD.Length; i++) s += Convert.ToInt16(bD[i]).ToString() + " ";
+                for (int i = 0; i < bD.Length; i++)
+                {
+                    if (i > 0)
+                    {
+                        s += " ";
+                    }
+                    s += Convert.ToInt16(bD[i]).ToString();
+                }
 
                 return s;
             }
@@ -368,10 +382,15 @@ namespace LLRP.DataType
 
             for (int i = 0; i < data.Count; i++)
             {
+                if (i > 0)
+                {
+                    s += " ";
+                }
+
                 UInt16 hD = (UInt16)(data[i] >> 8);
                 UInt16 lD = (UInt16)(data[i] & 0x00FF);
 
-                s += hD.ToString("X2") + lD.ToString("X2") + " ";
+                s += hD.ToString("X2") + lD.ToString("X2");
             }
 
             return s;
@@ -387,10 +406,15 @@ namespace LLRP.DataType
 
             for (int i = 0; i < data.Count; i++)
             {
+                if (i > 0)
+                {
+                    s += " ";
+                }
+
                 UInt16 hD = (UInt16)(data[i] >> 8);
                 UInt16 lD = (UInt16)(data[i] & 0x00FF);
 
-                s += hD.ToString("X2") + lD.ToString("X2")+" ";
+                s += hD.ToString("X2") + lD.ToString("X2");
             }
 
             return s;
@@ -407,7 +431,14 @@ namespace LLRP.DataType
                 UInt16[] bD = data.ToArray();
 
                 string s = string.Empty;
-                for (int i = 0; i < bD.Length; i++) s += Convert.ToUInt16(bD[i]).ToString() + " ";
+                for (int i = 0; i < bD.Length; i++)
+                {
+                    if (i > 0)
+                    {
+                        s += " ";
+                    }
+                    s += Convert.ToUInt16(bD[i]).ToString();
+                }
 
                 return s;
             }
@@ -534,7 +565,14 @@ namespace LLRP.DataType
                 UInt32[] bD = data.ToArray();
 
                 string s = string.Empty;
-                for (int i = 0; i < bD.Length; i++) s += Convert.ToUInt32(bD[i]).ToString()+ " ";
+                for (int i = 0; i < bD.Length; i++)
+                {
+                    if (i > 0)
+                    {
+                        s += " ";
+                    }
+                    s += Convert.ToUInt32(bD[i]).ToString();
+                }
 
                 return s;
             }
