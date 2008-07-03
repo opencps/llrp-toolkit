@@ -50,6 +50,15 @@ Changes with LTKJava 0.1.1 Snapshot (latest in version control)
 * Refactored org.llrp.ltk.util.LLRPConverter.java and org.llrp.ltk.util.Util.java
 [Christian Floerkemeier]
 
+* Fixed Bug in decodeXML in UnsignedByteArray_HEX 
+[Basil Gasser]
+
+* removed String delimiter in String representation of BitList
+[Basil Gasser]
+
+* refactored XML encoding of LLRP types
+[Basil Gasser]
+
 
 
 
