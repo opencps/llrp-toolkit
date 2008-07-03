@@ -41,13 +41,20 @@ use diagnostics;
 
 sub xml2llrp {
 
-	my $xml_reader = XML::LibXML::Reader->new(IO => STDIN);
+	my $xml_reader;
+
+	if (@ARGV) {
+		$xml_reader = XML::LibXML::Reader->new (location => $ARGV[0]);
+	} else {
+		$xml_reader = XML::LibXML::Reader->new(IO => STDIN);
+	}
 
 	# read the root node
 	$xml_reader->nextElement() == 1 || die "Failed to read root node.";
 
 	# move on to the first LTK-XML subdoc
 	$xml_reader->nextElement();
+
 	while (1) {
 
 		# read full subdoc, encode and dump bin to STDOUT
@@ -61,13 +68,13 @@ sub xml2llrp {
 		};
 		if ($@) {
 			$encoded_message = encode_message (
-"<ERROR_MESSAGE MessageID=\"0\" Version=\"0\">
-  <LLRPStatus>
-    <StatusCode>M_Success</StatusCode>
-    <ErrorDescription>$@</ErrorDescription>
-  </LLRPStatus>
-</ERROR_MESSAGE>"
-);
+			  "<ERROR_MESSAGE MessageID=\"0\" Version=\"0\">
+			     <LLRPStatus>
+			       <StatusCode>M_Success</StatusCode>
+			       <ErrorDescription>$@</ErrorDescription>
+			     </LLRPStatus>
+			   </ERROR_MESSAGE>"
+			);
 			
 		}
 
