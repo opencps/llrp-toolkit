@@ -900,7 +900,8 @@ namespace LLRP.DataType
                             case "Hex":
                                 return Convert.ToString((long)(ulong)val, 16);
                             case "Datetime":
-                                return ConvertMicrosecondsToUTCTime((ulong)val).ToString();
+                                return ConvertMicrosecondsToUTCTime((ulong)val).ToString("s") + "." +
+                                    String.Format ("{0:000000}", ((UInt64) val) % 1000000);
                             case "Dec":
                             default:
                               return ((UInt64)val).ToString();
@@ -1108,6 +1109,19 @@ namespace LLRP.DataType
 
             return new DateTime(ticks_utc, DateTimeKind.Utc);
         }
+
+        public static String Indent(String to_indent)
+        {
+            char[] sep = { '\x0a' };
+            String ts = to_indent.Replace("\x0d", "");
+            String[] sa = ts.Split(sep, StringSplitOptions.RemoveEmptyEntries);
+            String result = "";
+            foreach (var line in sa)
+            {
+                result += "  " + line + "\r\n";
+            }
+            return result;
+        }
     }
 
     /// <summary>
@@ -1187,5 +1201,6 @@ namespace LLRP.DataType
             }
             return string.Empty;
         }
+
     }
 }
