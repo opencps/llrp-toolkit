@@ -240,11 +240,10 @@ public class BitList extends LLRPType {
     @Override
     public void decodeXML(Element element) {
         String text = element.getText();
-        String[] bitStrings = text.split(" ");
-        bits = new Bit[bitStrings.length];
+        bits = new Bit[text.length()];
 
         for (int i = 0; i < bits.length; i++) {
-            bits[i] = new Bit(bitStrings[i]);
+            bits[i] = new Bit(text.charAt(i));
         }
     }
 
