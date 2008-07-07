@@ -40,6 +40,9 @@ public class UnsignedByte extends LLRPNumberType {
     public UnsignedByte(int value) {
         this.value = value;
         signed = false;
+        if (!inRange(value)){
+			throw new IllegalArgumentException("value "+value+" not in range");
+		}
     }
 
     /**
@@ -59,6 +62,9 @@ public class UnsignedByte extends LLRPNumberType {
      */
     public UnsignedByte(String valueString) {
         this(new Byte(valueString));
+        if (!inRange(valueString)){
+			throw new IllegalArgumentException("value "+valueString+" not in range");
+		}
     }
 
     /**
@@ -149,4 +155,13 @@ public class UnsignedByte extends LLRPNumberType {
     public String toString(){
     	return toString(2);
     }
+    
+    @Override
+	public boolean inRange(long value) {
+		return (value >= 0 && value <= 0xFF);
+	}
+    
+    public boolean inRange(String valueString){
+		return inRange(new BigInteger(valueString).longValue());
+	}
 }

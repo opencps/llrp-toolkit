@@ -78,6 +78,9 @@ public class UnsignedInteger96 extends LLRPNumberType {
      */
     public UnsignedInteger96(String string) {
         this(new BigInteger(string));
+        if (!inRange(string)){
+			throw new IllegalArgumentException("value "+string+" not in range");
+		}
     }
 
     /**
@@ -148,4 +151,20 @@ public class UnsignedInteger96 extends LLRPNumberType {
     public String toString(){
     	return value.toString();
     }
+    
+    @Override
+	public boolean inRange(long value) {
+    	// no upper check needed
+		return (value >= 0);
+	}
+    
+    @Override
+	public boolean inRange(String value) {
+    	// no upper check needed
+    	BigInteger v = new BigInteger(value);
+		boolean bigger = (v.compareTo(new BigInteger("2").pow(96)) == 1);
+		return (!bigger && Integer.parseInt(value) >= 0);
+	}
+    
+    
 }

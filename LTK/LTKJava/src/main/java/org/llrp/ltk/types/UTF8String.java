@@ -15,6 +15,8 @@
  */
 package org.llrp.ltk.types;
 
+import java.math.BigInteger;
+
 import org.jdom.Content;
 import org.jdom.Element;
 import org.jdom.IllegalDataException;
@@ -198,4 +200,9 @@ public class UTF8String extends LLRPType {
     public int hashCode() {
         return string.hashCode();
     }
+    
+    public boolean inRange(String valueString){
+    	// everyting allowed
+		return true;
+	}
 }

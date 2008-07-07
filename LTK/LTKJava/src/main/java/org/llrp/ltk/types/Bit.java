@@ -14,6 +14,8 @@
  */
 package org.llrp.ltk.types;
 
+import java.math.BigInteger;
+
 import org.jdom.Content;
 import org.jdom.Element;
 import org.jdom.Namespace;
@@ -43,6 +45,9 @@ public class Bit extends LLRPNumberType {
 	 *            everything but 0 is interpreted as 1
 	 */
 	public Bit(int x) {
+		if (!inRange(x)){
+			throw new IllegalArgumentException("value "+x+" not in range");
+		}
 		if (x != 0) {
 			value = 1;
 		} else {
@@ -77,6 +82,9 @@ public class Bit extends LLRPNumberType {
 	 *            everything but 0 is interpreted as 1
 	 */
 	public Bit(String x) {
+		if (!inRange(x)){
+			throw new IllegalArgumentException("value "+x+" not in range");
+		}
 		if (x.equalsIgnoreCase("0")) {
 			value = 0;
 		} else {
@@ -217,5 +225,14 @@ public class Bit extends LLRPNumberType {
 	
 	public String toString(int radix){
 		return toString();
+	}
+
+	@Override
+	public boolean inRange(long value) {
+		return (value >= 0 && value <= 1);
+	}
+	
+	public boolean inRange(String valueString){
+		return inRange(new BigInteger(valueString).longValue());
 	}
 }

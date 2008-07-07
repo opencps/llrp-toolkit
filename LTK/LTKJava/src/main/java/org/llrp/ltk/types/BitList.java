@@ -277,5 +277,20 @@ public class BitList extends LLRPType {
         }
         return s;
 	}
+	
+	/**
+	 * expects a string as formated for XML
+	 */
+	public boolean inRange(String valueString){
+		// try do create each element. If one failes, the whole string is illegal
+		for (int i = 0; i < valueString.length(); i++) {
+			try {
+				new Bit(valueString.charAt(i));
+			} catch (IllegalArgumentException e){
+				return false;
+			}
+		}
+		return true;
+	}
  
 }

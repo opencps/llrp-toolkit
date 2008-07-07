@@ -53,6 +53,9 @@ public class SignedInteger extends LLRPNumberType {
     
     public SignedInteger(int value) {
        this(new Integer(value));
+       if (!inRange(value)){
+			throw new IllegalArgumentException("value "+value+" not in range");
+		}
     }
     /**
          * Creates a new SignedInteger object.
@@ -68,6 +71,9 @@ public class SignedInteger extends LLRPNumberType {
      */
     public SignedInteger(String valueString) {
         this(valueString,10);
+        if (!inRange(valueString)){
+			throw new IllegalArgumentException("value "+valueString+" not in range");
+		}
     }
     
     /**
@@ -160,4 +166,13 @@ public class SignedInteger extends LLRPNumberType {
     public String toString(int radix){
     	return Integer.toString(value, radix);
     }
+    
+    @Override
+	public boolean inRange(long value) {
+		return (value >= Integer.MIN_VALUE && value <= Integer.MAX_VALUE);
+	}
+    
+    public boolean inRange(String valueString){
+		return inRange(new BigInteger(valueString).longValue());
+	}
 }

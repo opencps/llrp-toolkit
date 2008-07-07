@@ -69,6 +69,9 @@ public class UnsignedLong extends LLRPNumberType {
      */
     public UnsignedLong(String string) {
     	this(string,10);
+    	if (!inRange(string)){
+			throw new IllegalArgumentException("value "+string+" not in range");
+		}
     }
     /**
          * Creates a new UnsignedLong object.
@@ -173,4 +176,14 @@ public class UnsignedLong extends LLRPNumberType {
     public String toString(int radix){
     	return value.toString(radix);
     }
+    
+    @Override
+	public boolean inRange(long value) {
+    	// no upper check needed
+		return (value >= 0);
+	}
+    
+    public boolean inRange(String valueString){
+		return inRange(new BigInteger(valueString).longValue());
+	}
 }

@@ -49,6 +49,9 @@ public class LLRPInteger extends LLRPNumberType {
      */
     public LLRPInteger(String stringValue) {
         this(new Byte(stringValue));
+        if (!inRange(stringValue)){
+			throw new IllegalArgumentException("value "+stringValue+" not in range");
+		}
     }
 
     /**
@@ -63,6 +66,9 @@ public class LLRPInteger extends LLRPNumberType {
     
     public LLRPInteger(int value){
     	this(new Integer(value));
+    	if (!inRange(value)){
+			throw new IllegalArgumentException("value "+value+" not in range");
+		}
     }
 
     /**
@@ -187,4 +193,13 @@ public class LLRPInteger extends LLRPNumberType {
     public String toString(int radix){
     	return Integer.toString(value, radix);
     }
+    
+    @Override
+	public boolean inRange(long value) {
+		return (value >= Byte.MIN_VALUE && value <= Byte.MAX_VALUE);
+	}
+    
+    public boolean inRange(String valueString){
+		return inRange(new BigInteger(valueString).longValue());
+	}
 }

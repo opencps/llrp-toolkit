@@ -66,4 +66,6 @@ public abstract class LLRPNumberType extends LLRPType {
 	public String toString(){
 		return toInteger().toString();
 	}
+	
+	public abstract boolean inRange(long value);
 }

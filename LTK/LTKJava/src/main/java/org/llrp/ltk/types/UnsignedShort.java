@@ -44,6 +44,9 @@ public class UnsignedShort extends LLRPNumberType {
 
     public UnsignedShort(int value) {
        this(new Integer(value));
+       if (!inRange(value)){
+			throw new IllegalArgumentException("value "+value+" not in range");
+		}
     }
     /**
      * Creates a new UnsignedShort object from jdom element - used for xml decoding
@@ -88,6 +91,9 @@ public class UnsignedShort extends LLRPNumberType {
     public UnsignedShort(String valueString) {
         value = new Integer(valueString);
         signed = false;
+        if (!inRange(valueString)){
+			throw new IllegalArgumentException("value "+valueString+" not in range");
+		}
     }
 
     /**
@@ -168,4 +174,13 @@ public class UnsignedShort extends LLRPNumberType {
     public String toString(int radix){
     	return Integer.toString(value & 0xFFFF, radix);
     }
+    
+    @Override
+	public boolean inRange(long value) {
+		return (value >= 0 && value <= 0xFFFF);
+	}
+    
+    public boolean inRange(String valueString){
+		return inRange(new BigInteger(valueString).longValue());
+	}
 }

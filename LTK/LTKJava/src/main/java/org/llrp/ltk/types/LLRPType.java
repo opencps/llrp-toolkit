@@ -72,5 +72,6 @@ public abstract class LLRPType {
 		return toString(2);
 	}
     public abstract String toString(int radix);
-
+    
+	public abstract boolean inRange(String valueString);
 }

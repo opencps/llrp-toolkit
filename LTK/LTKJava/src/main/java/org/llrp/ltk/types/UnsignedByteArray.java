@@ -262,4 +262,20 @@ public class UnsignedByteArray extends LLRPType {
 		return s;
 	}
 	
+	/**
+	 * expects a string as formated for XML
+	 */
+	public boolean inRange(String valueString){
+		String[] strings = valueString.split(" ");
+		// try do create each element. If one failes, the whole string is illegal
+		for (int i = 0; i < strings.length; i++) {
+			try {
+				new UnsignedByte(strings[i]);
+			} catch (IllegalArgumentException e){
+				return false;
+			}
+		}
+		return true;
+	}
+	
 }

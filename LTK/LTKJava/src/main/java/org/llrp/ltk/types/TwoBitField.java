@@ -217,4 +217,13 @@ public class TwoBitField extends LLRPType {
     public String toString(int radix){
     	return Integer.toString(intValue(), radix);
     }
+    
+	
+	/**
+	 * expects a string as formated for XML
+	 */
+	public boolean inRange(String valueString){
+        int i = Integer.parseInt(valueString);
+        return (i >= 0 && i <= 3);
+	}
 }

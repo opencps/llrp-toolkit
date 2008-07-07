@@ -51,6 +51,9 @@ public class UnsignedInteger extends LLRPNumberType {
      */
     public UnsignedInteger(int value){
     	this(new Integer(value));
+    	if (!inRange(value)){
+			throw new IllegalArgumentException("value "+value+" not in range");
+		}
     }
     
     /**
@@ -61,6 +64,9 @@ public class UnsignedInteger extends LLRPNumberType {
     public UnsignedInteger(long value){
     	this.value = BigInteger.valueOf(value);
         signed = false;
+        if (!inRange(value)){
+			throw new IllegalArgumentException("value "+value+" not in range");
+		}
     }
 
     /**
@@ -70,6 +76,9 @@ public class UnsignedInteger extends LLRPNumberType {
      */
     public UnsignedInteger(String valueString) {
         value = new BigInteger(valueString);
+        if (!inRange(valueString)){
+			throw new IllegalArgumentException("value "+valueString+" not in range");
+		}
     }
 
     /**
@@ -177,4 +186,13 @@ public class UnsignedInteger extends LLRPNumberType {
     public String toString(){
     	return value.toString();
     }
+    
+    @Override
+	public boolean inRange(long value) {
+		return (value >= 0 && value <= 0xFFFFFFFF);
+	}
+    
+    public boolean inRange(String valueString){
+		return inRange(new BigInteger(valueString).longValue());
+	}
 }
