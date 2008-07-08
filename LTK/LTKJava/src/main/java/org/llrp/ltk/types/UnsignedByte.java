@@ -22,146 +22,155 @@ import org.jdom.Element;
 import org.jdom.Namespace;
 import org.jdom.Text;
 
-
 /**
  * UnsignedShort
- *
+ * 
  * @author Basil Gasser - ETH Zurich
  */
 public class UnsignedByte extends LLRPNumberType {
-    private static final Integer LENGTH = 8;
-    protected int value;
+	private static final Integer LENGTH = 8;
+	protected int value;
 
-    /**
-         * Creates a new UnsignedByte object.
-         *
-         * @param value to set
-         */
-    public UnsignedByte(int value) {
-        this.value = value;
-        signed = false;
-        if (!inRange(value)){
-			throw new IllegalArgumentException("value "+value+" not in range");
+	/**
+	 * Creates a new UnsignedByte object.
+	 * 
+	 * @param value
+	 *            to set
+	 */
+	public UnsignedByte(int value) {
+		if (value < 0) {
+			this.value = (2*Byte.MAX_VALUE+value+2);
+		} else {
+			this.value = value;
 		}
-    }
-
-    /**
-     * Creates a new UnsignedByte object from byte
-     *
-     * @param value interpreted as unsigned byte
-     */
-    public UnsignedByte(byte value) {
-        this.value = new Integer(value);
-        signed = false;
-    }
-
-    /**
-     * Creates a new UnsignedByte object.
-     *
-     * @param valueString value as string
-     */
-    public UnsignedByte(String valueString) {
-        this(new Byte(valueString));
-        if (!inRange(valueString)){
-			throw new IllegalArgumentException("value "+valueString+" not in range");
+		signed = false;
+		if (!inRange(this.value)) {
+			throw new IllegalArgumentException("value " + value
+					+ " not in range");
 		}
-    }
+	}
 
-    /**
-         * Creates a new UnsignedByte object.
-         *
-         * @param bitList to be decoded
-         */
-    public UnsignedByte(LLRPBitList bitList) {
-        decodeBinary(bitList);
-        signed = false;
-    }
+	/**
+	 * Creates a new UnsignedByte object from byte
+	 * 
+	 * @param value
+	 *            interpreted as unsigned byte
+	 */
+	public UnsignedByte(byte value) {
+		this((int) value);
+	}
 
-    /**
-         * Creates a new UnsignedByte object.
-         */
-    public UnsignedByte() {
-        value = 0;
-        signed = false;
-    }
+	/**
+	 * Creates a new UnsignedByte object.
+	 * 
+	 * @param valueString
+	 *            value as string
+	 */
+	public UnsignedByte(String valueString) {
+		this(new Byte(valueString));
+		if (!inRange(valueString)) {
+			throw new IllegalArgumentException("value " + valueString
+					+ " not in range");
+		}
+	}
 
-    /**
-     * String representation in specified radix.
-     *
-     */
-    public UnsignedByte(String valueString, int radix) {
-        this(new BigInteger(valueString, radix).intValue());
-    }
-    /**
-     * number of bits used to represent this type
-     *
-     * @return Integer
-     */
-    public static int length() {
-        return LENGTH;
-    }
+	/**
+	 * Creates a new UnsignedByte object.
+	 * 
+	 * @param bitList
+	 *            to be decoded
+	 */
+	public UnsignedByte(LLRPBitList bitList) {
+		decodeBinary(bitList);
+		signed = false;
+	}
 
-    /**
-     * to java byte - might loose precision
-     *
-     * @return byte
-     */
-    public byte toByte() {
-        return (byte) value;
-    }
+	/**
+	 * Creates a new UnsignedByte object.
+	 */
+	public UnsignedByte() {
+		value = 0;
+		signed = false;
+	}
 
-    /**
-     * to java Integer
-     *
-     * @return Integer
-     */
-    public Integer toInteger() {
-        return value;
-    }
+	/**
+	 * String representation in specified radix.
+	 * 
+	 */
+	public UnsignedByte(String valueString, int radix) {
+		this(new BigInteger(valueString, radix).intValue());
+	}
 
-    @Override
-    public void decodeBinary(LLRPBitList list) {
-        value = Integer.parseInt(list.toString(), 2);
-    }
+	/**
+	 * number of bits used to represent this type
+	 * 
+	 * @return Integer
+	 */
+	public static int length() {
+		return LENGTH;
+	}
 
-    @Override
-    public void decodeXML(Element element) {
-        value = Integer.parseInt(element.getText(), 2);
-    }
+	/**
+	 * to java byte - might loose precision
+	 * 
+	 * @return byte
+	 */
+	public byte toByte() {
+		return (byte) value;
+	}
 
-    @Override
-    public LLRPBitList encodeBinary() {
-        LLRPBitList result = new LLRPBitList(Integer.toBinaryString(value));
+	/**
+	 * to java Integer
+	 * 
+	 * @return Integer
+	 */
+	public Integer toInteger() {
+		return value;
+	}
 
-        if (result.length() < LENGTH) {
-            result.pad(LENGTH - result.length());
-        }
+	@Override
+	public void decodeBinary(LLRPBitList list) {
+		value = Integer.parseInt(list.toString(), 2);
+	}
 
-        return result.subList(result.length() - LENGTH, LENGTH);
-    }
+	@Override
+	public void decodeXML(Element element) {
+		value = Integer.parseInt(element.getText(), 2);
+	}
 
-    @Override
-    public Content encodeXML(String name, Namespace ns) {
-        Element element = new Element(name, ns);
-        element.setContent(new Text(Integer.toString(value)));
+	@Override
+	public LLRPBitList encodeBinary() {
+		LLRPBitList result = new LLRPBitList(Integer.toBinaryString(value));
 
-        return element;
-    }
-    
-    public String toString(int radix){
-    	return Integer.toString(value, radix);
-    }
-    
-    public String toString(){
-    	return toString(2);
-    }
-    
-    @Override
+		if (result.length() < LENGTH) {
+			result.pad(LENGTH - result.length());
+		}
+
+		return result.subList(result.length() - LENGTH, LENGTH);
+	}
+
+	@Override
+	public Content encodeXML(String name, Namespace ns) {
+		Element element = new Element(name, ns);
+		element.setContent(new Text(Integer.toString(value)));
+
+		return element;
+	}
+
+	public String toString(int radix) {
+		return Integer.toString(value, radix).replace("-", "");
+	}
+
+	public String toString() {
+		return toString(10);
+	}
+
+	@Override
 	public boolean inRange(long value) {
 		return (value >= 0 && value <= 0xFF);
 	}
-    
-    public boolean inRange(String valueString){
+
+	public boolean inRange(String valueString) {
 		return inRange(new BigInteger(valueString).longValue());
 	}
 }

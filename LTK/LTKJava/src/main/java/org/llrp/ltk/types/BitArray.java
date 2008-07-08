@@ -193,11 +193,15 @@ public class BitArray extends LLRPType {
     @Override
     public void decodeXML(Element element) {
         String text = element.getText();
+        if (!text.equals("")){
         String[] bitStrings = text.split(" ");
         bits = new Bit[bitStrings.length];
 
         for (int i = 0; i < bits.length; i++) {
             bits[i] = new Bit(bitStrings[i]);
+        }
+        } else {
+        	bits = new Bit[0];
         }
     }
 

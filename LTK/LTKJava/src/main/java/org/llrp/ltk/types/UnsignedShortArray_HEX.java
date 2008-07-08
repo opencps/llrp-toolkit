@@ -29,15 +29,15 @@ public class UnsignedShortArray_HEX extends UnsignedShortArray {
 		}
 	}
 
-    /**
-     * @param String
-     */
-    public UnsignedShortArray_HEX(String string) {
-    	Element element = new Element("foo","ns");
-    	element.setText(string);
-        decodeXML(element);
-    }
-    
+	/**
+	 * @param String
+	 */
+	public UnsignedShortArray_HEX(String string) {
+		Element element = new Element("foo", "ns");
+		element.setText(string);
+		decodeXML(element);
+	}
+
 	/**
 	 * first 16 bits of LLRPBitlist must indicate number of entries that follow
 	 * 
@@ -57,7 +57,6 @@ public class UnsignedShortArray_HEX extends UnsignedShortArray {
 
 	@Override
 	public Content encodeXML(String name, Namespace ns) {
-		
 
 		Element element = new Element(name, ns);
 		element.setContent(new Text(toString()));
@@ -68,13 +67,18 @@ public class UnsignedShortArray_HEX extends UnsignedShortArray {
 	@Override
 	public void decodeXML(Element element) {
 		String text = element.getText();
-		String[] strings = text.split(" ");
-		shorts = new UnsignedShort[strings.length];
+		if (!text.equals("")) {
+			String[] strings = text.split(" ");
+			shorts = new UnsignedShort[strings.length];
 
-		for (int i = 0; i < strings.length; i++) {
-			if (!strings[i].equals("")) {
-				shorts[i] = new UnsignedShort(Integer.parseInt(strings[i], 16));
-			} 
+			for (int i = 0; i < strings.length; i++) {
+				if (!strings[i].equals("")) {
+					shorts[i] = new UnsignedShort(Integer.parseInt(strings[i],
+							16));
+				}
+			}
+		} else {
+			shorts = new UnsignedShort[0];
 		}
 	}
 
@@ -90,6 +94,13 @@ public class UnsignedShortArray_HEX extends UnsignedShortArray {
 		if (sb.length() > 0 && sb.toString().startsWith(" ")) {
 			sb.deleteCharAt(0);
 		}
-		return sb.toString();
+		int check = sb.length()%4;
+		StringBuffer padding = new StringBuffer();
+		if (check!=0){
+			for (int i=0;i<4-check;i++){
+				padding.append("0");
+			}
+		}
+		return (padding.append(sb)).toString();
 	}
 }

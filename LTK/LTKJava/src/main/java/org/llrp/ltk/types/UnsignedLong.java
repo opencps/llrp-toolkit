@@ -184,6 +184,10 @@ public class UnsignedLong extends LLRPNumberType {
 	}
     
     public boolean inRange(String valueString){
-		return inRange(new BigInteger(valueString).longValue());
+    	// check upper bound, subract max value of long twice. If still bigger than 0, initial value was too big
+    	BigInteger b = new BigInteger(valueString);
+    	b = b.min(BigInteger.valueOf(Long.MAX_VALUE));
+    	b = b.min(BigInteger.valueOf(Long.MAX_VALUE));
+    	return (b.intValue()>0 && inRange(new BigInteger(valueString).longValue()));
 	}
 }

@@ -41,23 +41,29 @@ public class UnsignedShortArray extends LLRPType {
 	/**
 	 * Creates a new UnsignedShortArray object.
 	 * 
-	 * @param string of shorts
+	 * @param string
+	 *            of shorts
 	 */
 	public UnsignedShortArray(String shortString) {
-		String[] strings = shortString.split(" ");
-		shorts = new UnsignedShort[strings.length];
+		if (shortString.equals("")) {
+			shorts = new UnsignedShort[0];
+		} else {
+			String[] strings = shortString.split(" ");
+			shorts = new UnsignedShort[strings.length];
 
-		for (int i = 0; i < strings.length; i++) {
-			shorts[i] = new UnsignedShort(strings[i]);
+			for (int i = 0; i < strings.length; i++) {
+				shorts[i] = new UnsignedShort(strings[i]);
+			}
 		}
 	}
-	  
-    public UnsignedShortArray(short[] data){
-    	this.shorts = new UnsignedShort[data.length];
-    	for (int i = 0; i<data.length;i++){
-    		shorts[i] = new UnsignedShort(data[i]);
-    	}
-    }
+
+	public UnsignedShortArray(short[] data) {
+		this.shorts = new UnsignedShort[data.length];
+		for (int i = 0; i < data.length; i++) {
+			shorts[i] = new UnsignedShort(data[i]);
+		}
+	}
+
 	/**
 	 * Creates a new UnsignedShortArray object from jdom element - used for xml
 	 * decoding
@@ -90,8 +96,8 @@ public class UnsignedShortArray extends LLRPType {
 	}
 
 	/**
-	 * Creates an empty UnsignedShortArray. Do not call method 'set' on an empty array.
-	 * Add UnsignedShorts by calling the add method
+	 * Creates an empty UnsignedShortArray. Do not call method 'set' on an empty
+	 * array. Add UnsignedShorts by calling the add method
 	 */
 	public UnsignedShortArray() {
 		shorts = new UnsignedShort[0];
@@ -104,14 +110,15 @@ public class UnsignedShortArray extends LLRPType {
 	 *            to be decoded
 	 */
 	public void decodeBinary(LLRPBitList list) {
-	   Integer length = new SignedShort(list.subList(0,
-                   SignedShort.length())).toInteger();
-       shorts = new UnsignedShort[length];
+		Integer length = new SignedShort(list.subList(0, SignedShort.length()))
+				.toInteger();
+		shorts = new UnsignedShort[length];
 
-       for (int i = 0; i < length; i++) {
-           shorts[i] = new UnsignedShort(list.subList(
-                       i * UnsignedShort.length()+SignedShort.length(), UnsignedShort.length()));
-       }
+		for (int i = 0; i < length; i++) {
+			shorts[i] = new UnsignedShort(list.subList(i
+					* UnsignedShort.length() + SignedShort.length(),
+					UnsignedShort.length()));
+		}
 	}
 
 	/**
@@ -141,7 +148,7 @@ public class UnsignedShortArray extends LLRPType {
 	public boolean equals(LLRPType other) {
 		UnsignedShortArray ba = (UnsignedShortArray) other;
 
-		if (ba.size()!=(this.size())) {
+		if (ba.size() != (this.size())) {
 			return false;
 		}
 
@@ -154,8 +161,6 @@ public class UnsignedShortArray extends LLRPType {
 		return true;
 	}
 
-	
-	
 	/**
 	 * get UnsignedShort at specified position
 	 * 
@@ -222,7 +227,7 @@ public class UnsignedShortArray extends LLRPType {
 
 	@Override
 	public Content encodeXML(String name, Namespace ns) {
-		
+
 		Element element = new Element(name, ns);
 		element.setContent(new Text(toString()));
 
@@ -250,10 +255,10 @@ public class UnsignedShortArray extends LLRPType {
 	public int hashCode() {
 		return shorts.hashCode();
 	}
-	
-	public short[] toShortArray(){
+
+	public short[] toShortArray() {
 		short[] result = new short[shorts.length];
-		for (int i = 0; i<shorts.length;i++){
+		for (int i = 0; i < shorts.length; i++) {
 			result[i] = shorts[i].toShort();
 		}
 		return result;
@@ -264,35 +269,37 @@ public class UnsignedShortArray extends LLRPType {
 		String s = "";
 		for (UnsignedShort b : shorts) {
 			if (b != null) {
-				s += " "+b.toString(radix);
+				s += " " + b.toString(radix);
 			}
 		}
 		return s;
 	}
-	
-	public String toString(){
+
+	public String toString() {
 		String s = "";
 
 		for (UnsignedShort b : shorts) {
 
 			if (b != null) {
-				s += " "+b.toInteger().toString();
+				s += " " + b.toInteger().toString();
 			}
 		}
 
 		s = s.replaceFirst(" ", "");
 		return s;
 	}
+
 	/**
 	 * expects a string as formated for XML
 	 */
-	public boolean inRange(String valueString){
+	public boolean inRange(String valueString) {
 		String[] strings = valueString.split(" ");
-		// try do create each element. If one failes, the whole string is illegal
+		// try do create each element. If one failes, the whole string is
+		// illegal
 		for (int i = 0; i < strings.length; i++) {
 			try {
 				new UnsignedShort(strings[i]);
-			} catch (IllegalArgumentException e){
+			} catch (IllegalArgumentException e) {
 				return false;
 			}
 		}

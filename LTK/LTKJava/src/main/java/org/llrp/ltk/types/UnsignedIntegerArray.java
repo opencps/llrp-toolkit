@@ -187,11 +187,15 @@ public class UnsignedIntegerArray extends LLRPType {
 	@Override
 	public void decodeXML(Element element) {
 		String text = element.getText();
+		if (!text.equals("")){
 		String[] strings = text.split(" ");
 		integers = new UnsignedInteger[strings.length];
 
 		for (int i = 0; i < strings.length; i++) {
 			integers[i] = new UnsignedInteger(strings[i]);
+		}
+		} else {
+			integers = new UnsignedInteger[0];
 		}
 	}
 

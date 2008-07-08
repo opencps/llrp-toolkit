@@ -22,165 +22,178 @@ import org.jdom.Element;
 import org.jdom.Namespace;
 import org.jdom.Text;
 
-
 /**
  * UnsignedShort
- *
+ * 
  * @author Basil Gasser - ETH Zurich
  */
 public class UnsignedShort extends LLRPNumberType {
-    private static final Integer LENGTH = 16;
-    protected Integer value;
+	private static final Integer LENGTH = 16;
+	protected Integer value;
 
-    /**
-     * Creates a new UnsignedShort object - might loose precision
-     *
-     * @param value to set
-     */
-    public UnsignedShort(Short value) {
-        this.value = new Integer(value);
-        signed = false;
-    }
-
-    public UnsignedShort(int value) {
-       this(new Integer(value));
-       if (!inRange(value)){
-			throw new IllegalArgumentException("value "+value+" not in range");
-		}
-    }
-    /**
-     * Creates a new UnsignedShort object from jdom element - used for xml decoding
-     *
-     * @param element to be decoded
-     */
-    public UnsignedShort(Element element) {
-        decodeXML(element);
-    }
-
-    /**
-     * Creates a new UnsignedShort object.
-     */
-    public UnsignedShort() {
-        value = 0;
-        signed = false;
-    }
-
-    /**
-     * String representation in specified radix.
-     *
-     */
-    public UnsignedShort(String valueString, int radix) {
-        this(new BigInteger(valueString, radix).intValue());
-    }
-    
-    /**
-     * Creates a new UnsignedShort object.
-     *
-     * @param value  to set
-     */
-    public UnsignedShort(Integer value) {
-        this.value = value;
-        signed = false;
-    }
-
-    /**
-     * Creates a new UnsignedShort object.
-     *
-     * @param valueString value as string
-     */
-    public UnsignedShort(String valueString) {
-        value = new Integer(valueString);
-        signed = false;
-        if (!inRange(valueString)){
-			throw new IllegalArgumentException("value "+valueString+" not in range");
-		}
-    }
-
-    /**
-     * Creates a new UnsignedShort object.
-     *
-     * @param bitList to be decoded
-     */
-    public UnsignedShort(LLRPBitList bitList) {
-        decodeBinary(bitList);
-        signed = false;
-    }
-
-    /**
-     * test
-     *
-     * @param bitList
-     */
-    public LLRPBitList encodeBinary() {
-        LLRPBitList result = new LLRPBitList(Integer.toBinaryString(value));
-
-        if (result.length() < LENGTH) {
-            result.pad(LENGTH - result.length());
-        }
-
-        return result.subList(result.length() - LENGTH, LENGTH);
-    }
-
-    /**
-     * test
-     *
-     * @return test
-     */
-    public static int length() {
-        return LENGTH;
-    }
-
-    /**
-     * wrap UnsignedShort Integero Integer
-     *
-     * @return
-     */
-    public Integer toInteger() {
-        return value;
-    }
-    
-    public int intValue(){
-    	return value.intValue();
-    }
-
-    /**
-     * this might return a false value. Java short are signed and therefore
-     * might not provide enough precision
-     *
-     * @return
-     */
-    public short toShort() {
-        return value.shortValue();
-    }
-
-    @Override
-    public void decodeBinary(LLRPBitList list) {
-        value = Integer.parseInt(list.toString(), 2);
-    }
-
-    @Override
-    public void decodeXML(Element element) {
-        value = new Integer(element.getText());
-    }
-
-    @Override
-    public Content encodeXML(String name, Namespace ns) {
-        Element element = new Element(name, ns);
-        element.setContent(new Text(value.toString()));
-
-        return element;
-    }
-    
-    public String toString(int radix){
-    	return Integer.toString(value & 0xFFFF, radix);
-    }
-    
-    @Override
-	public boolean inRange(long value) {
-		return (value >= 0 && value <= 0xFFFF);
+	/**
+	 * Creates a new UnsignedShort object - might loose precision
+	 * 
+	 * @param value
+	 *            to set
+	 */
+	public UnsignedShort(Short value) {
+		this.value = value & 0xFFFFFFFF;
+		signed = false;
 	}
-    
-    public boolean inRange(String valueString){
+
+	public UnsignedShort(int value) {
+		if (value < 0) {
+			this.value = (2*Short.MAX_VALUE+value+2);
+		} else {
+			this.value = value;
+		}
+		signed = false;
+		if (!inRange(this.value)) {
+			throw new IllegalArgumentException("value " + value
+					+ " not in range");
+		}
+	}
+
+	/**
+	 * Creates a new UnsignedShort object from jdom element - used for xml
+	 * decoding
+	 * 
+	 * @param element
+	 *            to be decoded
+	 */
+	public UnsignedShort(Element element) {
+		decodeXML(element);
+	}
+
+	/**
+	 * Creates a new UnsignedShort object.
+	 */
+	public UnsignedShort() {
+		value = 0;
+		signed = false;
+	}
+
+	/**
+	 * String representation in specified radix.
+	 * 
+	 */
+	public UnsignedShort(String valueString, int radix) {
+		this(new BigInteger(valueString, radix).intValue());
+	}
+
+	/**
+	 * Creates a new UnsignedShort object.
+	 * 
+	 * @param value
+	 *            to set
+	 */
+	public UnsignedShort(Integer value) {
+		this(value.intValue());
+	}
+
+	/**
+	 * Creates a new UnsignedShort object.
+	 * 
+	 * @param valueString
+	 *            value as string
+	 */
+	public UnsignedShort(String valueString) {
+		value = new Integer(valueString);
+		signed = false;
+		if (!inRange(valueString)) {
+			throw new IllegalArgumentException("value " + valueString
+					+ " not in range");
+		}
+	}
+
+	/**
+	 * Creates a new UnsignedShort object.
+	 * 
+	 * @param bitList
+	 *            to be decoded
+	 */
+	public UnsignedShort(LLRPBitList bitList) {
+		decodeBinary(bitList);
+		signed = false;
+	}
+
+	/**
+	 * test
+	 * 
+	 * @param bitList
+	 */
+	public LLRPBitList encodeBinary() {
+		LLRPBitList result = new LLRPBitList(Integer.toBinaryString(value));
+
+		if (result.length() < LENGTH) {
+			result.pad(LENGTH - result.length());
+		}
+
+		return result.subList(result.length() - LENGTH, LENGTH);
+	}
+
+	/**
+	 * test
+	 * 
+	 * @return test
+	 */
+	public static int length() {
+		return LENGTH;
+	}
+
+	/**
+	 * wrap UnsignedShort Integero Integer
+	 * 
+	 * @return
+	 */
+	public Integer toInteger() {
+		return value;
+	}
+
+	public int intValue() {
+		return value.intValue();
+	}
+
+	/**
+	 * this might return a false value. Java short are signed and therefore
+	 * might not provide enough precision
+	 * 
+	 * @return
+	 */
+	public short toShort() {
+		return value.shortValue();
+	}
+
+	@Override
+	public void decodeBinary(LLRPBitList list) {
+		value = Integer.parseInt(list.toString(), 2);
+	}
+
+	@Override
+	public void decodeXML(Element element) {
+		value = new Integer(element.getText());
+	}
+
+	@Override
+	public Content encodeXML(String name, Namespace ns) {
+		Element element = new Element(name, ns);
+		element.setContent(new Text(value.toString()));
+
+		return element;
+	}
+
+	public String toString(int radix) {
+		return Integer.toString(value & 0xFFFF, radix);
+	}
+
+	@Override
+	public boolean inRange(long value) {
+		int max = Short.MAX_VALUE + Short.MAX_VALUE;
+		return (value >= 0 && value <= max);
+	}
+
+	public boolean inRange(String valueString) {
 		return inRange(new BigInteger(valueString).longValue());
 	}
 }
