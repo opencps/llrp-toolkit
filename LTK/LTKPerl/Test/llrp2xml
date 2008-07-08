@@ -1,0 +1,100 @@
+#!/usr/bin/env perl
+# vim60:fdm=marker:
+
+#############################################################################
+#                                                                           #
+#  Copyright 2008 Impinj, Inc.                                              #
+#                                                                           #
+#  Licensed under the Apache License, Version 2.0 (the "License");          #
+#  you may not use this file except in compliance with the License.         #
+#  You may obtain a copy of the License at                                  #
+#                                                                           #
+#      http://www.apache.org/licenses/LICENSE-2.0                           #
+#                                                                           #
+#  Unless required by applicable law or agreed to in writing, software      #
+#  distributed under the License is distributed on an "AS IS" BASIS,        #
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. #
+#  See the License for the specific language governing permissions and      #
+#  limitations under the License.                                           #
+#                                                                           #
+#                                                                           #
+#############################################################################
+# $$
+#
+# This is a simple example of using of the Perl-LLRP Builder.pm
+#
+# Generate Perl "POD" documentation using the pod generator of your choice
+#
+#############################################################################
+
+use lib "..";
+
+
+use XML::LibXML;
+
+use RFID::LLRP::Builder qw(encode_message decode_message);
+use RFID::LLRP::Link qw(parse_envelope);
+
+use diagnostics;
+
+sub llrp2xml {
+
+	my $llrp_reader;
+
+	if (@ARGV) {
+		$llrp_reader = open STDIN, '<', $ARGV[0];
+	}
+	$llrp_reader = *STDIN;
+
+	binmode $llrp_reader;
+
+	my $packet;
+
+	print STDOUT '<ps:packetSequence
+  xmlns="http://www.llrp.org/ltk/schema/core/encoding/xml/1.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:ps="http://www.llrp.org/ltk/schema/testing/encoding/xml/0.5"
+  xsi:schemaLocation="http://www.llrp.org/ltk/schema/core/encoding/xml/1.0 http://www.llrp.org/ltk/schema/core/encoding/xml/1.0/LLRP.xs
+                      http://www.llrp.org/ltk/schema/testing/encoding/xml/0.5 ../../Tests/Definitions/llrpSequence.xsd">', "\n";
+
+
+	while (1) {
+		
+		# read header
+		my $bytes_read = sysread ($llrp_reader, $packet, 10);
+		last if $bytes_read == 0;
+		$bytes_read == 10 || die "Less than a full-packet read";
+		my ($ver, $msg_type, $msg_len, $msg_id) = parse_envelope ($packet);
+
+		# validate length
+		$msg_len < 1_000_000 || die "Message too long";
+		$msg_len >= 10 || die "Message must be at least 10 bytes long";
+
+		# read packet remainder
+		$bytes_read = sysread ($llrp_reader, $packet, $msg_len - 10, 10);
+		$bytes_read == ($msg_len - 10) || die "Short packet payload";
+
+		my $decoded_message;
+		eval {
+			$decoded_message = decode_message ($packet);
+		};
+		if ($@) {
+			$decoded_message = decode_message (encode_message (
+			  "<ERROR_MESSAGE MessageID=\"0\" Version=\"0\">
+			     <LLRPStatus>
+			       <StatusCode>M_Success</StatusCode>
+			       <ErrorDescription>$@</ErrorDescription>
+			     </LLRPStatus>
+			   </ERROR_MESSAGE>"
+			));
+			
+		}
+
+		print STDOUT $decoded_message->documentElement()->toString(1), "\n";
+	}
+
+	print STDOUT "</ps:packetSequence>\n";
+
+}
+
+llrp2xml;
