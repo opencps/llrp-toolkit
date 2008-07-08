@@ -70,7 +70,7 @@ public class UnsignedLong extends LLRPNumberType {
     public UnsignedLong(String string) {
     	this(string,10);
     	if (!inRange(string)){
-			throw new IllegalArgumentException("value "+string+" not in range");
+			throw new IllegalArgumentException("value "+string+" not in range allowed for UnsignedLong");
 		}
     }
     /**

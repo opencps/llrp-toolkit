@@ -46,7 +46,7 @@ public class Bit extends LLRPNumberType {
 	 */
 	public Bit(int x) {
 		if (!inRange(x)){
-			throw new IllegalArgumentException("value "+x+" not in range");
+			throw new IllegalArgumentException("value "+x+" not in range allowed for Bit");
 		}
 		if (x != 0) {
 			value = 1;

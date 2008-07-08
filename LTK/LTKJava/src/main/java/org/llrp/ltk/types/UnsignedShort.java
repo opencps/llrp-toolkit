@@ -51,7 +51,7 @@ public class UnsignedShort extends LLRPNumberType {
 		signed = false;
 		if (!inRange(this.value)) {
 			throw new IllegalArgumentException("value " + value
-					+ " not in range");
+					+ " not in range allowed for UnsignedShort");
 		}
 	}
 

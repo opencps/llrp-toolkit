@@ -54,7 +54,7 @@ public class SignedInteger extends LLRPNumberType {
     public SignedInteger(int value) {
        this(new Integer(value));
        if (!inRange(value)){
-			throw new IllegalArgumentException("value "+value+" not in range");
+			throw new IllegalArgumentException("value "+value+" not in range allowed for SignedInteger");
 		}
     }
     /**

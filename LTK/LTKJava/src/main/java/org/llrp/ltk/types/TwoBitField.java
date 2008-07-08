@@ -63,6 +63,9 @@ public class TwoBitField extends LLRPType {
 		Element element = new Element("foo", "ns");
 		element.setText(string);
 		decodeXML(element);
+		if (!inRange(toString(10))){
+			throw new IllegalArgumentException(string+" not in range allowed for TwoBitField");
+		}
 	}
 
 	/**
@@ -205,8 +208,7 @@ public class TwoBitField extends LLRPType {
 				this.bits[0] = new Bit(1);
 				this.bits[1] = new Bit(1);
 			} else {
-				// TODO: this should never happen since the XML schema checks
-				// the range of allowable integers
+				throw new IllegalArgumentException(element.getText()+" not in range");
 			}
 		} else {
 			this.bits[0] = new Bit(0);

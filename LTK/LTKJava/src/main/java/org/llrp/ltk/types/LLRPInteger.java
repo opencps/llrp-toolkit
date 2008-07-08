@@ -50,7 +50,7 @@ public class LLRPInteger extends LLRPNumberType {
     public LLRPInteger(String stringValue) {
         this(new Byte(stringValue));
         if (!inRange(stringValue)){
-			throw new IllegalArgumentException("value "+stringValue+" not in range");
+			throw new IllegalArgumentException("value "+stringValue+" not in range allowed for LLRPInteger");
 		}
     }
 

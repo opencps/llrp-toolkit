@@ -52,7 +52,7 @@ public class UnsignedInteger extends LLRPNumberType {
     public UnsignedInteger(int value){
     	this(new Integer(value));
     	if (!inRange(value)){
-			throw new IllegalArgumentException("value "+value+" not in range");
+			throw new IllegalArgumentException("value "+value+" not in range allowed for UnsignedByte");
 		}
     }
     

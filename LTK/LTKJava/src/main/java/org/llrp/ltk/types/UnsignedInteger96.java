@@ -79,7 +79,7 @@ public class UnsignedInteger96 extends LLRPNumberType {
     public UnsignedInteger96(String string) {
         this(new BigInteger(string));
         if (!inRange(string)){
-			throw new IllegalArgumentException("value "+string+" not in range");
+			throw new IllegalArgumentException("value "+string+" not in range allowed for UnsignedInteger96");
 		}
     }
 
