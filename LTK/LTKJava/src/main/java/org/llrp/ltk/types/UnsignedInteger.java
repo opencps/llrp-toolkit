@@ -65,7 +65,7 @@ public class UnsignedInteger extends LLRPNumberType {
     	this.value = BigInteger.valueOf(value);
         signed = false;
         if (!inRange(value)){
-			throw new IllegalArgumentException("value "+value+" not in range");
+			throw new IllegalArgumentException("Illegal Argument: value "+value+" not in range allowed for UnsignedInteger");
 		}
     }
 
@@ -189,7 +189,7 @@ public class UnsignedInteger extends LLRPNumberType {
     
     @Override
 	public boolean inRange(long value) {
-		return (value >= 0 && value <= 0xFFFFFFFF);
+		return (value >= 0 && value <= 0xFFFFFFFFL);
 	}
     
     public boolean inRange(String valueString){
