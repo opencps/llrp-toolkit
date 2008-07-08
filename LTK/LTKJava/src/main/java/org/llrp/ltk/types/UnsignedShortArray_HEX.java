@@ -87,20 +87,22 @@ public class UnsignedShortArray_HEX extends UnsignedShortArray {
 		for (UnsignedShort b : shorts) {
 			if (b != null) {
 				sb.append(" ");
-				sb.append(b.toString(16));
+				String s = b.toString(16);
+				int check = s.length()%4;
+				StringBuffer padding = new StringBuffer();
+				if (check!=0){
+					for (int i=0;i<4-check;i++){
+						padding.append("0");
+					}
+				}
+				sb.append(padding.append(s));
 			}
 		}
 		// remove initial " " in the string
 		if (sb.length() > 0 && sb.toString().startsWith(" ")) {
 			sb.deleteCharAt(0);
 		}
-		int check = sb.length()%4;
-		StringBuffer padding = new StringBuffer();
-		if (check!=0){
-			for (int i=0;i<4-check;i++){
-				padding.append("0");
-			}
-		}
-		return (padding.append(sb)).toString();
+		
+		return sb.toString();
 	}
 }

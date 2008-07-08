@@ -189,7 +189,7 @@ public class UnsignedShort extends LLRPNumberType {
 
 	@Override
 	public boolean inRange(long value) {
-		int max = Short.MAX_VALUE + Short.MAX_VALUE;
+		int max = Short.MAX_VALUE + Short.MAX_VALUE + 1;
 		return (value >= 0 && value <= max);
 	}
 

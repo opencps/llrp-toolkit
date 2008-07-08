@@ -165,9 +165,8 @@ public class BytesToEnd extends LLRPType {
 
         int length = byteString.length();
 
-        for (Integer i = 0; i < length; i = i + LLRPInteger.length()) {
-            bytes.add(new LLRPInteger(byteString.substring(i,
-                        LLRPInteger.length())));
+        for (Integer i = 0; i < length; i++) {
+            bytes.add(new LLRPInteger(byteString.charAt(i)));
         }
     }
     

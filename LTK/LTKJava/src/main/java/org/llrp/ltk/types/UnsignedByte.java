@@ -67,7 +67,7 @@ public class UnsignedByte extends LLRPNumberType {
 	 *            value as string
 	 */
 	public UnsignedByte(String valueString) {
-		this(new Byte(valueString));
+		this(new Integer(valueString));
 		if (!inRange(valueString)) {
 			throw new IllegalArgumentException("value " + valueString
 					+ " not in range");
@@ -167,7 +167,7 @@ public class UnsignedByte extends LLRPNumberType {
 
 	@Override
 	public boolean inRange(long value) {
-		return (value >= 0 && value <= 0xFF);
+		return (value >= 0 && value <= 255);
 	}
 
 	public boolean inRange(String valueString) {
