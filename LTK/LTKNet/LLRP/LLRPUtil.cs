@@ -1116,7 +1116,7 @@ namespace LLRP.DataType
             String ts = to_indent.Replace("\x0d", "");
             String[] sa = ts.Split(sep, StringSplitOptions.RemoveEmptyEntries);
             String result = "";
-            foreach (var line in sa)
+            foreach (string line in sa)
             {
                 result += "  " + line + "\r\n";
             }
