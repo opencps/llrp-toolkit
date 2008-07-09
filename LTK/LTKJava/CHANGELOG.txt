@@ -1,12 +1,16 @@
 Changes with LTKJava 0.1.1 Snapshot (latest in version control)
 
+* fixed bug in XML encoding and decoding of UTCTimestamps reported by Li Cuizhu on the mailing list on 07/03/2008.
+[Christian Floerkemeier]
+
 * added getName method to all LLRP and custom parameters
 [Christian Floerkemeier]
 
 * changed log level when optional parameters are not used at binary encoding (was WARN is now INFO)
 [Christian Floerkemeier]
 
-* refactored LLRPMessageFactory.java. This class was moved from org.llrp.ltk.generated.messages to org.llrp.ltk.generated.
+* refactored LLRPMessageFactory.java. This class was moved from org.llrp.ltk.generated.messages to org.llrp.ltk.generated. Note this change is not backwards compatible!
+[Christian Floerkemeier]
 
 * LTKJava now throws an InvalidLLRPMessageException when a LTK-XML message which can be validated against LLRP.xsd (due to the xsd:other) but which uses an extension that has not been defined in the corresponding ExtensionDef.xml
 [Basil Gasser]
@@ -58,7 +62,6 @@ Changes with LTKJava 0.1.1 Snapshot (latest in version control)
 
 * refactored XML encoding of LLRP types
 [Basil Gasser]
-
 
 
 
