@@ -14,16 +14,16 @@
      <property name="llrpdef_xsd" value="${def}/llrpdef.xsd"/>
      <property name="llrpdef_xml" value="${def}/Core/llrp-1x0-def.xml"/>
      <property name="llrp_xsd" value="${def}/Core/llrp-1x0.xsd"/>
-	 <!-- configure the property below with the path to the extension XSD, if applicable -->
-	 <!-- <property name="extension_xsd" value="Impinj.xsd"/> -->
+	<!-- configure the property below with the path to the extension XSD, if applicable -->
+	<!-- <property name="extension_xsd" value="Impinj.xsd"/> -->
      
 	<taskdef name="xjc" classname="com.sun.tools.xjc.XJCTask">
              <classpath>
 	        <fileset dir="lib" includes="*.jar" />
   	     </classpath>
      </taskdef>
-            
-            
+	
+               
      <target name="init"> 
      	  <echo>using ant version '${ant.version}'</echo>
    	<echo>using java version '${java.version}'</echo>
@@ -98,6 +98,7 @@
 		         </classpath>
 		  	</java>
 	</target>
+	
 
 	<target name="copyLLRP.xsd">  
 		<echo message="Copy LLRP.xsd from Definitions directory to org.llrp.ltk so it can be loaded as a resource"/>
@@ -213,6 +214,16 @@
 
 	</target>
 	
+	<!-- ===================================== -->
+	<!-- deploy daily build -->
+	<!-- ===================================== -->
+	<target name="deploy" >
+		<scp todir="${user}:${pw}@athena.dialup.mit.edu:www/ltk" trust="true">
+		    <fileset dir="${build}">
+		      <include name="**/*.jar"/>
+		    </fileset>
+		  </scp>
+	</target>
 	
 	<!-- ===================================== -->
 	<!-- Remove build directories -->
