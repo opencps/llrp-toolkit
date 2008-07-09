@@ -684,7 +684,7 @@ namespace LLRPTest
                     string s = sr.ReadToEnd();
                     fs.Close();
 
-                    object obj;
+                    LLRP.DataType.Message obj;
                     ENUM_LLRP_MSG_TYPE msg_type;
 
                     try
