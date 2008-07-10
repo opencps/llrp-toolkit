@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.IO;
 
@@ -47,24 +46,6 @@ namespace LTK
             }
             Console.WriteLine(hex);
             Console.Out.Flush();
-        }
-
-        private static void read_msg(Stream source, byte[] hdr, ref  LLRPBinaryDecoder.LLRP_Envelope env, out byte[] packet)
-        {
-
-            /* read remaining bytes */
-            if (env.msg_len < LLRPBinaryDecoder.MIN_HDR || env.msg_len > 1000000)
-            {
-                throw new MalformedPacket("Message length (" + env.msg_len + ") out-of-range");
-            }
-            int remainder = (int)env.msg_len - LLRPBinaryDecoder.MIN_HDR;
-            packet = new byte[env.msg_len];
-            Array.Copy(hdr, packet, LLRPBinaryDecoder.MIN_HDR);
-            int bytes_read = source.Read(packet, LLRPBinaryDecoder.MIN_HDR, remainder);
-            if (bytes_read < remainder)
-            {
-                throw new MalformedPacket("Reached EOF before end of message");
-            }
         }
 
         static void Main(string[] args)
