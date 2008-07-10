@@ -52,7 +52,7 @@ namespace LTK
         {
             Stream s;
 
-            if (args.Count() == 1)
+            if (args.Length == 1)
             {
                 s = new FileStream(args[0], FileMode.Open, FileAccess.Read);
             }
@@ -95,11 +95,13 @@ namespace LTK
                 }
                 catch (Exception e)
                 {
+                    String desc = "ParseXMLToLLRPMessage failure on Packet #" + msg_no + ", " + e.Message;
+                    Console.Error.WriteLine(desc);
                     String err_msg =
                         "<ERROR_MESSAGE MessageID=\"0\" Version=\"0\">\r\n" +
                         "  <LLRPStatus>\r\n" +
                         "    <StatusCode>M_Success</StatusCode>\r\n" +
-                        "    <ErrorDescription>ParseXMLToLLRPMessage failure on Packet #" + msg_no + ", " + e.Message + "</ErrorDescription>\r\n" +
+                        "    <ErrorDescription>" + desc + "</ErrorDescription>\r\n" +
                         "  </LLRPStatus>\r\n" +
                         "</ERROR_MESSAGE>\r\n";
 
