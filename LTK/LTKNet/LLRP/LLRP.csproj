@@ -37,6 +37,7 @@
   <ItemGroup>
     <Compile Include="CommunicationInterface.cs" />
     <Compile Include="CustomParameter.cs" />
+    <Compile Include="LLRPBinaryDecoder.cs" />
     <Compile Include="LLRPDataType.cs" />
     <Compile Include="LLRPEndPoint.cs" />
     <Compile Include="LLRPEnum.cs" />
@@ -63,6 +64,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="LLRPBinaryDecoder.xslt" />
     <Content Include="LLRPClient.xslt" />
     <Content Include="LLRPEndPoint.xslt" />
     <Content Include="LLRPEnum.xslt" />

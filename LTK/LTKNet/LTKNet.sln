@@ -1,13 +1,21 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 9.00
-# Visual Studio 2005
+# Visual C# Express 2005
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LLRP", "LLRP\LLRP.csproj", "{1C0436C6-1226-4B5C-BE7D-8AC69AEB66FC}"
+	ProjectSection(ProjectDependencies) = postProject
+		{DD81CCB5-7E38-4A9B-8259-0AA4399D03F0} = {DD81CCB5-7E38-4A9B-8259-0AA4399D03F0}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LLRPVendorExt", "LLRPVendorExt\LLRPVendorExt.csproj", "{F6CB4F46-CAB9-4680-9FB3-5945C12E65E3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LLRPTest", "LLRPTest\LLRPTest.csproj", "{05148D22-BADC-44E7-88B8-FB16C026217F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeGenerator", "CodeGenerator\CodeGenerator.csproj", "{DD81CCB5-7E38-4A9B-8259-0AA4399D03F0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LLRP2XML", "LLRP2XML\LLRP2XML.csproj", "{998778C6-9D81-4886-951D-B99C6A9602E8}"
+	ProjectSection(ProjectDependencies) = postProject
+		{1C0436C6-1226-4B5C-BE7D-8AC69AEB66FC} = {1C0436C6-1226-4B5C-BE7D-8AC69AEB66FC}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -59,6 +67,16 @@ Global
 		{DD81CCB5-7E38-4A9B-8259-0AA4399D03F0}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{DD81CCB5-7E38-4A9B-8259-0AA4399D03F0}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{DD81CCB5-7E38-4A9B-8259-0AA4399D03F0}.Release|Win32.ActiveCfg = Release|Any CPU
+		{998778C6-9D81-4886-951D-B99C6A9602E8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{998778C6-9D81-4886-951D-B99C6A9602E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{998778C6-9D81-4886-951D-B99C6A9602E8}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{998778C6-9D81-4886-951D-B99C6A9602E8}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{998778C6-9D81-4886-951D-B99C6A9602E8}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{998778C6-9D81-4886-951D-B99C6A9602E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{998778C6-9D81-4886-951D-B99C6A9602E8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{998778C6-9D81-4886-951D-B99C6A9602E8}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{998778C6-9D81-4886-951D-B99C6A9602E8}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{998778C6-9D81-4886-951D-B99C6A9602E8}.Release|Win32.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -28,7 +27,7 @@ namespace LTK
             Console.Out.Flush();
         }
 
-        private static void read_msg (Stream source, byte[] hdr, ref  LLRPBinaryDecoder.LLRP_Envelope env, out byte [] packet)
+        private static void read_msg (Stream source, byte[] hdr, ref LLRPBinaryDecoder.LLRP_Envelope env, out byte [] packet)
         {
 
             /* read remaining bytes */
@@ -50,7 +49,7 @@ namespace LTK
         {
             Stream s;
 
-            if (args.Count() == 1)
+            if (args.GetLength(0) == 1)
             {
                 s = new FileStream(args[0], FileMode.Open, FileAccess.Read);
             }
