@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LLRP2XML", "LLRP2XML\LLRP2X
 		{1C0436C6-1226-4B5C-BE7D-8AC69AEB66FC} = {1C0436C6-1226-4B5C-BE7D-8AC69AEB66FC}
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XML2LLRP", "XML2LLRP\XML2LLRP.csproj", "{72581EA4-5751-4AE8-8E6B-11F2D552A8F9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -77,6 +79,16 @@ Global
 		{998778C6-9D81-4886-951D-B99C6A9602E8}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{998778C6-9D81-4886-951D-B99C6A9602E8}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{998778C6-9D81-4886-951D-B99C6A9602E8}.Release|Win32.ActiveCfg = Release|Any CPU
+		{72581EA4-5751-4AE8-8E6B-11F2D552A8F9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{72581EA4-5751-4AE8-8E6B-11F2D552A8F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{72581EA4-5751-4AE8-8E6B-11F2D552A8F9}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{72581EA4-5751-4AE8-8E6B-11F2D552A8F9}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{72581EA4-5751-4AE8-8E6B-11F2D552A8F9}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{72581EA4-5751-4AE8-8E6B-11F2D552A8F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{72581EA4-5751-4AE8-8E6B-11F2D552A8F9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{72581EA4-5751-4AE8-8E6B-11F2D552A8F9}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{72581EA4-5751-4AE8-8E6B-11F2D552A8F9}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{72581EA4-5751-4AE8-8E6B-11F2D552A8F9}.Release|Win32.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
