@@ -791,6 +791,12 @@ sub transact {
 		($msg, $req_doc) = encode_message ($doc, %encode_params);
 	}
 
+	# ban GET_REPORT() from transact()
+	my $rmid = unpack ("n", $msg) & 0x3FF;
+	if ($rmid == 60) {
+		die "transact() does not support GET_REPORT. Use encode_message()/send()/monitor()";
+	}
+
 	if ($trace && $first_time) {
 		my ($tdoc) = decode_message ($msg, %encode_params);
 		print STDERR $tdoc->toString(1), "\n";
@@ -827,7 +833,7 @@ sub transact {
 				die "FAILED: ReaderExceptionEvent, " . $node[0]>findvalue ('Message');
 			}
 		}
-		
+
 		# can avoid this code if this is not one of ours
 		if (!$lookup_mids_with_status{$msg_type}) {
 			push @{$nfy_queue}, $rsp;
@@ -926,6 +932,12 @@ sub fasttran {
 	my $timeout = 3;
 	my @ntfs;
 	my $nfy_queue = \@ntfs;
+
+	# ban GET_REPORT()
+	my $rmid = unpack ("n", $msg) & 0x3FF;
+	if ($rmid == 60) {
+		die "fasttran() does not support GET_REPORT. Use encode_message()/send()/monitor()";
+	}
 
 	if ($params{Trace}) {
 		print STDERR decode_message ($msg)->toString(1);
