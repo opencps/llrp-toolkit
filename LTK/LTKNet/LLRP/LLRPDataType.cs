@@ -168,14 +168,7 @@ namespace LLRP.DataType
                 byte[] bD = Util.ConvertBitArrayToByteArray(data.ToArray());
 
                 string s = string.Empty;
-                for (int i = 0; i < bD.Length; i++)
-                {
-                    if (i > 0)
-                    {
-                        s += " ";
-                    }
-                    s += Convert.ToInt16(bD[i]).ToString();
-                }
+                for (int i = 0; i < bD.Length; i++) s += Convert.ToInt16(bD[i]).ToString() + " ";
 
                 return s;
             }
@@ -193,11 +186,9 @@ namespace LLRP.DataType
         public static LLRPBitArray FromBinString(string str)
         {
             LLRPBitArray myBitArray = new LLRPBitArray();
-            for (int i = 0; i < str.Length; i++)
-            {
-                myBitArray.Add((str[i]=='1')?true:false);
-            }
 
+            for (int i = 0; i < str.Length; i++)myBitArray.Add((str[i] == '1') ? true : false);
+            
             return myBitArray;
         }
 
@@ -224,6 +215,84 @@ namespace LLRP.DataType
         }
     }
 
+    ///// <summary>
+    ///// Enumeration Array
+    ///// </summary>
+    //[Serializable]
+    //public class EnumByteArray
+    //{
+    //    private List<byte> data = new List<byte>();
+    //    Type t;
+
+    //    public EnumByteArray(Type t)
+    //    {
+    //        this.t = t;
+    //    }
+
+    //    public void Add(byte val)
+    //    {
+    //        data.Add(val);
+    //    }
+
+    //    public byte this[int index]
+    //    {
+    //        get { return data[index]; }
+    //        set { data[index] = value; }
+    //    }
+
+    //    public int Count
+    //    {
+    //        get { return data.Count; }
+    //    }
+
+    //    /// <summary>
+    //    /// Convert to enumeration string
+    //    /// </summary>
+    //    /// <returns></returns>
+    //    public string ToString()
+    //    {
+    //        string str = string.Empty;
+    //        foreach (byte b in data)
+    //        {
+    //            str += Enum.GetName(t, 1) + " ";
+    //        }
+    //        return str;
+    //    }
+    //    /// <summary>
+    //    /// Convert a enumeration string to byte array.
+    //    /// </summary>
+    //    /// <param name="str"></param>
+    //    /// <returns></returns>
+    //    public static ByteArray FromString(string str)
+    //    {
+    //        ByteArray bA = new ByteArray();
+    //        str = str.Trim();
+
+    //        string[] s = str.Split(new char[] { ',', ' ' });
+
+    //        byte[] bD = new byte[s.Length];
+
+    //        for (int i = 0; i < s.Length; i++)
+    //        {
+    //            try { bA.Add((byte)((int)Enum.Parse(t, s[i], true))); }
+    //            catch { bA.Add(0); }
+    //        }
+
+    //        return bA;
+    //    }
+
+    //    /// <summary>
+    //    /// Convert to byte array
+    //    /// </summary>
+    //    /// <returns></returns>
+    //    public byte[] ToArray()
+    //    {
+    //        return data.ToArray();
+    //    }
+    //}
+
+
+
     /// <summary>
     /// Byte Array used to store "u8v" "endofbytes" 
     /// </summary>
@@ -236,6 +305,8 @@ namespace LLRP.DataType
         {
             data.Add(val);
         }
+
+
         public byte this[int index]
         {
             get { return data[index]; }
@@ -312,6 +383,29 @@ namespace LLRP.DataType
         }
 
         /// <summary>
+        /// Convert a enumeration string to byte array.
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
+        public static ByteArray FromString(string str, Type t)
+        {
+            ByteArray bA = new ByteArray();
+            str = str.Trim();
+
+            string[] s = str.Split(new char[] { ',', ' ' });
+
+            byte[] bD = new byte[s.Length];
+
+            for (int i = 0; i < s.Length; i++)
+            {
+                try { bA.Add((byte)((int)Enum.Parse(t, s[i], true))); }
+                catch { bA.Add(0); }
+            }
+
+            return bA;
+        }
+
+        /// <summary>
         /// Convert to dec. based string. space is applied to each number
         /// </summary>
         /// <returns></returns>
@@ -322,14 +416,7 @@ namespace LLRP.DataType
                 byte[] bD = data.ToArray();
 
                 string s = string.Empty;
-                for (int i = 0; i < bD.Length; i++)
-                {
-                    if (i > 0)
-                    {
-                        s += " ";
-                    }
-                    s += Convert.ToInt16(bD[i]).ToString();
-                }
+                for (int i = 0; i < bD.Length; i++) s += Convert.ToInt16(bD[i]).ToString() + " ";
 
                 return s;
             }
@@ -337,6 +424,20 @@ namespace LLRP.DataType
             {
                 return "code error!";
             }
+        }
+
+        /// <summary>
+        /// Convert to enumeration string
+        /// </summary>
+        /// <returns></returns>
+        public string ToString(Type t)
+        {
+            string str = string.Empty;
+            foreach (byte b in data)
+            {
+                str += Enum.GetName(t, 1) + " ";
+            }
+            return str;
         }
 
         /// <summary>
@@ -382,15 +483,10 @@ namespace LLRP.DataType
 
             for (int i = 0; i < data.Count; i++)
             {
-                if (i > 0)
-                {
-                    s += " ";
-                }
-
                 UInt16 hD = (UInt16)(data[i] >> 8);
                 UInt16 lD = (UInt16)(data[i] & 0x00FF);
 
-                s += hD.ToString("X2") + lD.ToString("X2");
+                s += hD.ToString("X2") + lD.ToString("X2") + " ";
             }
 
             return s;
@@ -406,15 +502,10 @@ namespace LLRP.DataType
 
             for (int i = 0; i < data.Count; i++)
             {
-                if (i > 0)
-                {
-                    s += " ";
-                }
-
                 UInt16 hD = (UInt16)(data[i] >> 8);
                 UInt16 lD = (UInt16)(data[i] & 0x00FF);
 
-                s += hD.ToString("X2") + lD.ToString("X2");
+                s += hD.ToString("X2") + lD.ToString("X2")+" ";
             }
 
             return s;
@@ -431,14 +522,7 @@ namespace LLRP.DataType
                 UInt16[] bD = data.ToArray();
 
                 string s = string.Empty;
-                for (int i = 0; i < bD.Length; i++)
-                {
-                    if (i > 0)
-                    {
-                        s += " ";
-                    }
-                    s += Convert.ToUInt16(bD[i]).ToString();
-                }
+                for (int i = 0; i < bD.Length; i++) s += Convert.ToUInt16(bD[i]).ToString() + " ";
 
                 return s;
             }
@@ -565,14 +649,7 @@ namespace LLRP.DataType
                 UInt32[] bD = data.ToArray();
 
                 string s = string.Empty;
-                for (int i = 0; i < bD.Length; i++)
-                {
-                    if (i > 0)
-                    {
-                        s += " ";
-                    }
-                    s += Convert.ToUInt32(bD[i]).ToString();
-                }
+                for (int i = 0; i < bD.Length; i++) s += Convert.ToUInt32(bD[i]).ToString()+ " ";
 
                 return s;
             }
@@ -847,6 +924,17 @@ namespace LLRP.DataType
         {
             get { return data.Count; }
         }
+    }
+
+    public class UTCDateTime
+    {
+        private UInt64 microseconds;
+
+        public UTCDateTime(string utcstring)
+        {
+
+        }
+
     }
 
 }

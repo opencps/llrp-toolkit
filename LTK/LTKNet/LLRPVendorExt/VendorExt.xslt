@@ -377,7 +377,7 @@
     {
     int len = 0;
     int cursor = 0;
-    bool[] bit_array = new bool[500*1024*8];
+    bool[] bit_array = new bool[1000*1024*8];
 
     <xsl:for-each select="*">
       <xsl:if test="name()='field'">

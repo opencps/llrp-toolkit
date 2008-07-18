@@ -125,18 +125,25 @@ namespace LLRP.DataType
         public static byte[] ConvertBitArrayToByteArray(bool[] bit_array)
         {
             byte val = 0x00;
-            int size = bit_array.Length / 8 + (int)(((bit_array.Length % 8) > 0) ? 1 : 0);
-            byte[] data = new byte[size];
 
-            int reserved = bit_array.Length > 8 ? 8 : bit_array.Length;
+            int mod = bit_array.Length % 8;
 
-            for (int i = 0; i < size; i++)
+            int bit_size = (mod>0)? (bit_array.Length+8-mod):bit_array.Length;
+            int byte_size = bit_size / 8;
+
+            bool[] new_array = new bool[bit_size];
+            Array.Copy(bit_array, 0, new_array, (mod>0?(8-mod):0), bit_array.Length);
+
+            byte[] data = new byte[byte_size];
+            for (int i = 0; i < byte_size; i++)
             {
-                for (int j = 0; j < reserved; j++)
+                val = 0x00;
+                for (int j = 0; j < 8; j++)
                 {
                     val = (byte)(val << 1);
-                    val += (byte)(bit_array[i * 8 + j] ? 0x01 : 0x00);
+                    val += (byte)(new_array[i * 8 + j] ? 0x01 : 0x00);
                 }
+
                 data[i] = val;
             }
 
@@ -297,9 +304,13 @@ namespace LLRP.DataType
             {
                 obj = new LLRPBitArray();
 
-                for (int i = 0; i < field_len; i++)
+                int mod = field_len%8;
+
+                int total_len = (mod > 0) ? (field_len + 8 - mod) : field_len;
+
+                for (int i = 0; i < total_len; i++)
                 {
-                    ((LLRPBitArray)obj).Add(bit_array[cursor]);
+                    if(i<field_len)((LLRPBitArray)obj).Add(bit_array[cursor]);
                     cursor++;
                 }
             }
@@ -421,6 +432,7 @@ namespace LLRP.DataType
             else if (type.Equals(typeof(BitArray)))
             {
                 int len = ((BitArray)obj).Count * 1;
+
                 bit_arr = new BitArray(len);
                 for (int k = 0; k < len; k++) bit_arr[k] = ((BitArray)obj)[k];
                 return bit_arr;
@@ -428,8 +440,16 @@ namespace LLRP.DataType
             else if (type.Equals(typeof(LLRPBitArray)))
             {
                 int len = ((LLRPBitArray)obj).Count * 1;
-                bit_arr = new BitArray(len);
-                for (int k = 0; k < len; k++) bit_arr[k] = ((LLRPBitArray)obj)[k];
+                int mod = len % 8;
+
+                int total_len = (mod > 0) ? (len + (8 - mod)) : len;
+                bit_arr = new BitArray(total_len);
+                for (int k = 0; k < total_len; k++)
+                {
+                    if (k < len) bit_arr[k] = ((LLRPBitArray)obj)[k];
+                    else
+                        bit_arr[k] = false;
+                }
                 return bit_arr;
             }
             else if (type.Equals(typeof(ByteArray)))
@@ -728,7 +748,9 @@ namespace LLRP.DataType
                 switch (type)
                 {
                     case "u1":
-                        return Convert.ToBoolean(val);
+                        if(val=="1" || val=="0")return (val == "1") ? true : false;
+                        else
+                           return Convert.ToBoolean(val);
                     case "u8":
                         switch (format)
                         {
@@ -800,7 +822,7 @@ namespace LLRP.DataType
                             case "Hex":
                                 return Convert.ToUInt64(val, 16);
                             case "Datetime":
-                                return Convert.ToUInt64(DateTime.Parse(val));
+                                return ConvertUTCTimeToMicroseconds(val);
                             case "Dec":
                             default:
                                 return Convert.ToUInt64(val, 10);
@@ -830,7 +852,7 @@ namespace LLRP.DataType
                 switch (type)
                 {
                     case "u1":
-                        return Convert.ToString((Boolean)val);
+                        return Convert.ToString((Boolean)val).ToLower();
                     case "u8":
                         switch (format)
                         {
@@ -900,8 +922,7 @@ namespace LLRP.DataType
                             case "Hex":
                                 return Convert.ToString((long)(ulong)val, 16);
                             case "Datetime":
-                                return ConvertMicrosecondsToUTCTime((ulong)val).ToString("s") + "." +
-                                    String.Format ("{0:000000}", ((UInt64) val) % 1000000);
+                                return ConvertMicrosecondsToUTCTimeString((ulong)val);
                             case "Dec":
                             default:
                               return ((UInt64)val).ToString();
@@ -1102,25 +1123,27 @@ namespace LLRP.DataType
             }
         }
 
-        private static DateTime ConvertMicrosecondsToUTCTime(ulong microseconds)
+        private static string ConvertMicrosecondsToUTCTimeString(ulong microseconds)
         {
-            DateTime dt = new DateTime(1970,1,1,0,0,0, DateTimeKind.Utc);
-            long ticks_utc = dt.Ticks + (long)(10*microseconds);
+            DateTime dt = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+            long ticks_utc = dt.Ticks + (long)(10 * microseconds);
 
-            return new DateTime(ticks_utc, DateTimeKind.Utc);
+            dt =  new DateTime(ticks_utc, DateTimeKind.Utc);
+            return String.Format("{00}.{1:00000}", dt.ToString("s"), ((UInt64)microseconds) % 1000000);
+
         }
-
-        public static String Indent(String to_indent)
+        private static UInt64 ConvertUTCTimeToMicroseconds(string utcTime)
         {
-            char[] sep = { '\x0a' };
-            String ts = to_indent.Replace("\x0d", "");
-            String[] sa = ts.Split(sep, StringSplitOptions.RemoveEmptyEntries);
-            String result = "";
-            foreach (string line in sa)
+            try
             {
-                result += "  " + line + "\r\n";
+                DateTime dt;
+                DateTime.TryParse(utcTime, null, System.Globalization.DateTimeStyles.AdjustToUniversal | System.Globalization.DateTimeStyles.AssumeUniversal, out dt);
+
+                DateTime originalTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+
+                return (ulong)((dt.Ticks - originalTime.Ticks)/ 10);
             }
-            return result;
+            catch { return 0; }
         }
     }
 
@@ -1153,7 +1176,17 @@ namespace LLRP.DataType
         /// <returns></returns>
         public static XmlNodeList GetXmlNodes(XmlNode node, string child_node_name)
         {
-            return node.SelectNodes(child_node_name);
+            if (node.NamespaceURI != null)
+            {
+                XmlNamespaceManager xmgr = new XmlNamespaceManager(node.OwnerDocument.NameTable);
+                xmgr.AddNamespace("llrp", node.NamespaceURI);
+                return node.SelectNodes("llrp:"+child_node_name, xmgr);
+            }
+            else
+            {
+                return node.SelectNodes(child_node_name);
+            }
+
         }
 
         /// <summary>
@@ -1201,6 +1234,5 @@ namespace LLRP.DataType
             }
             return string.Empty;
         }
-
     }
 }
