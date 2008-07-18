@@ -41,6 +41,14 @@ or LLRP drivers for other languages, Please check http://sourceforge.net/project
    12). Added LLRPNetworkExeception class 
    13). Bug fixed. Description: Util.ConvertBitArrayToByteArray didn't convert bits array to byte array correctly.
    14). Bug fixed. Description: TCPIPClient try to issue BeginRead after the NetworkStream is released while ROSpec is executing. A delay of 100 miliseconds to allow stopping read added. 
+   
+   July 17, 2008
+   
+   15). Compliant with LTK Schema. Namespace is given to each message
+   16). Bug Fixed. Decode failure for GET_READER_CAPABILITY
+   17). Bug Fixed. Decode failure for GET_READER_CONFIG
+   18). Bug Fixed. Decode failure for some RO_ACCESS_REPORT messages
+   19). New fixes verified agaist three test cases. validated with round-trip test. 
 
 
   
