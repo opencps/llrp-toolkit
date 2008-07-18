@@ -72,6 +72,7 @@
     <Content Include="LLRPNamespace.xslt" />
     <Content Include="LLRPParam.xslt" />
     <Content Include="LLRPXmlParser.xslt" />
+    <Content Include="LLRPBinaryDecoder.xslt" />
     <Content Include="templates.xslt" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
