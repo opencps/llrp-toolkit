@@ -1145,6 +1145,26 @@ namespace LLRP.DataType
             }
             catch { return 0; }
         }
+
+        /// <summary>
+        /// Indent a string
+        /// </summary>
+        /// <param name="to_indent">String to be Indented</param>
+        /// <returns>Indented string</returns>
+        public static String Indent(string to_indent)
+        {
+            char[] sep = { '\x0a' };
+            String ts = to_indent.Replace("\x0d", "");
+            String[] sa = ts.Split(sep, StringSplitOptions.RemoveEmptyEntries);
+            String result = "";
+
+            foreach (string line in sa)
+            {
+                result += "  " + line + "\r\n";
+            }
+
+            return result;
+        }
     }
 
     /// <summary>
