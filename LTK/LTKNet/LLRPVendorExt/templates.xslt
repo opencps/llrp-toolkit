@@ -404,7 +404,7 @@
     int len;
     string xml_str = "<xsl:text disable-output-escaping="yes">&lt;</xsl:text>"+LLRPVendorConstants.VENDOR_NAME+":"+"<xsl:value-of select="@name"/>";
     xml_str += string.Format("\txmlns=\"{0}\"\n", LLRPVendorConstants.NAMESPACE_URI);
-    xml_str += string.Format("\txmlns:impinj=\"{0}\"\n", LLRPVendorConstants.NAMESPACE_URI);
+    xml_str += string.Format("\txmlns:<xsl:copy-of select="$d_vendor_name"/>=\"{0}\"\n", LLRPVendorConstants.NAMESPACE_URI);
     xml_str += " xmlns:xsi= \"\thttp://www.w3.org/2001/XMLSchema-instance\"\n";
     xml_str += string.Format("\txsi:schemaLocation=\"{0} {1}\"\n", LLRPVendorConstants.NAMESPACE_URI, LLRPVendorConstants.NAMESPACE_SCHEMALOCATION);
     xml_str += " Version=\"" + version.ToString() + "\" MessageID=\"" + MSG_ID.ToString() + "\"" + "<xsl:text disable-output-escaping="yes">&gt;</xsl:text>";
@@ -601,7 +601,7 @@
 
     string xml_str = "<xsl:text disable-output-escaping="yes">&lt;</xsl:text>"+LLRPVendorConstants.VENDOR_NAME+":"+"<xsl:value-of select="@name"/>";
     xml_str += string.Format("\txmlns=\"{0}\"\n", LLRPVendorConstants.NAMESPACE_URI);
-    xml_str += string.Format("\txmlns:impinj=\"{0}\"\n", LLRPVendorConstants.NAMESPACE_URI);
+    xml_str += string.Format("\txmlns:<xsl:copy-of select="$d_vendor_name"/>=\"{0}\"\n", LLRPVendorConstants.NAMESPACE_URI);
     xml_str += " xmlns:xsi= \"\thttp://www.w3.org/2001/XMLSchema-instance\"\n";
     xml_str += string.Format("\txsi:schemaLocation=\"{0} {1}\"", LLRPVendorConstants.NAMESPACE_URI, LLRPVendorConstants.NAMESPACE_SCHEMALOCATION) + "<xsl:text disable-output-escaping="yes">&gt;</xsl:text>";
 
