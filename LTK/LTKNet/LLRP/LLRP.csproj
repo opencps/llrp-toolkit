@@ -47,7 +47,7 @@
     <Compile Include="LLRPClient.cs" />
     <Compile Include="LLRPUtil.cs" />
     <Compile Include="LLRPXmlParser.cs" />
-    <Compile Include="LLRPNameSpace.cs" />
+    <Compile Include="LLRPNamespace.cs" />
     <Compile Include="LLRPBinaryDecoder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
@@ -65,28 +65,26 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="LLRPClient.xslt" />
-    <Content Include="LLRPEndPoint.xslt" />
-    <Content Include="LLRPEnum.xslt" />
-    <Content Include="LLRPMsg.xslt" />
-    <Content Include="LLRPNamespace.xslt" />
-    <Content Include="LLRPParam.xslt" />
-    <Content Include="LLRPXmlParser.xslt" />
-    <Content Include="LLRPBinaryDecoder.xslt" />
     <Content Include="templates.xslt" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <UsingTask TaskName="CodeGenerator.LLRPCodeGenerator" AssemblyFile="CodeGenerator.dll" />
-  <Target Name="BeforeBuild">
-    <CodeGenerator.LLRPCodeGenerator LLRP_XML_FILE="llrp-1x0-def.xml" XSLT_FILE="LLRPParam.xslt" OUTPUT_CS_FILE="LLRPParam.cs" Condition="!Exists('LLRPParam.cs')" />
-    <CodeGenerator.LLRPCodeGenerator LLRP_XML_FILE="llrp-1x0-def.xml" XSLT_FILE="LLRPMsg.xslt" OUTPUT_CS_FILE="LLRPMsg.cs" Condition="!Exists('LLRPMsg.cs')" />
-    <CodeGenerator.LLRPCodeGenerator LLRP_XML_FILE="llrp-1x0-def.xml" XSLT_FILE="LLRPXmlParser.xslt" OUTPUT_CS_FILE="LLRPXmlParser.cs" Condition="!Exists('LLRPXmlParser.cs')" />
-    <CodeGenerator.LLRPCodeGenerator LLRP_XML_FILE="llrp-1x0-def.xml" XSLT_FILE="LLRPEnum.xslt" OUTPUT_CS_FILE="LLRPEnum.cs" Condition="!Exists('LLRPEnum.cs')" />
-    <CodeGenerator.LLRPCodeGenerator LLRP_XML_FILE="llrp-1x0-def.xml" XSLT_FILE="LLRPEndPoint.xslt" OUTPUT_CS_FILE="LLRPEndPoint.cs" Condition="!Exists('LLRPEndPoint.cs')" />
-    <CodeGenerator.LLRPCodeGenerator LLRP_XML_FILE="llrp-1x0-def.xml" XSLT_FILE="LLRPClient.xslt" OUTPUT_CS_FILE="LLRPClient.cs" Condition="!Exists('LLRPClient.cs')" />
-    <CodeGenerator.LLRPCodeGenerator LLRP_XML_FILE="llrp-1x0-def.xml" XSLT_FILE="LLRPNameSpace.xslt" OUTPUT_CS_FILE="LLRPNameSpace.cs" Condition="!Exists('LLRPNameSpace.cs')" />
-    <CodeGenerator.LLRPCodeGenerator LLRP_XML_FILE="llrp-1x0-def.xml" XSLT_FILE="LLRPBinaryDecoder.xslt" OUTPUT_CS_FILE="LLRPBinaryDecoder.cs" Condition="!Exists('LLRPBinaryDecoder.cs')" />
+
+  <Target Name="BeforeBuild" Inputs="@(Generate)" Outputs="@(Generate -&gt; '%(filename).cs')">
+    <CodeGenerator.LLRPCodeGenerator LLRP_XML_FILE="llrp-1x0-def.xml" XSLT_FILE="@(Generate)" OUTPUT_CS_FILE="@(Generate -&gt; '%(filename).cs')" Condition="!Exists('@(Generate -&gt; \'%(filename).cs\')')" />
   </Target>
   <Target Name="AfterBuild">
   </Target>
+
+  <ItemGroup>
+    <Generate Include="LLRPParam.xslt" />
+    <Generate Include="LLRPMsg.xslt" />
+    <Generate Include="LLRPXmlParser.xslt" />
+    <Generate Include="LLRPEnum.xslt" />
+    <Generate Include="LLRPEndPoint.xslt" />
+    <Generate Include="LLRPClient.xslt" />
+    <Generate Include="LLRPNamespace.xslt" />
+    <Generate Include="LLRPBinaryDecoder.xslt" />
+  </ItemGroup>
+
 </Project>
