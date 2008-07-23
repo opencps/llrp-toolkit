@@ -153,9 +153,8 @@ sub reader_connect {
 			Timeout=> 5000);
 	$sock || die "Could not connect ($!)\n";
 
-	$sock->sockopt (TCP_NODELAY, 1);
-	$sock->sockopt (SO_SNDBUF, 0);
-	
+	setsockopt($sock, Socket::IPPROTO_TCP, Socket::TCP_NODELAY, 1);
+
 	my $buf = read_message ($sock, 20);
 	my $doc = decode_message ($buf);
 	my $cleanup = !$params{NoCleanUp};
