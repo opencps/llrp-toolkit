@@ -18,6 +18,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LLRP2XML", "LLRP2XML\LLRP2X
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XML2LLRP", "XML2LLRP\XML2LLRP.csproj", "{72581EA4-5751-4AE8-8E6B-11F2D552A8F9}"
+	ProjectSection(ProjectDependencies) = postProject
+		{1C0436C6-1226-4B5C-BE7D-8AC69AEB66FC} = {1C0436C6-1226-4B5C-BE7D-8AC69AEB66FC}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
