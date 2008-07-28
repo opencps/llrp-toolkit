@@ -154,10 +154,16 @@ namespace LLRP
 
         private void NonBlockTCPConnectionCallback(IAsyncResult ar)
         {
-            TcpClient tcpClient = ar.AsyncState as TcpClient;
-            if (tcpClient.Connected)
+            try
             {
-                non_block_tcp_connection_evt.Set();
+                TcpClient tcpClient = ar.AsyncState as TcpClient;
+                if (tcpClient != null && tcpClient.Connected)
+                {
+                    non_block_tcp_connection_evt.Set();
+                }
+            }
+            catch 
+            { 
             }
         }
 
@@ -170,12 +176,14 @@ namespace LLRP
             int offset = 0;                     //used to keep the start position of a LLRP message in 
                                                 //byte array returned from the read
             AsynReadState ss = (AsynReadState)ar.AsyncState;    //used to keep data
-            int nReads = ns.EndRead(ar);
 
-            lock (syn_msg)
+            try
             {
-                try
+                int nReads = ns.EndRead(ar);
+
+                lock (syn_msg)
                 {
+
                 REPEAT:
                     if (new_message)                //new_message is a flag to indicate if the data is part of unfinished message
                     {
@@ -234,16 +242,12 @@ namespace LLRP
                             //if ns !=null, do next asyn-read, to ensure that read
                             if (ns != null && ns.CanRead)
                             {
-                                try
-                                {
-                                    ns.Flush();
-                                    state = new AsynReadState(BUFFER_SIZE);
+                                ns.Flush();
+                                state = new AsynReadState(BUFFER_SIZE);
 
-                                    Array.Copy(ss.data, offset, state.data, 0, reserved_date_len);
+                                Array.Copy(ss.data, offset, state.data, 0, reserved_date_len);
 
-                                    if (!trying_to_close) ns.BeginRead(state.data, reserved_date_len, BUFFER_SIZE-reserved_date_len, new AsyncCallback(OnDataRead), state);
-                                }
-                                catch { }
+                                if (!trying_to_close) ns.BeginRead(state.data, reserved_date_len, BUFFER_SIZE - reserved_date_len, new AsyncCallback(OnDataRead), state);
                             }
 
                             return;
@@ -277,19 +281,16 @@ namespace LLRP
                     //if ns !=null, do next asyn-read, to ensure that read
                     if (ns != null && ns.CanRead)
                     {
-                        try
-                        {
-                            ns.Flush();
-                            state = new AsynReadState(BUFFER_SIZE);
+                        ns.Flush();
+                        state = new AsynReadState(BUFFER_SIZE);
 
-                            if (!trying_to_close) ns.BeginRead(state.data, 0, BUFFER_SIZE, new AsyncCallback(OnDataRead), state);
-                        }
-                        catch { }
+                        if (!trying_to_close) ns.BeginRead(state.data, 0, BUFFER_SIZE, new AsyncCallback(OnDataRead), state);
                     }
                 }
-                catch
-                {
-                }
+            }
+            catch
+            {
+                //throw new LLRPNetworkException("Unale to obtain NetStream for read/write. Please check if the network connection is brocken.");
             }
         }
         
