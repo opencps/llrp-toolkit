@@ -57,6 +57,9 @@
     
     using System.Net;
 
+    namespace LLRP
+    {
+
     /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>summary<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
     /// LLRP Binary Decoder
     /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>/summary<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
@@ -132,6 +135,8 @@
             : base(message, innerException)
         {
         }
+
+    }
 
     }
     
