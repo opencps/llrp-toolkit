@@ -58,6 +58,8 @@
     using LLRP;
     using LLRP.DataType;
     
+    namespace LLRP
+    {
     /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>summary<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
     /// LLRP XML Parser
     /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>/summary<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
@@ -90,6 +92,7 @@
         return;      
       }
       }
+    }
     }
   </xsl:template>
 </xsl:stylesheet>
