@@ -38,9 +38,9 @@ using System.Xml;
 using System.Reflection;
 using System.IO;
 
-using LLRP.DataType;
+using Org.LLRP.LTK.LLRPV1.DataType;
 
-namespace LLRP
+namespace Org.LLRP.LTK.LLRPV1
 {
     //LLRP Custom Parameters definitions
     public interface ICustom_Parameter : IParameter { }

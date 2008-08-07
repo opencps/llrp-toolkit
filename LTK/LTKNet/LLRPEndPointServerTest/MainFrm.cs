@@ -26,10 +26,10 @@ using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 
-using LLRP;
-using LLRP.DataType;
+using Org.LLRP.LTK.LLRPV1;
+using Org.LLRP.LTK.LLRPV1.DataType;
 
-namespace LLRPEndPointServerTest
+namespace Org.LLRP.LTK.LLRPV1EndPointServerTest
 {
     public partial class MainFrm : Form
     {

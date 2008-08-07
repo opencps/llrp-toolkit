@@ -57,9 +57,9 @@
     using System.Xml.Schema;
     using System.Runtime.InteropServices;
 
-    using LLRP.DataType;
+    using Org.LLRP.LTK.LLRPV1.DataType;
 
-    namespace LLRP
+    namespace Org.LLRP.LTK.LLRPV1
     {
 
     #region Custom Parameter Interface

@@ -52,12 +52,12 @@
     using System.ComponentModel;
     using System.Runtime.InteropServices;
 
-    using LLRP;
-    using LLRP.DataType;
+    using Org.LLRP.LTK.LLRPV1;
+    using Org.LLRP.LTK.LLRPV1.DataType;
     
     using System.Net;
 
-    namespace LLRP
+    namespace Org.LLRP.LTK.LLRPV1
     {
 
     /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>summary<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
@@ -96,7 +96,7 @@
        /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>/summary<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
        /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>param name="packet"<xsl:text disable-output-escaping="yes">&gt;</xsl:text>Binary LLRP packet to be decoded<xsl:text disable-output-escaping="yes">&lt;</xsl:text>/param<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
        /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>param name="msg"<xsl:text disable-output-escaping="yes">&gt;</xsl:text>LLRP message. output<xsl:text disable-output-escaping="yes">&lt;</xsl:text>/param<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
-       public static void Decode(ref byte [] packet, out LLRP.DataType.Message msg)
+       public static void Decode(ref byte [] packet, out Message msg)
        {
           LLRP_Envelope env;
           Decode_Envelope (packet, out env);

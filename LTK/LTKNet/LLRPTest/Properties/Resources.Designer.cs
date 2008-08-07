@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace LLRPTest.Properties
+namespace Org.LLRP.LTK.LLRPV1Test.Properties
 {
 
 

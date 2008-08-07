@@ -57,10 +57,10 @@
     using System.ComponentModel;
 
 
-    using LLRP;
-    using LLRP.DataType;
+    using Org.LLRP.LTK.LLRPV1;
+    using Org.LLRP.LTK.LLRPV1.DataType;
 
-    namespace LLRP.<xsl:copy-of select="$vendor_name"/>
+    namespace Org.LLRP.LTK.LLRPV1.<xsl:copy-of select="$vendor_name"/>
     {
 
     #region Custom Parameter Interface

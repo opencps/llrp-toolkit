@@ -35,7 +35,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace LLRP
+namespace Org.LLRP.LTK.LLRPV1
 {
 
     public delegate void delegateMessageReceived(Int16 ver, Int16 msg_type, int msg_id, byte[] data);

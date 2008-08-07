@@ -45,7 +45,7 @@ using System.Xml.Schema;
 using System.Runtime.InteropServices;
 
 
-namespace LLRP.DataType
+namespace Org.LLRP.LTK.LLRPV1.DataType
 {
     /// <summary>
     /// Parameter interface

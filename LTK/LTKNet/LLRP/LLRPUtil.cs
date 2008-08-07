@@ -43,7 +43,7 @@ using System.Xml.Serialization;
 using System.Xml.Schema;
 using System.Runtime.InteropServices;
 
-namespace LLRP.DataType
+namespace Org.LLRP.LTK.LLRPV1.DataType
 {
     /// <summary>
     /// Utility class contains data type conversion functions

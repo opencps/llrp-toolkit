@@ -1,4 +1,4 @@
-namespace LLRPEndPointServerTest
+namespace Org.LLRP.LTK.LLRPV1EndPointServerTest
 {
     partial class MainFrm
     {

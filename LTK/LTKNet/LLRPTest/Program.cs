@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
 
-namespace LLRPTest
+namespace Org.LLRP.LTK.LLRPV1Test
 {
     static class Program
     {

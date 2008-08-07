@@ -42,9 +42,9 @@ using System.Xml;
 using System.Xml.Serialization;
 using System.Data;
 
-using LLRP.DataType;
+using Org.LLRP.LTK.LLRPV1.DataType;
 
-namespace LLRP
+namespace Org.LLRP.LTK.LLRPV1
 {
     /// <summary>
     /// TCPIPClient, used for building LLRPClient

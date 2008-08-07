@@ -55,10 +55,10 @@
     using System.Xml.Schema;
     using System.Runtime.InteropServices;
 
-    using LLRP;
-    using LLRP.DataType;
+    using Org.LLRP.LTK.LLRPV1;
+    using Org.LLRP.LTK.LLRPV1.DataType;
     
-    namespace LLRP
+    namespace Org.LLRP.LTK.LLRPV1
     {
     /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>summary<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
     /// LLRP XML Parser

@@ -53,7 +53,7 @@
     using System.Xml.Schema;
     using System.ComponentModel;
 
-    namespace LLRP
+    namespace Org.LLRP.LTK.LLRPV1
     {
     //LLRP Enumeration definitions
 

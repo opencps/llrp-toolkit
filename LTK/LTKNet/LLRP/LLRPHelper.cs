@@ -43,7 +43,7 @@ using System.Xml.Serialization;
 using System.Xml.Schema;
 using System.Runtime.InteropServices;
 
-namespace LLRP
+namespace Org.LLRP.LTK.LLRPV1
 {
     /// <summary>
     /// Abstract class for all three types of Asyn. message sent from reader

@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace LLRPEndPointServerTest.Properties {
+namespace Org.LLRP.LTK.LLRPV1EndPointServerTest.Properties {
     using System;
     
     

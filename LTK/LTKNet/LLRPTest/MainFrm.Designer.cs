@@ -1,4 +1,4 @@
-namespace LLRPTest
+namespace Org.LLRP.LTK.LLRPV1Test
 {
     partial class MainFrm
     {

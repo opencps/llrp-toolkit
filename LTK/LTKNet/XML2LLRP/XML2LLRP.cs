@@ -5,8 +5,8 @@ using System.IO;
 
 using System.Xml;
 
-using LLRP;
-using LLRP.DataType;
+using Org.LLRP.LTK.LLRPV1;
+using LTKD = Org.LLRP.LTK.LLRPV1.DataType;
 
 namespace LTK
 {
@@ -86,7 +86,7 @@ namespace LTK
                 doc.Load(xr.ReadSubtree());
                 doc.WriteContentTo(tw);
                 
-                LLRP.DataType.Message msg;
+                LTKD.Message msg;
                 ENUM_LLRP_MSG_TYPE dummy;
 
                 try
@@ -108,7 +108,7 @@ namespace LTK
                     LLRPXmlParser.ParseXMLToLLRPMessage(err_msg, out msg, out dummy);
                 }
 
-                byte[] packet = LLRP.DataType.Util.ConvertBitArrayToByteArray(msg.ToBitArray());
+                byte[] packet = LTKD.Util.ConvertBitArrayToByteArray(msg.ToBitArray());
                 outp.Write(packet, 0, packet.Length);
 
                 /* next XML subdocument */

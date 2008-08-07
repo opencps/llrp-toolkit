@@ -5,8 +5,8 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Net;
 
-using LLRP;
-using LLRP.DataType;
+using Org.LLRP.LTK.LLRPV1;
+using Org.LLRP.LTK.LLRPV1.DataType;
 
 namespace LTK
 {
@@ -80,7 +80,7 @@ namespace LTK
                 byte[] packet;
                 read_msg(s, hdr, ref env, out packet);
 
-                LLRP.DataType.Message msg;
+                Message msg;
 
                 try
                 {

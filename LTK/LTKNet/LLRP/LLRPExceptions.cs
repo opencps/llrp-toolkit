@@ -35,9 +35,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 
-using LLRP.DataType;
+using Org.LLRP.LTK.LLRPV1.DataType;
 
-namespace LLRP
+namespace Org.LLRP.LTK.LLRPV1
 {
     /// <summary>
     /// LLRP network exception

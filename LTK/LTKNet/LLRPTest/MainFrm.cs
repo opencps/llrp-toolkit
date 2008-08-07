@@ -34,10 +34,10 @@ using System.Threading;
 
 using System.IO;
 
-using LLRP;
-using LLRP.DataType;
+using Org.LLRP.LTK.LLRPV1;
+using LTKD = Org.LLRP.LTK.LLRPV1.DataType;
 
-namespace LLRPTest
+namespace Org.LLRP.LTK.LLRPV1Test
 {
 
     public partial class MainFrm : Form
@@ -242,10 +242,10 @@ namespace LLRPTest
             tagSpec.C1G2TargetTag = new PARAM_C1G2TargetTag[1];
             tagSpec.C1G2TargetTag[0] = new PARAM_C1G2TargetTag();
             tagSpec.C1G2TargetTag[0].Match = true; //change to "true" if you want to the following parameters take effect.
-            tagSpec.C1G2TargetTag[0].MB = new TwoBits(1);
+            tagSpec.C1G2TargetTag[0].MB = new LTKD.TwoBits(1);
             tagSpec.C1G2TargetTag[0].Pointer = 0x20;
-            tagSpec.C1G2TargetTag[0].TagData = LLRPBitArray.FromString("6666");
-            tagSpec.C1G2TargetTag[0].TagMask = LLRPBitArray.FromBinString("1111111111111111");
+            tagSpec.C1G2TargetTag[0].TagData = LTKD.LLRPBitArray.FromString("6666");
+            tagSpec.C1G2TargetTag[0].TagMask = LTKD.LLRPBitArray.FromBinString("1111111111111111");
 
             msg.AccessSpec.AccessCommand.AirProtocolTagSpec.Add(tagSpec);
 
@@ -254,11 +254,11 @@ namespace LLRPTest
 
             PARAM_C1G2Write wr = new PARAM_C1G2Write();
             wr.AccessPassword = 0;
-            wr.MB = new TwoBits(1);
+            wr.MB = new LTKD.TwoBits(1);
             wr.OpSpecID = 111;
             wr.WordPointer = 2;
             //Data to be written.
-            wr.WriteData = UInt16Array.FromString("EEEE11112222333344445555");
+            wr.WriteData = LTKD.UInt16Array.FromString("EEEE11112222333344445555");
 
             msg.AccessSpec.AccessCommand.AccessCommandOpSpec.Add(wr);
 
@@ -387,7 +387,7 @@ namespace LLRPTest
             cmd.C1G2RFControl.ModeIndex = 2;
             cmd.C1G2RFControl.Tari = 0;
             cmd.C1G2SingulationControl = new PARAM_C1G2SingulationControl();
-            cmd.C1G2SingulationControl.Session = new TwoBits(1);
+            cmd.C1G2SingulationControl.Session = new LTKD.TwoBits(1);
             cmd.C1G2SingulationControl.TagPopulation = 0;
             cmd.C1G2SingulationControl.TagTransitTime = 1000;
             cmd.TagInventoryStateAware = false;
@@ -552,7 +552,7 @@ namespace LLRPTest
             msg.ROSpec.SpecParameter = new UNION_SpecParameter();
             PARAM_AISpec aiSpec = new PARAM_AISpec();
 
-            aiSpec.AntennaIDs = new UInt16Array();
+            aiSpec.AntennaIDs = new LTKD.UInt16Array();
             aiSpec.AntennaIDs.Add(0);       //0 :  applys to all antennae, 
             //aiSpec.AntennaIDs.Add(1);
             //aiSpec.AntennaIDs.Add(2);     ...
@@ -684,7 +684,7 @@ namespace LLRPTest
                     string s = sr.ReadToEnd();
                     fs.Close();
 
-                    LLRP.DataType.Message obj;
+                    LTKD.Message obj;
                     ENUM_LLRP_MSG_TYPE msg_type;
 
                     try

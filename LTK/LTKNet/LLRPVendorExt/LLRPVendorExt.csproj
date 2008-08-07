@@ -51,10 +51,28 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <UsingTask TaskName="LLRPCodeGenerator" AssemblyFile="CodeGenerator.dll" />
-  <Target Name="BeforeBuild">
-    <LLRPCodeGenerator LLRP_XML_FILE="VendorExt.xml" XSLT_FILE="VendorExt.xslt" OUTPUT_CS_FILE="VendorExt.cs" Condition="!Exists('VendorExt.cs')" />
-    <LLRPCodeGenerator LLRP_XML_FILE="VendorExt.xml" XSLT_FILE="LLRPVendorNameSpace.xslt" OUTPUT_CS_FILE="LLRPVendorNameSpace.cs" Condition="!Exists('LLRPVendorNameSpace.cs')" />
+
+  <Target Name="BeforeBuild" Inputs="@(Generate); VendorExt.xml"
+	  Outputs="@(Generate -> '%(filename).cs')">
+    <CodeGenerator.LLRPCodeGenerator LLRP_XML_FILE="VendorExt.xml" XSLT_FILE="@(Generate)" OUTPUT_CS_FILE="@(Generate -> '%(filename).cs')" Condition="!Exists('@(Generate -&gt; \'%(filename).cs\')')" />
   </Target>
+
+  <ItemGroup>
+    <Generate Include="VendorExt.xslt" />
+    <Generate Include="LLRPVendorNameSpace.xslt" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <CleanDependsOn>
+        $(CleanDependsOn);
+        CleanGeneratedCode;
+    </CleanDependsOn>
+  </PropertyGroup>
+
+  <Target Name="CleanGeneratedCode">
+    <Delete Files="@(Generate -> '%(filename).cs')"/>
+  </Target>
+
   <Target Name="AfterBuild">
   </Target>
 </Project>
