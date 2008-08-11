@@ -155,7 +155,7 @@
 				<zipfileset src="lib/jdom.jar" />
 				<zipfileset src="lib/jargs.jar" />
 				<zipfileset src="lib/jaxb-api.jar" />
-				<zipfileset src="lib/mina-core-2.0.0-M1.jar" />
+				<zipfileset src="lib/mina-core-1.1.7.jar" />
 				<zipfileset src="lib/slf4j-api-1.5.0.jar" />
 				<zipfileset src="lib/slf4j-log4j12-1.5.0.jar" />
 				<zipfileset dir="." includes="NOTICE.TXT" prefix="" />
@@ -219,9 +219,9 @@
 	<!-- ===================================== -->
 	<target name="deploy" >
 		<scp todir="${user}:${pw}@athena.dialup.mit.edu:www/ltk" trust="true">
-		    <fileset dir="${build}">
-		      <include name="**/*.jar"/>
-		    </fileset>
+			 <fileset dir="${build}">
+					      <include name="**/*.jar"/>
+			 </fileset>
 		  </scp>
 	</target>
 	
