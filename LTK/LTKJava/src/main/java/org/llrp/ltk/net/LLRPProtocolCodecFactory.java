@@ -67,4 +67,19 @@ public class LLRPProtocolCodecFactory implements ProtocolCodecFactory {
 		return encoder;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	public ProtocolDecoder getDecoder() throws Exception {
+		return decoder;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public ProtocolEncoder getEncoder() throws Exception {
+		return encoder;
+	}
+	
+
 }

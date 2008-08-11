@@ -25,10 +25,10 @@ import org.apache.mina.common.IdleStatus;
 import org.apache.mina.common.IoAcceptor;
 import org.apache.mina.common.IoHandlerAdapter;
 import org.apache.mina.common.IoSession;
-import org.apache.mina.common.ReadFuture;
+import org.apache.mina.filter.LoggingFilter;
 import org.apache.mina.filter.codec.ProtocolCodecFilter;
-import org.apache.mina.filter.logging.LoggingFilter;
-import org.apache.mina.transport.socket.nio.NioSocketAcceptor;
+import org.apache.mina.transport.socket.nio.SocketAcceptor;
+import org.apache.mina.transport.socket.nio.SocketAcceptorConfig;
 import org.llrp.ltk.types.LLRPMessage;
 
 
@@ -101,15 +101,21 @@ public class LLRPAcceptor extends IoHandlerAdapter implements LLRPConnection  {
 	}
 
 	public void bind(){
-		acceptor = new NioSocketAcceptor();
+		acceptor = new SocketAcceptor();
 		acceptor.getFilterChain().addLast( "logger", new LoggingFilter() );
 		acceptor.getFilterChain().addLast("codec", new ProtocolCodecFilter(new LLRPProtocolCodecFactory(LLRPProtocolCodecFactory.BINARY_ENCODING)));
-		acceptor.setHandler(handler);
-		acceptor.getSessionConfig().setReadBufferSize( 2048 );
-		acceptor.getSessionConfig().setIdleTime( IdleStatus.BOTH_IDLE, IDLE_TIME );
+		// MINA 2.0
+		// acceptor.setHandler(handler);
+		//acceptor.getSessionConfig().setReadBufferSize( 2048 );
+		//acceptor.getSessionConfig().setIdleTime( IdleStatus.BOTH_IDLE, IDLE_TIME );
+		
+		// MINA 1.1
+		SocketAcceptorConfig cfg = new SocketAcceptorConfig();
+		cfg.getSessionConfig().setReceiveBufferSize(2048);
+		
 		try {        
 			socketAddress = new InetSocketAddress(port);
-			acceptor.bind(socketAddress);
+			acceptor.bind(socketAddress, handler);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -149,42 +155,8 @@ public class LLRPAcceptor extends IoHandlerAdapter implements LLRPConnection  {
 	 * {@inheritDoc}
 	 */
 	public LLRPMessage transact(LLRPMessage message) {
-		String returnMessageType = message.getResponseType();
-		if (returnMessageType.equals("")){
-			endpoint.errorOccured("message does not expect return message");
-			log.debug("message does not expect return message");
-			return null;
-		}
-		if (session == null){
-			log.warn("session is not yet established");
-			endpoint.errorOccured("session is not yet established");
-			return null;
-		}
-		session.setAttribute(SYNC_MESSAGE_ANSWER, returnMessageType);
-		LLRPMessage returnMessage = null;
-		if (!session.isConnected()){
-			log.info("new session created");
-			endpoint.errorOccured("new session created");
-		}
-		// useReadOperation must be enabled to use read operation.
-		session.getConfig().setUseReadOperation(true);
-		session.write(message);
-		ReadFuture future = session.read();
-		// Wait until a message is received.
-		try {
-			future.await();
-			returnMessage = (LLRPMessage) future.getMessage();
-			while(!returnMessage.getName().equals(returnMessageType)){
-				log.info("message received does not match expected type; received "+returnMessage.getName()+", expected "+returnMessageType);
-				future = session.read();
-				future.await();
-				returnMessage = (LLRPMessage) future.getMessage();
-			}
-			session.removeAttribute(SYNC_MESSAGE_ANSWER);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return returnMessage;
+		
+		throw new UnsupportedOperationException();
 	}
 
 	/**

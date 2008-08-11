@@ -23,9 +23,8 @@ import org.apache.log4j.Logger;
 import org.apache.mina.common.CloseFuture;
 import org.apache.mina.common.ConnectFuture;
 import org.apache.mina.common.IoSession;
-import org.apache.mina.common.ReadFuture;
 import org.apache.mina.filter.codec.ProtocolCodecFilter;
-import org.apache.mina.transport.socket.nio.NioSocketConnector;
+import org.apache.mina.transport.socket.nio.SocketConnector;
 import org.llrp.ltk.types.LLRPMessage;
 
 /**
@@ -48,7 +47,7 @@ public class LLRPConnector implements LLRPConnection{
 	private Logger log = Logger.getLogger(LLRPConnector.class);
 	private String host;
 	private int port = 5084;
-	private org.apache.mina.transport.socket.SocketConnector connector;
+	private org.apache.mina.transport.socket.nio.SocketConnector connector;
 	private LLRPIoHandlerAdapter handler;
 
 	private ConnectFuture future;
@@ -85,19 +84,22 @@ public class LLRPConnector implements LLRPConnection{
 	} 
 	
 	public void connect(){
-		connector = new NioSocketConnector();
+		connector = new SocketConnector();
 		connector.getFilterChain().addLast("codec", new ProtocolCodecFilter(new LLRPProtocolCodecFactory(LLRPProtocolCodecFactory.BINARY_ENCODING)));
-		connector.setHandler(handler);
+		// MINA 2.0 method 
+		//connector.setHandler(handler);
 		InetSocketAddress add = new InetSocketAddress(host, port);
-		future = connector.connect(add);
-		future.awaitUninterruptibly();
+		future = connector.connect(add,handler);
+		// MINA 2.0
+		//future.awaitUninterruptibly();
 	}
 
 	public void disconnect(){
 		IoSession session = future.getSession();
 		if (session != null && session.isConnected()){
 			CloseFuture future = session.close();
-			future.awaitUninterruptibly();
+			// MINA 2.0
+			// future.awaitUninterruptibly();
 		}
 	}
 
@@ -113,43 +115,6 @@ public class LLRPConnector implements LLRPConnection{
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public LLRPMessage transact(LLRPMessage message) {
-		IoSession session = future.getSession();
-		String returnMessageType = message.getResponseType();
-		if (returnMessageType.equals("")){
-			endpoint.errorOccured("message does not expect return message");
-			return null;
-		}
-		session.setAttribute(SYNC_MESSAGE_ANSWER, returnMessageType);
-		LLRPMessage returnMessage = null;
-		if (!future.isConnected()){
-			future = connector.connect();
-			future.awaitUninterruptibly();
-			session = future.getSession();
-			log.info("new session created");
-		}
-		// useReadOperation must be enabled to use read operation.
-		session.getConfig().setUseReadOperation(true);
-		session.write(message);
-		ReadFuture future = session.read();
-		// Wait until a message is received.
-		try {
-			future.await();
-			returnMessage = (LLRPMessage) future.getMessage();
-			while(!returnMessage.getName().equals(returnMessageType)){
-				future = session.read();
-				future.await();
-				returnMessage = (LLRPMessage) future.getMessage();
-			}
-			session.removeAttribute(SYNC_MESSAGE_ANSWER);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return returnMessage;
-	}
 
 	/**
 	 * {@inheritDoc}
@@ -157,8 +122,10 @@ public class LLRPConnector implements LLRPConnection{
 	public void send(LLRPMessage message) {
 		IoSession session = future.getSession();
 		if (!future.isConnected()){
-			future = connector.connect();
-			future.awaitUninterruptibly();
+			future = connector.connect(session.getServiceAddress(),session.getHandler());
+			// MINA 2.0
+			// future = connector.connect();
+			// future.awaitUninterruptibly();
 			session = future.getSession();
 			log.info("new session created");
 		}
@@ -233,6 +200,13 @@ public class LLRPConnector implements LLRPConnection{
 	 */
 	public void setPort(int port) {
 		this.port = port;
+	}
+	
+	/**
+	 * {@inheritDocs}
+	 */
+	public LLRPMessage transact(LLRPMessage message) {
+		throw new UnsupportedOperationException();
 	}
 
 }

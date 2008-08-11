@@ -18,7 +18,7 @@
 package org.llrp.ltk.net;
 
 import org.apache.log4j.Logger;
-import org.apache.mina.common.IoBuffer;
+import org.apache.mina.common.ByteBuffer;
 import org.apache.mina.common.IoSession;
 import org.apache.mina.filter.codec.ProtocolEncoder;
 import org.apache.mina.filter.codec.ProtocolEncoderOutput;
@@ -45,7 +45,8 @@ public class LLRPBinaryEncoder implements ProtocolEncoder {
 					+ me.getMessage());
 			return;
 		}
-		IoBuffer buffer = IoBuffer.allocate(byteMsg.length, false);
+		// Note: ByteBuffer is renamed in MINA to IOBuffer
+		ByteBuffer buffer = ByteBuffer.allocate(byteMsg.length, false);
 		buffer.put(byteMsg);
 		buffer.flip();
 		out.write(buffer);
