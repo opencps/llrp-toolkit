@@ -60,6 +60,9 @@ public abstract class LLRPMessage {
 	protected BitList version;
 	protected UnsignedInteger messageID = new UnsignedInteger();
 	protected UnsignedInteger messageLength = new UnsignedInteger();
+	
+	private static Validator validator;
+	private static byte[] mutex = new byte[0];
 
 	/**
 	 * encode this message to binary formate.
@@ -348,23 +351,24 @@ public abstract class LLRPMessage {
 
 			byte[] a = stream.toByteArray();
 			InputStream is = new ByteArrayInputStream(a);
-
-			// create a SchemaFactory capable of understanding WXS schemas
-			SchemaFactory factory = SchemaFactory
-					.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-			// load a WXS schema, represented by a Schema instance
-			ClassLoader cl = getClass().getClassLoader();
-			InputStream s = new BufferedInputStream(cl
-					.getResourceAsStream(schemaPath));
-			Schema schema = factory.newSchema(new StreamSource(s));
-
-
-			// create a Validator instance, which can be used to validate an
-			// instance document
-			Validator validator = schema.newValidator();
-
-			// validate the DOM tree
-			validator.validate(new StreamSource(is));
+			
+			synchronized (mutex) {
+				if(validator == null){//first access
+					//create a SchemaFactory capable of understanding WXS schemas
+					SchemaFactory factory = SchemaFactory
+							.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+					// load a WXS schema, represented by a Schema instance
+					ClassLoader cl = getClass().getClassLoader();
+					InputStream s = new BufferedInputStream(cl
+							.getResourceAsStream(schemaPath));
+					Schema schema = factory.newSchema(new StreamSource(s));
+					// create a Validator instance, which can be used to validate an
+					// instance document
+					validator = schema.newValidator();
+				}
+				//validate the DOM tree
+				validator.validate(new StreamSource(is));
+			}
 		} catch (SAXException e) {
 
 			XMLOutputter output = new XMLOutputter();
