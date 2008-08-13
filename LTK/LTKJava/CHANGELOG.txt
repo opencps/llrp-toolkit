@@ -1,8 +1,12 @@
 Changes with LTKJava 0.1.1 Snapshot (latest in version control)
 
+* improved XML validation performance - patch by Li Cuizhu 
+[Christian Floerkemeier]
+
 * added documentation from XML to JavaDoc 
 [Basil Gasser]
 * downgraded from MINA-2.0.1M to stable MINA-1.1.7. Release date of stable MINA-2.0.* is currently not known. Users of LTKJava only need to replace the MINA dependency with version 1.1.7. 
+[Christian Floerkemeier]
 
 * fixed bug in XML encoding and decoding of UTCTimestamps reported by Li Cuizhu on the mailing list on 07/03/2008.
 [Christian Floerkemeier]
