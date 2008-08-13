@@ -20,6 +20,8 @@ import org.llrp.ltkGenerator.generated.Documentation;
 import org.llrp.ltkGenerator.generated.MessageDefinition;
 import org.llrp.ltkGenerator.generated.ParameterDefinition;
 
+import org.apache.xerces.dom.ElementNSImpl;
+
 public class Utility {
 	private Map<String, String> superTypes;
 	private List<ChoiceDefinition> choices;
@@ -421,19 +423,32 @@ public class Utility {
 				doc += "* ";
 
 				if (ob instanceof Documentation) {
-					doc += ((Documentation) ob).getContent().get(0).toString();
+					Documentation descOb = (Documentation) ob;
+					for (Object ox : descOb.getContent()) {
+						doc += '\n';
+						// allowed are only Element or String
+						if (ox instanceof ElementNSImpl) {
+							ElementNSImpl el = (ElementNSImpl) ox;
+							doc += el.getTextContent();
+						} else {
+							doc += ox.toString();
+						}	
+					}
 				}
 
 				if (ob instanceof Description) {
-					Object x = ((Description) ob).getContent().get(0);
-
-					// allowed are only Element or String
-//					if (x instanceof ElementNSImpl) {
-//						ElementNSImpl el = (ElementNSImpl) x;
-//						doc += el.getTextContent();
-//					} else {
-						doc += x.toString();
-//					}
+					Description descOb = (Description) ob;
+					for (Object ox : descOb.getContent()) {
+						doc += '\n';
+						// allowed are only Element or String
+						if (ox instanceof ElementNSImpl) {
+							ElementNSImpl el = (ElementNSImpl) ox;
+							doc += el.getTextContent();
+						} else {
+							doc += ox.toString();
+						}
+						
+					}
 				}
 
 				doc += '\n';
@@ -449,19 +464,32 @@ public class Utility {
 				doc += "* ";
 
 				if (ob instanceof Documentation) {
-					doc += ((Documentation) ob).getContent().get(0).toString();
+					Documentation descOb = (Documentation) ob;
+					for (Object ox : descOb.getContent()) {
+						doc += '\n';
+						// allowed are only Element or String
+						if (ox instanceof ElementNSImpl) {
+							ElementNSImpl el = (ElementNSImpl) ox;
+							doc += el.getTextContent();
+						} else {
+							doc += ox.toString();
+						}	
+					}
 				}
 
 				if (ob instanceof Description) {
-					Object x = ((Description) ob).getContent().get(0);
-
-					// allowed are only Element or String
-//					if (x instanceof ElementNSImpl) {
-//						ElementNSImpl el = (ElementNSImpl) x;
-//						doc += el.getTextContent();
-//					} else {
-						doc += x.toString();
-//					}
+					Description descOb = (Description) ob;
+					for (Object ox : descOb.getContent()) {
+						doc += '\n';
+						// allowed are only Element or String
+						if (ox instanceof ElementNSImpl) {
+							ElementNSImpl el = (ElementNSImpl) ox;
+							doc += el.getTextContent();
+						} else {
+							doc += ox.toString();
+						}
+						
+					}
 				}
 
 				doc += '\n';
