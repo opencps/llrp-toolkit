@@ -227,7 +227,7 @@ $utility.clearImports()
 	
 		
 /**
- * $utility.getAnnotation($message).
+ * $utility.getAnnotation($message)
  */
 
 

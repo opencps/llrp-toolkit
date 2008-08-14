@@ -222,7 +222,7 @@ import org.llrp.ltk.generated.LLRPConstants;
 	
 		
 /**
- * $utility.getAnnotation($parameter).
+ * $utility.getAnnotation($parameter)
  */
  
 ## TV Parameters have type number from 0 - 127, TLV from 128 - 2047

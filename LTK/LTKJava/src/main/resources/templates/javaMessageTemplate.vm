@@ -202,7 +202,7 @@ import org.llrp.ltk.generated.LLRPConstants;
 	
 		
 /**
- * $utility.getAnnotation($message).
+ * $utility.getAnnotation($message)
  */
 
 

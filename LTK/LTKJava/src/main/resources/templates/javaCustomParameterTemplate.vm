@@ -236,7 +236,7 @@ import org.llrp.ltk.exceptions.InvalidLLRPMessageException;
 	#end
 #end
 /**
- * $utility.getAnnotation($custom).
+ * $utility.getAnnotation($custom)
  */
 ## beginning of class
 public class $custom.getName() extends Custom $interfaces{
