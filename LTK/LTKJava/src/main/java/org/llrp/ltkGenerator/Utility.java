@@ -19,8 +19,7 @@ import org.llrp.ltkGenerator.generated.Description;
 import org.llrp.ltkGenerator.generated.Documentation;
 import org.llrp.ltkGenerator.generated.MessageDefinition;
 import org.llrp.ltkGenerator.generated.ParameterDefinition;
-
-import org.apache.xerces.dom.ElementNSImpl;
+import com.sun.org.apache.xerces.internal.dom.ElementNSImpl;
 
 public class Utility {
 	private Map<String, String> superTypes;
@@ -100,7 +99,7 @@ public class Utility {
 	public String convertType(String xmlType, boolean isEnum) {
 		// two bit enumerations must be handled seperately
 		logger.debug("Utility.convertType: get llrp type for " + xmlType);
-		if (xmlType == null){
+		if (xmlType == null) {
 			return "null";
 		}
 		if (isEnum) {
@@ -220,7 +219,7 @@ public class Utility {
 	}
 
 	public boolean isByteToEnd(String type) {
-		if (type == null){
+		if (type == null) {
 			return false;
 		}
 		return type.toLowerCase().contains("bytestoend");
@@ -315,8 +314,7 @@ public class Utility {
 			logger.debug("Utility.getSuperType: nothing found for " + sub);
 
 			return "";
-		}	
-		
+		}
 
 		return sup;
 	}
@@ -324,20 +322,34 @@ public class Utility {
 	public void setSuperType(String sub, String sup) {
 		// use the converted types
 		String s = convertType(sup, true);
-		
+
 		if (!s.equalsIgnoreCase(NOTYPE)) {
-			// if it already contains the key but a different value, something is not ok!
-			if (superTypes.containsKey(sub.toLowerCase()) && !superTypes.get(sub.toLowerCase()).equalsIgnoreCase(s)){
-				throw new RuntimeException("Invalid definition in LLRPdef.xml or extension: trying to set "+ s+" as super type for "+ sub+ " but super type is already set to "+superTypes.get(sub.toLowerCase()));
+			// if it already contains the key but a different value, something
+			// is not ok!
+			if (superTypes.containsKey(sub.toLowerCase())
+					&& !superTypes.get(sub.toLowerCase()).equalsIgnoreCase(s)) {
+				throw new RuntimeException(
+						"Invalid definition in LLRPdef.xml or extension: trying to set "
+								+ s + " as super type for " + sub
+								+ " but super type is already set to "
+								+ superTypes.get(sub.toLowerCase()));
 			}
 			superTypes.put(sub.toLowerCase(), s);
-			logger.debug("Utility.setSupertype: set " + s + " for " + sub.toLowerCase());
+			logger.debug("Utility.setSupertype: set " + s + " for "
+					+ sub.toLowerCase());
 		} else {
-			if (superTypes.containsKey(sub.toLowerCase()) && !superTypes.get(sub.toLowerCase()).equalsIgnoreCase(sup)){
-				throw new RuntimeException("Invalid definition in LLRPdef.xml or extension: trying to set "+ sup+" as super type for "+ sub.toLowerCase()+ " but super type is already set to "+superTypes.get(sub.toLowerCase()));
+			if (superTypes.containsKey(sub.toLowerCase())
+					&& !superTypes.get(sub.toLowerCase()).equalsIgnoreCase(sup)) {
+				throw new RuntimeException(
+						"Invalid definition in LLRPdef.xml or extension: trying to set "
+								+ sup + " as super type for "
+								+ sub.toLowerCase()
+								+ " but super type is already set to "
+								+ superTypes.get(sub.toLowerCase()));
 			}
 			superTypes.put(sub.toLowerCase(), sup);
-			logger.debug("Utility.setSupertype: set " + sup + " for " + sub.toLowerCase());
+			logger.debug("Utility.setSupertype: set " + sup + " for "
+					+ sub.toLowerCase());
 		}
 	}
 
@@ -418,82 +430,14 @@ public class Utility {
 			MessageDefinition m = (MessageDefinition) o;
 			Annotation a = m.getAnnotation().get(0);
 			List<Object> list = a.getDocumentationOrDescription();
-
-			for (Object ob : list) {
-				doc += "* ";
-
-				if (ob instanceof Documentation) {
-					Documentation descOb = (Documentation) ob;
-					for (Object ox : descOb.getContent()) {
-						doc += '\n';
-						// allowed are only Element or String
-						if (ox instanceof ElementNSImpl) {
-							ElementNSImpl el = (ElementNSImpl) ox;
-							doc += el.getTextContent();
-						} else {
-							doc += ox.toString();
-						}	
-					}
-				}
-
-				if (ob instanceof Description) {
-					Description descOb = (Description) ob;
-					for (Object ox : descOb.getContent()) {
-						doc += '\n';
-						// allowed are only Element or String
-						if (ox instanceof ElementNSImpl) {
-							ElementNSImpl el = (ElementNSImpl) ox;
-							doc += el.getTextContent();
-						} else {
-							doc += ox.toString();
-						}
-						
-					}
-				}
-
-				doc += '\n';
-			}
+			doc = extractAnnotation(list);
 		}
 
 		if (o instanceof ParameterDefinition) {
 			ParameterDefinition m = (ParameterDefinition) o;
 			Annotation a = m.getAnnotation().get(0);
 			List<Object> list = a.getDocumentationOrDescription();
-
-			for (Object ob : list) {
-				doc += "* ";
-
-				if (ob instanceof Documentation) {
-					Documentation descOb = (Documentation) ob;
-					for (Object ox : descOb.getContent()) {
-						doc += '\n';
-						// allowed are only Element or String
-						if (ox instanceof ElementNSImpl) {
-							ElementNSImpl el = (ElementNSImpl) ox;
-							doc += el.getTextContent();
-						} else {
-							doc += ox.toString();
-						}	
-					}
-				}
-
-				if (ob instanceof Description) {
-					Description descOb = (Description) ob;
-					for (Object ox : descOb.getContent()) {
-						doc += '\n';
-						// allowed are only Element or String
-						if (ox instanceof ElementNSImpl) {
-							ElementNSImpl el = (ElementNSImpl) ox;
-							doc += el.getTextContent();
-						} else {
-							doc += ox.toString();
-						}
-						
-					}
-				}
-
-				doc += '\n';
-			}
+			doc = extractAnnotation(list);
 		}
 
 		if (doc.equals("")) {
@@ -501,6 +445,41 @@ public class Utility {
 		} else {
 			return doc;
 		}
+	}
+
+	private String extractAnnotation(List<Object> list) {
+		String description  = "";
+		String documentation = "";
+		for (Object ob : list) {
+
+			if (ob instanceof Description) {
+				Description descOb = (Description) ob;
+				for (Object ox : descOb.getContent()) {
+					// allowed are only Element or String
+					if (ox instanceof ElementNSImpl) {
+						ElementNSImpl el = (ElementNSImpl) ox;
+						description += el.getTextContent();
+					} else {
+						description += ox.toString();
+					}
+				}
+				description += '\n';
+			}
+			if (ob instanceof Documentation) {
+				documentation += "See EPCGlobal LLRP Specification section";
+				Documentation descOb = (Documentation) ob;
+				for (Object ox : descOb.getContent()) {
+					// allowed are only Element or String
+					if (ox instanceof ElementNSImpl) {
+						ElementNSImpl el = (ElementNSImpl) ox;
+						documentation += el.getTextContent().replace('\n', ' ');
+					} else {
+						documentation += ox.toString();
+					}
+				}
+			}
+		}
+		return description+documentation;
 	}
 
 	/**
@@ -533,7 +512,7 @@ public class Utility {
 	}
 
 	public boolean isCustomChoice(String name) {
-		if (name == null){
+		if (name == null) {
 			return false;
 		}
 		return customChoicesMap.containsKey(name.toLowerCase());
@@ -554,12 +533,13 @@ public class Utility {
 	public boolean isCustomMessage(String name) {
 		return customMessageMap.containsKey(name.toLowerCase());
 	}
-	public void addPrefixForParameter(String parameter, String ns){
+
+	public void addPrefixForParameter(String parameter, String ns) {
 		prefixForParameterMap.put(parameter, ns);
 	}
-	
-	public String getPrefixForParameter(String parameter){
-		if (prefixForParameterMap.containsKey(parameter)){
+
+	public String getPrefixForParameter(String parameter) {
+		if (prefixForParameterMap.containsKey(parameter)) {
 			return prefixForParameterMap.get(parameter);
 		} else {
 			return "";
