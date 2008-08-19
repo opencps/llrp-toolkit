@@ -1092,10 +1092,10 @@
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>This is the response by the Reader to the GET_READER_CONFIG message. The response is the LLRPStatus Parameter and the list of configuration parameters based on the RequestedData in GET_READER_CONFIG. If the GET_READER_CONFIG message did not have any errors, the success code is returned in the LLRPStatus parameter, and in addition the requested configuration parameters are returned. If there is an error, the appropriate error code is returned in the LLRPStatus parameter. The response contains at most one instance of each configuration parameter except for two cases, which are as follows:</h:p>
-          <h:lu>
+          <h:ul>
             <h:li><h:p>If RequestedData is 0, 2 or 3, and AntennaID is set to 0 in the GET_READER_CONFIG message, the Reader <h:b>SHALL</h:b> return one instance of AntennaProperties Parameter or AntennaConfiguration Parameter per requested antenna.</h:p></h:li>
             <h:li><h:p>If RequestedData is 0 or 9 (10), and GPIPortNum (GPOPortNum) is set to 0 in the GET_READER_CONFIG message, and, if the Reader supports GPI (GPO), the Reader <h:b>SHALL</h:b> return one instance of GPIPortCurrentState (GPOWriteData) Parameter per requested GPI Port (GPO Port).</h:p></h:li>
-          </h:lu>
+          </h:ul>
       </description>
     </annotation>
     <parameter repeat="1"   type="LLRPStatus"/>
