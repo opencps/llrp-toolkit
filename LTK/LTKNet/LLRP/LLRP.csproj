@@ -69,7 +69,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <UsingTask TaskName="CodeGenerator.LLRPCodeGenerator" AssemblyFile="CodeGenerator.dll" />
-  <Target Name="BeforeBuild" Inputs="@(Generate)" Outputs="@(Generate -> '%(filename).cs')">
+  <Target Name="BeforeBuild" Inputs="@(Generate); templates.xslt" Outputs="@(Generate -> '%(filename).cs')">
     <CodeGenerator.LLRPCodeGenerator LLRP_XML_FILE="llrp-1x0-def.xml" XSLT_FILE="@(Generate)" OUTPUT_CS_FILE="@(Generate -> '%(filename).cs')" Condition="!Exists('@(Generate -&gt; \'%(filename).cs\')')" />
   </Target>
 
