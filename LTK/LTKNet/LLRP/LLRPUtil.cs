@@ -1182,7 +1182,8 @@ namespace Org.LLRP.LTK.LLRPV1.DataType
         {
             foreach (XmlNode cn in node.ChildNodes)
             {
-                if (cn.Name == child_node_name) return cn.InnerText;
+                if (cn.Name == child_node_name || cn.LocalName == child_node_name)
+                    return cn.InnerText;
             }
 
             return string.Empty;
