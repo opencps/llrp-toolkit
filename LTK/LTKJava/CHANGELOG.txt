@@ -1,5 +1,8 @@
 Changes with LTKJava 0.1.1 Snapshot (latest in version control)
 
+* fixed bug in synchronous messaging [tracker: 1997316] -  patch by Li Cuizhu 
+[Christian Floerkemeier]
+
 * improved XML validation performance - patch by Li Cuizhu 
 [Christian Floerkemeier]
 
