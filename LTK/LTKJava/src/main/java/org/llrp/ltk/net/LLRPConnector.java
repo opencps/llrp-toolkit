@@ -18,11 +18,16 @@
 package org.llrp.ltk.net;
 
 import java.net.InetSocketAddress;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.apache.log4j.Logger;
 import org.apache.mina.common.CloseFuture;
 import org.apache.mina.common.ConnectFuture;
 import org.apache.mina.common.IoSession;
+import org.apache.mina.common.WriteFuture;
 import org.apache.mina.filter.codec.ProtocolCodecFilter;
 import org.apache.mina.transport.socket.nio.SocketConnector;
 import org.llrp.ltk.types.LLRPMessage;
@@ -32,10 +37,12 @@ import org.llrp.ltk.types.LLRPMessage;
  * 
  * Here is a simple code example:
  * <p>
- * <code> LLRPConnection c = new LLRPConnector(endpoint,ip); </code> <p>
+ * <code> LLRPConnector c = new LLRPConnector(endpoint,ip); </code> <p>
  * <code> c.connect(); </code> <p>
- * <code> // send message asynchronously </code> <p>
+ * <code> // send message asynchronously - response needs to handled via  </code> <p>
+ * <code> the message received method of the endpoint </code> <p>
  * <code> c.send(llrpmessage); </code> <p>
+ * <code>  </code> <p>
  * <code> // send message synchronously </code> <p>
  * <code> LLRPMessage m = c.transact(llrpmessage); </code>
  */
@@ -52,6 +59,9 @@ public class LLRPConnector implements LLRPConnection{
 
 	private ConnectFuture future;
 	private LLRPEndpoint endpoint;
+	
+	private BlockingQueue<LLRPMessage> synMessageQueue = new LinkedBlockingQueue<LLRPMessage>();
+	private long synMessageTimeout = 10000;
 
 	public LLRPConnector() {
 		super();
@@ -108,10 +118,14 @@ public class LLRPConnector implements LLRPConnection{
 	 */
 	public void messageReceived(IoSession session, LLRPMessage message){
 		String expectedSyncMessage = (String) session.getAttribute(SYNC_MESSAGE_ANSWER);
+		log.debug("message "+message.getClass()+" received in session "+session);
 		// send message only if not already handled by synchronous call
 		if (!message.getName().equals(expectedSyncMessage)){
-			log.debug("message "+message.getClass()+" received in session "+session);
+			log.debug("Calling messageReceived of endpoint ... "+session);
 			endpoint.messageReceived(message);
+		}else{
+			synMessageQueue.add(message);
+			log.debug("Adding message "+message.getClass()+" to transaction queue "+session);
 		}
 	}
 
@@ -136,7 +150,8 @@ public class LLRPConnector implements LLRPConnection{
 	 * {@inheritDoc}
 	 */
 	public void errorOccured(String message) {
-		throw new RuntimeException(message);
+		//throw new RuntimeException(message);
+		endpoint.errorOccured(message);
 	}
 
 	/**
@@ -205,8 +220,61 @@ public class LLRPConnector implements LLRPConnection{
 	/**
 	 * {@inheritDocs}
 	 */
-	public LLRPMessage transact(LLRPMessage message) {
-		throw new UnsupportedOperationException();
+	public LLRPMessage transact(LLRPMessage message) throws TimeoutException {
+		IoSession session = future.getSession();
+		if(session == null){
+			endpoint.errorOccured("session is not yet established");
+			return null;
+		}
+		String returnMessageType = message.getResponseType();
+		if (returnMessageType.equals("")){
+			endpoint.errorOccured("message does not expect return message");
+			return null;
+		}
+		session.setAttribute(SYNC_MESSAGE_ANSWER, returnMessageType);
+		LLRPMessage returnMessage = null;
+		if (!future.isConnected()){
+			future = connector.connect(session.getServiceAddress(),session.getHandler());
+			session = future.getSession();
+			log.info("new session created");
+		}
+		
+		
+		WriteFuture writeFuture = session.write(message);
+		log.info(message.getName() + " sent ....");
+		writeFuture.join();
+
+		// Wait until a message is received.
+		try {
+			returnMessage = synMessageTimeout==0?synMessageQueue.take():synMessageQueue.poll(synMessageTimeout, TimeUnit.MILLISECONDS);
+			// if message received was not expected message, wait for next message (restart timer)
+			while(returnMessage!=null && !returnMessage.getName().equals(returnMessageType)){
+				returnMessage = synMessageTimeout==0?synMessageQueue.take():synMessageQueue.poll(synMessageTimeout, TimeUnit.MILLISECONDS);
+			}
+			session.removeAttribute(SYNC_MESSAGE_ANSWER);
+			if (returnMessage == null){
+				throw new TimeoutException("Request timed out after " + synMessageTimeout + " ms.");
+			}
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+				
+		return returnMessage;
+
+	}
+	
+	/**
+	 * {@inheritDocs}
+	 */
+	public long getTransactionTimeout() {
+		return synMessageTimeout;
+	}
+
+	/**
+	 * {@inheritDocs}
+	 */
+	public void setTransactionTimeout(long synMessageTimeout) {
+		this.synMessageTimeout = synMessageTimeout;
 	}
 
 }

@@ -19,12 +19,16 @@ package org.llrp.ltk.net;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 import org.apache.mina.common.IdleStatus;
 import org.apache.mina.common.IoAcceptor;
 import org.apache.mina.common.IoHandlerAdapter;
 import org.apache.mina.common.IoSession;
+import org.apache.mina.common.WriteFuture;
 import org.apache.mina.filter.LoggingFilter;
 import org.apache.mina.filter.codec.ProtocolCodecFilter;
 import org.apache.mina.transport.socket.nio.SocketAcceptor;
@@ -37,7 +41,7 @@ import org.llrp.ltk.types.LLRPMessage;
  * 
  * Here is a simple code example:
  * <p>
- * <code> LLRPConnection c = new LLRPAcceptor(endpoint); </code> <p>
+ * <code> LLRPAcceptor c = new LLRPAcceptor(endpoint); </code> <p>
  * <code> c.bind(); </code> <p>
  * <code> // send message asynchronously </code> <p>
  * <code> c.send(llrpmessage); </code> <p>
@@ -59,6 +63,8 @@ public class LLRPAcceptor extends IoHandlerAdapter implements LLRPConnection  {
 	private InetSocketAddress socketAddress;
 	private LLRPEndpoint endpoint;
 	private IoSession session;
+	private BlockingQueue<LLRPMessage> synMessageQueue = new LinkedBlockingQueue<LLRPMessage>();
+	private long synMessageTimeout = 0;
 
 	public LLRPAcceptor() {
 		super();
@@ -127,9 +133,18 @@ public class LLRPAcceptor extends IoHandlerAdapter implements LLRPConnection  {
 	 * {@inheritDoc}
 	 */
 	public void messageReceived(IoSession session, LLRPMessage message) {
-		log.debug("message "+message.getClass()+" received in session "+session);
+//		log.debug("message "+message.getClass()+" received in session "+session);
 		this.session = session;
-		endpoint.messageReceived(message);
+//		endpoint.messageReceived(message);
+		
+		String expectedSyncMessage = (String) session.getAttribute(SYNC_MESSAGE_ANSWER);
+		// send message only if not already handled by synchronous call
+		if (!message.getName().equals(expectedSyncMessage)){
+			log.debug("message "+message.getClass()+" received in session "+session);
+			endpoint.messageReceived(message);
+		}else{
+			synMessageQueue.add(message);
+		}
 	}
 
 
@@ -142,6 +157,7 @@ public class LLRPAcceptor extends IoHandlerAdapter implements LLRPConnection  {
 	 */
 	public  void errorOccured(String message) {
 		log.warn(message);
+		endpoint.errorOccured(message);
 	}
 
 	/**
@@ -155,8 +171,38 @@ public class LLRPAcceptor extends IoHandlerAdapter implements LLRPConnection  {
 	 * {@inheritDoc}
 	 */
 	public LLRPMessage transact(LLRPMessage message) {
-		
-		throw new UnsupportedOperationException();
+		String returnMessageType = message.getResponseType();
+		if (returnMessageType.equals("")){
+			endpoint.errorOccured("message does not expect return message");
+			return null;
+		}
+		if (session == null){
+			log.warn("session is not yet established");
+			endpoint.errorOccured("session is not yet established");
+			return null;
+		}
+		session.setAttribute(SYNC_MESSAGE_ANSWER, returnMessageType);
+		LLRPMessage returnMessage = null;
+		if (!session.isConnected()){
+			log.info("session is not yet connected");
+			endpoint.errorOccured("session is not yet connected");
+			return null;
+		}
+
+		WriteFuture writeFuture = session.write(message);
+		writeFuture.join();
+
+		// Wait until a message is received.
+		try {
+			returnMessage = synMessageTimeout==0?synMessageQueue.take():synMessageQueue.poll(synMessageTimeout, TimeUnit.MILLISECONDS);
+			while(returnMessage!=null && !returnMessage.getName().equals(returnMessageType)){
+				returnMessage = synMessageTimeout==0?synMessageQueue.take():synMessageQueue.poll(synMessageTimeout, TimeUnit.MILLISECONDS);
+			}
+			session.removeAttribute(SYNC_MESSAGE_ANSWER);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return returnMessage;
 	}
 
 	/**
@@ -206,6 +252,14 @@ public class LLRPAcceptor extends IoHandlerAdapter implements LLRPConnection  {
 	 */
 	public void setPort(int port) {
 		this.port = port;
+	}
+
+	public long getTransactionTimeout() {
+		return synMessageTimeout;
+	}
+
+	public void setTransactionTimeout(long synMessageTimeout) {
+		this.synMessageTimeout = synMessageTimeout;
 	}
 
 

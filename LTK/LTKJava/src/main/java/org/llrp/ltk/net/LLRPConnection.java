@@ -17,6 +17,8 @@
 
 package org.llrp.ltk.net;
 
+import java.util.concurrent.TimeoutException;
+
 import org.apache.mina.common.IoSession;
 import org.llrp.ltk.types.LLRPMessage;
 
@@ -51,12 +53,28 @@ public interface LLRPConnection {
 	
 	/**
 	 * sends an LLRP message and returns the response message as defined in the 
-	 * LLRP specification.
+	 * LLRP specification. 
 	 * 
 	 * @param message LLRP message to be sent
 	 * @returns message LLRP response message
 	 */
-	public LLRPMessage transact(LLRPMessage message);
+	public LLRPMessage transact(LLRPMessage message) throws TimeoutException;
+	
+	/**
+	 * sets the maximum wait time for the correct response to a LLRP request sent 
+	 * via the transact method. The default is set to 10 s.
+	 * 
+	 * @param timeout in milliseconds
+	 */
+	public void setTransactionTimeout(long timeout);
+	
+	/**
+	 * gets the maximum wait time for the correct response to a LLRP request sent 
+	 * via the transact method. 
+	 * 
+	 * @returns timeout in milliseconds
+	 */
+	public long getTransactionTimeout();
 	
 	/**
 	 * sends an LLRP message without waiting for a response message.
