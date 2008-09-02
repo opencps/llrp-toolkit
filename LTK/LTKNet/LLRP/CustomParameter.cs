@@ -310,15 +310,15 @@ namespace Org.LLRP.LTK.LLRPV1
                 string key = param.VendorID + "-" + param.SubType;
                 if (vendorExtensionIDTypeHash != null)
                 {
-                    cursor = old_cursor;
-                    object[] parameters = new object[] { bit_array, cursor, length };
-
                     try
                     {
                         Type tp = (Type)vendorExtensionIDTypeHash[key];
                         MethodInfo mis = tp.GetMethod("FromBitArray");
 
                         if (mis == null) return null;
+
+                        cursor = old_cursor;
+                        object[] parameters = new object[] { bit_array, cursor, length };
 
                         object obj = mis.Invoke(null, parameters);
                         cursor = (int)parameters[1];
