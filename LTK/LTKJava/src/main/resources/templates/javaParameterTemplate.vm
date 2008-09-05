@@ -765,7 +765,7 @@ $utility.clearNumberOfReserved()
 						throw new MissingParameterException("$parameter.getName() misses non optional parameter of type $field.getType()");
 					#else	
 						##if it is optional, just inform that it is not set
-						LOGGER.warn("encoded message misses non optional parameter $curName");
+						LOGGER.info("encoded message misses optional parameter $curName");
 					#end				
 				}
 			#elseif ($utility.isCustom($field.getType()))
