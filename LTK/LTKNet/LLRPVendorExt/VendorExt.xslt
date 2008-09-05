@@ -177,10 +177,17 @@
     byte sub_type = <xsl:value-of select="@subtype"/>;
 
     public UInt32 VENDOR_ID{get{return vendor_id;}}
-    public Byte SUB_TYPE{get{return sub_type;}
-    }
-    
-    <xsl:for-each select="*">
+    public Byte SUB_TYPE{get{return sub_type;}}
+
+    <xsl:if test="contains(@name, 'ENABLE_EXTENSION') and not(contains(@name, 'RESPONSE'))">
+      static MSG_IMPINJ_ENABLE_EXTENSIONS()
+      {
+      Assembly asm = Assembly.GetCallingAssembly();
+      CustomParamDecodeFactory.LoadVendorExtentionAssembly(asm);
+      }
+    </xsl:if>
+
+      <xsl:for-each select="*">
     <xsl:if test="name()='field'">
     public <xsl:call-template name='DefineDataType'/><xsl:text> </xsl:text><xsl:value-of select="@name"/><xsl:call-template name='DefineDefaultValue'/>
     <xsl:call-template name="DefineDataLength"/>

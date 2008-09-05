@@ -261,6 +261,34 @@ namespace Org.LLRP.LTK.LLRPV1
         public static Hashtable vendorExtensionNameTypeHash;
 
         /// <summary>
+        /// Register vendor extension assembly
+        /// </summary>
+        /// <param name="asm"></param>
+        public static void LoadVendorExtentionAssembly(Assembly asm)
+        {
+            try
+            {
+                Type[] types = asm.GetTypes();
+                vendorExtensionIDTypeHash = new Hashtable();
+                vendorExtensionNameTypeHash = new Hashtable();
+
+                foreach (Type tp in types)
+                {
+                    if (tp.BaseType != typeof(PARAM_Custom)) continue;
+
+                    string type_full_name = tp.Namespace + "." + tp.Name;
+
+                    object obj = asm.CreateInstance(type_full_name);
+                    PARAM_Custom temp_param = (PARAM_Custom)obj;
+                    string key = temp_param.VendorID + "-" + temp_param.SubType;
+                    if (!vendorExtensionIDTypeHash.ContainsKey(key)) vendorExtensionIDTypeHash.Add(key, tp);
+                    if (!vendorExtensionNameTypeHash.ContainsKey(tp.Name)) vendorExtensionNameTypeHash.Add(tp.Name, tp);
+                }
+            }
+            catch { }
+        }
+
+        /// <summary>
         /// Create vendor extended paramters from BitArray
         /// </summary>
         /// <param name="bit_array">BitArray. Input</param>
@@ -271,44 +299,12 @@ namespace Org.LLRP.LTK.LLRPV1
         {
             if (cursor >= length) return null;
 
-            if (vendorExtensionIDTypeHash == null || vendorExtensionNameTypeHash == null)
-            {
-                vendorExtensionIDTypeHash = new Hashtable();
-                vendorExtensionNameTypeHash = new Hashtable();
-
-                Assembly asm = Assembly.GetCallingAssembly();
-
-                string fullName = asm.ManifestModule.FullyQualifiedName;
-                string path = fullName.Substring(0, fullName.LastIndexOf("\\"));
-
-                DirectoryInfo di = new DirectoryInfo(path);//Environment.CurrentDirectory);
-                FileInfo[] f_infos = di.GetFiles("LLRP.*.dll");
-
-                foreach (FileInfo fi in f_infos)
-                {
-                    asm = Assembly.LoadFile(fi.FullName);
-                    Type[] types = asm.GetTypes();
-                    foreach(Type tp in types)
-                    {
-                        if (tp.BaseType != typeof(PARAM_Custom)) continue;
-
-                        string type_full_name = tp.Namespace + "." + tp.Name;
-                        
-                        object obj = asm.CreateInstance(type_full_name);
-                        PARAM_Custom temp_param = (PARAM_Custom)obj;
-                        string key = temp_param.VendorID + "-" + temp_param.SubType;
-                        vendorExtensionIDTypeHash.Add(key, tp);
-                        vendorExtensionNameTypeHash.Add(tp.Name, tp);
-                    }
-                }
-            }
-
             int old_cursor = cursor;
             PARAM_Custom param = PARAM_Custom.FromBitArray(ref bit_array, ref cursor, length);
             if (param != null)
             {
                 string key = param.VendorID + "-" + param.SubType;
-                if (vendorExtensionIDTypeHash != null)
+                if (vendorExtensionIDTypeHash != null )
                 {
                     try
                     {
