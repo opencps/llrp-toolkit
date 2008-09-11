@@ -55,6 +55,7 @@
     using System.Xml;
     using System.Xml.Schema;
     using System.ComponentModel;
+    using System.Reflection;
 
 
     using Org.LLRP.LTK.LLRPV1;
@@ -180,7 +181,7 @@
     public Byte SUB_TYPE{get{return sub_type;}}
 
     <xsl:if test="contains(@name, 'ENABLE_EXTENSION') and not(contains(@name, 'RESPONSE'))">
-      static MSG_IMPINJ_ENABLE_EXTENSIONS()
+      static MSG_<xsl:value-of select="@name"/>()
       {
       Assembly asm = Assembly.GetCallingAssembly();
       CustomParamDecodeFactory.LoadVendorExtentionAssembly(asm);
