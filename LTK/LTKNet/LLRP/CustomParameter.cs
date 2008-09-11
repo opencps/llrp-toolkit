@@ -264,7 +264,7 @@ namespace Org.LLRP.LTK.LLRPV1
         /// Register vendor extension assembly
         /// </summary>
         /// <param name="asm"></param>
-        public static void LoadVendorExtentionAssembly(Assembly asm)
+        public static void LoadVendorExtensionAssembly(Assembly asm)
         {
             try
             {

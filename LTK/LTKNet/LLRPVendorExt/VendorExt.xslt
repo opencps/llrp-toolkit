@@ -184,7 +184,7 @@
       static MSG_<xsl:value-of select="@name"/>()
       {
       Assembly asm = Assembly.GetCallingAssembly();
-      CustomParamDecodeFactory.LoadVendorExtentionAssembly(asm);
+      CustomParamDecodeFactory.LoadVendorExtensionAssembly(asm);
       }
     </xsl:if>
 
