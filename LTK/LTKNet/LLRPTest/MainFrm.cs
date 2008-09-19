@@ -108,7 +108,17 @@ namespace Org.LLRP.LTK.LLRPV1Test
                 {
                     if (msg.TagReportData[i].EPCParameter.Count > 0)
                     {
-                        string epc = ((PARAM_EPC_96)(msg.TagReportData[i].EPCParameter[0])).EPC.ToHexString();
+                        string epc;
+                        // reports come in two flavors.  Get the right flavor
+                        if (msg.TagReportData[i].EPCParameter[0].GetType() == typeof(PARAM_EPC_96))
+                        {
+                            epc = ((PARAM_EPC_96)(msg.TagReportData[i].EPCParameter[0])).EPC.ToHexString();
+                        }
+                        else
+                        {
+                            epc = ((PARAM_EPCData)(msg.TagReportData[i].EPCParameter[0])).EPC.ToHexString();
+
+                        }
                         if (!listBox1.Items.Contains(epc))
                         {
                             try
