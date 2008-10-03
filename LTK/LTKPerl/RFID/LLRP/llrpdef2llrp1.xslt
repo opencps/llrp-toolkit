@@ -306,9 +306,17 @@
 </xsl:template>
 
 <xsl:template match="llb:choiceDefinition/llb:parameter" mode="CHOICE_DEF">
-  <xsl:text>&#32;&#32;param 1&#32;</xsl:text>
-  <xsl:value-of select="@type"/>
-  <xsl:text>&#10;</xsl:text>
+  <xsl:choose>
+    <xsl:when test="@type='Custom'">
+      <xsl:text>extension-point&#10;</xsl:text>
+      <xsl:apply-templates select="//llb:allowedIn[@type = current()/../@name]" mode="EXTENSION_POINT"/>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:text>&#32;&#32;param 1&#32;</xsl:text>
+      <xsl:value-of select="@type"/>
+      <xsl:text>&#10;</xsl:text>
+    </xsl:otherwise>
+  </xsl:choose>
 </xsl:template>
 
 <!-- utility functions -->
