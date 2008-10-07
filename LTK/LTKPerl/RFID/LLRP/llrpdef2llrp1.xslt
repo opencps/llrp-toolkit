@@ -257,6 +257,11 @@
         <xsl:text>&#32;</xsl:text>
         <xsl:value-of select="$ns"/>
       </xsl:if>
+      <xsl:variable name="nsc" select="//llb:customChoiceDefinition[@name = current()/@type]/@namespace"/>
+      <xsl:if test="$nsc">
+        <xsl:text>&#32;</xsl:text>
+        <xsl:value-of select="$nsc"/>
+      </xsl:if>
       <xsl:if test="@name">
         <xsl:text>&#32;name=</xsl:text>
         <xsl:value-of select="@name"/>
@@ -305,6 +310,15 @@
   <xsl:text>end&#10;&#10;</xsl:text>
 </xsl:template>
 
+<xsl:template match="llb:customChoiceDefinition" mode="CHOICE_DEF">
+  <xsl:text>custom-union&#32;</xsl:text>
+  <xsl:value-of select="@namespace"/><xsl:text>&#32;</xsl:text>
+  <xsl:value-of select="@name"/>
+  <xsl:text>&#10;</xsl:text>
+  <xsl:apply-templates mode="CHOICE_DEF"/>
+  <xsl:text>end&#10;&#10;</xsl:text>
+</xsl:template>
+
 <xsl:template match="llb:choiceDefinition/llb:parameter" mode="CHOICE_DEF">
   <xsl:choose>
     <xsl:when test="@type='Custom'">
@@ -317,6 +331,14 @@
       <xsl:text>&#10;</xsl:text>
     </xsl:otherwise>
   </xsl:choose>
+</xsl:template>
+
+<xsl:template match="llb:customChoiceDefinition/llb:parameter" mode="CHOICE_DEF">
+  <xsl:text>&#32;&#32;param 1&#32;</xsl:text>
+  <xsl:value-of select="@type"/>
+  <xsl:text>&#32;</xsl:text>
+  <xsl:value-of select="../@namespace"/>
+  <xsl:text>&#10;</xsl:text>
 </xsl:template>
 
 <!-- utility functions -->

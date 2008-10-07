@@ -92,6 +92,7 @@ my %subparser_generator = (
 	'vendor'		=> \&vendor_compiler,
 	'custom-message'	=> \&custom_message_compiler_gen,
 	'custom-parameter'	=> \&custom_parameter_compiler_gen,
+	'custom-union'		=> \&custom_parameter_compiler_gen,
 	'core-namespace'	=> \&core_namespace_compiler,
 	'namespace'		=> \&ext_namespace_compiler
 );
@@ -268,6 +269,7 @@ sub read_schema {
 				# given the match rule, lookup the type definition
 				my $whole_name = fqp_type ($rule);
 				my $context = $registry{$whole_name};
+
 				ref $context or
 					die "Unable to locate $whole_name type defn";
 
@@ -853,14 +855,20 @@ sub custom_message_compiler_gen {
 
 sub custom_parameter_compiler_gen {
 
-	my ($vendor_name, $subtype, $prefix, $desc_name);
-	($head, $vendor_name, $subtype, $prefix, $desc_name) = @_;
-	my $ns = $llrp{Prefix2NS}->{$prefix};
+	my ($vendor_name, $subtype, $prefix, $desc_name, $ns);
+	if ($_[0] eq 'custom-union') {
+		($head, $prefix, $desc_name) = @_;
+		$subtype = 0;
+		$vendor_name = undef;
+	} else {
+		($head, $vendor_name, $subtype, $prefix, $desc_name) = @_;
+	}
+	$ns = $llrp{Prefix2NS}->{$prefix};
 
 	# construct the custom parameter definition
 	my $body_ref = {
 		Name			=> $desc_name,
-		Concrete		=> 1,
+		Concrete		=> ($head ne 'custom-union') + 0,
 		Parameter		=> [],
 		ParameterSubtype	=> $subtype + 0,
 		VendorName		=> $vendor_name,
@@ -872,62 +880,66 @@ sub custom_parameter_compiler_gen {
 
 	# construct a "concrete" set of default parameters (the common
 	# parameter header)
-	$body_ref->{Parameter} = [ {
-			Name		=> 'TVEncoding',
-			DefaultValue	=> 0,
-			Bits		=> 1,
-			Leaf		=> 1,
-			Type		=> 'UnsignedInteger',
-			Format		=> 'Boolean',
-			BinaryOnly	=> 1,
-			Optional	=> 0
-		}, {
-			Name		=> 'Reserved',
-			DefaultValue	=> 0,
-			Bits		=> 5,
-			Leaf		=> 1,
-			Type		=> 'UnsignedInteger',
-			Format		=> 'Decimal',
-			BinaryOnly	=> 1,
-			Optional	=> 0
-		}, {
-			Name		=> 'Type',
-			DefaultValue	=> 1023,
-			Bits		=> 10,
-			Leaf		=> 1,
-			Type		=> 'UnsignedInteger',
-			Format		=> 'Decimal',
-			BinaryOnly	=> 1,
-			Optional	=> 0
-		}, {
-			Name		=> 'Length',
-			DefaultValue	=> 4,
-			Bits		=> 16,
-			Leaf		=> 1,
-			Type		=> 'UnsignedInteger',
-			Format		=> 'Decimal',
-			BinaryOnly	=> 1,
-			Optional	=> 0
-		}, {
-			Name		=> 'VendorIdentifier',
-			DefaultValue	=> $llrp{Vendors}->{$vendor_name},
-			Bits		=> 32,
-			Leaf		=> 1,
-			Type		=> 'UnsignedInteger',
-			Format		=> 'Decimal',
-			BinaryOnly	=> 1,
-			Optional	=> 0
-		}, {
-			Name		=> 'ParameterSubtype',
-			DefaultValue	=> $subtype + 0,
-			Bits		=> 32,
-			Leaf		=> 1,
-			Type		=> 'UnsignedInteger',
-			Format		=> 'Decimal',
-			BinaryOnly	=> 1,
-			Optional	=> 0
-		}
-	];
+	if ($body_ref->{Concrete}) {
+		$body_ref->{Parameter} = [ {
+				Name		=> 'TVEncoding',
+				DefaultValue	=> 0,
+				Bits		=> 1,
+				Leaf		=> 1,
+				Type		=> 'UnsignedInteger',
+				Format		=> 'Boolean',
+				BinaryOnly	=> 1,
+				Optional	=> 0
+			}, {
+				Name		=> 'Reserved',
+				DefaultValue	=> 0,
+				Bits		=> 5,
+				Leaf		=> 1,
+				Type		=> 'UnsignedInteger',
+				Format		=> 'Decimal',
+				BinaryOnly	=> 1,
+				Optional	=> 0
+			}, {
+				Name		=> 'Type',
+				DefaultValue	=> 1023,
+				Bits		=> 10,
+				Leaf		=> 1,
+				Type		=> 'UnsignedInteger',
+				Format		=> 'Decimal',
+				BinaryOnly	=> 1,
+				Optional	=> 0
+			}, {
+				Name		=> 'Length',
+				DefaultValue	=> 4,
+				Bits		=> 16,
+				Leaf		=> 1,
+				Type		=> 'UnsignedInteger',
+				Format		=> 'Decimal',
+				BinaryOnly	=> 1,
+				Optional	=> 0
+			}, {
+				Name		=> 'VendorIdentifier',
+				DefaultValue	=> $llrp{Vendors}->{$vendor_name},
+				Bits		=> 32,
+				Leaf		=> 1,
+				Type		=> 'UnsignedInteger',
+				Format		=> 'Decimal',
+				BinaryOnly	=> 1,
+				Optional	=> 0
+			}, {
+				Name		=> 'ParameterSubtype',
+				DefaultValue	=> $subtype + 0,
+				Bits		=> 32,
+				Leaf		=> 1,
+				Type		=> 'UnsignedInteger',
+				Format		=> 'Decimal',
+				BinaryOnly	=> 1,
+				Optional	=> 0
+			}
+		];
+	} else {
+		$body_ref->{Parameter} = [];
+	}
 
 	my $subparams = $body_ref->{Parameter};
 
