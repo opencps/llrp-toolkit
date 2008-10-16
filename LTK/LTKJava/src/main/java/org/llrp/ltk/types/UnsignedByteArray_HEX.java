@@ -100,7 +100,7 @@ public class UnsignedByteArray_HEX extends UnsignedByteArray {
 			Integer ti = Integer.decode("0x" + temp);
 			tempList.add(new UnsignedByte(ti));
 		}
-		UnsignedByte[] bs = new UnsignedByte[length];
+		UnsignedByte[] bs = new UnsignedByte[tempList.size()];
 		bytes = tempList.toArray(bs);
 	}
 
