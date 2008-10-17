@@ -7,8 +7,8 @@
     <ProjectGuid>{F6CB4F46-CAB9-4680-9FB3-5945C12E65E3}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>LLRP.Impinj</RootNamespace>
-    <AssemblyName>LLRP.Impinj</AssemblyName>
+    <RootNamespace>LLRP.Vendor</RootNamespace>
+    <AssemblyName>LLRP.Vendor</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>

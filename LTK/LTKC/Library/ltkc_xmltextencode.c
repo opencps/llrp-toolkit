@@ -1003,7 +1003,18 @@ put_u1 (
     const char *                pFieldName = pFieldDescriptor->pName;
 
     appendOpenTag(pEncoderStream, pFieldName);
-    appendFormat(pEncoderStream, "%u", Value & 1);
+    switch(pFieldDescriptor->eFieldFormat)
+    {
+    case LLRP_FMT_NORMAL:
+    default:
+        appendFormat(pEncoderStream, "%s", (Value & 1) ? "true" : "false");
+        break;
+
+    case LLRP_FMT_DEC:
+    case LLRP_FMT_HEX:
+        appendFormat(pEncoderStream, "%u", Value & 1);
+        break;
+    }
     appendCloseTag(pEncoderStream, pFieldName);
 }
 

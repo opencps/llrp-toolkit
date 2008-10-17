@@ -29,7 +29,7 @@ namespace LLRP
 
 static char     ident[] = {
     "$" "Id: libltkcpp "
-    LTKC_VERSION_STR
+    LTKCPP_VERSION_STR
     "  Built: "
     __DATE__
     " "

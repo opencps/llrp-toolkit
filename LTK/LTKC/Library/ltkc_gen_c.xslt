@@ -1977,6 +1977,13 @@ LLRP_<xsl:value-of select='$LLRPName'/>_next<xsl:value-of select='$MemberBaseNam
                 pCurrent-&gt;hdr.pNextSubParameter;
 }
 
+void
+LLRP_<xsl:value-of select='$LLRPName'/>_clear<xsl:value-of select='$MemberBaseName'/> (
+  LLRP_tS<xsl:value-of select='$LLRPName'/> *pThis)
+{
+    SUBPARAM_CLEAR(list<xsl:value-of select='$MemberBaseName'/>);
+}
+
 </xsl:template>
 
 

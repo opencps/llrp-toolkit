@@ -638,7 +638,18 @@ CXMLTextEncoderStream::put_u1 (
     const char *                pFieldName = pFieldDescriptor->m_pName;
 
     appendOpenTag(pFieldName);
-    appendFormat("%d", Value & 1);
+    switch(pFieldDescriptor->m_eFieldFormat)
+    {
+    case CFieldDescriptor::FMT_NORMAL:
+    default:
+        appendFormat("%s", (Value & 1) ? "true" : "false");
+        break;
+
+    case CFieldDescriptor::FMT_DEC:
+    case CFieldDescriptor::FMT_HEX:
+        appendFormat("%d", Value & 1);
+        break;
+    }
     appendCloseTag(pFieldName);
 }
 

@@ -179,6 +179,23 @@ LLRP_Element_attachToSubParameterList (
     }
 }
 
+void
+LLRP_Element_clearSubParameterList (
+  LLRP_tSElement *              pElement,
+  LLRP_tSParameter **           ppListHead)
+{
+    LLRP_tSParameter **         ppCur = ppListHead;
+    LLRP_tSParameter *          pValue;
+
+    while (NULL != (pValue = *ppCur))
+    {
+        *ppCur = pValue->pNextSubParameter;
+
+        LLRP_Element_removeSubParameterFromAllList(pElement, pValue);
+        LLRP_Element_destruct((LLRP_tSElement *) pValue);
+    }
+}
+
 int
 LLRP_Element_walk (
   const LLRP_tSElement *          pElement,
@@ -188,7 +205,7 @@ LLRP_Element_walk (
   void *                        pArg,
   int                           iDepth,
   int                           nMaxDepth)
-{
+ {
     LLRP_tSParameter *          pParameter;
     int                         rc;
 

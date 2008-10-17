@@ -36,3 +36,7 @@
             (LLRP_tSParameter**)&pThis->MEMBER,		\
             (LLRP_tSParameter*)(VALUE))
 
+#define SUBPARAM_CLEAR(MEMBER)				\
+        LLRP_Element_clearSubParameterList(		\
+            (LLRP_tSElement *)pThis,			\
+            (LLRP_tSParameter**)&pThis->MEMBER)

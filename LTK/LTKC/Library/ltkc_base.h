@@ -641,6 +641,11 @@ LLRP_Element_attachToSubParameterList (
   LLRP_tSParameter **           ppListHead,
   LLRP_tSParameter *            pValue);
 
+extern void
+LLRP_Element_clearSubParameterList (
+  LLRP_tSElement *              pElement,
+  LLRP_tSParameter **           ppListHead);
+
 extern int
 LLRP_Element_walk (
   const LLRP_tSElement *        pElement,
