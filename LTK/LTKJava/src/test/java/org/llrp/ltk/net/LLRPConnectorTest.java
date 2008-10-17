@@ -15,7 +15,7 @@ import org.llrp.ltk.types.UnsignedInteger;
 public class LLRPConnectorTest extends TestCase implements LLRPEndpoint{
 
 	LLRPConnection connection; 
-	String READER_IP_ADDRESS = "10.78.0.184";
+	String READER_IP_ADDRESS = "10.78.0.108";
 	LLRPMessage response;
 	boolean ready = false;
 	Logger logger;
@@ -37,15 +37,22 @@ public class LLRPConnectorTest extends TestCase implements LLRPEndpoint{
 		
 		connection = new LLRPConnector(this, READER_IP_ADDRESS);
 		((LLRPConnector) connection).connect();
-		
-		// Wait for incoming reader event notification
-		Thread.sleep(5000);
-		
+				
 	}
 
+	
+	protected void tearDown() {
+		
+		((LLRPConnector) connection).disconnect();
+		
+		
+		
+	}
+	
+	
 	public final void testTransact() {
 				
-		if (ready == true) {
+		
 			
 		try {
 			DELETE_ROSPEC del = new DELETE_ROSPEC();
@@ -59,13 +66,28 @@ public class LLRPConnectorTest extends TestCase implements LLRPEndpoint{
 			e.printStackTrace();				
 		}
 
-		}
-		else {
-			logger.error("Connection to reader unsuccessful");
-			throw new RuntimeException("Connection to reader unsuccessful");
-		}
+		
 		
 	}
+	
+	public final void testSend() throws Exception {
+		
+		
+		try {
+			DELETE_ROSPEC del = new DELETE_ROSPEC();
+			del.setROSpecID(new UnsignedInteger(1));
+			logger.debug(del.toXMLString());
+			connection.send(del);
+			
+		}
+		catch (Exception e) {
+			e.printStackTrace();				
+		}
+
+		Thread.sleep(20000);
+		
+	}
+	
 	
 	public void messageReceived(LLRPMessage message) {
 		
@@ -76,37 +98,7 @@ public class LLRPConnectorTest extends TestCase implements LLRPEndpoint{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		// check whether received message is of type READER_EVENT_NOTIFICATION
-		// and whether connection attempt was successful
-		if (message instanceof READER_EVENT_NOTIFICATION) {
-			READER_EVENT_NOTIFICATION m = (READER_EVENT_NOTIFICATION) message;
-			logger.debug("ConnectioAttempt Status: " + m.getReaderEventNotificationData()
-					.getConnectionAttemptEvent().getStatus());
-			if (m.getReaderEventNotificationData()
-					.getConnectionAttemptEvent().getStatus()
-					.intValue() == (ConnectionAttemptStatusType.Success)) {
-				ready = true;
-				logger.debug("Setting READY flag to " + ready);
-				
-			}
-			else {
-				logger.error("Connection to reader unsuccessful");
-				throw new RuntimeException("Connection to reader unsuccessful");
-			}
-		}
-		else {
-			logger.error("Expected READER_EVENT_NOTIFICATION but received " + message.getName());
-			throw new RuntimeException("Expected READER_EVENT_NOTIFICATION but received " + message.getName());
-			
-		}
-		
-		
-		
-		
-		
-		
-		
+	
 	}
 	
 	public void errorOccured(String s) {

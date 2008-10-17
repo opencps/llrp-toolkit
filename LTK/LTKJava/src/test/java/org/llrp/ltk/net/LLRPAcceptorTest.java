@@ -26,15 +26,20 @@ public class LLRPAcceptorTest extends TestCase implements LLRPEndpoint {
 		
 		connection = new LLRPAcceptor(this);
 		((LLRPAcceptor) connection).bind();
-		
-		// Wait for reader initated connection and reader event notification
-		Thread.sleep(20000);
-		
+			
 	}
 
+	protected void tearDown() {
+		
+		((LLRPAcceptor) connection).close();
+		
+		
+		
+	}
+	
+	
 	public final void testTransact() {
 				
-		if (ready == true) {
 			
 		try {
 			DELETE_ROSPEC del = new DELETE_ROSPEC();
@@ -48,13 +53,27 @@ public class LLRPAcceptorTest extends TestCase implements LLRPEndpoint {
 			e.printStackTrace();				
 		}
 
-		}
-		else {
-			logger.error("Connection to reader unsuccessful");
-			throw new RuntimeException("Connection to reader unsuccessful");
-		}
 		
 	}
+	
+	public final void testSend() {
+		
+		
+		try {
+			DELETE_ROSPEC del = new DELETE_ROSPEC();
+			del.setROSpecID(new UnsignedInteger(1));
+			logger.debug(del.toXMLString());
+			connection.send(del);
+			
+		}
+		catch (Exception e) {
+			e.printStackTrace();				
+		}
+
+		
+	}
+	
+	
 	
 	public void messageReceived(LLRPMessage message) {
 		
@@ -66,29 +85,7 @@ public class LLRPAcceptorTest extends TestCase implements LLRPEndpoint {
 			e.printStackTrace();
 		}
 		
-		// check whether received message is of type READER_EVENT_NOTIFICATION
-		// and whether connection attempt was successful
-		if (message instanceof READER_EVENT_NOTIFICATION) {
-			READER_EVENT_NOTIFICATION m = (READER_EVENT_NOTIFICATION) message;
-			logger.debug("ConnectioAttempt Status: " + m.getReaderEventNotificationData()
-					.getConnectionAttemptEvent().getStatus());
-			if (m.getReaderEventNotificationData()
-					.getConnectionAttemptEvent().getStatus()
-					.intValue() == (ConnectionAttemptStatusType.Success)) {
-				ready = true;
-				logger.debug("Setting READY flag to " + ready);
-				
-			}
-			else {
-				logger.error("Connection to reader unsuccessful");
-				throw new RuntimeException("Connection to reader unsuccessful");
-			}
-		}
-		else {
-			logger.error("Expected READER_EVENT_NOTIFICATION but received " + message.getName());
-			throw new RuntimeException("Expected READER_EVENT_NOTIFICATION but received " + message.getName());
-			
-		}
+		
 		
 		
 		
