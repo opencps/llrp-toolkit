@@ -19,21 +19,13 @@ package org.llrp.ltk.net;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
-import org.apache.mina.common.IdleStatus;
 import org.apache.mina.common.IoAcceptor;
-import org.apache.mina.common.IoHandlerAdapter;
-import org.apache.mina.common.IoSession;
-import org.apache.mina.common.WriteFuture;
 import org.apache.mina.filter.LoggingFilter;
 import org.apache.mina.filter.codec.ProtocolCodecFilter;
 import org.apache.mina.transport.socket.nio.SocketAcceptor;
 import org.apache.mina.transport.socket.nio.SocketAcceptorConfig;
-import org.llrp.ltk.types.LLRPMessage;
 
 
 /**
@@ -52,19 +44,14 @@ import org.llrp.ltk.types.LLRPMessage;
  * @author Christian Floerkemeier - MIT
  * 
  */
-public class LLRPAcceptor extends IoHandlerAdapter implements LLRPConnection  {
+public class LLRPAcceptor extends LLRPConnection  {
 
 	public static final int IDLE_TIME = 20;
-	private static final String SYNC_MESSAGE_ANSWER = "synchronousMessageAnswer";
+
 	private static final Logger log = Logger.getLogger(LLRPAcceptor.class);
-	private LLRPIoHandlerAdapter handler;
 	private int port = 5084;
 	private IoAcceptor acceptor;
 	private InetSocketAddress socketAddress;
-	private LLRPEndpoint endpoint;
-	private IoSession session;
-	private BlockingQueue<LLRPMessage> synMessageQueue = new LinkedBlockingQueue<LLRPMessage>();
-	private long synMessageTimeout = 0;
 
 	public LLRPAcceptor() {
 		super();
@@ -78,7 +65,6 @@ public class LLRPAcceptor extends IoHandlerAdapter implements LLRPConnection  {
 	 */
 	
 	public LLRPAcceptor(LLRPEndpoint endpoint){
-		handler = new LLRPIoHandlerAdapterImpl(this);
 		this.endpoint = endpoint;
 	}
 	
@@ -92,21 +78,22 @@ public class LLRPAcceptor extends IoHandlerAdapter implements LLRPConnection  {
 	public LLRPAcceptor(LLRPEndpoint endpoint, int port){
 		this.endpoint = endpoint;
 		this.port = port;
-		handler = new LLRPIoHandlerAdapterImpl(this);
 	}
 
 	public LLRPAcceptor(LLRPEndpoint endpoint, int port, LLRPIoHandlerAdapter handler){
-		this.endpoint = endpoint;
+		super.endpoint = endpoint;
 		this.port = port;
-		this.handler = handler;
+		super.handler = handler;
 	}
 
 	public LLRPAcceptor(LLRPEndpoint endpoint, LLRPIoHandlerAdapter handler){
-		this.endpoint = endpoint;
-		this.handler = handler;
+		super.endpoint = endpoint;
+		super.handler = handler;
 	}
-
-	public void bind(){
+	public void bind() throws LLRPConnectionAttemptFailedException{
+		bind(CONNECT_TIMEOUT);
+	}
+	public void bind(long timeout) throws LLRPConnectionAttemptFailedException{
 		acceptor = new SocketAcceptor();
 		acceptor.getFilterChain().addLast( "logger", new LoggingFilter() );
 		acceptor.getFilterChain().addLast("codec", new ProtocolCodecFilter(new LLRPProtocolCodecFactory(LLRPProtocolCodecFactory.BINARY_ENCODING)));
@@ -127,24 +114,10 @@ public class LLRPAcceptor extends IoHandlerAdapter implements LLRPConnection  {
 			e.printStackTrace();
 		}
 		log.info("server listening on port "+port);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void messageReceived(IoSession session, LLRPMessage message) {
-//		log.debug("message "+message.getClass()+" received in session "+session);
-		this.session = session;
-//		endpoint.messageReceived(message);
 		
-		String expectedSyncMessage = (String) session.getAttribute(SYNC_MESSAGE_ANSWER);
-		// send message only if not already handled by synchronous call
-		if (!message.getName().equals(expectedSyncMessage)){
-			log.debug("message "+message.getClass()+" received in session "+session);
-			endpoint.messageReceived(message);
-		}else{
-			synMessageQueue.add(message);
-		}
+		//check if llrp reader reply with a status report to indicate connection success.
+		//the client shall not send any information to the reader until this status report message is received
+		checkLLRPConnectionAttemptStatus(timeout);
 	}
 
 
@@ -152,93 +125,10 @@ public class LLRPAcceptor extends IoHandlerAdapter implements LLRPConnection  {
 		acceptor.unbind(socketAddress);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public  void errorOccured(String message) {
-		log.warn(message);
-		endpoint.errorOccured(message);
+	public boolean reconnect(){
+		return false;
 	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void messageSent() {
-		log.debug("message transmitted");
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public LLRPMessage transact(LLRPMessage message) {
-		String returnMessageType = message.getResponseType();
-		if (returnMessageType.equals("")){
-			endpoint.errorOccured("message does not expect return message");
-			return null;
-		}
-		if (session == null){
-			log.warn("session is not yet established");
-			endpoint.errorOccured("session is not yet established");
-			return null;
-		}
-		session.setAttribute(SYNC_MESSAGE_ANSWER, returnMessageType);
-		LLRPMessage returnMessage = null;
-		if (!session.isConnected()){
-			log.info("session is not yet connected");
-			endpoint.errorOccured("session is not yet connected");
-			return null;
-		}
-
-		WriteFuture writeFuture = session.write(message);
-		writeFuture.join();
-
-		// Wait until a message is received.
-		try {
-			returnMessage = synMessageTimeout==0?synMessageQueue.take():synMessageQueue.poll(synMessageTimeout, TimeUnit.MILLISECONDS);
-			while(returnMessage!=null && !returnMessage.getName().equals(returnMessageType)){
-				returnMessage = synMessageTimeout==0?synMessageQueue.take():synMessageQueue.poll(synMessageTimeout, TimeUnit.MILLISECONDS);
-			}
-			session.removeAttribute(SYNC_MESSAGE_ANSWER);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return returnMessage;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void send(LLRPMessage message) {
-		handler.send(message);
-	}
-
-	/**
-	 * @return the endpoint
-	 */
-	public LLRPEndpoint getEndpoint() {
-		return endpoint;
-	}
-
-	/**
-	 * @param endpoint the endpoint to set
-	 */
-	public void setEndpoint(LLRPEndpoint endpoint) {
-		this.endpoint = endpoint;
-	}
-
-	/**
-	 * @return the handler
-	 */
-	public LLRPIoHandlerAdapter getHandler() {
-		return handler;
-	}
-
-	/**
-	 * @param handler the handler to set
-	 */
-	public void setHandler(LLRPIoHandlerAdapter handler) {
-		this.handler = handler;
-	}
+	
 
 	/**
 	 * @return the port
@@ -253,14 +143,5 @@ public class LLRPAcceptor extends IoHandlerAdapter implements LLRPConnection  {
 	public void setPort(int port) {
 		this.port = port;
 	}
-
-	public long getTransactionTimeout() {
-		return synMessageTimeout;
-	}
-
-	public void setTransactionTimeout(long synMessageTimeout) {
-		this.synMessageTimeout = synMessageTimeout;
-	}
-
 
 }

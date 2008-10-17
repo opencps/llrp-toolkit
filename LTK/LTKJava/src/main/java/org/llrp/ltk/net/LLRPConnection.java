@@ -17,9 +17,15 @@
 
 package org.llrp.ltk.net;
 
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import org.apache.log4j.Logger;
 import org.apache.mina.common.IoSession;
+import org.apache.mina.common.WriteFuture;
+import org.llrp.ltk.generated.parameters.ConnectionAttemptEvent;
+import org.llrp.ltk.generated.enumerations.ConnectionAttemptStatusType;
 import org.llrp.ltk.types.LLRPMessage;
 
 /**
@@ -28,28 +34,74 @@ import org.llrp.ltk.types.LLRPMessage;
  * or a remotely initiated connection.
  */
 
-public interface LLRPConnection {
+public abstract class LLRPConnection {
+	public static final int CONNECT_TIMEOUT = 10000;
+	public static final String SYNC_MESSAGE_ANSWER = "synchronousMessageAnswer";	
+	protected LLRPEndpoint endpoint;
+	protected LLRPIoHandlerAdapter handler;
+	protected IoSession session;
+	private Logger log = Logger.getLogger(LLRPConnection.class);
+	
+	public LLRPConnection(){
+		handler = new LLRPIoHandlerAdapter(this);
+	}
+	
+	/**
+	 * check if llrp connection succeeded
+	 * @param timeout	the wait time before reader replies with a status report
+	 * @throws LLRPConnectionAttemptFailedException
+	 */
+	protected void checkLLRPConnectionAttemptStatus(long timeout)throws LLRPConnectionAttemptFailedException{
+		try{
+			BlockingQueue<ConnectionAttemptEvent> connectionAttemptEventQueue = handler.getConnectionAttemptEventQueue();
+			ConnectionAttemptEvent connectionAttemptEvent = connectionAttemptEventQueue.poll(timeout, TimeUnit.MILLISECONDS);
+			if(connectionAttemptEvent != null){
+				ConnectionAttemptStatusType status = connectionAttemptEvent.getStatus();
+				if(status.intValue() == ConnectionAttemptStatusType.Success){
+					log.info("LLRP reader reported successfull connection attempt (ConnectionAttemptEvent.Status = " + status.toString() + ")");
+				}else{
+					log.info("LLRP reader reported failed connection attempt (ConnectionAttemptStatus = " + status.toString() + ")");
+					throw new LLRPConnectionAttemptFailedException(status.toString());
+				}
+			} else{
+				throw new LLRPConnectionAttemptFailedException("Connection request timed out after " + timeout + " ms.");
+			}
+		}catch(InterruptedException e){
+			e.printStackTrace();
+			throw new LLRPConnectionAttemptFailedException(e.getMessage());
+		}
+	}
 
 	/**
-	 * is called by the IoHandlerAdapter whenever a message is received on the connection.
 	 * 
-	 * @param IoSession the session where the message was received
-	 * @param message the LLRPMessage received
+	 * @return
 	 */
-	public void messageReceived(IoSession session, LLRPMessage message);
+	public abstract boolean reconnect();
 	
 	/**
-	 * is called by the IoHandlerAdapter whenever a message is successfully transmitted.
+	 * sends an LLRP message without waiting for a response message.
 	 * 
+	 * @param message LLRP message to be sent
 	 */
-	public void messageSent();
-	
-	/**
-	 * is called by the IoHandlerAdapter whenever an error ocurred.
-	 * 
-	 * @param message	error message
-	 */
-	public void errorOccured(String message);
+	public void send(LLRPMessage message){
+		if (session == null){
+			log.warn("session is not yet established");
+			endpoint.errorOccured("session is not yet established");
+			return;
+		}
+		
+		if(!session.isConnected()){
+			if(reconnect()){
+				session.write(message);
+			}else{
+				log.info("session is not yet connected");
+				endpoint.errorOccured("session is not yet connected");
+			}
+		}else{
+			session.write(message);
+		}
+		
+	}
 	
 	/**
 	 * sends an LLRP message and returns the response message as defined in the 
@@ -58,28 +110,87 @@ public interface LLRPConnection {
 	 * @param message LLRP message to be sent
 	 * @returns message LLRP response message
 	 */
-	public LLRPMessage transact(LLRPMessage message) throws TimeoutException;
-	
+	public LLRPMessage transact(LLRPMessage message) throws TimeoutException{
+		return transact(message,0);
+	}
 	/**
-	 * sets the maximum wait time for the correct response to a LLRP request sent 
-	 * via the transact method. The default is set to 10 s.
-	 * 
-	 * @param timeout in milliseconds
-	 */
-	public void setTransactionTimeout(long timeout);
-	
-	/**
-	 * gets the maximum wait time for the correct response to a LLRP request sent 
-	 * via the transact method. 
-	 * 
-	 * @returns timeout in milliseconds
-	 */
-	public long getTransactionTimeout();
-	
-	/**
-	 * sends an LLRP message without waiting for a response message.
+	 * sends an LLRP message and returns the response message as defined in the 
+	 * LLRP specification. 
 	 * 
 	 * @param message LLRP message to be sent
+	 * @param transactionTimeout  timeout
+	 * @returns message LLRP response message
 	 */
-	public void send(LLRPMessage message);
+	public LLRPMessage transact(LLRPMessage message,long transactionTimeout) throws TimeoutException{
+		String returnMessageType = message.getResponseType();
+		if (returnMessageType.equals("")){
+			endpoint.errorOccured("message does not expect return message");
+			return null;
+		}
+		if (session == null){
+			log.warn("session is not yet established");
+			endpoint.errorOccured("session is not yet established");
+			return null;
+		}
+		session.setAttribute(SYNC_MESSAGE_ANSWER, returnMessageType);
+		LLRPMessage returnMessage = null;
+		if (!session.isConnected()){
+			if(!reconnect()){//reconnect failed
+				log.info("session is not yet connected");
+				endpoint.errorOccured("session is not yet connected");
+				return null;
+			}
+		}
+
+		WriteFuture writeFuture = session.write(message);
+		log.info(message.getName() + " transact ....");
+		writeFuture.join();
+
+		// Wait until a message is received.
+		try {
+			BlockingQueue<LLRPMessage> synMessageQueue = handler.getSynMessageQueue();
+			returnMessage = transactionTimeout==0?synMessageQueue.take():synMessageQueue.poll(transactionTimeout, TimeUnit.MILLISECONDS);
+			// if message received was not expected message, wait for next message (restart timer)
+			while(returnMessage!=null && !returnMessage.getName().equals(returnMessageType)){
+				returnMessage = transactionTimeout==0?synMessageQueue.take():synMessageQueue.poll(transactionTimeout, TimeUnit.MILLISECONDS);
+			}
+			session.removeAttribute(SYNC_MESSAGE_ANSWER);
+			if (returnMessage == null){
+				throw new TimeoutException("Request timed out after " + transactionTimeout + " ms.");
+			}
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		return returnMessage;
+	}
+	
+	/**
+	 * @return the endpoint
+	 */
+	public LLRPEndpoint getEndpoint() {
+		return endpoint;
+	}
+
+	/**
+	 * @param endpoint the endpoint to set
+	 */
+	public void setEndpoint(LLRPEndpoint endpoint) {
+		this.endpoint = endpoint;
+	}
+	
+	/**
+	 * @return the handler
+	 */
+	public LLRPIoHandlerAdapter getHandler() {
+		return handler;
+	}
+
+	/**
+	 * @param handler the handler to set
+	 */
+	public void setHandler(LLRPIoHandlerAdapter handler) {
+		this.handler = handler;
+	}
+	
+	
 }
