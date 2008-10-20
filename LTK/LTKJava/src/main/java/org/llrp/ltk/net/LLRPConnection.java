@@ -24,12 +24,12 @@ import java.util.concurrent.TimeoutException;
 import org.apache.log4j.Logger;
 import org.apache.mina.common.IoSession;
 import org.apache.mina.common.WriteFuture;
-import org.llrp.ltk.generated.parameters.ConnectionAttemptEvent;
 import org.llrp.ltk.generated.enumerations.ConnectionAttemptStatusType;
+import org.llrp.ltk.generated.parameters.ConnectionAttemptEvent;
 import org.llrp.ltk.types.LLRPMessage;
 
 /**
- * LLRPConnection represents an interface for an LLRP connection at a LLRP reader or client. 
+ * LLRPConnection represents an abstract interface for an LLRP connection at a LLRP reader or client. 
  * The actual implementation differ depending on whether it is a self-initiated connection 
  * or a remotely initiated connection.
  */
@@ -43,11 +43,13 @@ public abstract class LLRPConnection {
 	private Logger log = Logger.getLogger(LLRPConnection.class);
 	
 	public LLRPConnection(){
-		handler = new LLRPIoHandlerAdapter(this);
+		handler = new LLRPIoHandlerAdapterImpl(this);
 	}
 	
 	/**
-	 * check if llrp connection succeeded
+	 * check whether ConnectionAttemptStatus in READER_NOTIFICATION message was set by reader
+	 * to 'Success'. 
+	 * 
 	 * @param timeout	the wait time before reader replies with a status report
 	 * @throws LLRPConnectionAttemptFailedException
 	 */
@@ -73,8 +75,9 @@ public abstract class LLRPConnection {
 	}
 
 	/**
+	 * reconnect to existing connection
 	 * 
-	 * @return
+	 * @return boolean indicating failure (false) or success (true)
 	 */
 	public abstract boolean reconnect();
 	
@@ -115,7 +118,7 @@ public abstract class LLRPConnection {
 	}
 	/**
 	 * sends an LLRP message and returns the response message as defined in the 
-	 * LLRP specification. 
+	 * LLRP specification timing out after the time interval specified.
 	 * 
 	 * @param message LLRP message to be sent
 	 * @param transactionTimeout  timeout
@@ -165,6 +168,8 @@ public abstract class LLRPConnection {
 	}
 	
 	/**
+	 * returns the endpoint which receives incoming LLRPMessages
+	 * 
 	 * @return the endpoint
 	 */
 	public LLRPEndpoint getEndpoint() {
@@ -172,6 +177,8 @@ public abstract class LLRPConnection {
 	}
 
 	/**
+	 * sets the endpoint which receives incoming LLRPMessages
+	 * 
 	 * @param endpoint the endpoint to set
 	 */
 	public void setEndpoint(LLRPEndpoint endpoint) {
@@ -179,6 +186,8 @@ public abstract class LLRPConnection {
 	}
 	
 	/**
+	 * returns the handler that handles incoming LLRPMessages and forwards them to LLRPEndpoint registered.
+	 * 
 	 * @return the handler
 	 */
 	public LLRPIoHandlerAdapter getHandler() {
@@ -186,6 +195,8 @@ public abstract class LLRPConnection {
 	}
 
 	/**
+	 * sets the handler that handles incoming LLRPMessages and forwards them to LLRPEndpoint registered.
+	 * 
 	 * @param handler the handler to set
 	 */
 	public void setHandler(LLRPIoHandlerAdapter handler) {

@@ -90,9 +90,29 @@ public class LLRPAcceptor extends LLRPConnection  {
 		super.endpoint = endpoint;
 		super.handler = handler;
 	}
+	
+	
+	/**
+	 * binds the LLRPIOHandler registered to the port specified. It
+	 * does not wait for an incoming READER_NOTIFICATION message with a successful 
+	 * ConnectionAttemptEvent. Use the bind method where you can specify a timeout instead.
+	 */
+	
 	public void bind() throws LLRPConnectionAttemptFailedException{
-		bind(CONNECT_TIMEOUT);
+		bind(0);
 	}
+	
+	/**
+	 * binds the LLRPIOHandler registered to the port specified. The bind method
+	 * waits for an incoming READER_NOTIFICATION message with a successful 
+	 * ConnectionAttemptEvent for the timeout specified. If the timeout is set to zero,
+	 * the bind method will not wait for an incoming READER_NOTIFICATION message. 
+	 * 
+	 * @param timeout time in ms
+	 * @throws LLRPConnectionAttemptFailedException if ConnectionAttemptStatus 'Success' in READER_NOTIFICATION 
+	 * message is not received within time interval specified by timeout
+	 */
+	
 	public void bind(long timeout) throws LLRPConnectionAttemptFailedException{
 		acceptor = new SocketAcceptor();
 		acceptor.getFilterChain().addLast( "logger", new LoggingFilter() );
@@ -109,28 +129,43 @@ public class LLRPAcceptor extends LLRPConnection  {
 		try {        
 			socketAddress = new InetSocketAddress(port);
 			acceptor.bind(socketAddress, handler);
+			log.info("server listening on port "+port);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.error(e.getMessage());
+			throw new LLRPConnectionAttemptFailedException(e.getMessage());
 		}
-		log.info("server listening on port "+port);
+		
 		
 		//check if llrp reader reply with a status report to indicate connection success.
 		//the client shall not send any information to the reader until this status report message is received
-		checkLLRPConnectionAttemptStatus(timeout);
+		
+		if (timeout>0) {
+			checkLLRPConnectionAttemptStatus(timeout);
+		}
 	}
 
+	/** 
+	 * close acceptor socket.
+	 * 
+	 **/
 
 	public void close(){
 		acceptor.unbind(socketAddress);
 	}
 
+	/** 
+	 * reconnect method. currently not implemented. always returns false.
+	 * 
+	 **/
+	
 	public boolean reconnect(){
 		return false;
 	}
 	
 
 	/**
+	 * get host address of reader device.
+	 * 
 	 * @return the port
 	 */
 	public int getPort() {

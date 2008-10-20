@@ -18,92 +18,38 @@
 package org.llrp.ltk.net;
 
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
 
-import org.apache.log4j.Logger;
-import org.apache.mina.common.IdleStatus;
 import org.apache.mina.common.IoHandlerAdapter;
-import org.apache.mina.common.IoSession;
-import org.llrp.ltk.generated.messages.KEEPALIVE;
-import org.llrp.ltk.generated.messages.KEEPALIVE_ACK;
-import org.llrp.ltk.generated.messages.READER_EVENT_NOTIFICATION;
 import org.llrp.ltk.generated.parameters.ConnectionAttemptEvent;
 import org.llrp.ltk.types.LLRPMessage;
 
-public class LLRPIoHandlerAdapter extends IoHandlerAdapter{
-	private Logger log = Logger.getLogger(LLRPConnection.class);	
-	private LLRPConnection connection;
-	private BlockingQueue<LLRPMessage> synMessageQueue = new LinkedBlockingQueue<LLRPMessage>();
-	private BlockingQueue<ConnectionAttemptEvent> connectionAttemptEventQueue = new LinkedBlockingQueue<ConnectionAttemptEvent>(1);
-	private boolean keepAliveAck = true;
 
-	public LLRPIoHandlerAdapter(LLRPConnection connection) {
-		this.connection = connection;
-	}
-	public void sessionOpened(IoSession session) throws Exception {
-		log.debug("session is opened:"+session);
-		this.connection.session = session;
-	}
+/**
+ * defines methods that need to be any LLRPIoHandlerAdapter implementation in addition to
+ * the methods defined by the MINA IoHandler interface. 
+ *
+ */
 
-	public void messageReceived(IoSession session, Object message)
-			throws Exception {		
-		LLRPMessage llrpMessage = (LLRPMessage) message;
-		log.debug("message "+message.getClass()+" received in session "+session);
-		if(message instanceof KEEPALIVE){
-			if(keepAliveAck){
-				session.write(new KEEPALIVE_ACK());
-				return;
-			}
-		}
-		
-		if (llrpMessage instanceof READER_EVENT_NOTIFICATION) {
-			 ConnectionAttemptEvent connectionAttemptEvent = ((READER_EVENT_NOTIFICATION)message).getReaderEventNotificationData().getConnectionAttemptEvent();
-			 if(connectionAttemptEvent != null){
-				 connectionAttemptEventQueue.add(connectionAttemptEvent);
-				 connection.getEndpoint().messageReceived(llrpMessage);
-				 return;
-			 }
-		}
-		
-		String expectedSyncMessage = (String) session.getAttribute(LLRPConnection.SYNC_MESSAGE_ANSWER);
-		// send message only if not already handled by synchronous call
-		if (!llrpMessage.getName().equals(expectedSyncMessage)){
-			log.debug("Calling messageReceived of endpoint ... "+session);
-			connection.getEndpoint().messageReceived(llrpMessage);
-		}else{
-			synMessageQueue.add(llrpMessage);
-			log.debug("Adding message "+message.getClass()+" to transaction queue "+session);
-		}
-	}
+public abstract class LLRPIoHandlerAdapter extends IoHandlerAdapter{
 
-	public void messageSent(IoSession session, Object message)	throws java.lang.Exception {
-		log.debug("message transmitted");
-	}
+	/**
+	 * returns queue of all incoming messages where the messages type is equal to the one specified 
+	 * in the IoSession parameter LLRPConnection.SYNC_MESSAGE_ANSWER. This method is required by
+	 * the transact (synchronous message sending) of the LLRP connections. 
+	 **/
+
+	public abstract BlockingQueue<LLRPMessage> getSynMessageQueue();
+
+	/** 
+	 * returns queue with all incoming ConnectionAttemptEvent parameters which were embedded in 
+	 * READER_NOTIFICATION messages. 
+	 * The getConnectionAttemptEventQueue method is used
+	 * to fetch any ConnectionAttemptEvent that arrived in READER_NOTIFICATION messages. 
+	 * These events are used by LLRPConnection objects
+	 * to check whether the connection could be established successfully. 
+	 **/ 
 	
-	
-	public void exceptionCaught(IoSession session, Throwable cause)
-			throws Exception {
-		connection.getEndpoint().errorOccured(cause.getClass().getName());
-	}
+	public abstract BlockingQueue<ConnectionAttemptEvent> getConnectionAttemptEventQueue();
 
-    @Override
-    public void sessionIdle( IoSession session, IdleStatus status ) throws Exception
-    {
-        System.out.println( "IDLE " + session.getIdleCount( status ));
-    }
 
-	public BlockingQueue<LLRPMessage> getSynMessageQueue() {
-		return synMessageQueue;
-	}
-	
-	public BlockingQueue<ConnectionAttemptEvent> getConnectionAttemptEventQueue() {
-		return connectionAttemptEventQueue;
-	}
-	
-	public boolean isKeepAliveAck() {
-		return keepAliveAck;
-	}
-	public void setKeepAliveAck(boolean keepAliveAck) {
-		this.keepAliveAck = keepAliveAck;
-	}
 }

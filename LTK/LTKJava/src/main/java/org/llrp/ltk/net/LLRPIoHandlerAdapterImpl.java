@@ -17,51 +17,146 @@
 
 package org.llrp.ltk.net;
 
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+
+import org.apache.log4j.Logger;
 import org.apache.mina.common.IdleStatus;
 import org.apache.mina.common.IoSession;
+import org.llrp.ltk.generated.messages.KEEPALIVE;
+import org.llrp.ltk.generated.messages.KEEPALIVE_ACK;
+import org.llrp.ltk.generated.messages.READER_EVENT_NOTIFICATION;
+import org.llrp.ltk.generated.parameters.ConnectionAttemptEvent;
 import org.llrp.ltk.types.LLRPMessage;
 
-public class LLRPIoHandlerAdapterImpl extends LLRPIoHandlerAdapter{
+/**
+ * 
+ * LLRPIoHandlerAdapterImpl handles incoming messages. It routes incoming asynchronous messages 
+ * to the LLRPEndpoint registered, replies to KEEP_ALIVE messages and handles incoming READER_NOTIFICATION 
+ * messages and responses to synchronous calls. 
+ *
+ */
 
+public class LLRPIoHandlerAdapterImpl extends LLRPIoHandlerAdapter{
+	private Logger log = Logger.getLogger(LLRPConnection.class);	
 	private LLRPConnection connection;
-	private IoSession replySession;
+	private BlockingQueue<LLRPMessage> synMessageQueue = new LinkedBlockingQueue<LLRPMessage>();
+	private BlockingQueue<ConnectionAttemptEvent> connectionAttemptEventQueue = new LinkedBlockingQueue<ConnectionAttemptEvent>(1);
+	private boolean keepAliveAck = true;
 
 	public LLRPIoHandlerAdapterImpl(LLRPConnection connection) {
 		this.connection = connection;
 	}
-
-	public void messageReceived(IoSession session, Object message)
-			throws Exception {
-		// message is already LLRPMessage
-		replySession = session;
-		connection.messageReceived(session,(LLRPMessage) message);
-	}
-
-	public void messageSent(IoSession session, Object message)	throws java.lang.Exception {
-		connection.messageSent();
-	}
 	
-	public void send(LLRPMessage message) {
-		if(replySession.isConnected()){
-		replySession.write(message);
-		} else {
-			connection.errorOccured("session not connected");
+	/**
+	 * {@inheritDoc}
+	 */
+	
+	public void sessionOpened(IoSession session) throws Exception {
+		log.debug("session is opened:"+session);
+		this.connection.session = session;
+	}
+
+	/**
+	 * is called whenever an LLRP Message is received. The method replies to incoming
+	 * KEEP_ALIVE messages by sending an KEEP_ALIVE_ACK when the keepAliveAck flag is set. 
+	 * ConnectionAttemptEvents of incoming are stored in a queue that can be retrieved using 
+	 * the getConnectionAttemptEventQueue method. messageReceived also checks whether the 
+	 * incoming message is a response to previously method sent via the LLRPConnection.transact 
+	 * method. Matching messages are stored in a queue that can be retrieved via the 
+	 * getSynMessageQueue() method. All incoming messages except KEEP_ALIVE and those identified
+	 * as synchronous responses to the LLRPConnection.transact method are passed to the
+	 * LLRPEndpoint registered.
+	 */
+	
+	public void messageReceived(IoSession session, Object message)
+			throws Exception {		
+		LLRPMessage llrpMessage = (LLRPMessage) message;
+		log.debug("message "+message.getClass()+" received in session "+session);
+		if(message instanceof KEEPALIVE){
+			if(keepAliveAck){
+				session.write(new KEEPALIVE_ACK());
+				return;
+			}
 		}
 		
+		if (llrpMessage instanceof READER_EVENT_NOTIFICATION) {
+			 ConnectionAttemptEvent connectionAttemptEvent = ((READER_EVENT_NOTIFICATION)message).getReaderEventNotificationData().getConnectionAttemptEvent();
+			 if(connectionAttemptEvent != null){
+				 connectionAttemptEventQueue.add(connectionAttemptEvent);
+				 connection.getEndpoint().messageReceived(llrpMessage);
+				 return;
+			 }
+		}
+		
+		String expectedSyncMessage = (String) session.getAttribute(LLRPConnection.SYNC_MESSAGE_ANSWER);
+		// send message only if not already handled by synchronous call
+		if (!llrpMessage.getName().equals(expectedSyncMessage)){
+			log.debug("Calling messageReceived of endpoint ... "+session);
+			connection.getEndpoint().messageReceived(llrpMessage);
+		}else{
+			synMessageQueue.add(llrpMessage);
+			log.debug("Adding message "+message.getClass()+" to transaction queue "+session);
+		}
 	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	
+	public void messageSent(IoSession session, Object message)	throws java.lang.Exception {
+		log.debug("message transmitted");
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
 	
 	public void exceptionCaught(IoSession session, Throwable cause)
 			throws Exception {
-		connection.errorOccured(cause.getClass().getName());
+		connection.getEndpoint().errorOccured(cause.getClass().getName());
 	}
 
-	public void close() {
-		replySession.close();
-	}
-
-    @Override
+	/**
+	 * {@inheritDoc}
+	 */
+	
     public void sessionIdle( IoSession session, IdleStatus status ) throws Exception
     {
         System.out.println( "IDLE " + session.getIdleCount( status ));
     }
+
+    /**
+	 * {@inheritDoc}
+	 */
+    
+	public BlockingQueue<LLRPMessage> getSynMessageQueue() {
+		return synMessageQueue;
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	
+	public BlockingQueue<ConnectionAttemptEvent> getConnectionAttemptEventQueue() {
+		return connectionAttemptEventQueue;
+	}
+	
+	/**
+	 * returns true if incoming KEEP_ALIVE messages are being acknowledged.
+	 */
+	
+	public boolean isKeepAliveAck() {
+		return keepAliveAck;
+	}
+	
+	/**
+	 * set whether incoming KEEP_ALIVE messages are being acknowledged.
+	 * 
+	 * @param keepAliveAck true if KEEP_ALIVE messages are to be acknowledged
+	 */
+	
+	public void setKeepAliveAck(boolean keepAliveAck) {
+		this.keepAliveAck = keepAliveAck;
+	}
 }

@@ -82,9 +82,29 @@ public class LLRPConnector extends LLRPConnection{
 		this.port = port;
 	} 
 	
+	
+	/**
+	 * connects to a LLRP device at the host address and port specified. the connect method waits by default 
+	 * 10 s for a response. If the READER_NOTIFICATION does not arrive or the ConnectionAttemptEventStatus 
+	 * is not set to 'Success', a LLRPConnectionAttemptFailedException is thrown.
+	 * 
+	 * @throws LLRPConnectionAttemptFailedException
+	 * 
+	 */
+	
 	public void connect() throws LLRPConnectionAttemptFailedException{
 		connect(CONNECT_TIMEOUT);
 	}
+	
+	/**
+	 * connects to a LLRP device at the host address and port specified. the connect method waits
+	 * for the timeperiod specified (in ms) for a response. If the READER_NOTIFICATION does not arrive 
+	 * or the ConnectionAttemptEventStatus 
+	 * is not set to 'Success', a LLRPConnectionAttemptFailedException is thrown.
+	 * 
+	 * @param timeout time in ms
+	 * @throws LLRPConnectionAttemptFailedException
+	 */
 	
 	public void connect(long timeout) throws LLRPConnectionAttemptFailedException{
 		connector = new SocketConnector();
@@ -104,6 +124,11 @@ public class LLRPConnector extends LLRPConnection{
 		
 	}
 
+	
+	/**
+	 * disconnect existing connection to LLRP device.
+	 */
+	
 	public void disconnect(){
 		//IoSession session = future.getSession();
 		if (session != null && session.isConnected()){
@@ -113,7 +138,16 @@ public class LLRPConnector extends LLRPConnection{
 		}
 	}
 	
-	public  boolean reconnect(){
+	
+	/**
+	 * reconnect to LLRP device using host, port and handler specified.
+	 * 
+	 * @returns true if connection could be established 
+	 * and ConnectionAttemptEvent Status was set to 'Success', set to false otherwise 
+	 * 
+	 */
+	
+	public boolean reconnect() {
 		ConnectFuture future = connector.connect(remoteAddress,handler);
 		future.join();		// Wait until the connection attempt is finished.
 		// MINA 2.0
@@ -121,11 +155,23 @@ public class LLRPConnector extends LLRPConnection{
 		// future.awaitUninterruptibly();
 		session = future.getSession();
 		log.info("new session created:" + session);
+		
+		//check if llrp reader reply with a status report to indicate connection success.
+		//the client shall not send any information to the reader until this status report message is received
+		
+		try {
+			checkLLRPConnectionAttemptStatus(CONNECT_TIMEOUT);
+		} catch (LLRPConnectionAttemptFailedException e) {
+			return false;
+		}
+	
 		return true;
 	}
 	
 
 	/**
+	 * get host address of reader device.
+	 * 
 	 * @return the host
 	 */
 	public String getHost() {
@@ -133,6 +179,8 @@ public class LLRPConnector extends LLRPConnection{
 	}
 
 	/**
+	 * set host address of reader device.
+	 * 
 	 * @param host the host to set
 	 */
 	public void setHost(String host) {
@@ -140,6 +188,8 @@ public class LLRPConnector extends LLRPConnection{
 	}
 
 	/**
+	 * get port on which to connect to reader device.
+	 * 
 	 * @return the port
 	 */
 	public int getPort() {
@@ -147,6 +197,8 @@ public class LLRPConnector extends LLRPConnection{
 	}
 
 	/**
+	 * set port on which to connect to reader device.
+	 * 
 	 * @param port the port to set
 	 */
 	public void setPort(int port) {
