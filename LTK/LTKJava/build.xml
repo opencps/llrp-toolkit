@@ -167,6 +167,8 @@
 			</jar>
 	</target>
 	
+	
+	
         <target name="sourceJar" depends="compile"> 
           <echo message="Creating source jar ..."/>
 			  <jar destfile="${build}/LTKJava_src_${version}.jar">
@@ -176,6 +178,20 @@
 	    		<fileset dir="." includes="NOTICE.TXT,README.TXT,LICENSE.txt" />
 			    
 	</jar>
+	</target>
+	
+    <target name="generateJar" depends="generate"> 
+	 <echo message="Creating binary jar of generator without dependencies..."/>
+		  <jar destfile="${build}/LTKJava_Generator_${version}.jar">
+		  	<fileset dir="${build}/classes"
+		  	includes="org/llrp/ltkGenerator/**"
+            		 excludes="**/testing/"
+    		/>
+    		<fileset dir="." includes="NOTICE.TXT,README.TXT,LICENSE.txt" />
+    		<manifest>
+		</manifest>
+  		    
+		</jar>
 	</target>
 	
 	
@@ -210,7 +226,7 @@
 	<!-- ===================================== -->
 	<!-- package software -->
 	<!-- ===================================== -->
-	<target name="package" depends="jar,jarWithDep,sourceJar">
+	<target name="package" depends="jar,jarWithDep,sourceJar,generateJar">
 
 	</target>
 	
