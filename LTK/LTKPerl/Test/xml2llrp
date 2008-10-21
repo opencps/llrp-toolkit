@@ -49,6 +49,8 @@ sub xml2llrp {
 		$xml_reader = XML::LibXML::Reader->new(IO => STDIN);
 	}
 
+	binmode STDOUT;
+
 	# read the root node
 	$xml_reader->nextElement() == 1 || die "Failed to read root node.";
 
@@ -78,7 +80,7 @@ sub xml2llrp {
 			
 		}
 
-		print $encoded_message;
+		syswrite STDOUT, $encoded_message;
 
 		#my $decoded_message = decode_message ($encoded_message);
 		#print $decoded_message->toString(1);
