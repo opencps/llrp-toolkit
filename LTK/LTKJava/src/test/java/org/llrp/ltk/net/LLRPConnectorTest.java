@@ -5,10 +5,8 @@ import junit.framework.TestCase;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 import org.llrp.ltk.exceptions.InvalidLLRPMessageException;
-import org.llrp.ltk.generated.enumerations.ConnectionAttemptStatusType;
 import org.llrp.ltk.generated.messages.DELETE_ROSPEC;
 import org.llrp.ltk.generated.messages.DELETE_ROSPEC_RESPONSE;
-import org.llrp.ltk.generated.messages.READER_EVENT_NOTIFICATION;
 import org.llrp.ltk.types.LLRPMessage;
 import org.llrp.ltk.types.UnsignedInteger;
 
@@ -32,27 +30,16 @@ public class LLRPConnectorTest extends TestCase implements LLRPEndpoint{
 			logger.warn("READER_IP_ADDRESS property not specified on command line using default value: "
 			+ READER_IP_ADDRESS);
 		}
-		
-		
-		
+				
+	}
+	
+	
+	public final void testTransact() throws Exception {
+				
 		connection = new LLRPConnector(this, READER_IP_ADDRESS);
+			
+		
 		((LLRPConnector) connection).connect();
-				
-	}
-
-	
-	protected void tearDown() {
-		
-		((LLRPConnector) connection).disconnect();
-		
-		
-		
-	}
-	
-	
-	public final void testTransact() {
-				
-		
 			
 		try {
 			DELETE_ROSPEC del = new DELETE_ROSPEC();
@@ -66,12 +53,16 @@ public class LLRPConnectorTest extends TestCase implements LLRPEndpoint{
 			e.printStackTrace();				
 		}
 
-		
+		((LLRPConnector) connection).disconnect();
 		
 	}
 	
 	public final void testSend() throws Exception {
 		
+		connection = new LLRPConnector(this, READER_IP_ADDRESS);
+			
+		
+		((LLRPConnector) connection).connect();
 		
 		try {
 			DELETE_ROSPEC del = new DELETE_ROSPEC();
@@ -85,6 +76,8 @@ public class LLRPConnectorTest extends TestCase implements LLRPEndpoint{
 		}
 
 		Thread.sleep(20000);
+		
+		((LLRPConnector) connection).disconnect();
 		
 	}
 	

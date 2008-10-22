@@ -25,7 +25,8 @@ public class LLRPAcceptorTest extends TestCase implements LLRPEndpoint {
 		logger = Logger.getRootLogger();
 		
 		connection = new LLRPAcceptor(this);
-		((LLRPAcceptor) connection).bind();
+		((LLRPAcceptor) connection).setPort(25084);
+		((LLRPAcceptor) connection).bind(10000);
 			
 	}
 
@@ -38,8 +39,9 @@ public class LLRPAcceptorTest extends TestCase implements LLRPEndpoint {
 	}
 	
 	
-	public final void testTransact() {
+	public final void testTransact() throws Exception {
 				
+		
 			
 		try {
 			DELETE_ROSPEC del = new DELETE_ROSPEC();
