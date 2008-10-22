@@ -57,6 +57,11 @@ public class LLRPConnector extends LLRPConnection{
 		super();
 	}
 
+	/** 
+	 * LLRPConnector using parameters provided and LLRPIoAdapterHandlerImpl as default IoHandler
+	 *
+	 */
+	
 	public LLRPConnector(LLRPEndpoint endpoint, String host, int port) {
 		super.endpoint = endpoint;
 		this.host = host;
@@ -64,16 +69,31 @@ public class LLRPConnector extends LLRPConnection{
 
 	}
 
+	/** 
+	 * LLRPConnector using parameters provided and LLRPIoAdapterHandlerImpl as default IoHandler
+	 * and default port 5084
+	 *
+	 */
+	
 	public LLRPConnector(LLRPEndpoint endpoint, String host) {
 		super.endpoint = endpoint;
 		this.host = host;
 	}
+	
+	/** 
+	 * LLRPConnector using parameters provided and default port 5084
+	 *
+	 */
 	
 	public LLRPConnector(LLRPEndpoint endpoint, String host, LLRPIoHandlerAdapter handler) {
 		super.endpoint = endpoint;
 		super.handler = handler;
 		this.host = host;
 	} 
+	
+	/** 
+	 * LLRPConnector using parameters provided
+	 */
 	
 	public LLRPConnector(LLRPEndpoint endpoint, String host, int port, LLRPIoHandlerAdapter handler) {
 		super.endpoint = endpoint;
