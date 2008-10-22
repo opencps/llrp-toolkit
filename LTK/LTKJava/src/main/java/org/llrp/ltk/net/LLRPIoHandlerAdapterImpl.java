@@ -43,9 +43,14 @@ public class LLRPIoHandlerAdapterImpl extends LLRPIoHandlerAdapter{
 	private BlockingQueue<LLRPMessage> synMessageQueue = new LinkedBlockingQueue<LLRPMessage>();
 	private BlockingQueue<ConnectionAttemptEvent> connectionAttemptEventQueue = new LinkedBlockingQueue<ConnectionAttemptEvent>(1);
 	private boolean keepAliveAck = true;
+	private boolean keepAliveForward = false;
 
+	
 	public LLRPIoHandlerAdapterImpl(LLRPConnection connection) {
 		this.connection = connection;
+	}
+	
+	public LLRPIoHandlerAdapterImpl() {
 	}
 	
 	/**
@@ -74,10 +79,14 @@ public class LLRPIoHandlerAdapterImpl extends LLRPIoHandlerAdapter{
 		LLRPMessage llrpMessage = (LLRPMessage) message;
 		log.debug("message "+message.getClass()+" received in session "+session);
 		if(message instanceof KEEPALIVE){
+			if (keepAliveForward) {
+				connection.getEndpoint().messageReceived(llrpMessage);
+			}		
 			if(keepAliveAck){
 				session.write(new KEEPALIVE_ACK());
 				return;
 			}
+			
 		}
 		
 		if (llrpMessage instanceof READER_EVENT_NOTIFICATION) {
@@ -143,7 +152,7 @@ public class LLRPIoHandlerAdapterImpl extends LLRPIoHandlerAdapter{
 	}
 	
 	/**
-	 * returns true if incoming KEEP_ALIVE messages are being acknowledged.
+	 * {@inheritDoc}
 	 */
 	
 	public boolean isKeepAliveAck() {
@@ -151,12 +160,44 @@ public class LLRPIoHandlerAdapterImpl extends LLRPIoHandlerAdapter{
 	}
 	
 	/**
-	 * set whether incoming KEEP_ALIVE messages are being acknowledged.
-	 * 
-	 * @param keepAliveAck true if KEEP_ALIVE messages are to be acknowledged
+	 * {@inheritDoc}
 	 */
 	
 	public void setKeepAliveAck(boolean keepAliveAck) {
 		this.keepAliveAck = keepAliveAck;
 	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	
+	public boolean isKeepAliveForward() {
+		return keepAliveForward;
+	}
+	
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	
+	public void setKeepAliveForward(boolean keepAliveForward) {
+		this.keepAliveForward = keepAliveForward;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	
+	public LLRPConnection getConnection() {
+		return connection;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	
+	public void setConnection(LLRPConnection connection) {
+		this.connection = connection;
+	}
+	
 }

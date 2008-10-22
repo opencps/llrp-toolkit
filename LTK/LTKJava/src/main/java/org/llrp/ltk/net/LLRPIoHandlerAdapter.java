@@ -33,6 +33,40 @@ import org.llrp.ltk.types.LLRPMessage;
 public abstract class LLRPIoHandlerAdapter extends IoHandlerAdapter{
 
 	/**
+	 * returns true if incoming KEEP_ALIVE messages are being acknowledged.
+	 */
+	
+	public abstract boolean isKeepAliveAck();
+	
+	/**
+	 * set whether incoming KEEP_ALIVE messages should be acknowledged. Default case is that 
+	 * KEEP_ALIVE messages are acknowledged.
+	 * 
+	 * @param keepAliveAck true if KEEP_ALIVE messages are to be acknowledged
+	 */
+	
+	public abstract void setKeepAliveAck(boolean keepAliveAck);
+	
+	/**
+	 * returns true if incoming KEEP_ALIVE messages are being forwarded to the LLRPEndpoint.
+	 * 
+	 * 
+	 * @returns keepAliveForward true if KEEP_ALIVE messages are forwarded, false otherwise
+	 */
+	
+	public abstract boolean isKeepAliveForward();
+	
+	
+	/**
+	 * set whether incoming KEEP_ALIVE messages are being forwarded to the LLRPEndpoint.
+	 * Default is with forwarding off.
+	 * 
+	 * @param keepAliveForward true if KEEP_ALIVE messages are to be forwarded
+	 */
+	
+	public abstract void setKeepAliveForward(boolean keepAliveForward);
+	
+	/**
 	 * returns queue of all incoming messages where the messages type is equal to the one specified 
 	 * in the IoSession parameter LLRPConnection.SYNC_MESSAGE_ANSWER. This method is required by
 	 * the transact (synchronous message sending) of the LLRP connections. 
@@ -51,5 +85,23 @@ public abstract class LLRPIoHandlerAdapter extends IoHandlerAdapter{
 	
 	public abstract BlockingQueue<ConnectionAttemptEvent> getConnectionAttemptEventQueue();
 
+	/** 
+	 * gets connection on which handler is operating
+	 * 
+	 * @returns connection
+	 **/ 
+	
+	public abstract LLRPConnection getConnection();
+	
+	/** 
+	 * sets connection on which handler is operating
+	 * 
+	 * @params connection
+	 **/
+	
+	public abstract void setConnection(LLRPConnection connection);
+	
+	
+	
 
 }
