@@ -175,4 +175,5 @@ public class SignedInteger extends LLRPNumberType {
     public boolean inRange(String valueString){
 		return inRange(new BigInteger(valueString).longValue());
 	}
+
 }

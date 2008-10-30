@@ -91,6 +91,10 @@ public class UnsignedByteArray_HEX extends UnsignedByteArray {
 	 */
 	public void decodeXML(Element element) {
 		String byteString = element.getText();
+		if (byteString == null || byteString.equals("")){
+			bytes = new UnsignedByte[0];
+			return;
+		}
 		LinkedList<UnsignedByte> tempList = new LinkedList<UnsignedByte>();
 
 		int length = byteString.length();

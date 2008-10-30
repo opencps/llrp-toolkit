@@ -211,6 +211,10 @@ public class UnsignedByteArray extends LLRPType {
 	@Override
 	public void decodeXML(Element element) {
 		String text = element.getText();
+		if (text == null || text.equals("")){
+			bytes = new UnsignedByte[0];
+			return;
+		}
 		String[] strings = text.split(" ");
 		bytes = new UnsignedByte[strings.length];
 

@@ -243,4 +243,32 @@ public class UnsignedIntegerArray extends LLRPType {
 		}
 		return true;
 	}
+	
+	/**
+	 * compare each element
+	 * 
+	 * @param other
+	 *            to compare
+	 * 
+	 * @return boolean
+	 */
+	public boolean equals(LLRPType other) {
+		if (!(other instanceof UnsignedIntegerArray)) {
+			throw new IllegalArgumentException(
+					"Argument not UnsignedIntegerArray");
+		}
+		UnsignedIntegerArray ba = (UnsignedIntegerArray) other;
+
+		if (ba.size() != (this.size())) {
+			return false;
+		}
+
+		for (int i = 0; i < integers.length; i++) {
+			if (!ba.get(i).equals(this.get(i))) {
+				return false;
+			}
+		}
+
+		return true;
+	}
 }

@@ -39,8 +39,8 @@ public class SignedIntegerArray extends LLRPType {
 	}
 
 	/**
-	 * Creates a new SignedIntegerArray object from jdom element - used for
-	 * xml decoding
+	 * Creates a new SignedIntegerArray object from jdom element - used for xml
+	 * decoding
 	 * 
 	 * @param element
 	 *            to be decoded
@@ -59,6 +59,13 @@ public class SignedIntegerArray extends LLRPType {
 		integers = new SignedInteger[length];
 	}
 
+	public SignedIntegerArray(int[] data) {
+		this.integers = new SignedInteger[data.length];
+		for (int i = 0; i < data.length; i++) {
+			integers[i] = new SignedInteger(data[i]);
+		}
+	}
+
 	/**
 	 * first 16 bits of LLRPBitlist must indicate number of entries that follow
 	 * 
@@ -69,15 +76,15 @@ public class SignedIntegerArray extends LLRPType {
 		decodeBinary(bits);
 	}
 
-    /**
-     * @param String
-     */
-    public SignedIntegerArray(String string) {
-    	Element element = new Element("foo","ns");
-    	element.setText(string);
-        decodeXML(element);
-    }
-	
+	/**
+	 * @param String
+	 */
+	public SignedIntegerArray(String string) {
+		Element element = new Element("foo", "ns");
+		element.setText(string);
+		decodeXML(element);
+	}
+
 	/**
 	 * Creates an empty SignedIntegerArray. Do not call methood 'set' on an
 	 * empty array. Add SignedInteger by calling the add method
@@ -177,7 +184,7 @@ public class SignedIntegerArray extends LLRPType {
 
 	@Override
 	public Content encodeXML(String name, Namespace ns) {
-		
+
 		Element element = new Element(name, ns);
 		element.setContent(new Text(toString()));
 
@@ -187,13 +194,13 @@ public class SignedIntegerArray extends LLRPType {
 	@Override
 	public void decodeXML(Element element) {
 		String text = element.getText();
-		if (!text.equals("")){
-		String[] strings = text.split(" ");
-		integers = new SignedInteger[strings.length];
+		if (!text.equals("")) {
+			String[] strings = text.split(" ");
+			integers = new SignedInteger[strings.length];
 
-		for (int i = 0; i < strings.length; i++) {
-			integers[i] = new SignedInteger(strings[i]);
-		}
+			for (int i = 0; i < strings.length; i++) {
+				integers[i] = new SignedInteger(strings[i]);
+			}
 		} else {
 			integers = new SignedInteger[0];
 		}
@@ -215,8 +222,8 @@ public class SignedIntegerArray extends LLRPType {
 		return s;
 
 	}
-	
-	public String toString(){
+
+	public String toString() {
 		String s = "";
 
 		for (SignedInteger b : integers) {
@@ -227,20 +234,50 @@ public class SignedIntegerArray extends LLRPType {
 		s = s.replaceFirst(" ", "");
 		return s;
 	}
-	
+
 	/**
 	 * expects a string as formated for XML
 	 */
-	public boolean inRange(String valueString){
+	public boolean inRange(String valueString) {
 		String[] strings = valueString.split(" ");
-		// try do create each element. If one failes, the whole string is illegal
+		// try do create each element. If one failes, the whole string is
+		// illegal
 		for (int i = 0; i < strings.length; i++) {
 			try {
 				new SignedInteger(strings[i]);
-			} catch (IllegalArgumentException e){
+			} catch (IllegalArgumentException e) {
 				return false;
 			}
 		}
 		return true;
 	}
+
+	/**
+	 * compare each element
+	 * 
+	 * @param other
+	 *            to compare
+	 * 
+	 * @return boolean
+	 */
+	public boolean equals(LLRPType other) {
+		if (!(other instanceof SignedIntegerArray)) {
+			throw new IllegalArgumentException(
+					"Argument not SignedIntegerArray");
+		}
+		SignedIntegerArray ba = (SignedIntegerArray) other;
+
+		if (ba.size() != (this.size())) {
+			return false;
+		}
+
+		for (int i = 0; i < integers.length; i++) {
+			if (!ba.get(i).equals(this.get(i))) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
 }

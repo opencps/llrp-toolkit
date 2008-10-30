@@ -237,6 +237,10 @@ public class SignedShortArray extends LLRPType {
 	@Override
 	public void decodeXML(Element element) {
 		String text = element.getText();
+		if (text == null || text.equals("")){
+			shorts = new SignedShort[0];
+			return;
+		}
 		String[] strings = text.split(" ");
 		shorts = new SignedShort[strings.length];
 

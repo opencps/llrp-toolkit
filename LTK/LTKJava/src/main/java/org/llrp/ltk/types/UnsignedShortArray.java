@@ -237,6 +237,10 @@ public class UnsignedShortArray extends LLRPType {
 	@Override
 	public void decodeXML(Element element) {
 		String text = element.getText();
+		if (text == null || text.equals("")){
+			shorts = new UnsignedShort[0];
+			return;
+		}
 		String[] strings = text.split(" ");
 		shorts = new UnsignedShort[strings.length];
 
