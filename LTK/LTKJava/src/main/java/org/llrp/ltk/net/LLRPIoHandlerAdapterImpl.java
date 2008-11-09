@@ -31,7 +31,8 @@ import org.llrp.ltk.types.LLRPMessage;
 
 /**
  * 
- * LLRPIoHandlerAdapterImpl handles incoming messages. It routes incoming asynchronous messages 
+ * LLRPIoHandlerAdapterImpl is the default implementation of the LLRPIoHandlerAdapter.
+ * It handles incoming messages: routes incoming asynchronous messages 
  * to the LLRPEndpoint registered, replies to KEEP_ALIVE messages and handles incoming READER_NOTIFICATION 
  * messages and responses to synchronous calls. 
  *

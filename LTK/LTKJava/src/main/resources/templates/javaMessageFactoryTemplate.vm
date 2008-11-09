@@ -38,7 +38,7 @@ import org.llrp.ltk.generated.messages.*;
 /**
  * 
  * LLRPMessageFactory generates LLRPMessage objects from LLRP Messages
- * in binary and XML encoding.
+ * in binary or LTK XML encoding.
  *
  * LLRPMessageFactory detects the message types in a binary or XML message and 
  * instantiates the corresponding LTK Java message object, e.g. ADD_ROSPEC. 

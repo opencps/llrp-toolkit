@@ -35,7 +35,7 @@ package org.llrp.ltk.generated.custom.interfaces;
 
 	/**
 	 * interface $interface.getName() 
-	 * to represent choices from xml document.
+	 * representing choice construct in llrpdef.xml.
 	 */	
 public interface $interface.getName() {
 	

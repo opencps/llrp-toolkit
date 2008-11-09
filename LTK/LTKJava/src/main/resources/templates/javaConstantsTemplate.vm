@@ -29,7 +29,7 @@
 package org.llrp.ltk.generated;
 
 /**
- * defining some constants
+ * LLRPConstants defines constants for XSD and LLRP XML namespace and LLRP XML XSD schema path.
  *
  */
 public class LLRPConstants {

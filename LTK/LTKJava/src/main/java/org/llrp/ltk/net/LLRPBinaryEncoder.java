@@ -25,6 +25,10 @@ import org.apache.mina.filter.codec.ProtocolEncoderOutput;
 import org.llrp.ltk.exceptions.InvalidLLRPMessageException;
 import org.llrp.ltk.types.LLRPMessage;
 
+/**
+	 * LLRPBinaryEncoder encodes LLRPMessage objects to the LLRP binary format.
+ */
+
 public class LLRPBinaryEncoder implements ProtocolEncoder {
 
 	Logger log = Logger.getLogger(LLRPBinaryEncoder.class);
@@ -33,6 +37,10 @@ public class LLRPBinaryEncoder implements ProtocolEncoder {
 		// nothing to dispose
 	}
 
+	/**
+	 * convert LLRPMessage object to binary format
+	*/
+	
 	public void encode(IoSession session, Object message,
 			ProtocolEncoderOutput out) throws Exception {
 		LLRPMessage llrp = (LLRPMessage) message;

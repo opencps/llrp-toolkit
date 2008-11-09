@@ -162,7 +162,7 @@ public class LLRPConnector extends LLRPConnection{
 	/**
 	 * reconnect to LLRP device using host, port and handler specified.
 	 * 
-	 * @returns true if connection could be established 
+	 * @return true if connection could be established 
 	 * and ConnectionAttemptEvent Status was set to 'Success', set to false otherwise 
 	 * 
 	 */

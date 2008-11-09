@@ -27,6 +27,10 @@ import org.apache.mina.filter.codec.ProtocolDecoderOutput;
 import org.llrp.ltk.generated.LLRPMessageFactory;
 import org.llrp.ltk.types.LLRPMessage;
 
+/**
+	 * LLRPBinaryDecoder decodes incoming binary LLRP messages to LLRPMessage objects.
+ */
+
 public class LLRPBinaryDecoder extends CumulativeProtocolDecoder {
 
 	private static final String MESSAGE_VERSION_KEY = "MessageVersion";

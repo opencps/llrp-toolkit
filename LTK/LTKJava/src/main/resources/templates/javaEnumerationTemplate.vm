@@ -51,7 +51,6 @@ import java.util.List;
 
 /**
  * $className is Enumeration of Type $utility.getSuperType($className)
- * Use isValidValue to check if value to be set is allowed.
  */
 public class $className extends $superType implements LLRPEnumeration{
 	#set($class = ".class")
@@ -70,7 +69,7 @@ public class $className extends $superType implements LLRPEnumeration{
 	/**
 	 * Create new $className by passing integer value.
 	 *
-	 * @throw IllegalArgumentException
+	 * @throws IllegalArgumentException
 	 * if the value is not allowed for this enumeration
 	 * @param value an Integer value allowed - might check first
 	 * with isValidValue it it is an allowed value
@@ -95,7 +94,7 @@ public class $className extends $superType implements LLRPEnumeration{
 		/**
 		 * Create new $className by passing jdom element.
 		 *
-		 * @throw IllegalArgumentException
+		 * @throws IllegalArgumentException
 		 * String must be a concatenation of several enumeration strings seperated by whitespace
 		 * @param element - jdom element where the child is a string
 		 * that contains several names for values of the enumeration.
@@ -112,7 +111,7 @@ public class $className extends $superType implements LLRPEnumeration{
 		/**
 		 * Create new $className by passing jdom element.
 		 *
-		 * @throw IllegalArgumentException
+		 * @throws IllegalArgumentException
 		 * if the value found in element is not allowed 
 		 * for this enumeration.
 		 * @param element - jdom element where the child is a string
@@ -135,7 +134,7 @@ public class $className extends $superType implements LLRPEnumeration{
 		/**
 		 * Create new $className by passing a string
 		 *
-		 * @throw IllegalArgumentException
+		 * @throws IllegalArgumentException
 		 * String must be a concatenation of several enumeration strings seperated by whitespace
 		 * @param element - string that contains several names for values of the enumeration.
 		 */
@@ -150,7 +149,7 @@ public class $className extends $superType implements LLRPEnumeration{
 		/**
 		 * Create new $className by passing a string.
 		 *
-		 * @throw IllegalArgumentException
+		 * @throws IllegalArgumentException
 		 * if the string does not stand for a valid value.
 		 * @param name - name for a value
 		 */	
@@ -171,7 +170,7 @@ public class $className extends $superType implements LLRPEnumeration{
 	/**
 	 * Create new $className by passing LLRPBitList.
 	 *
-	 * @throw IllegalArgumentException
+	 * @throws IllegalArgumentException
 	 * if the value found in the BitList is not allowed
 	 * for this enumeration.
 	 * @param list - LLRPBitList
@@ -189,7 +188,7 @@ public class $className extends $superType implements LLRPEnumeration{
 		 * set a value of this enumeration to the 
 		 * value identified by given string.
 		 *
-		 * @throw IllegalArgumentException
+		 * @throws IllegalArgumentException
 		 * if the value found for given String is not allowed
 		 * for this enumeration.
 		 * @param name set this enumeration to hold one of the allowed values
@@ -211,7 +210,7 @@ public class $className extends $superType implements LLRPEnumeration{
 		 * set the current value of this enumeration to the 
 		 * value identified by given string.
 		 *
-		 * @throw IllegalArgumentException
+		 * @throws IllegalArgumentException
 		 * if the value found for given String is not allowed
 		 * for this enumeration.
 		 * @param name set this enumeration to hold one of the allowed values
@@ -235,7 +234,7 @@ public class $className extends $superType implements LLRPEnumeration{
 		 * set a value of this enumeration to the 
 		 * value identified by given string.
 		 *
-		 * @throw IllegalArgumentException
+		 * @throws IllegalArgumentException
 		 * if the value found for given String is not allowed
 		 * for this enumeration.
 		 * @param name set this enumeration to hold one of the allowed values
@@ -259,7 +258,7 @@ public class $className extends $superType implements LLRPEnumeration{
 		 * set the current value of this enumeration to the 
 		 * value given.
 		 *
-		 * @throw IllegalArgumentException
+		 * @throws IllegalArgumentException
 		 * if the value is not allowed
 		 * for this enumeration.
 		 * @param value to be set 
@@ -318,7 +317,6 @@ public class $className extends $superType implements LLRPEnumeration{
 
 	/**
 		* {@inheritDoc}
-            * @implements LLRPEnumeration.isValidValue(int value)
 	 */	
 		public boolean isValidValue(final int value){
 			switch (value){
@@ -333,7 +331,6 @@ public class $className extends $superType implements LLRPEnumeration{
 		
 	/**
 		* {@inheritDoc}
-            * @implements LLRPEnumeration.getValue(String name)
 	 */		
 		public final int getValue(final String name){
 				#foreach ($entry in $enum.getEntry())
@@ -344,7 +341,6 @@ public class $className extends $superType implements LLRPEnumeration{
 		
     /**
              * {@inheritDoc}
-    * @implements LLRPEnumeration.getName(int value)
      */
     public final String getName(final int value) {
 			#foreach ($entry in $enum.getEntry())
@@ -355,7 +351,6 @@ public class $className extends $superType implements LLRPEnumeration{
 		
 		/**
 		 	* {@inheritDoc}
-            * @implements LLRPEnumeration.isValidName(String name)
 		 */	
 		public boolean isValidName(final String name){
 			#foreach ($entry in $enum.getEntry())

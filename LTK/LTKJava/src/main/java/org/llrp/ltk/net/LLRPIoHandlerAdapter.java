@@ -25,8 +25,8 @@ import org.llrp.ltk.types.LLRPMessage;
 
 
 /**
- * defines methods that need to be any LLRPIoHandlerAdapter implementation in addition to
- * the methods defined by the MINA IoHandler interface. 
+ * LLRPIoHandlerAdapter defines abstract methods that need to be implemented by any LLRPIoHandlerAdaptor implementation in addition to
+ * the methods defined by the Apache MINA IoHandler interface. 
  *
  */
 
@@ -51,7 +51,7 @@ public abstract class LLRPIoHandlerAdapter extends IoHandlerAdapter{
 	 * returns true if incoming KEEP_ALIVE messages are being forwarded to the LLRPEndpoint.
 	 * 
 	 * 
-	 * @returns keepAliveForward true if KEEP_ALIVE messages are forwarded, false otherwise
+	 * @return keepAliveForward true if KEEP_ALIVE messages are forwarded, false otherwise
 	 */
 	
 	public abstract boolean isKeepAliveForward();
@@ -88,7 +88,7 @@ public abstract class LLRPIoHandlerAdapter extends IoHandlerAdapter{
 	/** 
 	 * gets connection on which handler is operating
 	 * 
-	 * @returns connection
+	 * @return connection
 	 **/ 
 	
 	public abstract LLRPConnection getConnection();
@@ -96,7 +96,7 @@ public abstract class LLRPIoHandlerAdapter extends IoHandlerAdapter{
 	/** 
 	 * sets connection on which handler is operating
 	 * 
-	 * @params connection
+	 * @param connection
 	 **/
 	
 	public abstract void setConnection(LLRPConnection connection);

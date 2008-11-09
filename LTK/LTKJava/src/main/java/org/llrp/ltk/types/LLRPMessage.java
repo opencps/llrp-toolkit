@@ -36,13 +36,15 @@ import org.llrp.ltk.exceptions.MissingParameterException;
 import org.xml.sax.SAXException;
 
 /**
- * representing a message in LLRP. * The binary encoding Is always: Reserved(3
+ * LLRPMessage represents an LLRP message in LTKJava. 
+ * <p>
+ * The binary encoding Is always: Reserved(3
  * Bits) | Version (3 Bits) | Message Type (10 Bits) | Message Length (32 Bits) |
  * Parameters
  * 
  * call empty constructor to create new message. Use constructor taking
  * LLRPBitList or Byte[] to create message from binary encoded message. Use
- * constructor taking JDOM document to create message from XML encoding
+ * constructor with JDOM document as a parameter to create message from XML encoding
  * 
  * @author Basil Gasser - ETH Zurich
  * @author Christian Floerkemeier - MIT

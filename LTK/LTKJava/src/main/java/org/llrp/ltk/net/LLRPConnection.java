@@ -111,7 +111,7 @@ public abstract class LLRPConnection {
 	 * LLRP specification. 
 	 * 
 	 * @param message LLRP message to be sent
-	 * @returns message LLRP response message
+	 * @return message LLRP response message
 	 */
 	public LLRPMessage transact(LLRPMessage message) throws TimeoutException{
 		return transact(message,0);
@@ -122,7 +122,7 @@ public abstract class LLRPConnection {
 	 * 
 	 * @param message LLRP message to be sent
 	 * @param transactionTimeout  timeout
-	 * @returns message LLRP response message
+	 * @return message LLRP response message
 	 */
 	public LLRPMessage transact(LLRPMessage message,long transactionTimeout) throws TimeoutException{
 		String returnMessageType = message.getResponseType();

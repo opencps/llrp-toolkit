@@ -35,8 +35,10 @@ import org.apache.mina.transport.socket.nio.SocketAcceptorConfig;
  * <p>
  * <code> LLRPAcceptor c = new LLRPAcceptor(endpoint); </code> <p>
  * <code> c.bind(); </code> <p>
+ * <code> // wait for incoming reader initiated connection ..... </code> <p>
  * <code> // send message asynchronously </code> <p>
  * <code> c.send(llrpmessage); </code> <p>
+  * <code> // asynchronously LLRP messages arrive via LLRPEndpoint.messageReceived</code> <p>
  * <code> // send message synchronously </code> <p>
  * <code> LLRPMessage m = c.transact(llrpmessage); </code>
  * 
@@ -61,7 +63,7 @@ public class LLRPAcceptor extends LLRPConnection  {
 	 * creates a remotely initiated LLRP connection on default PORT 5084 
 	 * and uses LLRPIoHandlerAdapterImpl by default
 	 * 
-	 * @param LLRPEndpoint endpoint that handles incoming, asynchronous LLRP messages
+	 * @param endpoint that handles incoming, asynchronous LLRP messages
 	 */
 	
 	public LLRPAcceptor(LLRPEndpoint endpoint){
@@ -71,8 +73,8 @@ public class LLRPAcceptor extends LLRPConnection  {
 	/**
 	 * creates a remotely initiated LLRP connection and uses LLRPIoHandlerAdapterImpl by default
 	 * 
-	 * @param LLRPEndpoint endpoint that handles incoming, asynchronous LLRP messages
-	 * @param Port on which LLRPAcceptor is waiting for incoming connections
+	 * @param endpoint that handles incoming, asynchronous LLRP messages
+	 * @param port on which LLRPAcceptor is waiting for incoming connections
 	 */
 
 	public LLRPAcceptor(LLRPEndpoint endpoint, int port){
@@ -80,12 +82,27 @@ public class LLRPAcceptor extends LLRPConnection  {
 		this.port = port;
 	}
 
+	/**
+	 * creates a remotely initiated LLRP connection and uses LLRPIoHandlerAdapterImpl by default
+	 * 
+	 * @param endpoint that handles incoming, asynchronous LLRP messages
+	 * @param port on which LLRPAcceptor is waiting for incoming connections
+	 * @param handler which handles incoming LLRP messages
+	 */
+	
 	public LLRPAcceptor(LLRPEndpoint endpoint, int port, LLRPIoHandlerAdapter handler){
 		super.endpoint = endpoint;
 		this.port = port;
 		super.handler = handler;
 	}
 
+	/**
+	 * creates a remotely initiated LLRP connection on default PORT 5084 
+	 * 
+	 * @param endpoint that handles incoming, asynchronous LLRP messages
+	 * @param handler which handles incoming LLRP messages
+	 */
+	
 	public LLRPAcceptor(LLRPEndpoint endpoint, LLRPIoHandlerAdapter handler){
 		super.endpoint = endpoint;
 		super.handler = handler;
