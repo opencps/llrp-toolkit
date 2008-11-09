@@ -2,7 +2,7 @@
 <project name="LLRPGenerator" default="compile" basedir=".">
      <property name="src" value="src/main/java"/> 
      <property name="src.test" value="src/test/java"/> 
-     <property name="version" value="0_1_1-SNAPSHOT"/> 
+     <property name="version" value="0_1_1_SNAPSHOT"/> 
      <property name="res" value="src/main/resources"/> 
      <property name="build" value="target"/>
      <property name="docs" value="docs"/>
@@ -210,10 +210,14 @@
 	
 		    <packageset dir="${src}" defaultexcludes="yes">
 		      <include name="org/llrp/ltk/**"/>
-		      <exclude name="org/llrp/testing/**"/>
 		      <exclude name="org/llrp/ltkGenerator/**"/>
 		    </packageset>
-		
+			<classpath>
+	        	<pathelement path="${classpath}"/>
+	      		<fileset dir="lib">
+	        		<include name="**/*.jar"/>
+	      		</fileset>
+	         </classpath>
 		    <doctitle><![CDATA[<h1>LLRP Implementation</h1>]]></doctitle>
 		    <bottom><![CDATA[<i>Copyright &#169; 2007 ETH Zurich.</i>]]></bottom>
 		    <tag name="todo" scope="all" description="To do:"/>
