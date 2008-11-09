@@ -849,7 +849,7 @@ $utility.clearNumberOfReserved()
 		#end 
 		#if ($field.getRepeat()== $mustListRepeat  || $field.getRepeat()== $optionalListRepeat)
 			/**
-			 * set $curName$list of type  List<$field.getType()>.
+			 * set $curName$list of type  List &lt;$field.getType()>.
 			 * @param  $curName$list to be set
 			 */
 			public void set$utility.firstToUpperCase($curName)$list (final List<$field.getType()> $curName$list) {
@@ -931,8 +931,8 @@ $utility.clearNumberOfReserved()
 		#end 
 		#if ($field.getRepeat()== $mustListRepeat  || $field.getRepeat()== $optionalListRepeat)
 			/**
-			 * get $curName$list of type List<$field.getType()> .
-			 * @return  List<$field.getType()>
+			 * get $curName$list of type List &lt;$field.getType()> .
+			 * @return  List &lt;$field.getType()>
 			 */
 			public List<$field.getType()> get$utility.firstToUpperCase($curName)$list$emptyBrack {
 				return $curName$list;
