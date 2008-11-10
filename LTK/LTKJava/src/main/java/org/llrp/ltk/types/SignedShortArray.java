@@ -41,7 +41,7 @@ public class SignedShortArray extends LLRPType {
 	/**
 	 * Creates a new SignedShortArray object.
 	 * 
-	 * @param string
+	 * @param shortString
 	 *            of shorts
 	 */
 	public SignedShortArray(String shortString) {
@@ -194,7 +194,7 @@ public class SignedShortArray extends LLRPType {
 	/**
 	 * length of BaseType not array - for array length call size()
 	 * 
-	 * @return
+	 * @return int
 	 */
 	public static int length() {
 		return SignedShort.length();

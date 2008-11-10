@@ -76,10 +76,12 @@ public class BitArray_HEX extends BitArray {
 		return LENGTH;
 	}
 
-
-	/**
-	 * @Override {@inheritDoc}
-	 */
+    /**
+     * encode to XML
+     *
+     * @param name of element
+     * @param ns Namespace
+     */
 	public Content encodeXML(String name, Namespace ns) {
 		Element element = new Element(name, ns);
 		// xs:hexBinary only lets you define a number of bits evenly divisible
@@ -111,7 +113,8 @@ public class BitArray_HEX extends BitArray {
 	}
 
 	/**
-	 * @Override {@inheritDoc}
+	 * decode JDOM Element
+	 * @param element to decode
 	 */
 	public void decodeXML(Element element) {
 		String hexString = element.getText();

@@ -199,9 +199,12 @@ public class UnsignedByteArray extends LLRPType {
 		return bytes.length;
 	}
 
-	/**
-	 * @Override {@inheritDoc}
-	 */
+    /**
+     * encode to XML
+     *
+     * @param name of element
+     * @param ns Namespace
+     */
 	public Content encodeXML(String name, Namespace ns) {
 		
 		Element element = new Element(name, ns);
@@ -211,8 +214,11 @@ public class UnsignedByteArray extends LLRPType {
 	}
 
 	/**
-	 * @Override {@inheritDoc}
-	 */
+    /**
+     * decode from XML
+     *
+     * @param element to decode
+     */
 	public void decodeXML(Element element) {
 		String text = element.getText();
 		if (text == null || text.equals("")){

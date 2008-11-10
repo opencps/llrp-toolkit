@@ -127,7 +127,7 @@ public class UnsignedInteger extends LLRPNumberType {
     /**
      * number of bits used to represent this type
      *
-     * @return Integer
+     * @return int
      */
     public static int length() {
         return LENGTH;
@@ -137,7 +137,7 @@ public class UnsignedInteger extends LLRPNumberType {
      * this might return a false value. Java Integer are signed and therefore
      * might not provide enough precision
      *
-     * @return
+     * @return Integer
      */
     public Integer toInteger() {
         return value.intValue();
@@ -149,7 +149,7 @@ public class UnsignedInteger extends LLRPNumberType {
     /**
      * Unsigned Integer wrapped Integero java long
      *
-     * @return
+     * @return Long
      */
     public Long toLong() {
         return value.longValue();

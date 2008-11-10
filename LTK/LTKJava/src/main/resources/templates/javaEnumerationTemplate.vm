@@ -151,7 +151,6 @@ public class $className extends $superType implements LLRPEnumeration{
 		 *
 		 * @throws IllegalArgumentException
 		 * if the string does not stand for a valid value.
-		 * @param name - name for a value
 		 */	
 		public $className (final String name){
 			if (!isValidName(name)){
@@ -237,7 +236,7 @@ public class $className extends $superType implements LLRPEnumeration{
 		 * @throws IllegalArgumentException
 		 * if the value found for given String is not allowed
 		 * for this enumeration.
-		 * @param name set this enumeration to hold one of the allowed values
+		 * @param value to be set at position
 		 */
 		public final void set(final int value, int position){
 			if (!isValidValue(value)) throw new IllegalArgumentException("name not allowed");

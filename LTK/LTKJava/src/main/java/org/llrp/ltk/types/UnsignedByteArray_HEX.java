@@ -82,7 +82,12 @@ public class UnsignedByteArray_HEX extends UnsignedByteArray {
 		super(bytes);
 	}
 
-	@Override
+    /**
+     * encode to XML
+     *
+     * @param name of element
+     * @param ns Namespace
+     */
 	public Content encodeXML(String name, Namespace ns) {
 
 		Element element = new Element(name, ns);
@@ -92,7 +97,7 @@ public class UnsignedByteArray_HEX extends UnsignedByteArray {
 	}
 
 	/**
-	 * @Override {@inheritDoc}
+	 * @param element to decode
 	 */
 	public void decodeXML(Element element) {
 		String byteString = element.getText();

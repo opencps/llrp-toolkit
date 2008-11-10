@@ -77,7 +77,7 @@ public class SignedIntegerArray extends LLRPType {
 	}
 
 	/**
-	 * @param String
+	 * @param string
 	 */
 	public SignedIntegerArray(String string) {
 		Element element = new Element("foo", "ns");

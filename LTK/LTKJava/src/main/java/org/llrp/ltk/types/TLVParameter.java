@@ -105,7 +105,7 @@ public abstract class TLVParameter extends LLRPParameter {
     /**
      * protected method to force subclasses to implement their specific encoding
      *
-     * @return
+     * @return LLRPBitList
      */
     protected abstract LLRPBitList encodeBinarySpecific();
 

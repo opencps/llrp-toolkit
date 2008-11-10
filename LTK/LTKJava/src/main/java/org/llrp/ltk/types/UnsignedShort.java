@@ -119,9 +119,8 @@ public class UnsignedShort extends LLRPNumberType {
 	}
 
 	/**
-	 * test
+	 * @return LLRPBitList
 	 * 
-	 * @param bitList
 	 */
 	public LLRPBitList encodeBinary() {
 		LLRPBitList result = new LLRPBitList(Integer.toBinaryString(value));

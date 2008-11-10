@@ -65,7 +65,7 @@ public class UnsignedLong extends LLRPNumberType {
 
 
     /**
-     * @param String radix 10
+     * @param string radix 10
      */
     public UnsignedLong(String string) {
     	this(string,10);

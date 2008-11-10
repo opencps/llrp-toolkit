@@ -38,7 +38,7 @@ public class BytesToEnd_HEX extends BytesToEnd {
 	}
 
 	/**
-	 * @param binary
+	 * @param hexString
 	 *            String in Hexadecimal format
 	 */
 	public BytesToEnd_HEX(String hexString) {
@@ -47,9 +47,12 @@ public class BytesToEnd_HEX extends BytesToEnd {
 		decodeXML(element);
 	}
 
-	/**
-	 * @Override {@inheritDoc}
-	 */
+    /**
+     * encode to XML
+     *
+     * @param name of element
+     * @param ns Namespace
+     */
 	public Content encodeXML(String name, Namespace ns) {
 		Element element = new Element(name, ns);
 		element.setContent(new Text(toString()));
@@ -58,7 +61,8 @@ public class BytesToEnd_HEX extends BytesToEnd {
 	}
 
 	/**
-	 * @Override {@inheritDoc}
+	 * decode JDOM Element
+	 * @param element to decode
 	 */
 	public void decodeXML(Element element) {
 		String hexString = element.getText().replaceAll(" ", "");
@@ -77,7 +81,8 @@ public class BytesToEnd_HEX extends BytesToEnd {
 	}
 
 	/**
-	 * @Override {@inheritDoc}
+	 * Bytes in HEX Format
+	 * @return String 
 	 */
 	public String toString() {
 		String s = "";

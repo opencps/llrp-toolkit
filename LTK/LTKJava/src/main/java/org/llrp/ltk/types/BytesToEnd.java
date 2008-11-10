@@ -41,7 +41,7 @@ public class BytesToEnd extends LLRPType {
     }
 
     /**
-     * @param binary String in Hexadecimal format
+     * @param hexString String in Hexadecimal format
      */
     public BytesToEnd(String hexString) {
     	Element element = new Element("foo","ns");
@@ -142,9 +142,12 @@ public class BytesToEnd extends LLRPType {
         return bytes.size();
     }
 
-	/**
-	 * @Override {@inheritDoc}
-	 */
+    /**
+     * encode to XML
+     *
+     * @param name of element
+     * @param ns Namespace
+     */
     public Content encodeXML(String name, Namespace ns) {
       
 
@@ -154,9 +157,12 @@ public class BytesToEnd extends LLRPType {
         return element;
     }
 
-	/**
-	 * @Override {@inheritDoc}
-	 */
+    /**
+     * decode from XML
+     *
+     * @param element to decode
+     * 
+     */
     public void decodeXML(Element element) {
         String byteString = element.getText();
         bytes = new LinkedList<LLRPInteger>();
