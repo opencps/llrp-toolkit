@@ -21,7 +21,7 @@ import org.jdom.Namespace;
 import org.jdom.Text;
 
 /**
- * SignedIntegerArray - length encoded as first 16 bits!
+ * Array of 32 bit integers - length encoded as first 16 bits in binary encoding
  * 
  * @author gasserb
  */
@@ -96,7 +96,7 @@ public class SignedIntegerArray extends LLRPType {
 	/**
 	 * encodes length before encoding containing values
 	 * 
-	 * @return
+	 * @return LLRPBitList
 	 */
 	public LLRPBitList encodeBinary() {
 		LLRPBitList result = new LLRPBitList();
@@ -121,7 +121,7 @@ public class SignedIntegerArray extends LLRPType {
 	/**
 	 * length of BaseType not array - for array length call size()
 	 * 
-	 * @return
+	 * @return int
 	 */
 	public static int length() {
 		return SignedInteger.length();
@@ -176,7 +176,7 @@ public class SignedIntegerArray extends LLRPType {
 	/**
 	 * number of elements in array
 	 * 
-	 * @return
+	 * @return int
 	 */
 	public int size() {
 		return integers.length;

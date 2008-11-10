@@ -21,7 +21,7 @@ import org.jdom.Namespace;
 import org.jdom.Text;
 
 /**
- * Array of SignedShorts - length encoded with first 16 bits
+ * Array of 16 bit signed shorts - length encoded in first 16 bits of binary encoding
  * 
  * @author gasserb
  */
@@ -219,7 +219,7 @@ public class SignedShortArray extends LLRPType {
 	/**
 	 * number of elements in array
 	 * 
-	 * @return
+	 * @return int
 	 */
 	public int size() {
 		return shorts.length;

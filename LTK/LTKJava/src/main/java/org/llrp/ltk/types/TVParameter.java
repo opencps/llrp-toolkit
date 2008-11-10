@@ -33,7 +33,7 @@ public abstract class TVParameter extends LLRPParameter {
      *
      * @param bits to be decoded
      *
-     * @throw LLRPException
+     * @throws LLRPException
      *             in case of any error or unexpected behaviour
      *
      */

@@ -6,7 +6,11 @@ import org.jdom.Content;
 import org.jdom.Element;
 import org.jdom.Namespace;
 import org.jdom.Text;
-
+/**
+ * Array of unsigned shorts encoded in HEX Format. Length encoded in first 16 bits of binary encoding
+ * @author Basil Gasser - ETH Zurich
+ *
+ */
 public class UnsignedShortArray_HEX extends UnsignedShortArray {
 	public UnsignedShortArray_HEX(Element element) {
 		super(element);
@@ -30,7 +34,7 @@ public class UnsignedShortArray_HEX extends UnsignedShortArray {
 	}
 
 	/**
-	 * @param String
+	 * @param string
 	 */
 	public UnsignedShortArray_HEX(String string) {
 		Element element = new Element("foo", "ns");

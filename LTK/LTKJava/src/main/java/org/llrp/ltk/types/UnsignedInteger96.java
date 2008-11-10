@@ -24,7 +24,7 @@ import java.math.BigInteger;
 
 
 /**
- * Integer with 96 Bits used to represent.
+ * Unsigned 96bit Integer
  *
  * @author Basil Gasser - ETH Zurich
  */

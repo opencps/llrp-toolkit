@@ -23,7 +23,7 @@ import org.jdom.Namespace;
 import org.jdom.Text;
 
 /**
- * UnsignedShort
+ * unsigned 16 bit short
  * 
  * @author Basil Gasser - ETH Zurich
  */

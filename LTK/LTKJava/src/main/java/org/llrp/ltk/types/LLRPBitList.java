@@ -199,7 +199,7 @@ public class LLRPBitList {
     /**
      * returns number of bits in this list.
      *
-     * @return
+     * @return int
      */
     public int length() {
         return length;

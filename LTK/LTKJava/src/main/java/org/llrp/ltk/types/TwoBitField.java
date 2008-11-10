@@ -57,7 +57,7 @@ public class TwoBitField extends LLRPType {
 	}
 
 	/**
-	 * @param String
+	 * @param string
 	 */
 	public TwoBitField(String string) {
 		Element element = new Element("foo", "ns");

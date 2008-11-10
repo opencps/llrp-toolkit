@@ -58,7 +58,10 @@ public abstract class LLRPType {
      */
     public abstract void decodeXML(Element element);
     
-    
+    /**
+     * create string as found in xml encoding
+     * @return String
+     */ 
     public String toXMLString() {
         Content c = encodeXML(this.getClass().getName(), Namespace.getNamespace(""));
         XMLOutputter outputter = new XMLOutputter();
@@ -68,6 +71,10 @@ public abstract class LLRPType {
         return outputter.outputString(d);
     }
     
+    /**
+     * String representation
+     * @return String
+     */ 
     public String toString(){
 		return toString(2);
 	}

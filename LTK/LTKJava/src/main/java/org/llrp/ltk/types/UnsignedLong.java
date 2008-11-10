@@ -24,7 +24,7 @@ import java.math.BigInteger;
 
 
 /**
- * UnsignedLong - type does not exist in java
+ * Unsigned Long 
  *
  * @author Basil Gasser - ETH Zurich
  */
@@ -120,7 +120,7 @@ public class UnsignedLong extends LLRPNumberType {
     /**
      * UnsignedLong wrapped Integero BigInteger
      *
-     * @return
+     * @return BigInteger
      */
     public BigInteger toBigInteger() {
         return value;
@@ -139,7 +139,7 @@ public class UnsignedLong extends LLRPNumberType {
      * this might return a false value. Java long are signed and therefore might
      * not provide enough precision
      *
-     * @return
+     * @return long
      */
     public long toLong() {
         return value.longValue();

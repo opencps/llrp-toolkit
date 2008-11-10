@@ -24,7 +24,7 @@ import org.jdom.Text;
 
 
 /**
- * SignedShort
+ * 16bit signed Short
  *
  * @author Basil Gasser - ETH Zurich
  */

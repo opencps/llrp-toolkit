@@ -24,7 +24,7 @@ import java.math.BigInteger;
 
 
 /**
- * UnsignedInteger - type does not exist in java
+ * Unsigned 32 bit Integer
  *
  * @author Basil Gasser - ETH Zurich
  */

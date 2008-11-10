@@ -23,7 +23,7 @@ import org.jdom.Namespace;
 import org.jdom.Text;
 
 /**
- * UnsignedShort
+ * unsigned 16bit short
  * 
  * @author Basil Gasser - ETH Zurich
  */
@@ -134,9 +134,9 @@ public class UnsignedShort extends LLRPNumberType {
 	}
 
 	/**
-	 * test
 	 * 
-	 * @return test
+	 * 
+	 * @return int
 	 */
 	public static int length() {
 		return LENGTH;
@@ -145,7 +145,7 @@ public class UnsignedShort extends LLRPNumberType {
 	/**
 	 * wrap UnsignedShort Integero Integer
 	 * 
-	 * @return
+	 * @return Integer
 	 */
 	public Integer toInteger() {
 		return value;
@@ -159,7 +159,7 @@ public class UnsignedShort extends LLRPNumberType {
 	 * this might return a false value. Java short are signed and therefore
 	 * might not provide enough precision
 	 * 
-	 * @return
+	 * @return short
 	 */
 	public short toShort() {
 		return value.shortValue();

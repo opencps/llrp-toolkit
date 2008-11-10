@@ -24,7 +24,7 @@ import org.jdom.Text;
 
 
 /**
- * SignedInteger.
+ * Signed 32 bit Integer
  *
  * @author Basil Gasser - ETH Zurich
  */

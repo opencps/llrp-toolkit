@@ -21,7 +21,7 @@ import org.jdom.Namespace;
 
 
 /**
- * Array of bits - when encoded length is also encoded!
+ * Array of bits
  *
  * @author gasserb
  */
@@ -77,11 +77,11 @@ public class BitArray extends LLRPType {
     }
 
     /**
-     * @param binary String
+     * @param binaryString
      */
-    public BitArray(String string) {
+    public BitArray(String binaryString) {
     	Element element = new Element("foo","ns");
-    	element.setText(string);
+    	element.setText(binaryString);
         decodeXML(element);
     }
     

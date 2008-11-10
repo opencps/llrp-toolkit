@@ -8,6 +8,11 @@ import org.jdom.Element;
 import org.jdom.Namespace;
 import org.jdom.Text;
 
+/**
+ * Array of unsigned bytes encoded in HEX Format. Length encoded in first 16 bits of binary encoding
+ * @author Basil Gasser - ETH Zurich
+ *
+ */
 public class UnsignedByteArray_HEX extends UnsignedByteArray {
 	/**
 	 * Creates a new UnsignedByteArray object.
@@ -31,7 +36,7 @@ public class UnsignedByteArray_HEX extends UnsignedByteArray {
 	}
 
 	/**
-	 * @param binary
+	 * @param string
 	 *            String in Hexadecimal format
 	 */
 	public UnsignedByteArray_HEX(String string) {

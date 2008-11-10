@@ -21,7 +21,7 @@ import org.jdom.Namespace;
 import org.jdom.Text;
 
 /**
- * Array of UnsignedShorts - length encoded with first 16 bits
+ * Array of UnsignedShorts - length encoded with first 16 bits in binary encoding
  * 
  * @author gasserb
  */
@@ -41,8 +41,8 @@ public class UnsignedShortArray extends LLRPType {
 	/**
 	 * Creates a new UnsignedShortArray object.
 	 * 
-	 * @param string
-	 *            of shorts
+	 * @param shortString
+	 *           string of shorts
 	 */
 	public UnsignedShortArray(String shortString) {
 		if (shortString.equals("")) {
@@ -185,7 +185,7 @@ public class UnsignedShortArray extends LLRPType {
 	/**
 	 * length in bytes
 	 * 
-	 * @return Integer
+	 * @return int
 	 */
 	public int getByteLength() {
 		return shorts.length * 2;
@@ -194,7 +194,7 @@ public class UnsignedShortArray extends LLRPType {
 	/**
 	 * length of BaseType not array - for array length call size()
 	 * 
-	 * @return
+	 * @return int
 	 */
 	public static int length() {
 		return UnsignedShort.length();
@@ -219,7 +219,7 @@ public class UnsignedShortArray extends LLRPType {
 	/**
 	 * number of elements in array
 	 * 
-	 * @return
+	 * @return int
 	 */
 	public int size() {
 		return shorts.length;

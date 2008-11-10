@@ -2,7 +2,11 @@ package org.llrp.ltk.types;
 
 import org.jdom.Element;
 
-
+/**
+ * String in UTF8 Format
+ * @author Basil Gasser - ETH Zurich
+ *
+ */
 public class UTF8String_UTF_8 extends UTF8String {
     public UTF8String_UTF_8() {
         string = "";
@@ -38,7 +42,7 @@ public class UTF8String_UTF_8 extends UTF8String {
     /**
      * length in number of bits used to represent this type.
      *
-     * @return
+     * @return int
      */
     public static int length() {
         return LENGTH;

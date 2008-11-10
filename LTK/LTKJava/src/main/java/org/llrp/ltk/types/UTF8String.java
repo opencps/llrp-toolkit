@@ -28,7 +28,7 @@ import org.jdom.Verifier;
 /**
  * Strig with UT8 Encoding!
  *
- * @author gasserb
+ * @author Basil Gasser - ETH Zurich
  */
 public class UTF8String extends LLRPType {
     //8 because we encode it as a list of bytes

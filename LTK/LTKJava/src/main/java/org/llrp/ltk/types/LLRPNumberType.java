@@ -20,7 +20,7 @@ import org.jdom.Namespace;
 /**
  * Super Type for all numerical types!
  * 
- * @author gasserb
+ * @author Basil Gasser - ETH Zurich
  */
 public abstract class LLRPNumberType extends LLRPType {
 	protected boolean signed;

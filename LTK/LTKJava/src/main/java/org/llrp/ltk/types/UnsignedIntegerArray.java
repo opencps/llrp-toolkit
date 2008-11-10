@@ -21,7 +21,7 @@ import org.jdom.Namespace;
 import org.jdom.Text;
 
 /**
- * UnsignedIntegerArray - length encoded as first 16 bits!
+ * Array of unsigned 32bit integers. Length encoded in first 16 bits of binary encoding
  * 
  * @author gasserb
  */
@@ -70,7 +70,7 @@ public class UnsignedIntegerArray extends LLRPType {
 	}
 
     /**
-     * @param String
+     * @param string
      */
     public UnsignedIntegerArray(String string) {
     	Element element = new Element("foo","ns");
@@ -89,7 +89,7 @@ public class UnsignedIntegerArray extends LLRPType {
 	/**
 	 * encodes length before encoding containing values
 	 * 
-	 * @return
+	 * @return LLRPBitList
 	 */
 	public LLRPBitList encodeBinary() {
 		LLRPBitList result = new LLRPBitList();
@@ -114,7 +114,7 @@ public class UnsignedIntegerArray extends LLRPType {
 	/**
 	 * length of BaseType not array - for array length call size()
 	 * 
-	 * @return
+	 * @return int
 	 */
 	public static int length() {
 		return UnsignedInteger.length();
@@ -169,7 +169,7 @@ public class UnsignedIntegerArray extends LLRPType {
 	/**
 	 * number of elements in array
 	 * 
-	 * @return
+	 * @return int
 	 */
 	public int size() {
 		return integers.length;

@@ -10,8 +10,8 @@ import org.jdom.Text;
 
 public class BitArray_HEX extends BitArray {
 	/**
-	 * create a new BitArray_HEX. When encoded, BitArray_HEX also encodes its
-	 * length.
+	 * Array of Bits encoded in HEX Format.
+	 * XML element has count attribute if number of bits is not evenly divisible my 8
 	 * 
 	 * @param bits
 	 *            to be decoded
@@ -58,7 +58,7 @@ public class BitArray_HEX extends BitArray {
 	}
 
 	/**
-	 * @param binary
+	 * @param hexString
 	 *            String in Hexadecimal format
 	 */
 	public BitArray_HEX(String hexString) {
@@ -76,7 +76,10 @@ public class BitArray_HEX extends BitArray {
 		return LENGTH;
 	}
 
-	@Override
+
+	/**
+	 * @Override {@inheritDoc}
+	 */
 	public Content encodeXML(String name, Namespace ns) {
 		Element element = new Element(name, ns);
 		// xs:hexBinary only lets you define a number of bits evenly divisible

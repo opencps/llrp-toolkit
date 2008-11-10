@@ -22,7 +22,7 @@ import org.jdom.Namespace;
 import org.jdom.Text;
 
 /**
- * A single bit.
+ * A single bit
  * 
  * @author Basil Gasser - ETH Zurich
  */

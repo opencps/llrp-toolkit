@@ -43,7 +43,7 @@ public interface LLRPEnumeration {
      * set the current value of this enumeration to the
      * value identified by given string.
      *
-     * @throw IllegalArgumentException
+     * @throws IllegalArgumentException
      * if the value found for given String is not allowed
      * for this enumeration.
      * @param name set this enumeration to hold one of the allowed values
@@ -54,7 +54,7 @@ public interface LLRPEnumeration {
      * set the current value of this enumeration to the
      * value given.
      *
-     * @throw IllegalArgumentException
+     * @throws IllegalArgumentException
      * if the value is not allowed
      * for this enumeration.
      * @param value to be set

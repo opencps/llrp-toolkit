@@ -18,7 +18,7 @@ import org.jdom.Text;
 
 public class UnsignedLong_DATETIME extends UnsignedLong {
 	/**
-	 * {@inheritDoc}
+	 * unsigned long encoded in datetime Format.
 	 * 
 	 * @param aLong
 	 */
@@ -32,7 +32,7 @@ public class UnsignedLong_DATETIME extends UnsignedLong {
 	
 
     /**
-     * @param String
+     * @param string
      */
     public UnsignedLong_DATETIME(String string) {
     	Element element = new Element("foo","ns");
@@ -66,7 +66,7 @@ public class UnsignedLong_DATETIME extends UnsignedLong {
 	/**
 	 * length in number of bits used to represent this type.
 	 * 
-	 * @return
+	 * @return int
 	 */
 	public static int length() {
 		return LENGTH;

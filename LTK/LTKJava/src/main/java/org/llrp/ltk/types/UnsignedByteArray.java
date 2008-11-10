@@ -23,7 +23,7 @@ import org.jdom.Namespace;
 import org.jdom.Text;
 
 /**
- * UnsignedByteArray - length encoded as first 16 bits!
+ * Array of unsigned bytes. Length encoded in first 16 bits of binary encoding
  * 
  * @author gasserb
  */
@@ -138,7 +138,7 @@ public class UnsignedByteArray extends LLRPType {
 	/**
 	 * length of BaseType - not of the array - for array length call size()
 	 * 
-	 * @return
+	 * @return int
 	 */
 	public static int length() {
 		return LLRPInteger.length();
@@ -193,13 +193,15 @@ public class UnsignedByteArray extends LLRPType {
 	/**
 	 * number of elements in array
 	 * 
-	 * @return
+	 * @return int
 	 */
 	public int size() {
 		return bytes.length;
 	}
 
-	@Override
+	/**
+	 * @Override {@inheritDoc}
+	 */
 	public Content encodeXML(String name, Namespace ns) {
 		
 		Element element = new Element(name, ns);
@@ -208,7 +210,9 @@ public class UnsignedByteArray extends LLRPType {
 		return element;
 	}
 
-	@Override
+	/**
+	 * @Override {@inheritDoc}
+	 */
 	public void decodeXML(Element element) {
 		String text = element.getText();
 		if (text == null || text.equals("")){

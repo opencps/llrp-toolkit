@@ -26,7 +26,7 @@ import java.util.List;
 
 
 /**
- * List of Bytes of unbound length.
+ * List of Bytes of unbound length. Length is not encoded!
  *
  * @author Basil Gasser - ETH Zurich
  */
@@ -142,10 +142,9 @@ public class BytesToEnd extends LLRPType {
         return bytes.size();
     }
 
-    /**
-     * @Override
-     * {@inheritDoc}
-     */
+	/**
+	 * @Override {@inheritDoc}
+	 */
     public Content encodeXML(String name, Namespace ns) {
       
 
@@ -155,10 +154,9 @@ public class BytesToEnd extends LLRPType {
         return element;
     }
 
-    /**
-     * @Override
-     * {@inheritDoc}
-     */
+	/**
+	 * @Override {@inheritDoc}
+	 */
     public void decodeXML(Element element) {
         String byteString = element.getText();
         bytes = new LinkedList<LLRPInteger>();

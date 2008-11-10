@@ -7,7 +7,11 @@ import org.jdom.Text;
 
 import java.math.BigInteger;
 
-
+/**
+ * 96 bit Integer encoded in HEX Format
+ * @author Basil Gasser - ETH Zurich
+ *
+ */
 public class Integer96_HEX extends UnsignedInteger96 {
     public Integer96_HEX() {
         super();
@@ -36,7 +40,6 @@ public class Integer96_HEX extends UnsignedInteger96 {
     /**
     * length in number of bits used to represent this type.
     *
-    * @return
     */
     public static int length() {
         return LENGTH;

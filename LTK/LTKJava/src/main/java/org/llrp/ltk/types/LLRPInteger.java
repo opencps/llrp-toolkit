@@ -24,7 +24,7 @@ import org.jdom.Text;
 
 
 /**
- * 8 Bit Integer!
+ * 8 Bit Integer
  *
  * @author Basil Gasser - ETH Zurich
  */

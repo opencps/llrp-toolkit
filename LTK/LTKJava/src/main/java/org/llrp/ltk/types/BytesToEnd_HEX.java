@@ -9,7 +9,7 @@ import org.jdom.Text;
 import org.llrp.ltk.generated.LLRPConstants;
 
 /**
- * class representing BytesToEnd in Hex format.
+ * BytesToEnd in HEX format.
  * 
  */
 public class BytesToEnd_HEX extends BytesToEnd {
@@ -30,7 +30,8 @@ public class BytesToEnd_HEX extends BytesToEnd {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * BytesToEnd created from XML element
+	 * @param element 
 	 */
 	public BytesToEnd_HEX(Element element) {
 		super(element);
@@ -46,7 +47,9 @@ public class BytesToEnd_HEX extends BytesToEnd {
 		decodeXML(element);
 	}
 
-	@Override
+	/**
+	 * @Override {@inheritDoc}
+	 */
 	public Content encodeXML(String name, Namespace ns) {
 		Element element = new Element(name, ns);
 		element.setContent(new Text(toString()));
@@ -73,6 +76,9 @@ public class BytesToEnd_HEX extends BytesToEnd {
 		}
 	}
 
+	/**
+	 * @Override {@inheritDoc}
+	 */
 	public String toString() {
 		String s = "";
 		int i = 0;

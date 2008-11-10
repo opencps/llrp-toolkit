@@ -19,7 +19,7 @@ import org.jdom.Element;
 
 
 /**
- * TwoBitEnumerations
+ * Enumerations that can hold 4 values (2 bits) at most
  *
  * @author Basil Gasser - ETH Zurich
  */
