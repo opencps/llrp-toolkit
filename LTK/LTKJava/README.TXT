@@ -1,7 +1,7 @@
 
 
 USING AND BUILDING THE LLRP Tool Kit for Java
-Last updated 11 June 2008
+Last updated 17 November 2008
 
 
 
@@ -16,11 +16,21 @@ LLRP Tool Kit is available on SourceForge.net
 
     http://sourceforge.net/projects/llrp-toolkit/
 
+FEATURES 
+==========
 
+- codec for binary LLRP messages
+- codec for LTK XML messages incl. XSD schema validation
+- support for LTK structured extension approach (binary & LTK XML)
+- synchronous and asynchronous messaging
+- client and reader-initiated connections
+- automatic acknowledgement of KEEP_ALIVE messages
 
 
 USER GUIDE
 ==========
+
+See wiki for additional examples: http://llrp-toolkit.wiki.sourceforge.net/
 
 1. Download the most recent version of the LLRP Tool Kit for Java and add it to your classpath. 
 
@@ -28,13 +38,8 @@ It is available from the download section at
 
 http://sourceforge.net/projects/llrp-toolkit/
 
-Daily builds are currently available from 
-
-http://web.mit.edu/~floerkem/www/ltk/
-	
-
-2. Add the runtime dependencies listed below to the classpath if you did not download the
-jar with the dependencies (LTKJava_with_dep_<version>.jar)
+2. Add the runtime dependencies listed below to the classpath if you are not using the
+LTKJava jar with the dependencies (LTKJava_with_dep_<version>.jar)
 
 3. Start using the library:
 
@@ -57,19 +62,24 @@ LLRPMessage message = LLRPMessageFactory.createLLRPMessage(doc);
 // output as a binary message<p>
 Byte[] output = message.encodeBinary();
 
-See wiki for additional information: http://llrp-toolkit.wiki.sourceforge.net/
+// open a client initiated connection
+LLRPConnection connection = new LLRPConnector(this, READER_IP_ADDRESS);
+((LLRPConnector) connection).connect();
+		
+// send the message synchronously
+LLRPMessage response = connection.transact(message);
 
+See wiki for more detailed examples: http://llrp-toolkit.wiki.sourceforge.net/
 
 BUILDING FROM SOURCE
 =====================
 
 The LTKJava generates the LLRP java classes from the description of the LLRP binary binding 
-in llrp-def.xml and possible extensions. A detailed description of the LTKJava approach is available in the project wiki:
+in llrp-def.xml and any extensions specified. A detailed description of the LTKJava approach is available in the project wiki:
 
 http://llrp-toolkit.wiki.sourceforge.net/ 
 
-The LTKJava can be built using ant with JDK1.5 and higher. (We plan to add maven support in the near future 
-to facilitate the dependency management).
+The LTKJava can be built using ant with JDK1.5 and higher. 
 
 1. Obtain the sources from the CVS. 
 
@@ -118,7 +128,7 @@ log4j 				1.2.15 	http://logging.apache.org/log4j/1.2/download.html
 commons-collection 	3.2		http://commons.apache.org
 commons-configuration 1.5 	http://commons.apache.org
 commons-lang 		2.3 	http://commons.apache.org
-common-logging 		1.1.1   http://commons.apache.org (check)
+common-logging 		1.1.1   http://commons.apache.org
 JAXB RI dependencies including:
 jaxb-xjc 			2.0 	https://jaxb.dev.java.net/
 jaxb-impl 			2.0 	https://jaxb.dev.java.net/
