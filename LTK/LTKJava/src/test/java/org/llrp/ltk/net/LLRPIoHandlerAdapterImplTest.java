@@ -96,13 +96,6 @@ public void testSetKeepAliveForward() throws Exception {
 
 public void messageReceived(LLRPMessage message) {
 	
-	try {
-		logger.debug("Received the following message: ");
-		logger.debug(message.toXMLString());
-	} catch (InvalidLLRPMessageException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-	}
 
 	if(message instanceof KEEPALIVE){
 		keep_alives_received++;
