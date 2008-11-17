@@ -39,7 +39,7 @@ import org.llrp.ltk.types.LLRPMessage;
  */
 
 public class LLRPIoHandlerAdapterImpl extends LLRPIoHandlerAdapter{
-	private Logger log = Logger.getLogger(LLRPConnection.class);	
+	private Logger log = Logger.getLogger(LLRPIoHandlerAdapterImpl.class);	
 	private LLRPConnection connection;
 	private BlockingQueue<LLRPMessage> synMessageQueue = new LinkedBlockingQueue<LLRPMessage>();
 	private BlockingQueue<ConnectionAttemptEvent> connectionAttemptEventQueue = new LinkedBlockingQueue<ConnectionAttemptEvent>(1);
@@ -78,7 +78,10 @@ public class LLRPIoHandlerAdapterImpl extends LLRPIoHandlerAdapter{
 	public void messageReceived(IoSession session, Object message)
 			throws Exception {		
 		LLRPMessage llrpMessage = (LLRPMessage) message;
-		log.debug("message "+message.getClass()+" received in session "+session);
+		log.info("message "+message.getClass()+" received in session "+session);
+		if (log.isDebugEnabled()) {
+			log.debug(llrpMessage.toXMLString());
+		}
 		if(message instanceof KEEPALIVE){
 			if (keepAliveForward) {
 				connection.getEndpoint().messageReceived(llrpMessage);
@@ -115,7 +118,13 @@ public class LLRPIoHandlerAdapterImpl extends LLRPIoHandlerAdapter{
 	 */
 	
 	public void messageSent(IoSession session, Object message)	throws java.lang.Exception {
-		log.debug("message transmitted");
+		if (log.isInfoEnabled()) {
+			log.info( "Message " + ((LLRPMessage)message).getName() + " successfully transmitted");
+		}
+		if (log.isDebugEnabled()) {
+			log.debug(((LLRPMessage)message).toXMLString());
+		}
+		
 	}
 	
 	/**
