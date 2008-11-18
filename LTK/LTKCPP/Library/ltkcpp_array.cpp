@@ -45,6 +45,10 @@ llrp_u8v_t::llrp_u8v_t (
         m_pValue = new llrp_u8_t[m_nValue];
         memset(m_pValue, 0, sizeof m_pValue[0] * m_nValue);
     }
+    else
+    {
+        m_pValue = NULL;
+    }
 }
 
 llrp_u8v_t::llrp_u8v_t (
@@ -120,6 +124,10 @@ llrp_s8v_t::llrp_s8v_t (
     {
         m_pValue = new llrp_s8_t[m_nValue];
         memset(m_pValue, 0, sizeof m_pValue[0] * m_nValue);
+    }
+    else
+    {
+        m_pValue = NULL;
     }
 }
 
@@ -197,6 +205,10 @@ llrp_u16v_t::llrp_u16v_t (
         m_pValue = new llrp_u16_t[m_nValue];
         memset(m_pValue, 0, sizeof m_pValue[0] * m_nValue);
     }
+    else
+    {
+        m_pValue = NULL;
+    }
 }
 
 llrp_u16v_t::llrp_u16v_t (
@@ -272,6 +284,10 @@ llrp_s16v_t::llrp_s16v_t (
     {
         m_pValue = new llrp_s16_t[m_nValue];
         memset(m_pValue, 0, sizeof m_pValue[0] * m_nValue);
+    }
+    else
+    {
+        m_pValue = NULL;
     }
 }
 
@@ -349,6 +365,10 @@ llrp_u32v_t::llrp_u32v_t (
         m_pValue = new llrp_u32_t[m_nValue];
         memset(m_pValue, 0, sizeof m_pValue[0] * m_nValue);
     }
+    else
+    {
+        m_pValue = NULL;
+    }
 }
 
 llrp_u32v_t::llrp_u32v_t (
@@ -424,6 +444,10 @@ llrp_s32v_t::llrp_s32v_t (
     {
         m_pValue = new llrp_s32_t[m_nValue];
         memset(m_pValue, 0, sizeof m_pValue[0] * m_nValue);
+    }
+    else
+    {
+        m_pValue = NULL;
     }
 }
 
@@ -501,6 +525,10 @@ llrp_u64v_t::llrp_u64v_t (
         m_pValue = new llrp_u64_t[m_nValue];
         memset(m_pValue, 0, sizeof m_pValue[0] * m_nValue);
     }
+    else
+    {
+        m_pValue = NULL;
+    }
 }
 
 llrp_u64v_t::llrp_u64v_t (
@@ -576,6 +604,10 @@ llrp_s64v_t::llrp_s64v_t (
     {
         m_pValue = new llrp_s64_t[m_nValue];
         memset(m_pValue, 0, sizeof m_pValue[0] * m_nValue);
+    }
+    else
+    {
+        m_pValue = NULL;
     }
 }
 
@@ -655,6 +687,10 @@ llrp_u1v_t::llrp_u1v_t (
         m_pValue = new llrp_byte_t[nByte];
         memset(m_pValue, 0, nByte);
     }
+    else
+    {
+        m_pValue = NULL;
+    }
 }
 
 llrp_u1v_t::llrp_u1v_t (
@@ -733,6 +769,10 @@ llrp_utf8v_t::llrp_utf8v_t (
         m_pValue = new llrp_utf8_t[m_nValue];
         memset(m_pValue, 0, sizeof m_pValue[0] * m_nValue);
     }
+    else
+    {
+        m_pValue = NULL;
+    }
 }
 
 llrp_utf8v_t::llrp_utf8v_t (
@@ -808,6 +848,10 @@ llrp_bytesToEnd_t::llrp_bytesToEnd_t (
     {
         m_pValue = new llrp_byte_t[m_nValue];
         memset(m_pValue, 0, sizeof m_pValue[0] * m_nValue);
+    }
+    else
+    {
+        m_pValue = NULL;
     }
 }
 

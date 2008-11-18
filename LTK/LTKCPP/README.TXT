@@ -15,6 +15,9 @@
 #
 ############################################################################
 
+/** @mainpage LLRP Toolkit for C PlusPlus (LTKCPP)
+ ** @author Gordon Waidhofer
+ ** 
 
 OVERVIEW OF THE LLRP Tool Kit for C++
 Last updated 28 Jan 2008
@@ -392,3 +395,5 @@ TODO LIST
 - Windows prior to WinXP does not have getaddrinfo(). Probably
   should step back to gethostbyname()
 - Need to test on more versions of Visual Studio
+
+**/ 

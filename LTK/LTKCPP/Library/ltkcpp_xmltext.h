@@ -19,6 +19,17 @@
  */
 
 
+/**
+ *****************************************************************************
+ **
+ ** @file  ltkcpp_xmltext.h
+ **
+ ** @brief Classes to encode LTK-XML 
+ **
+ ** These classes implement the basic Encoder and Decoder classes
+ ** to convert LTKCPP objects to  LTK_XML syntax
+ **
+ *****************************************************************************/
 
 
 namespace LLRP

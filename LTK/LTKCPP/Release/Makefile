@@ -38,7 +38,8 @@ EXAMPLE_FILES       = ../Examples/example1.cpp ../Examples/Example-Makefile
 all: std
 
 std: $(LTKCPP_FILES) $(EXAMPLE_FILES)
-	rm -rf std
+	-rm -rf std
+	-rm -rf ltkcpp_dox.log
 	mkdir std
 	chmod 777 std
 	mkdir std/libltkcpp
@@ -50,10 +51,14 @@ std: $(LTKCPP_FILES) $(EXAMPLE_FILES)
 	cp ../Examples/Example-Makefile std/libltkcpp/example/Makefile
 	chmod 644 std/libltkcpp/example/*
 	chmod 755 std/libltkcpp/example
+	mkdir std/Documentation
+	chmod 777 std/Documentation
+	(cat ltkcpp.dox ; echo OUTPUT_DIRECTORY="std/Documentation" ) | doxygen - 
+	chmod 755 std/Documentation
 	chmod 755 std/libltkcpp
 	chmod 755 std
-	cd std; tar czf libltkcpp_std.tgz libltkcpp
-	cd std; zip -rq libltkcpp_std     libltkcpp
+	cd std; tar czf libltkcpp_std.tgz libltkcpp Documentation
+	cd std; zip -rq libltkcpp_std     libltkcpp Documentation
 
 clean:
 	rm -rf *.tgz *.zip

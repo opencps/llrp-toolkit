@@ -18,6 +18,17 @@
  ***************************************************************************
  */
 
+/**
+ *****************************************************************************
+ **
+ ** @file  ltkcpp_frame.h
+ **
+ ** @brief Classes to encode and decod LLRP binary frames
+ **
+ ** These classes implement the basic Encoder and Decoder classes
+ ** to convert LTKCPP objects to and from LLRP binary syntax.
+ **
+ *****************************************************************************/
 
 
 

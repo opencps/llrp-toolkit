@@ -15,12 +15,11 @@
 #
 ############################################################################
 
+/** @file INSTALL.TXT
+ ** @brief contains instructions on installing and building the LTKCPP
 
 INSTALLING AND BUILDING THE LLRP Tool Kit for C++
 Last updated 28 Jan 2008
-
-
-
 
 INTRODUCTION
 ============
@@ -182,3 +181,4 @@ FOR FURTHER INFORMATION OR TO GET HELP
 
 Visit the LLRP Tool Kit project on SourceForge.net
 
+**/

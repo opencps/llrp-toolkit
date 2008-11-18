@@ -38,6 +38,12 @@ static char     ident[] = {
 };
 
 
+/**
+ ****************************************************************************
+ ** @brief Gets the type registry for the LTKCPP
+ ** 
+ ** @return CTypeRegistry The Type registry.
+ **/
 CTypeRegistry *
 getTheTypeRegistry (void)
 {

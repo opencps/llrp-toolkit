@@ -73,6 +73,8 @@ class CPlatformSocket;
  **         - The send buffer and count
  **         - Details of the last send error, including I/O errors,
  **           or encode errors.
+ ** 
+ ** @ingroup LTKCoreElement
  **
  *****************************************************************************/
 

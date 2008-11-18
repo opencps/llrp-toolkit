@@ -21,7 +21,7 @@
 /**
  *****************************************************************************
  **
- ** @file  ltkc_connection.cpp
+ ** @file  ltkcpp_connection.cpp
  **
  ** @brief Functions to communicate using LLRP messages over a socket
  **
@@ -440,10 +440,6 @@ CConnection::closeConnectionToReader (void)
  **                                   socket queue, return immediately
  **                                   no matter what
  **                             >0 => ms to await complete frame
- ** @param[in]  pResponseType   The type descriptor of the sought
- **                             or NULL to match all messages.
- **                             If not NULL, ERROR_MESSAGE will
- **                             also match.
  **
  ** @return     ==NULL          Something failed.  Use getTransactError()
  **                             for best guess at what went wrong.

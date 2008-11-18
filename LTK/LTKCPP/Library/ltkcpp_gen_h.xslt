@@ -21,6 +21,7 @@
 <xsl:stylesheet
         version='1.0'
         xmlns:LL="http://www.llrp.org/ltk/schema/core/encoding/binary/1.0"
+        xmlns:h="http://www.w3.org/1999/xhtml"
         xmlns:xsl='http://www.w3.org/1999/XSL/Transform'>
 <xsl:output omit-xml-declaration='yes' method='text' encoding='iso-8859-1'/>
 
@@ -45,6 +46,17 @@
 <xsl:call-template name='ClassDeclarationsParameters'/>
 <xsl:call-template name='ClassDeclarationsChoices'/>
 
+/** @brief Enrolls the types for <xsl:value-of select='$RegistryName'/> into the LTKCPP registry
+ ** 
+ ** LTKCPP needs an internal registry for storing all the type information.  This function
+ ** is required to enroll the types for the <xsl:value-of select='$RegistryName'/> into
+ ** the operating registry.  
+ ** 
+ ** For example -- in order to decode and encode packets from the core LLRP specification
+ ** The user must EnrollCoreTypesIntoRegistry.
+ **
+ ** @ingroup LTKCoreElement
+ */
 extern void
 enroll<xsl:value-of select='$RegistryName'/>TypesIntoRegistry (
   CTypeRegistry *               pTypeRegistry);
@@ -73,11 +85,98 @@ enroll<xsl:value-of select='$RegistryName'/>TypesIntoRegistry (
  * that is included by a platform specific .h header file.
  * That .h file takes care of prerequisites needed by this file.
  */
-
-
 </xsl:template>
 
 
+<!--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ -
+ - @brief Documentation template generates comment for doxygen
+ -
+ - Invoked by templates
+ -
+ -
+ -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ -->
+<xsl:template name='Documentation' xml:space='default'>
+  <xsl:param name='Brief'/>
+/**
+ ** @brief  <xsl:value-of select='$Brief'/>
+ **
+ <!-- applies the templates below to ensure that we translate the XHTML to html -->
+<xsl:apply-templates/>
+ **/
+</xsl:template>
+
+<!--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ -
+ - @brief For all templates that match the documentation field
+ -
+ - Prints out a list of the references into the code as href html tags to be
+ - interpreted by doxygen etc.
+ -
+ -
+
+ -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ -->
+<xsl:template match='LL:annotation/LL:documentation'>
+&lt;ul&gt;
+  <xsl:for-each select='h:a'>  
+    &lt;li&gt;&lt;b&gt;Document Reference&lt;/b&gt;  <xsl:apply-templates select="."/> &lt;/li&gt;
+  </xsl:for-each>
+&lt;/ul&gt;  
+</xsl:template>
+
+<!--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ -
+ - @brief For all templates that match the description field
+ -
+ - Prints out each detailed description and also the relevant copyright information
+ -
+ - Separate each description section by a line in case there is different copyrights
+ - for different descriptions
+ -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ -->
+<xsl:template match='LL:annotation/LL:description'>
+  <xsl:apply-templates/>
+  <xsl:if test="@copyright">&lt;SMALL&gt;&lt;i&gt;<xsl:value-of select="normalize-space(@copyright)"/>&lt;/i&gt;&lt;/SMALL&gt;</xsl:if> 
+  &lt;HR&gt;
+</xsl:template>
+
+<!--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ -
+ - @brief These next few templates translate the XHTML to the proper doxygen format
+ -
+ - Invoked by templates\
+ - If i wanted to do a thorough job, I'd have to translsate all the tags
+ - found in http://www.stack.nl/~dimitri/doxygen/htmlcmds.html. 
+ -
+ -
+ -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ -->
+ <!-- Copy the html a (link) elements -->
+ <xsl:template match="h:a">
+   &lt;a href=<xsl:value-of select="@href"/>&gt;<xsl:apply-templates/>&lt;/a&gt;
+ </xsl:template>
+ 
+ <!-- Copy the html boldface element-->
+ <xsl:template match="h:b">
+   &lt;b&gt;<xsl:apply-templates/>&lt;/b&gt;
+ </xsl:template>
+
+ <!-- Copy the html un-numbered list element -->
+ <xsl:template match="h:ul">
+    &lt;ul&gt;<xsl:apply-templates/>&lt;/ul&gt; 
+ </xsl:template>
+
+ <!-- Copy the html list item element -->
+ <xsl:template match="h:li">
+    &lt;li&gt;<xsl:apply-templates/>&lt;/li&gt;
+ </xsl:template>
+
+ <!-- Copy the html paragraph element-->
+ <xsl:template match="h:p">
+    &lt;p&gt;<xsl:apply-templates/>&lt;/p&gt; 
+ </xsl:template>
 
 <!--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  -
@@ -211,10 +310,13 @@ g_nsdesc<xsl:value-of select='@prefix'/>;
 
 <xsl:for-each select='LL:enumerationDefinition|LL:customEnumerationDefinition'>
   <xsl:variable name='enumBaseName' select='@name'/>
+  <xsl:call-template name='Documentation'>
+    <xsl:with-param name='Brief'>Global enumeration E<xsl:value-of select='@name'/> for LLRP enumerated field <xsl:value-of select='$enumBaseName'/></xsl:with-param>
+  </xsl:call-template>
 enum E<xsl:value-of select='@name'/>
 {
 <xsl:for-each select='LL:entry' xml:space='preserve'>
-    <xsl:value-of select='$enumBaseName'/>_<xsl:value-of select='@name'/> = <xsl:value-of select='@value'/>,</xsl:for-each>
+    <xsl:value-of select='$enumBaseName'/>_<xsl:value-of select='@name'/> = <xsl:value-of select='@value'/>, /**&lt; <xsl:value-of select='@name'/> */ </xsl:for-each> 
 };
 
 extern const SEnumTableEntry
@@ -242,15 +344,22 @@ g_est<xsl:value-of select='$enumBaseName'/>[];
  -->
 
 <xsl:template name='ClassDeclarationsMessages'>
-
+/** 
+ * \defgroup <xsl:value-of select='$RegistryName'/>Message  <xsl:value-of select='$RegistryName'/> Message Classes
+ * Classes to manipulate the messages defined by the <xsl:value-of select='$RegistryName'/> LLRP protocol
+ */
+/*@{*/ 
 <xsl:for-each select='LL:messageDefinition|LL:customMessageDefinition'>
+  <xsl:call-template name='Documentation'>
+    <xsl:with-param name='Brief'>Class Definition C<xsl:value-of select='@name'/> for LLRP message <xsl:value-of select='@name'/></xsl:with-param>
+  </xsl:call-template>
   <xsl:call-template name='ClassDeclarationCommon'>
     <xsl:with-param name='ClassBase'>CMessage</xsl:with-param>
     <xsl:with-param name='ClassName'>C<xsl:value-of select='@name'/></xsl:with-param>
     <xsl:with-param name='IsCustomParameter'>false</xsl:with-param>
   </xsl:call-template>
 </xsl:for-each>
-
+/*@}*/
 </xsl:template>
 
 
@@ -271,8 +380,15 @@ g_est<xsl:value-of select='$enumBaseName'/>[];
  -->
 
 <xsl:template name='ClassDeclarationsParameters'>
-
+/** 
+ * \defgroup <xsl:value-of select='$RegistryName'/>Parameter <xsl:value-of select='$RegistryName'/> Parameter Classes
+ * Classes to manipulate the parameters defined by the <xsl:value-of select='$RegistryName'/> LLRP protocol
+ */
+/*@{*/ 
 <xsl:for-each select='LL:parameterDefinition|LL:customParameterDefinition'>
+  <xsl:call-template name='Documentation'>
+    <xsl:with-param name='Brief'>Class Definition C<xsl:value-of select='@name'/> for LLRP parameter <xsl:value-of select='@name'/></xsl:with-param>
+  </xsl:call-template>
   <xsl:call-template name='ClassDeclarationCommon'>
     <xsl:with-param name='ClassBase'>CParameter</xsl:with-param>
     <xsl:with-param name='ClassName'>C<xsl:value-of select='@name'/></xsl:with-param>
@@ -284,7 +400,7 @@ g_est<xsl:value-of select='$enumBaseName'/>[];
     </xsl:with-param>
   </xsl:call-template>
 </xsl:for-each>
-
+/*@}*/ 
 </xsl:template>
 
 
@@ -314,6 +430,9 @@ class <xsl:value-of select='$ClassName'/> : public <xsl:value-of select='$ClassB
   public:
     <xsl:value-of select='$ClassName'/> (void);
     ~<xsl:value-of select='$ClassName'/> (void);
+
+/** @name Internal Framework Functions */
+//@{
 
     static const CFieldDescriptor * const
     s_apFieldDescriptorTable[];
@@ -346,6 +465,7 @@ class <xsl:value-of select='$ClassName'/> : public <xsl:value-of select='$ClassB
     s_decodeFields (
       CDecoderStream *          pDecoderStream,
       CElement *                pElement);
+//@}
 
   <xsl:call-template name='ClassDeclFields'/>
   <xsl:call-template name='ClassDeclSubParameters'/>
@@ -420,16 +540,21 @@ class <xsl:value-of select='$ClassName'/> : public <xsl:value-of select='$ClassB
   protected:
     <xsl:value-of select='$FieldType'/> <xsl:value-of select='$MemberName'/>;
 
+/** @name Internal Framework Functions */
+//@{
   public:
     static const CFieldDescriptor
     s_fd<xsl:value-of select='$BaseName'/>;
+//@}
 
+    /** @brief Get accessor functions for the LLRP <xsl:value-of select='$BaseName'/> field */
     inline <xsl:value-of select='$FieldType'/>
     get<xsl:value-of select='$BaseName'/> (void)
     {
         return <xsl:value-of select='$MemberName'/>;
     }
 
+    /** @brief Set accessor functions for the LLRP <xsl:value-of select='$BaseName'/> field */
     inline void
     set<xsl:value-of select='$BaseName'/> (
       <xsl:value-of select='$FieldType'/> value)
@@ -620,12 +745,14 @@ class <xsl:value-of select='$ClassName'/> : public <xsl:value-of select='$ClassB
     <xsl:value-of select='$NativeType'/> * m_p<xsl:value-of select='$Name'/>;
 
   public:
+    /** @brief Get accessor functions for the LLRP <xsl:value-of select='$Name'/> sub-parameter */  
     inline <xsl:value-of select='$NativeType'/> *
     get<xsl:value-of select='$Name'/> (void)
     {
         return m_p<xsl:value-of select='$Name'/>;
     }
 
+    /** @brief Set accessor functions for the LLRP <xsl:value-of select='$Name'/> sub-parameter */  
     EResultCode
     set<xsl:value-of select='$Name'/> (
       <xsl:value-of select='$NativeType'/> * pValue);
@@ -656,18 +783,21 @@ class <xsl:value-of select='$ClassName'/> : public <xsl:value-of select='$ClassB
     std::list&lt;<xsl:value-of select='$NativeType'/> *&gt; m_list<xsl:value-of select='$Name'/>;
 
   public:
+     /** @brief  Returns the first element of the <xsl:value-of select='$Name'/> sub-parameter list*/  
     inline std::list&lt;<xsl:value-of select='$NativeType'/> *&gt;::iterator
     begin<xsl:value-of select='$Name'/> (void)
     {
         return m_list<xsl:value-of select='$Name'/>.begin();
     }
 
+     /** @brief  Returns the last element of the <xsl:value-of select='$Name'/> sub-parameter list*/  
     inline std::list&lt;<xsl:value-of select='$NativeType'/> *&gt;::iterator
     end<xsl:value-of select='$Name'/> (void)
     {
         return m_list<xsl:value-of select='$Name'/>.end();
     }
 
+     /** @brief  Clears the LLRP <xsl:value-of select='$Name'/> sub-parameter list*/  
     inline void
     clear<xsl:value-of select='$Name'/> (void)
     {
@@ -675,6 +805,7 @@ class <xsl:value-of select='$ClassName'/> : public <xsl:value-of select='$ClassB
     }
 
     EResultCode
+     /** @brief  Add a <xsl:value-of select='$Name'/> to the LLRP sub-parameter list*/  
     add<xsl:value-of select='$Name'/> (
       <xsl:value-of select='$NativeType'/> * pValue);
 
@@ -696,9 +827,10 @@ class <xsl:value-of select='$ClassName'/> : public <xsl:value-of select='$ClassB
 <xsl:template name='ClassDeclarationsChoices'>
 
 <xsl:for-each select='LL:choiceDefinition|LL:customChoiceDefinition'>
-
 class C<xsl:value-of select='@name'/>
 {
+/** @name Internal Framework Functions */
+//@{
   public:
     static const CTypeDescriptor
     s_typeDescriptor;
@@ -706,10 +838,10 @@ class C<xsl:value-of select='@name'/>
     static llrp_bool_t
     isMember (
       CParameter *              pParameter);
+//@}
+
 };
-
 </xsl:for-each>
-
 </xsl:template>
 
 

@@ -17,6 +17,17 @@
  *
  ***************************************************************************
  */
+/**
+ *****************************************************************************
+ **
+ ** @file ltkcpp.h 
+ **
+ ** @brief  File that includes all LLRP classes and types
+ **
+ ** This file includes all the LLRP types and classes that are generated
+ ** by the LLRP automated build process. 
+ **
+ *****************************************************************************/
 
 
 #ifndef _LTKCPP_H
@@ -28,10 +39,21 @@
 #include "ltkcpp_xmltext.h"
 #include "ltkcpp_connection.h"
 
+/*
+** @brief The Namespace for the LLRP LTK Library */
 namespace LLRP
 {
 #include "out_ltkcpp.h"
 
+/* @brief Gets a new type registry and enrolls the core LLRP types
+**
+** Convenience function to get a new type registry, and enroll the
+** core LLRP types
+**
+** @return CTypeRegistry The type registry created 
+**
+** @ingroup LTKCoreElement
+*/
 extern CTypeRegistry *
 getTheTypeRegistry (void);
 
