@@ -40,7 +40,8 @@
   <parameterDefinition name="UTCTimestamp" typeNum="128" required="false">
     <annotation>
       <documentation>
-        reference 7.1.3.1.1.1 and 16.2.2.1
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=37&amp;view=fit">LLRP Specification Section 7.1.3.1.1.1</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=131&amp;view=fit">LLRP Specification Section 16.2.2.1</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
         <h:p> The timestamps in LLRP messages or parameters can be either the uptime or the UTC time [UTC]. If a Reader has an UTC clock, all timestamps reported by the Reader <h:b>SHALL</h:b> use an UTC timestamp parameter. If a Reader has no UTC clock capability, all timestamps reported by the Reader. <h:b>SHALL</h:b> use the uptime parameter. </h:p>
@@ -52,8 +53,9 @@
   <parameterDefinition name="Uptime" typeNum="129" required="false">
     <annotation>
       <documentation>
-        reference 7.1.3.1.1.2 and 16.2.2.2
-      </documentation>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=37&amp;view=fit">LLRP Specification Section 7.1.3.1.1.2</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=131&amp;view=fit">LLRP Specification Section 16.2.2.2</h:a>
+      </documentation>          
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
          <h:p> The timestamps in LLRP messages or parameters can be either the uptime or the UTC time [UTC]. If a Reader has an UTC clock, all timestamps reported by the Reader <h:b>SHALL</h:b> use an UTC timestamp parameter. If a Reader has no UTC clock capability, all timestamps reported by the Reader <h:b>SHALL</h:b> use the uptime parameter.</h:p>
       </description>
@@ -64,8 +66,8 @@
   <enumerationDefinition name="AirProtocols">
     <annotation>
       <documentation>
-        reference 7.1.4
-      </documentation>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=38&amp;view=fit">LLRP Specification Section 7.1.4</h:a>
+      </documentation>             
       <description>
         <h:p>This is the identifier of the air protocol. </h:p>
       </description>
@@ -77,8 +79,9 @@
   <messageDefinition name="CUSTOM_MESSAGE" typeNum="1023" required="false">
     <annotation>
       <documentation>
-        reference 8.1 and 16.1.42
-      </documentation>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=42&amp;view=fit">LLRP Specification Section 8.1</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=129&amp;view=fit">LLRP Specification Section 16.1.42</h:a>
+      </documentation>                
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
            <h:p>This message carries a vendor defined format from Reader to Client or Client to Reader. </h:p>
            <h:p>No requirements are made as to the content or parameters contained within the Data portion of these messages. Clients <h:b>MAY</h:b> ignore CUSTOM_MESSAGEs. Readers <h:b>SHALL</h:b> accept CUSTOM_MESSAGE and return an ERROR_MESSAGE if CUSTOM_MESSAGE is unsupported by the Reader or the CUSTOM_MESSAGE contains fields and/or parameters that are unsupported by the Reader.</h:p>
@@ -92,8 +95,9 @@
   <parameterDefinition name="Custom" typeNum="1023" required="false">
     <annotation>
       <documentation>
-        reference 8.2 and 16.2.9
-      </documentation>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=42&amp;view=fit">LLRP Specification Section 8.2</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=152&amp;view=fit">LLRP Specification Section 16.2.9</h:a>
+      </documentation>                
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
          <h:p>Certain Messages and Parameter Sets within LLRP allow for the insertion of vendor defined parameters</h:p>
               <h:p>Clients <h:b>SHALL</h:b> accept messages (except for CUSTOM_MESSAGE) that contain custom parameters but <h:b>MAY</h:b> ignore all custom parameters within these messages. Readers <h:b>SHALL</h:b> accept messages (except for CUSTOM_MESSAGE) that contain custom parameters and <h:b>SHALL</h:b> return an error when such parameters are unsupported. </h:p>    
@@ -107,7 +111,8 @@
   <messageDefinition name="GET_READER_CAPABILITIES" typeNum="1" required="true" responseType="GET_READER_CAPABILITIES_RESPONSE">
     <annotation>
       <documentation>
-        reference 9.1.1 and 16.1.1
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=44&amp;view=fit">LLRP Specification Section 9.1.1</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=117&amp;view=fit">LLRP Specification Section 16.1.1</h:a>      
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
          <h:p>This message is sent from the Client to the Reader. The Client is able to request only a subset or all the capabilities from the Reader.</h:p>
@@ -121,7 +126,7 @@
   <enumerationDefinition name="GetReaderCapabilitiesRequestedData">
     <annotation>
       <documentation>
-        reference 9.1.1
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=44&amp;view=fit">LLRP Specification Section 9.1.1</h:a>  
       </documentation>
     </annotation>
     <entry     value="0"    name="All"/>
@@ -134,7 +139,8 @@
   <messageDefinition name="GET_READER_CAPABILITIES_RESPONSE" typeNum="11" required="true">
     <annotation>
       <documentation>
-        reference 9.1.2 and 16.1.2
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=44&amp;view=fit">LLRP Specification Section 9.1.2</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=117&amp;view=fit">LLRP Specification Section 16.1.2</h:a>      
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
          <h:p>This is the response from the Reader to the GET_READER_CAPABILITIES message. The response contains the LLRPStatus Parameter and the list of parameters for the requested capabilities conveyed via RequestedData in the GET_READER_CAPABILITIES message. </h:p>
@@ -151,7 +157,8 @@
   <parameterDefinition name="GeneralDeviceCapabilities" typeNum="137" required="true">
     <annotation>
       <documentation>
-        reference 9.2.1 and 16.2.3.1
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=45&amp;view=fit">LLRP Specification Section 9.1.2</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=131&amp;view=fit">LLRP Specification Section 16.2.3.1</h:a>      
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
          <h:p>This parameter carries the general capabilities of the device like supported air protocols, version of the Reader firmware, device hardware and software information, and receive sensitivity table. </h:p> 
@@ -173,7 +180,8 @@
   <parameterDefinition name="ReceiveSensitivityTableEntry" typeNum="139" required="true">
     <annotation>
       <documentation>
-        reference 9.2.1.1 and 16.2.3.1.1
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=45&amp;view=fit">LLRP Specification Section 9.2.1.1</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=132&amp;view=fit">LLRP Specification Section 16.2.3.1.1</h:a>      
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
          <h:p>This parameter specifies the index into the Receive Sensitivity Table for a receive sensitivity value. The receive sensitivity is expressed in dB and the value is relative to the maximum sensitivity. If the Reader does not allow control of receive sensitivity, a table of one entry is returned, the entry having the value of zero.</h:p>
@@ -187,7 +195,8 @@
   <parameterDefinition name="PerAntennaReceiveSensitivityRange" typeNum="149" required="false">
     <annotation>
       <documentation>
-        reference 9.2.1.2 and 16.2.3.1.2
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=46&amp;view=fit">LLRP Specification Section 9.2.1.2</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=132&amp;view=fit">LLRP Specification Section 16.2.3.1.2</h:a>      
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
          <h:p>For a particular antenna, this parameter specifies the Reader's valid index range in the Receive Sensitivity Table.  A Reader should report this parameter if the Reader allows control of receive sensitivity (i.e., the Reader reports a Receive Sensitivity Table with more than one entry) and the Reader supports multiple antennas where the antennas can have different receive sensitivity values.</h:p>
@@ -202,7 +211,8 @@
   <parameterDefinition name="PerAntennaAirProtocol" typeNum="140" required="true">
     <annotation>
       <documentation>
-        reference 9.2.1.3 and 16.2.3.1.3
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=46&amp;view=fit">LLRP Specification Section 9.2.1.3</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=132&amp;view=fit">LLRP Specification Section 16.2.3.1.3</h:a>      
       </documentation>
       <description>
          <h:p>Describes the air-protocols supporter on a per-antenna basis.</h:p>
@@ -216,7 +226,8 @@
   <parameterDefinition name="GPIOCapabilities" typeNum="141" required="true">
     <annotation>
       <documentation>
-        reference 9.2.1.4 and 16.2.3.1.4
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=47&amp;view=fit">LLRP Specification Section 9.2.1.4</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=133&amp;view=fit">LLRP Specification Section 16.2.3.1.4</h:a>      
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
          <h:p>This parameter describes the GPIO capabilities of the Reader. A value of zero for NumGPIs indicates that the Reader does not have general purpose inputs. A value of zero for NumGPOs indicates that the Reader does not have general purpose outputs.</h:p>
@@ -229,7 +240,8 @@
   <parameterDefinition name="LLRPCapabilities" typeNum="142" required="true">
     <annotation>
       <documentation>
-        reference 9.2.2 and 16.2.3.2
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=47&amp;view=fit">LLRP Specification Section 9.2.2</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=133&amp;view=fit">LLRP Specification Section 16.2.3.2</h:a>      
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
          <h:p>This parameter describes the LLRP protocol capabilities of the Reader. These include optional LLRP commands and parameters, capacities of data structures used in LLRP operations, and air protocol specific capabilities used by LLRP.</h:p>
@@ -254,7 +266,8 @@
   <parameterDefinition name="RegulatoryCapabilities" typeNum="143" required="true">
     <annotation>
       <documentation>
-        reference 9.2.4 and 16.2.3.4
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=48&amp;view=fit">LLRP Specification Section 9.2.4</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=133&amp;view=fit">LLRP Specification Section 16.2.3.4</h:a>      
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
          <h:p>This parameter carries the RF regulation specific attributes. They include regulatory standard, frequency band information, power levels supported, frequencies supported, and any air protocol specific values that are determined based on regulatory restriction. </h:p>
@@ -271,7 +284,7 @@
   <enumerationDefinition name="CommunicationsStandard">
     <annotation>
       <documentation>
-        reference 9.2.4
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=49&amp;view=fit">LLRP Specification Section 9.2.4</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
          <h:p>This field carries the enumerations of the communications standard.</h:p>
@@ -292,7 +305,8 @@
   <parameterDefinition name="UHFBandCapabilities" typeNum="144" required="true">
     <annotation>
       <documentation>
-        reference 9.2.4.1 and 16.2.3.4.1
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=49&amp;view=fit">LLRP Specification Section 9.2.4.1</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=134&amp;view=fit">LLRP Specification Section 16.2.3.4.1</h:a>      
       </documentation>
       <description>
          <h:p>Describes the frequency, power, and air-protocol capabilities for the regulatory region.</h:p>
@@ -306,7 +320,8 @@
   <parameterDefinition name="TransmitPowerLevelTableEntry" typeNum="145" required="true">
     <annotation>
       <documentation>
-        reference 9.2.4.1.1 and 16.2.3.4.1.1
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=49&amp;view=fit">LLRP Specification Section 9.2.4.1.1</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=134&amp;view=fit">LLRP Specification Section 16.2.3.4.1.1</h:a>      
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
          <h:p>This parameter specifies the index into the TransmitPowerLevelTable for a transmit power value. The transmit power is expressed in dBm*100 to allow fractional dBm representation and is the conducted power at the connector of the Reader.</h:p>
@@ -319,7 +334,8 @@
   <parameterDefinition name="FrequencyInformation" typeNum="146" required="true">
     <annotation>
       <documentation>
-        reference 9.2.4.1.2 and 16.2.3.4.1.2
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=50&amp;view=fit">LLRP Specification Section 9.2.4.1.2</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=134&amp;view=fit">LLRP Specification Section 16.2.3.4.1.2</h:a>      
       </documentation>
       <description>
          <h:p>Describes the fixed frequency or hopping frequencies supported in this UHFBand.</h:p>
@@ -334,7 +350,8 @@
   <parameterDefinition name="FrequencyHopTable" typeNum="147" required="true">
     <annotation>
       <documentation>
-        reference 9.2.4.1.2.1 and 16.2.3.4.1.2.1
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=50&amp;view=fit">LLRP Specification Section 9.2.4.1.2.1</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=134&amp;view=fit">LLRP Specification Section 16.2.3.4.1.2.1</h:a>      
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
          <h:p>This parameter carries the frequency hop table parameters. This is used for Readers operating in regions with frequency hopping regulatory requirements. If the Reader is capable of storing multiple hop tables, the Reader may send all of them to the Client.</h:p>
@@ -352,7 +369,8 @@
   <parameterDefinition name="FixedFrequencyTable" typeNum="148" required="true">
     <annotation>
       <documentation>
-        reference 9.2.4.1.2.2 and 16.2.3.4.1.2.2
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=50&amp;view=fit">LLRP Specification Section 9.2.4.1.2.2</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=135&amp;view=fit">LLRP Specification Section 16.2.3.4.1.2.2</h:a>      
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>This parameter carries the fixed frequency list that can be used by the Reader. The one-based position of a frequency in the list is defined as its ChannelIndex (i.e. the first frequency is referred to as ChannelIndex one).</h:p>  
@@ -364,7 +382,8 @@
   <messageDefinition name="ADD_ROSPEC" typeNum="20" required="true" responseType="ADD_ROSPEC_RESPONSE">
     <annotation>
       <documentation>
-        reference 10.1.1 and 16.1.3
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=51&amp;view=fit">LLRP Specification Section 10.1.1</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=117&amp;view=fit">LLRP Specification Section 16.1.3</h:a>      
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>An ADD_ROSPEC message communicates the information of a ROSpec to the Reader. LLRP supports configuration of multiple ROSpecs. Each ROSpec is uniquely identified using a ROSpecID, generated by the Client. The ROSpec starts at the Disabled state waiting for the ENABLE_ROSPEC message for the ROSpec from the Client, upon which it transitions to the Inactive state.</h:p> 
@@ -377,7 +396,8 @@
   <messageDefinition name="ADD_ROSPEC_RESPONSE" typeNum="30" required="true">
     <annotation>
       <documentation>
-        reference 10.1.2 and 16.1.4
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=51&amp;view=fit">LLRP Specification Section 10.1.2</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=118&amp;view=fit">LLRP Specification Section 16.1.4</h:a>      
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>This is the response by the Reader to an ADD_ROSPEC message. If all the parameters specified in the ADD_ROSPEC command are successfully set, then the success code is returned in the LLRPStatus parameter. If there is an error, the appropriate error code is returned in the LLRPStatus parameter.</h:p>
@@ -389,7 +409,8 @@
   <messageDefinition name="DELETE_ROSPEC" typeNum="21" required="true" responseType="DELETE_ROSPEC_RESPONSE">
     <annotation>
       <documentation>
-        reference 10.1.3 and 16.1.5
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=51&amp;view=fit">LLRP Specification Section 10.1.3</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=118&amp;view=fit">LLRP Specification Section 16.1.5</h:a>      
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>This command is issued by the Client to the Reader. This command deletes the ROSpec at the Reader corresponding to ROSpecID passed in this message.</h:p>
@@ -402,7 +423,8 @@
   <messageDefinition name="DELETE_ROSPEC_RESPONSE" typeNum="31" required="true">
     <annotation>
       <documentation>
-        reference 10.1.4 and 16.1.6
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=52&amp;view=fit">LLRP Specification Section 10.1.4</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=118&amp;view=fit">LLRP Specification Section 16.1.6</h:a>       
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>This is the response by the Reader to a DELETE_ROSPEC command. If there was a ROSpec corresponding to the ROSpecID that the Reader was presently executing, and the Reader was successful in stopping that execution, then the success code is returned in the LLRPStatus parameter. If there is an error, the appropriate error code is returned in the LLRPStatus parameter.</h:p>
@@ -414,7 +436,8 @@
   <messageDefinition name="START_ROSPEC" typeNum="22" required="true" responseType="START_ROSPEC_RESPONSE">
     <annotation>
       <documentation>
-        reference 10.1.5 and 16.1.7
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=52&amp;view=fit">LLRP Specification Section 10.1.5</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=118&amp;view=fit">LLRP Specification Section 16.1.7</h:a>       
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>This message is issued by the Client to the Reader. Upon receiving the message, the Reader starts the ROSpec corresponding to ROSpecID passed in this message, if the ROSpec is in the enabled state.</h:p> 
@@ -427,7 +450,8 @@
   <messageDefinition name="START_ROSPEC_RESPONSE" typeNum="32" required="true">
     <annotation>
       <documentation>
-        reference 10.1.6 and 16.1.8
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=52&amp;view=fit">LLRP Specification Section 10.1.6</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=119&amp;view=fit">LLRP Specification Section 16.1.8</h:a>             
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>This is the response by the Reader to a START_ROSPEC command. If there was a ROSpec corresponding to the ROSpecID in the enabled state, and the Reader was able to start executing that ROSpec, then the success code is returned in the LLRPStatus parameter. If there is an error, the appropriate error code is returned in the LLRPStatus parameter.</h:p>
@@ -439,7 +463,8 @@
   <messageDefinition name="STOP_ROSPEC" typeNum="23" required="true" responseType="STOP_ROSPEC_RESPONSE">
     <annotation>
       <documentation>
-        reference 10.1.7 and 16.1.9
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=53&amp;view=fit">LLRP Specification Section 10.1.7</h:a>      
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=119&amp;view=fit">LLRP Specification Section 16.1.9</h:a>       
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>This message is issued by the Client to the Reader. Upon receiving the message, the Reader stops the execution of the ROSpec corresponding to the ROSpecID passed in this message. STOP_ROSPEC overrides all other priorities and stops the execution. This basically moves the ROSpec's state to Inactive. This message does not the delete the ROSpec.</h:p> 
@@ -452,7 +477,8 @@
   <messageDefinition name="STOP_ROSPEC_RESPONSE" typeNum="33" required="true">
     <annotation>
       <documentation>
-        reference 10.1.8 and 16.1.10
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=53&amp;view=fit">LLRP Specification Section 10.1.8</h:a>      
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=119&amp;view=fit">LLRP Specification Section 16.1.10</h:a>       
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>This is the response by the Reader to a STOP_ROSPEC command. If the Reader was currently executing the ROSpec corresponding to the ROSpecID, and the Reader was able to stop executing that ROSpec, then the success code is returned in the LLRPStatus parameter. If there is an error, the appropriate error code is returned in the LLRPStatus parameter.</h:p>
@@ -464,7 +490,8 @@
   <messageDefinition name="ENABLE_ROSPEC" typeNum="24" required="true" responseType="ENABLE_ROSPEC_RESPONSE">
     <annotation>
       <documentation>
-        reference 10.1.9 and 16.1.11
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=53&amp;view=fit">LLRP Specification Section 10.1.9</h:a>      
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=119&amp;view=fit">LLRP Specification Section 16.1.11</h:a>       
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>This message is issued by the Client to the Reader. Upon receiving the message, the Reader moves the ROSpec corresponding to the ROSpecID passed in this message from the disabled to the enabled state.</h:p>
@@ -477,7 +504,8 @@
   <messageDefinition name="ENABLE_ROSPEC_RESPONSE" typeNum="34" required="true">
     <annotation>
       <documentation>
-        reference 10.1.10 and 16.1.12
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=54&amp;view=fit">LLRP Specification Section 10.1.10</h:a>      
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=120&amp;view=fit">LLRP Specification Section 16.1.12</h:a>       
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>This is the response by the Reader to a ENABLE_ROSPEC command. If there was a ROSpec corresponding to the ROSpecID, and the Reader was able to enable that ROSpec, then the success code is returned in the LLRPStatus parameter. If there is an error, the appropriate error code is returned in the LLRPStatus parameter.</h:p>
@@ -489,7 +517,8 @@
   <messageDefinition name="DISABLE_ROSPEC" typeNum="25" required="true" responseType="DISABLE_ROSPEC_RESPONSE">
     <annotation>
       <documentation>
-        reference 10.1.11 and 16.1.13
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=54&amp;view=fit">LLRP Specification Section 10.1.11</h:a>      
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=120&amp;view=fit">LLRP Specification Section 16.1.13</h:a>       
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>This message is issued by the Client to the Reader. Upon receiving the message, the Reader moves the ROSpec corresponding to the ROSpecID passed in this message to the disabled state.</h:p>
@@ -502,7 +531,8 @@
   <messageDefinition name="DISABLE_ROSPEC_RESPONSE" typeNum="35" required="true">
     <annotation>
       <documentation>
-        reference 10.1.12 and 16.1.14
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=54&amp;view=fit">LLRP Specification Section 10.1.12</h:a>      
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=120&amp;view=fit">LLRP Specification Section 16.1.14</h:a>       
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>This is the response by the Reader to a DISABLE_ROSPEC command. If there was a ROSpec corresponding to the ROSpecID, and the Reader was able to disable that ROSpec, then the success code is returned in the LLRPStatus parameter. If there is an error, the appropriate error code is returned in the LLRPStatus parameter.</h:p>
@@ -514,7 +544,8 @@
   <messageDefinition name="GET_ROSPECS" typeNum="26" required="true" responseType="GET_ROSPECS_RESPONSE">
     <annotation>
       <documentation>
-        reference 10.1.13 and 16.1.15
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=54&amp;view=fit">LLRP Specification Section 10.1.13</h:a>      
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=120&amp;view=fit">LLRP Specification Section 16.1.15</h:a>       
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>This is the request from the Client to the Reader to retrieve all the ROSpecs that have been configured at the Reader.</h:p>
@@ -525,7 +556,8 @@
   <messageDefinition name="GET_ROSPECS_RESPONSE" typeNum="36" required="true">
     <annotation>
       <documentation>
-        reference 10.1.14 and 16.1.16
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=55&amp;view=fit">LLRP Specification Section 10.1.14</h:a>      
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=121&amp;view=fit">LLRP Specification Section 16.1.16</h:a>       
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>This is the response by the Reader to a GET_ROSPECS command. If there are no ROSpecs configured at the Reader, the response is just the LLRPStatus parameter with the success code. Else, a list of ROSpec parameter is returned by the Reader, along with the success code in the LLRPStatus parameter.</h:p>
@@ -538,11 +570,12 @@
   <parameterDefinition name="ROSpec" typeNum="177" required="true">
     <annotation>
       <documentation>
-        reference 10.2.1 and 16.2.4.1
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=55&amp;view=fit">LLRP Specification Section 10.2.1</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=135&amp;view=fit">LLRP Specification Section 16.2.4.1</h:a>        
       </documentation>
-	  <description copyright="Copyright 2006, 2007, EPCglobal Inc.">
-		  <h:p>This parameter carries the information of the Reader inventory and survey operation.</h:p>
-	  </description>
+   <description copyright="Copyright 2006, 2007, EPCglobal Inc.">
+    <h:p>This parameter carries the information of the Reader inventory and survey operation.</h:p>
+   </description>
     </annotation>
     <field     type="u32"   name="ROSpecID"/>
     <field     type="u8"    name="Priority"/>
@@ -556,7 +589,7 @@
   <enumerationDefinition name="ROSpecState">
     <annotation>
       <documentation>
-        reference 10.2.1
+       <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=55&amp;view=fit">LLRP Specification Section 10.2.1</h:a>      
       </documentation>
     </annotation>
     <entry     value="0"    name="Disabled"/>
@@ -573,7 +606,8 @@
   <parameterDefinition name="ROBoundarySpec" typeNum="178" required="true">
     <annotation>
       <documentation>
-        reference 10.2.1.1 and 16.2.4.1.1
+       <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=55&amp;view=fit">LLRP Specification Section 10.2.1.1</h:a>            
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=135&amp;view=fit">LLRP Specification Section 16.2.4.1.1</h:a>        
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>This parameter carries the lifetime of the command, ROStartTrigger and ROStopTrigger parameters.</h:p>
@@ -586,7 +620,8 @@
   <parameterDefinition name="ROSpecStartTrigger" typeNum="179" required="true">
     <annotation>
       <documentation>
-        reference 10.2.1.1.1 and 16.2.4.1.1.1
+       <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=56&amp;view=fit">LLRP Specification Section 10.2.1.1.1</h:a>            
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=136&amp;view=fit">LLRP Specification Section 16.2.4.1.1.1</h:a>        
       </documentation>
       <description>
           <h:p>Describes the condition upon which the ROSpec will start execution.</h:p>
@@ -601,7 +636,7 @@
   <enumerationDefinition name="ROSpecStartTriggerType">
     <annotation>
       <documentation>
-        reference 10.2.1.1.1
+       <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=56&amp;view=fit">LLRP Specification Section 10.2.1.1.1</h:a>            
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
         <h:p>Description</h:p>
@@ -622,7 +657,8 @@
   <parameterDefinition name="PeriodicTriggerValue" typeNum="180" required="true">
     <annotation>
       <documentation>
-        reference 10.2.1.1.1.1 and 16.2.4.1.1.1.1
+       <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=56&amp;view=fit">LLRP Specification Section 10.2.1.1.1.1</h:a>            
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=136&amp;view=fit">LLRP Specification Section 16.2.4.1.1.1.1</h:a>        
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>Periodic trigger is specified using UTC time, offset and period.</h:p>
@@ -639,7 +675,8 @@
   <parameterDefinition name="GPITriggerValue" typeNum="181" required="true">
     <annotation>
       <documentation>
-        reference 10.2.1.1.1.2 and 16.2.4.1.1.1.2
+       <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=57&amp;view=fit">LLRP Specification Section 10.2.1.1.1.2</h:a>            
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=136&amp;view=fit">LLRP Specification Section 16.2.4.1.1.1.2</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>This trigger is tied to an event on the General Purpose Input (GPI) of the Reader. The event is represented as a boolean type, and it is up to the internal implementation of the Reader to map exact physical event to a boolean type. For example, a 0 to 1 and a 1 to 0 transition on an input pin of the Reader could be mapped to a boolean true and a  boolean false event respectively.</h:p> 
@@ -656,7 +693,8 @@
   <parameterDefinition name="ROSpecStopTrigger" typeNum="182" required="true">
     <annotation>
       <documentation>
-        reference 10.2.1.1.2 and 16.2.4.1.1.2
+       <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=57&amp;view=fit">LLRP Specification Section 10.2.1.1.2</h:a>                  
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=136&amp;view=fit">LLRP Specification Section 16.2.4.1.1.2</h:a>
       </documentation>
       <description>
           <h:p>Describes the condition upon which the ROSpec will stop.</h:p>
@@ -671,7 +709,7 @@
   <enumerationDefinition name="ROSpecStopTriggerType">
     <annotation>
       <documentation>
-        reference 10.2.1.1.2
+       <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=57&amp;view=fit">LLRP Specification Section 10.2.1.1.2</h:a>                  
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
        <h:p>Description</h:p>
@@ -690,7 +728,8 @@
   <parameterDefinition name="AISpec" typeNum="183" required="true">
     <annotation>
       <documentation>
-        reference 10.2.2 and 16.2.4.2
+       <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=57&amp;view=fit">LLRP Specification Section 10.2.2</h:a>                  
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=137&amp;view=fit">LLRP Specification Section 16.2.4.2</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>This parameter defines antenna inventory operations.</h:p>
@@ -705,7 +744,8 @@
   <parameterDefinition name="AISpecStopTrigger" typeNum="184" required="true">
     <annotation>
       <documentation>
-        reference 10.2.2.1 and 16.2.4.2.1
+       <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=58&amp;view=fit">LLRP Specification Section 10.2.2.1</h:a>                  
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=137&amp;view=fit">LLRP Specification Section 16.2.4.2.1</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>This parameter defines the stop (i.e., terminating boundary) of an antenna inventory operation.</h:p>
@@ -721,7 +761,7 @@
   <enumerationDefinition name="AISpecStopTriggerType">
     <annotation>
       <documentation>
-        reference 10.2.2.1
+       <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=58&amp;view=fit">LLRP Specification Section 10.2.2.1</h:a>                  
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
         <h:p>Description:</h:p>
@@ -742,7 +782,8 @@
   <parameterDefinition name="TagObservationTrigger" typeNum="185" required="true">
     <annotation>
       <documentation>
-        reference 10.2.2.1.1 and 16.2.4.2.1.1
+       <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=58&amp;view=fit">LLRP Specification Section 10.2.2.1.1</h:a>                  
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=137&amp;view=fit">LLRP Specification Section 16.2.4.2.1.1</h:a>
       </documentation>
       <description >
           <h:p>Describes the boundary (stop) condition that is based on tag observations.</h:p>
@@ -760,7 +801,7 @@
   <enumerationDefinition name="TagObservationTriggerType">
     <annotation>
       <documentation>
-        reference 10.2.2.1.1
+       <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=58&amp;view=fit">LLRP Specification Section 10.2.2.1.1</h:a>                  
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>Description:</h:p>
@@ -779,7 +820,8 @@
   <parameterDefinition name="InventoryParameterSpec" typeNum="186" required="true">
     <annotation>
       <documentation>
-        reference 10.2.2.2 and 16.2.4.2.2
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=59&amp;view=fit">LLRP Specification Section 10.2.2.2</h:a>                  
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=137&amp;view=fit">LLRP Specification Section 16.2.4.2.2</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>This parameter defines the inventory operation to be performed at all antennas specified in the corresponding AISpec. This parameter is composed of an InventoryParameterSpecID, a ProtocolID, and zero or more optional antenna configuration parameters. Antenna configurations for antennas not indicated by the AntennaIDs within the AISpec are ignored by the reader.</h:p>
@@ -795,7 +837,8 @@
   <parameterDefinition name="RFSurveySpec" typeNum="187" required="false">
     <annotation>
       <documentation>
-        reference 10.2.3 and 16.2.4.3
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=59&amp;view=fit">LLRP Specification Section 10.2.3</h:a>                  
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=138&amp;view=fit">LLRP Specification Section 16.2.4.3</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>This parameter defines RF Survey operations. RF Survey is an operation during which the Reader performs a scan and measures the power levels across a set of frequencies at an antenna. This parameter defines the identifier of the antenna where this survey is to be performed, the duration of the survey operation (specified via stop trigger), and the range of frequencies to measure power levels of.</h:p> 
@@ -811,7 +854,8 @@
   <parameterDefinition name="RFSurveySpecStopTrigger" typeNum="188" required="false">
     <annotation>
       <documentation>
-        reference 10.2.3.1 and 16.2.4.3.1
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=60&amp;view=fit">LLRP Specification Section 10.2.3.1</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=138&amp;view=fit">LLRP Specification Section 16.2.4.3.1</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>This parameter defines the stop trigger for RF Survey operations.</h:p>
@@ -826,7 +870,7 @@
   <enumerationDefinition name="RFSurveySpecStopTriggerType">
     <annotation>
       <documentation>
-        reference 10.2.3.1
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=60&amp;view=fit">LLRP Specification Section 10.2.3.1</h:a>
       </documentation>
     </annotation>
     <entry     value="0"    name="Null"/>
@@ -837,7 +881,8 @@
   <messageDefinition name="ADD_ACCESSSPEC" typeNum="40" required="true" responseType="ADD_ACCESSSPEC_RESPONSE">
     <annotation>
       <documentation>
-        reference 11.1.1 and 16.1.17
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=60&amp;view=fit">LLRP Specification Section 11.1.1</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=121&amp;view=fit">LLRP Specification Section 16.1.17</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>This command creates a new AccessSpec at the Reader. The AccessSpec starts at the Disabled state waiting for the ENABLE_ACCESSSPEC message for the AccessSpec from the Client, upon which it transitions to the Active state. The AccessSpecID is generated by the Client.</h:p>
@@ -850,7 +895,8 @@
   <messageDefinition name="ADD_ACCESSSPEC_RESPONSE" typeNum="50" required="true">
     <annotation>
       <documentation>
-        reference 11.1.2 and 16.1.18
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=61&amp;view=fit">LLRP Specification Section 11.1.2</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=121&amp;view=fit">LLRP Specification Section 16.1.18</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>This is the response by the Reader to an ADD_ACCESSSPEC command. If the parameters passed in that ADD_ACCESSSPEC command were successfully accepted and set at the Reader, then the success code is returned in the LLRPStatus parameter. However, if the AccessSpec was not successfully created at the Reader, the Reader sends a LLRPStatus parameter describing the error in the message.</h:p>
@@ -862,7 +908,8 @@
   <messageDefinition name="DELETE_ACCESSSPEC" typeNum="41" required="true" responseType="DELETE_ACCESSSPEC_RESPONSE">
     <annotation>
       <documentation>
-        reference 11.1.3 and 16.1.19
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=61&amp;view=fit">LLRP Specification Section 11.1.3</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=122&amp;view=fit">LLRP Specification Section 16.1.19</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>This command is issued by the Client to the Reader. The Reader deletes the AccessSpec corresponding to the AccessSpecId, and this AccessSpec will stop taking effect from the next inventory round.</h:p>
@@ -875,7 +922,8 @@
   <messageDefinition name="DELETE_ACCESSSPEC_RESPONSE" typeNum="51" required="true">
     <annotation>
       <documentation>
-        reference 11.1.4 and 16.1.20
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=61&amp;view=fit">LLRP Specification Section 11.1.4</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=122&amp;view=fit">LLRP Specification Section 16.1.20</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>This is the response by the Reader to a DELETE_ACCESSSPEC command. If there was an AccessSpec at the Reader corresponding to the AccessSpecID passed in the DELETE_ACCESSSPEC command, and the Reader was successful in deleting that AccessSpec, then the success code is returned in the LLRPStatus parameter. If there is an error, the appropriate error code is returned in the LLRPStatus parameter.</h:p>
@@ -887,7 +935,8 @@
   <messageDefinition name="ENABLE_ACCESSSPEC" typeNum="42" required="true" responseType="ENABLE_ACCESSSPEC_RESPONSE">
     <annotation>
       <documentation>
-        reference 11.1.5 and 16.1.21
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=62&amp;view=fit">LLRP Specification Section 11.1.5</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=122&amp;view=fit">LLRP Specification Section 16.1.21</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>This message is issued by the Client to the Reader. Upon receiving the message, the Reader moves the AccessSpec corresponding to the AccessSpecID in this message from the Disabled state to the Active state. The Reader executes this access-spec until it gets a DISABLE_ACCESSSPEC or a DELETE_ACCESSSPEC from the Client. The AccessSpec takes effect with the next (and subsequent) inventory rounds.</h:p> 
@@ -900,7 +949,8 @@
   <messageDefinition name="ENABLE_ACCESSSPEC_RESPONSE" typeNum="52" required="true">
     <annotation>
       <documentation>
-        reference 11.1.6 and 16.1.22
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=62&amp;view=fit">LLRP Specification Section 11.1.6</h:a>      
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=122&amp;view=fit">LLRP Specification Section 16.1.22</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>This is the response by the Reader to an ENABLE_ACCESSSPEC command. If there was an AccessSpec corresponding to the AccessSpecID, and the Reader was able to move that AccessSpec from the disabled to the active state, then the success code is returned in the LLRPStatus parameter. If there is an error, the appropriate error code is returned in the LLRPStatus parameter.</h:p>
@@ -912,7 +962,8 @@
   <messageDefinition name="DISABLE_ACCESSSPEC" typeNum="43" required="true" responseType="DISABLE_ACCESSSPEC_RESPONSE">
     <annotation>
       <documentation>
-        reference 11.1.7 and 16.1.23
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=62&amp;view=fit">LLRP Specification Section 11.1.7</h:a>      
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=123&amp;view=fit">LLRP Specification Section 16.1.23</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>This message is issued by the Client to the Reader. Upon receiving the message, the Reader stops the execution of the AccessSpec corresponding to AccessSpecID in this message. This basically moves the AccessSpec's state to Disabled. This message does not delete the AccessSpec. The AccessSpec will stop taking effect from the next inventory round.</h:p>
@@ -925,7 +976,8 @@
   <messageDefinition name="DISABLE_ACCESSSPEC_RESPONSE" typeNum="53" required="true">
     <annotation>
       <documentation>
-        reference 11.1.8 and 16.1.24
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=63&amp;view=fit">LLRP Specification Section 11.1.8</h:a>      
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=123&amp;view=fit">LLRP Specification Section 16.1.24</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>This is the response by the Reader to a STOP_ACCESSSPEC command. If the Reader was currently executing the AccessSpec corresponding to the AccessSpecID, and the Reader was able to disable that AccessSpec, then the success code is returned in the LLRPStatus parameter. If there is an error, the appropriate error code is returned in the LLRPStatus parameter.</h:p>
@@ -937,7 +989,8 @@
   <messageDefinition name="GET_ACCESSSPECS" typeNum="44" required="true" responseType="GET_ACCESSSPECS_RESPONSE">
     <annotation>
       <documentation>
-        reference 11.1.9 and 16.1.25
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=63&amp;view=fit">LLRP Specification Section 11.1.9</h:a>            
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=123&amp;view=fit">LLRP Specification Section 16.1.25</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>This is the request from the Client to the Reader to retrieve all the AccessSpecs that have been configured at the Reader.</h:p>
@@ -948,7 +1001,8 @@
   <messageDefinition name="GET_ACCESSSPECS_RESPONSE" typeNum="54" required="true">
     <annotation>
       <documentation>
-        reference 11.1.10 and 16.1.26
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=63&amp;view=fit">LLRP Specification Section 11.1.10</h:a>            
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=123&amp;view=fit">LLRP Specification Section 16.1.26</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>This is the response by the Reader to a GET_ACCESSSPECS command. If there are no AccessSpecs configured at the Reader, the response is just the LLRPStatus parameter with the success code. Else, a list of (AccessSpecID, AccessSpec parameter) is returned by the Reader, along with the LLRPStatus parameter containing the success code. The order of the AccessSpecs listed in the message is normatively the order in which the AccessSpecs were created at the Reader.</h:p>
@@ -961,11 +1015,12 @@
   <parameterDefinition name="AccessSpec" typeNum="207" required="true">
     <annotation>
       <documentation>
-        reference 11.2.1 and 16.2.5.1
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=64&amp;view=fit">LLRP Specification Section 11.2.1</h:a>            
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=138&amp;view=fit">LLRP Specification Section 16.2.5.1</h:a>
       </documentation>
-	  <description copyright="Copyright 2006, 2007, EPCglobal Inc.">
-		  <h:p>This parameter carries information of the Reader access operation.</h:p>
-	  </description>
+   <description copyright="Copyright 2006, 2007, EPCglobal Inc.">
+    <h:p>This parameter carries information of the Reader access operation.</h:p>
+   </description>
     </annotation>
     <field     type="u32"   name="AccessSpecID"/>
     <field     type="u16"   name="AntennaID"/>
@@ -984,7 +1039,7 @@
   <enumerationDefinition name="AccessSpecState">
     <annotation>
       <documentation>
-        reference 11.2.1
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=64&amp;view=fit">LLRP Specification Section 11.2.1</h:a>                  
       </documentation>
     </annotation>
     <entry     value="0"    name="Disabled"/>
@@ -994,7 +1049,8 @@
   <parameterDefinition name="AccessSpecStopTrigger" typeNum="208" required="true">
     <annotation>
       <documentation>
-        reference 11.2.1.1 and 16.2.5.1.1
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=65&amp;view=fit">LLRP Specification Section 11.2.1.1</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=139&amp;view=fit">LLRP Specification Section 16.2.5.1.1</h:a>
       </documentation>
       <description>
           <h:p>Defines the condition upon which an AccessSpec will be automatically deleted</h:p>
@@ -1009,7 +1065,7 @@
   <enumerationDefinition name="AccessSpecStopTriggerType">
     <annotation>
       <documentation>
-        reference 11.2.1.1
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=65&amp;view=fit">LLRP Specification Section 11.2.1.1</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>Description:</h:p>
@@ -1026,7 +1082,8 @@
   <parameterDefinition name="AccessCommand" typeNum="209" required="true">
     <annotation>
       <documentation>
-        reference 11.2.1.2 and 16.2.5.1.2
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=65&amp;view=fit">LLRP Specification Section 11.2.1.2</h:a>      
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=139&amp;view=fit">LLRP Specification Section 16.2.5.1.2</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>This parameter defines the air protocol access-specific settings. It contains a TagSpec and an OpSpec Parameter. The TagSpec specifies the tag filters in terms of air protocol specific memory capabilities (e.g., memory banks, pointer and length). The OpSpec specifies all the details of the operations required for the air protocol specific access operation commands.</h:p>
@@ -1051,7 +1108,8 @@
   <messageDefinition name="GET_READER_CONFIG" typeNum="2" required="true" responseType="GET_READER_CONFIG_RESPONSE">
     <annotation>
       <documentation>
-        reference 12.1.1 and 16.1.36
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=67&amp;view=fit">LLRP Specification Section 12.1.1</h:a>            
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=126&amp;view=fit">LLRP Specification Section 16.1.36</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>This command is issued by the Client to get the current configuration information of the Reader. The Requested Data passed in the command represents the parameter(s) of interest to the Client that has to be returned by the Reader.</h:p>
@@ -1068,7 +1126,7 @@
   <enumerationDefinition name="GetReaderConfigRequestedData">
     <annotation>
       <documentation>
-        reference 12.1.1
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=67&amp;view=fit">LLRP Specification Section 12.1.1</h:a>            
       </documentation>
     </annotation>
     <entry     value="0"    name="All"/>
@@ -1088,7 +1146,8 @@
   <messageDefinition name="GET_READER_CONFIG_RESPONSE" typeNum="12" required="true">
     <annotation>
       <documentation>
-        reference 12.1.2 and 16.1.37
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=68&amp;view=fit">LLRP Specification Section 12.1.2</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=127&amp;view=fit">LLRP Specification Section 16.1.37</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>This is the response by the Reader to the GET_READER_CONFIG message. The response is the LLRPStatus Parameter and the list of configuration parameters based on the RequestedData in GET_READER_CONFIG. If the GET_READER_CONFIG message did not have any errors, the success code is returned in the LLRPStatus parameter, and in addition the requested configuration parameters are returned. If there is an error, the appropriate error code is returned in the LLRPStatus parameter. The response contains at most one instance of each configuration parameter except for two cases, which are as follows:</h:p>
@@ -1116,7 +1175,8 @@
   <messageDefinition name="SET_READER_CONFIG" typeNum="3" required="true" responseType="SET_READER_CONFIG_RESPONSE">
     <annotation>
       <documentation>
-        reference 12.1.3 and 16.1.38
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=69&amp;view=fit">LLRP Specification Section 12.1.3</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=127&amp;view=fit">LLRP Specification Section 16.1.38</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>This command is issued by the Client to the Reader. This command sets the Reader configuration using the parameters specified in this command.  Values passed by the SET_READER_CONFIG <h:b>SHALL</h:b> apply for the duration of the LLRP connection, or until the values are changed by additional SET_READER_CONFIG messages.</h:p>
@@ -1141,7 +1201,8 @@
   <messageDefinition name="SET_READER_CONFIG_RESPONSE" typeNum="13" required="true">
     <annotation>
       <documentation>
-        reference 12.1.4 and 16.1.39
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=70&amp;view=fit">LLRP Specification Section 12.1.4</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=128&amp;view=fit">LLRP Specification Section 16.1.39</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>This is the response by the Reader to a SET_READER_CONFIG command. If all the parameters specified in the SET_READER_CONFIG command are successfully set, then the success code is returned in the LLRPStatus parameter. If there is an error, the appropriate error code is returned in the LLRPStatus parameter.</h:p>
@@ -1153,7 +1214,8 @@
   <messageDefinition name="CLOSE_CONNECTION" typeNum="14" required="true" responseType="CLOSE_CONNECTION_RESPONSE">
     <annotation>
       <documentation>
-        reference 12.1.5 and 16.1.40
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=70&amp;view=fit">LLRP Specification Section 12.1.5</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=128&amp;view=fit">LLRP Specification Section 16.1.40</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>This command is issued by the Client to the Reader.  This command instructs the Reader to gracefully close its connection with the Client.  Under normal operating conditions, a Client <h:b>SHALL</h:b> attempt to send this command before closing an LLRP connection.  A Client should wait briefly for the Reader to respond with a CLOSE_CONNECTION_RESPONSE.</h:p>
@@ -1166,7 +1228,8 @@
   <messageDefinition name="CLOSE_CONNECTION_RESPONSE" typeNum="4" required="true">
     <annotation>
       <documentation>
-        reference 12.1.6 and 16.1.41
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=71&amp;view=fit">LLRP Specification Section 12.1.6</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=128&amp;view=fit">LLRP Specification Section 16.1.41</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>This is the response by the Reader to a CLOSE_CONNECTON command from the Client.  Upon receiving a CLOSE_CONNECTION command, the Reader <h:b>SHALL</h:b> attempt to send this response to the Client.  After attempting to send this response, the Reader <h:b>SHALL</h:b> close its connection with the Client.</h:p>
@@ -1178,7 +1241,8 @@
   <parameterDefinition name="LLRPConfigurationStateValue" typeNum="217" required="true">
     <annotation>
       <documentation>
-        reference 12.2.1 and 16.2.6.1
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=71&amp;view=fit">LLRP Specification Section 12.2.1</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=140&amp;view=fit">LLRP Specification Section 16.2.6.1</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>This parameter, LLRPConfigurationStateValue, is a 32-bit value which represents a Reader's entire LLRP configuration state including: LLRP configuration parameters, vendor extension configuration parameters, ROSpecs, and AccessSpecs.  A Reader <h:b>SHALL</h:b> change this value only:</h:p>
@@ -1198,7 +1262,8 @@
   <parameterDefinition name="Identification" typeNum="218" required="true">
     <annotation>
       <documentation>
-        reference 12.2.2 and 16.2.6.2
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=72&amp;view=fit">LLRP Specification Section 12.2.2</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=140&amp;view=fit">LLRP Specification Section 16.2.6.2</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>This parameter carries an identification parameter that is unique within the local administration domain.  The identifier could be the Reader MAC address or EPC. The IDType defines the type of the identification value contained in this Parameter.</h:p>          
@@ -1213,7 +1278,7 @@
   <enumerationDefinition name="IdentificationType">
     <annotation>
       <documentation>
-        reference 12.2.2
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=72&amp;view=fit">LLRP Specification Section 12.2.2</h:a>
       </documentation>
     </annotation>
     <entry     value="0"    name="MAC_Address"/>
@@ -1223,7 +1288,8 @@
   <parameterDefinition name="GPOWriteData" typeNum="219" required="true">
     <annotation>
       <documentation>
-        reference 12.2.3 and 16.2.6.3
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=72&amp;view=fit">LLRP Specification Section 12.2.3</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=140&amp;view=fit">LLRP Specification Section 16.2.6.3</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>This parameter carries the data pertinent to perform the write to a general purpose output port.</h:p> 
@@ -1238,7 +1304,8 @@
   <parameterDefinition name="KeepaliveSpec" typeNum="220" required="true">
     <annotation>
       <documentation>
-        reference 12.2.4 and 16.2.6.4
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=73&amp;view=fit">LLRP Specification Section 12.2.4</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=140&amp;view=fit">LLRP Specification Section 16.2.6.4</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>This parameter carries the specification for the keepalive message generation by the Reader. This includes the definition of the periodic trigger to send the keepalive message.</h:p> 
@@ -1252,7 +1319,7 @@
   <enumerationDefinition name="KeepaliveTriggerType">
     <annotation>
       <documentation>
-        reference 12.2.4
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=73&amp;view=fit">LLRP Specification Section 12.2.4</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>Description:</h:p>
@@ -1269,7 +1336,8 @@
   <parameterDefinition name="AntennaProperties" typeNum="221" required="false">
     <annotation>
       <documentation>
-        reference 12.2.5 and 16.2.6.5
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=73&amp;view=fit">LLRP Specification Section 12.2.5</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=141&amp;view=fit">LLRP Specification Section 16.2.6.5</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>This parameter carries a single antenna's properties. The properties include the gain and the connectivity status of the antenna.The antenna gain is the composite gain and includes the loss of the associated cable from the Reader to the antenna. The gain is represented in dBi*100 to allow fractional dBi representation.</h:p>
@@ -1284,7 +1352,8 @@
   <parameterDefinition name="AntennaConfiguration" typeNum="222" required="true">
     <annotation>
       <documentation>
-        reference 12.2.6 and 16.2.6.6
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=74&amp;view=fit">LLRP Specification Section 12.2.6</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=141&amp;view=fit">LLRP Specification Section 16.2.6.6</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>This parameter carries a single antenna's configuration and it specifies the default values for the parameter set that are passed in this parameter block. The scope of the default values is the antenna. The default values are used for parameters during an operation on this antenna if the parameter was unspecified in the spec that describes the operation.</h:p> 
@@ -1299,7 +1368,8 @@
   <parameterDefinition name="RFReceiver" typeNum="223" required="true">
     <annotation>
       <documentation>
-        reference 12.2.6.1 and 16.2.6.7
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=74&amp;view=fit">LLRP Specification Section 12.2.6.1</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=141&amp;view=fit">LLRP Specification Section 16.2.6.7</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>This Parameter carries the RF receiver information. The Receiver Sensitivity defines the sensitivity setting at the receiver. The value is the index into the ReceiveSensitivityTable (section 9.2.1.1).</h:p> 
@@ -1311,7 +1381,8 @@
   <parameterDefinition name="RFTransmitter" typeNum="224" required="true">
     <annotation>
       <documentation>
-        reference 12.2.6.2 and 16.2.6.8
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=74&amp;view=fit">LLRP Specification Section 12.2.6.2</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=141&amp;view=fit">LLRP Specification Section 16.2.6.8</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>This Parameter carries the RF transmitter information. The Transmit Power defines the transmit power for the antenna expressed as an index into the TransmitPowerTable (section 9.2.4.1.1). The HopTableID is the index of the frequency hop table to be used by the Reader (section 9.2.4.1.2.1) and is used when operating in frequency-hopping regulatory regions. This field is ignored in non-frequency-hopping regulatory regions. The ChannelIndex is the one-based channel index in the FixedFrequencyTable to use during transmission (section 9.2.4.1.2.2) and is used when operating in non-frequency-hopping regulatory regions. This field is ignored in frequency-hopping regulatory regions.</h:p>
@@ -1325,7 +1396,8 @@
   <parameterDefinition name="GPIPortCurrentState" typeNum="225" required="false">
     <annotation>
       <documentation>
-        reference 12.2.6.3 and 16.2.6.9
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=75&amp;view=fit">LLRP Specification Section 12.2.6.3</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=142&amp;view=fit">LLRP Specification Section 16.2.6.9</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>This Parameter carries the current configuration and state of a single GPI port.  In a SET_READER_CONFIG message, this parameter is used to enable or disable the GPI port using the GPIConfig field; the GPIState field is ignored by the reader.  In a GET_READER_CONFIG message, this parameter reports both the configuration and state of the GPI port.</h:p>
@@ -1343,7 +1415,7 @@
   <enumerationDefinition name="GPIPortState">
     <annotation>
       <documentation>
-        reference 12.2.6.3
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=75&amp;view=fit">LLRP Specification Section 12.2.6.3</h:a>
       </documentation>
     </annotation>
     <entry     value="0"    name="Low"/>
@@ -1354,7 +1426,8 @@
   <parameterDefinition name="EventsAndReports" typeNum="226" required="false">
     <annotation>
       <documentation>
-        reference 12.2.6.4 and 16.2.6.10
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=75&amp;view=fit">LLRP Specification Section 12.2.6.4</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=142&amp;view=fit">LLRP Specification Section 16.2.6.10</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>This parameter controls the behavior of the Reader when a new LLRP connection is established. In a SET_READER_CONFIG message, this parameter is used to enable or disable the holding of events and reports upon connection using the HoldEventsAndReportsUponReconnect field. In a GET_READER_CONFIG message, this parameter reports the current configuration. If the HoldEventsAndReportsUponReconnect is true, the reader will not deliver any reports or events (except the ConnectionAttemptEvent) to the Client until the Client issues an ENABLE_EVENTS_AND_REPORTS message. Once the ENABLE_EVENTS_AND_REPORTS message is received the reader ceases its hold on events and reports for the duration of the connection.</h:p>
@@ -1367,7 +1440,8 @@
   <messageDefinition name="GET_REPORT" typeNum="60" required="true">
     <annotation>
       <documentation>
-        reference 13.1.1 and 16.1.29
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=76&amp;view=fit">LLRP Specification Section 13.1.1</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=124&amp;view=fit">LLRP Specification Section 16.1.29</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>This message is issued by the Client to the Reader to get the tag reports. In response to this message, the Reader <h:b>SHALL</h:b> return tag reports accumulated.</h:p> 
@@ -1378,7 +1452,8 @@
   <messageDefinition name="RO_ACCESS_REPORT" typeNum="61" required="true">
     <annotation>
       <documentation>
-        reference 13.1.2 and 16.1.30
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=77&amp;view=fit">LLRP Specification Section 13.1.2</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=125&amp;view=fit">LLRP Specification Section 16.1.30</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>This message is issued by the Reader to the Client, and it contains the results of the RO and Access operations. The ROReportSpec and AccessReportSpec parameters define the contents and triggers for this message.</h:p> 
@@ -1392,7 +1467,8 @@
   <messageDefinition name="KEEPALIVE" typeNum="62" required="true">
     <annotation>
       <documentation>
-        reference 13.1.3 and 16.1.31
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=77&amp;view=fit">LLRP Specification Section 13.1.3</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=125&amp;view=fit">LLRP Specification Section 16.1.31</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>This message is issued by the Reader to the Client. This message can be used by the Client to monitor the LLRP-layer connectivity with the Reader. The Client configures the trigger at the Reader to send the Keepalive message. The configuration is done using the KeepaliveSpec parameter (section 12.2.4).</h:p>
@@ -1403,7 +1479,8 @@
   <messageDefinition name="KEEPALIVE_ACK" typeNum="72" required="true">
     <annotation>
       <documentation>
-        reference 13.1.4 and 16.1.32
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=77&amp;view=fit">LLRP Specification Section 13.1.4</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=125&amp;view=fit">LLRP Specification Section 16.1.32</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>A Client <h:b>SHALL</h:b> generate a KEEPALIVE_ACK in response to each KEEPALIVE received by the reader.</h:p>
@@ -1414,7 +1491,8 @@
   <messageDefinition name="READER_EVENT_NOTIFICATION" typeNum="63" required="true">
     <annotation>
       <documentation>
-        reference 13.1.5 and 16.1.33
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=77&amp;view=fit">LLRP Specification Section 13.1.5</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=126&amp;view=fit">LLRP Specification Section 16.1.33</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
          <h:p>This message is issued by the Reader to the Client whenever an event that the Client subscribed to occurs. The pertinent event data is conveyed using the ReaderEventNotificationData parameter.</h:p>
@@ -1426,7 +1504,8 @@
   <messageDefinition name="ENABLE_EVENTS_AND_REPORTS" typeNum="64" required="false">
     <annotation>
       <documentation>
-        reference 13.1.6 and 16.1.34
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=78&amp;view=fit">LLRP Specification Section 13.1.6</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=126&amp;view=fit">LLRP Specification Section 16.1.34</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>This message can be issued by the Client to the Reader after a LLRP connection is established. The Client uses this message to inform the Reader that it can remove its hold on event and report messages.  Readers that are configured to hold events and reports on reconnection (See Section 12.2.6.4) respond to this message by returning the tag reports accumulated (same way they respond to GET_REPORT (See Section 13.1.1)).</h:p>
@@ -1437,7 +1516,8 @@
   <parameterDefinition name="ROReportSpec" typeNum="237" required="true">
     <annotation>
       <documentation>
-        reference 13.2.1 and 16.2.7.1
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=78&amp;view=fit">LLRP Specification Section 13.2.1</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=142&amp;view=fit">LLRP Specification Section 16.2.7.1</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>This Parameter carries the Reader inventory and RF survey reporting definition for the antenna. This parameter describes the contents of the report sent by the Reader and defines the events that cause the report to be sent.</h:p>
@@ -1456,7 +1536,7 @@
   <enumerationDefinition name="ROReportTriggerType">
     <annotation>
       <documentation>
-        reference 13.2.1
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=78&amp;view=fit">LLRP Specification Section 13.2.1</h:a>
       </documentation>
     </annotation>
     <entry     value="0"    name="None"/>
@@ -1467,7 +1547,8 @@
   <parameterDefinition name="TagReportContentSelector" typeNum="238" required="true">
     <annotation>
       <documentation>
-        reference 13.2.1.1 and 16.2.7.1.1
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=78&amp;view=fit">LLRP Specification Section 13.2.1.1</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=142&amp;view=fit">LLRP Specification Section 16.2.7.1.1</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>This parameter is used to configure the contents that are of interest in TagReportData. If enabled, the field is reported along with the tag data in the TagReportData.</h:p>
@@ -1490,7 +1571,8 @@
   <parameterDefinition name="AccessReportSpec" typeNum="239" required="true">
     <annotation>
       <documentation>
-        reference 13.2.2 and 16.2.7.2
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=79&amp;view=fit">LLRP Specification Section 13.2.2</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=143&amp;view=fit">LLRP Specification Section 16.2.7.2</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>This parameter sets up the triggers for the Reader to send the access results to the Client. In addition, the Client can enable or disable reporting of ROSpec details in the access results.</h:p>  
@@ -1503,7 +1585,7 @@
   <enumerationDefinition name="AccessReportTriggerType">
     <annotation>
       <documentation>
-        reference 13.2.2
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=80&amp;view=fit">LLRP Specification Section 13.2.2</h:a>
       </documentation>
     </annotation>
     <entry     value="0"    name="Whenever_ROReport_Is_Generated"/>
@@ -1513,7 +1595,8 @@
   <parameterDefinition name="TagReportData" typeNum="240" required="true">
     <annotation>
       <documentation>
-        reference 13.2.3 and 16.2.7.3
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=80&amp;view=fit">LLRP Specification Section 13.2.3</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=143&amp;view=fit">LLRP Specification Section 16.2.7.3</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>This report parameter is generated per tag per accumulation scope. The only mandatory portion of this parameter is the EPCData parameter. If there was an access operation performed on the tag, the results of the OpSpecs are mandatory in the report. The other sub-parameters in this report are optional. LLRP provides three ways to make the tag reporting efficient:</h:p>
@@ -1578,7 +1661,8 @@
   <parameterDefinition name="EPCData" typeNum="241" required="true">
     <annotation>
       <documentation>
-        reference 13.2.3.2 and 16.2.7.3.1
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=82&amp;view=fit">LLRP Specification Section 13.2.3.2</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=144&amp;view=fit">LLRP Specification Section 16.2.7.3.1</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>This parameter carries the EPC identifier information.</h:p>
@@ -1590,7 +1674,8 @@
   <parameterDefinition name="EPC_96" typeNum="13" required="false">
     <annotation>
       <documentation>
-        reference 13.2.3.2 and 16.2.7.3.2
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=82&amp;view=fit">LLRP Specification Section 13.2.3.2</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=144&amp;view=fit">LLRP Specification Section 16.2.7.3.2</h:a>
       </documentation>
       <description>
           <h:p>This parameter carries 96-bit EPC identifier information.</h:p>
@@ -1602,7 +1687,8 @@
   <parameterDefinition name="ROSpecID" typeNum="9" required="true">
     <annotation>
       <documentation>
-        reference 13.2.3.3 and 16.2.7.3.3
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=82&amp;view=fit">LLRP Specification Section 13.2.3.3</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=144&amp;view=fit">LLRP Specification Section 16.2.7.3.3</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>This parameter carries the ROSpecID information.</h:p>
@@ -1614,7 +1700,8 @@
   <parameterDefinition name="SpecIndex" typeNum="14" required="true">
     <annotation>
       <documentation>
-        reference 13.2.3.4 and 16.2.7.3.4
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=82&amp;view=fit">LLRP Specification Section 13.2.3.4</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=145&amp;view=fit">LLRP Specification Section 16.2.7.3.4</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>This parameter carries the SpecIndex information. The SpecIndex indicates the item within the ROSpec that was being executed at the time the tag was observed.</h:p>
@@ -1626,7 +1713,8 @@
   <parameterDefinition name="InventoryParameterSpecID" typeNum="10" required="true">
     <annotation>
       <documentation>
-        reference 13.2.3.5 and 16.2.7.3.5
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=83&amp;view=fit">LLRP Specification Section 13.2.3.5</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=145&amp;view=fit">LLRP Specification Section 16.2.7.3.5</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>This parameter carries the InventoryParameterSpecID information.</h:p>          
@@ -1638,7 +1726,8 @@
   <parameterDefinition name="AntennaID" typeNum="1" required="true">
     <annotation>
       <documentation>
-        reference 13.2.3.6 and 16.2.7.3.6
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=83&amp;view=fit">LLRP Specification Section 13.2.3.6</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=145&amp;view=fit">LLRP Specification Section 16.2.7.3.6</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>This parameter carries the AntennaID information.</h:p>
@@ -1650,7 +1739,8 @@
   <parameterDefinition name="PeakRSSI" typeNum="6" required="true">
     <annotation>
       <documentation>
-        reference 13.2.3.7 and 16.2.7.3.7
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=83&amp;view=fit">LLRP Specification Section 13.2.3.7</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=145&amp;view=fit">LLRP Specification Section 16.2.7.3.7</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>This parameter carries the PeakRSSI information.</h:p>
@@ -1663,7 +1753,8 @@
   <parameterDefinition name="ChannelIndex" typeNum="7" required="true">
     <annotation>
       <documentation>
-        reference 13.2.3.8 and 16.2.7.3.8
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=83&amp;view=fit">LLRP Specification Section 13.2.3.8</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=145&amp;view=fit">LLRP Specification Section 16.2.7.3.8</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>This parameter carries the one-based ChannelIndex informationvalue.</h:p>
@@ -1675,7 +1766,8 @@
   <parameterDefinition name="FirstSeenTimestampUTC" typeNum="2" required="false">
     <annotation>
       <documentation>
-        reference 13.2.3.9 and 16.2.7.3.9
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=83&amp;view=fit">LLRP Specification Section 13.2.3.9</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=145&amp;view=fit">LLRP Specification Section 16.2.7.3.9</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>This parameter carries the FirstSeenTimestamp information in UTC.</h:p>
@@ -1689,7 +1781,8 @@
   <parameterDefinition name="FirstSeenTimestampUptime" typeNum="3" required="false">
     <annotation>
       <documentation>
-        reference 13.2.3.10 and 16.2.7.3.10
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=84&amp;view=fit">LLRP Specification Section 13.2.3.10</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=145&amp;view=fit">LLRP Specification Section 16.2.7.3.10</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>This parameter carries the FirstSeenTimestamp information in Uptime.</h:p>          
@@ -1702,7 +1795,8 @@
   <parameterDefinition name="LastSeenTimestampUTC" typeNum="4" required="false">
     <annotation>
       <documentation>
-        reference 13.2.3.11 and 16.2.7.3.11
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=84&amp;view=fit">LLRP Specification Section 13.2.3.11</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=146&amp;view=fit">LLRP Specification Section 16.2.7.3.11</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>This parameter carries the LastSeenTimestamp information in UTC.</h:p>
@@ -1715,7 +1809,8 @@
   <parameterDefinition name="LastSeenTimestampUptime" typeNum="5" required="false">
     <annotation>
       <documentation>
-        reference 13.2.3.12 and 16.2.7.3.12
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=84&amp;view=fit">LLRP Specification Section 13.2.3.12</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=146&amp;view=fit">LLRP Specification Section 16.2.7.3.12</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>This parameter carries the LastSeenTimestamp information in UTC.</h:p>
@@ -1728,7 +1823,8 @@
   <parameterDefinition name="TagSeenCount" typeNum="8" required="true">
     <annotation>
       <documentation>
-        reference 13.2.3.13 and 16.2.7.3.13
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=84&amp;view=fit">LLRP Specification Section 13.2.3.13</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=146&amp;view=fit">LLRP Specification Section 16.2.7.3.13</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>This parameter carries the tag seen count information. If TagSeenCount > 65535 for the report period, the reader <h:b>SHALL</h:b> report 65535.</h:p>
@@ -1740,7 +1836,8 @@
   <parameterDefinition name="AccessSpecID" typeNum="16" required="true">
     <annotation>
       <documentation>
-        reference 13.2.3.15 and 16.2.7.3.15
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=85&amp;view=fit">LLRP Specification Section 13.2.3.15</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=146&amp;view=fit">LLRP Specification Section 16.2.7.3.15</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>This parameter carries the AccessSpecID information.</h:p>
@@ -1752,7 +1849,8 @@
   <parameterDefinition name="RFSurveyReportData" typeNum="242" required="false">
     <annotation>
       <documentation>
-        reference 13.2.4 and 16.2.7.4
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=85&amp;view=fit">LLRP Specification Section 13.2.4</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=147&amp;view=fit">LLRP Specification Section 16.2.7.4</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>This describes the content of the RF Survey Report.</h:p>
@@ -1767,7 +1865,8 @@
   <parameterDefinition name="FrequencyRSSILevelEntry" typeNum="243" required="false">
     <annotation>
       <documentation>
-        reference 13.2.4.1 and 16.2.7.4.1
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=85&amp;view=fit">LLRP Specification Section 13.2.4.1</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=147&amp;view=fit">LLRP Specification Section 16.2.7.4.1</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
         <h:p>Description</h:p>
@@ -1794,7 +1893,8 @@
   <parameterDefinition name="ReaderEventNotificationSpec" typeNum="244" required="true">
     <annotation>
       <documentation>
-        reference 13.2.5 and 16.2.7.5
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=86&amp;view=fit">LLRP Specification Section 13.2.5</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=147&amp;view=fit">LLRP Specification Section 16.2.7.5</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>This parameter is used by the Client to enable or disable notification of one or more Reader events. Notification of buffer overflow events and connection events (attempt/close) are mandatory, and not configurable.</h:p>
@@ -1806,7 +1906,8 @@
   <parameterDefinition name="EventNotificationState" typeNum="245" required="true">
     <annotation>
       <documentation>
-        reference 13.2.5.1 and 16.2.7.5.1
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=86&amp;view=fit">LLRP Specification Section 13.2.5.1</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=148&amp;view=fit">LLRP Specification Section 16.2.7.5.1</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>This parameter is used to enable or disable notification of a single Reader event type.</h:p>
@@ -1821,7 +1922,7 @@
   <enumerationDefinition name="NotificationEventType">
     <annotation>
       <documentation>
-        reference 13.2.5.1
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=86&amp;view=fit">LLRP Specification Section 13.2.5.1</h:a>
       </documentation>
     </annotation>
     <entry     value="0"    name="Upon_Hopping_To_Next_Channel"/>
@@ -1838,7 +1939,8 @@
   <parameterDefinition name="ReaderEventNotificationData" typeNum="246" required="true">
     <annotation>
       <documentation>
-        reference 13.2.6 and 16.2.7.6
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=86&amp;view=fit">LLRP Specification Section 13.2.6</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=148&amp;view=fit">LLRP Specification Section 16.2.7.6</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>This parameter describes the contents of the event notification sent by the Reader, and defines the events that cause the notification to be sent. Event notification messages may be sent by the Reader due to connection establishment/closing event, critical events such as hopping, fault-detection in a Reader functional block, buffer overflow, due to the activation of a Reader accessory trigger input (e.g. motion detection), or due to performance monitoring events such as abnormalities in the RF environment.</h:p> 
@@ -1875,7 +1977,8 @@
   <parameterDefinition name="HoppingEvent" typeNum="247" required="true">
     <annotation>
       <documentation>
-        reference 13.2.6.2 and 16.2.7.6.1
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=88&amp;view=fit">LLRP Specification Section 13.2.6.2</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=148&amp;view=fit">LLRP Specification Section 16.2.7.6.1</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>A Reader reports this event every time it hops frequency.</h:p>
@@ -1889,7 +1992,8 @@
   <parameterDefinition name="GPIEvent" typeNum="248" required="true">
     <annotation>
       <documentation>
-        reference 13.2.6.3 and 16.2.7.6.2
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=88&amp;view=fit">LLRP Specification Section 13.2.6.3</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=149&amp;view=fit">LLRP Specification Section 16.2.7.6.2</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>A reader reports this event every time an enabled GPI changes GPIstate.</h:p>
@@ -1903,7 +2007,8 @@
   <parameterDefinition name="ROSpecEvent" typeNum="249" required="true">
     <annotation>
       <documentation>
-        reference 13.2.6.4 and 16.2.7.6.3
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=89&amp;view=fit">LLRP Specification Section 13.2.6.4</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=149&amp;view=fit">LLRP Specification Section 16.2.7.6.3</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>This parameter carries the ROSpec event details. The EventType could be start or end of the ROSpec.</h:p> 
@@ -1919,7 +2024,7 @@
   <enumerationDefinition name="ROSpecEventType">
     <annotation>
       <documentation>
-        reference 13.2.6.4
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=89&amp;view=fit">LLRP Specification Section 13.2.6.4</h:a>
       </documentation>
     </annotation>
     <entry     value="0"    name="Start_Of_ROSpec"/>
@@ -1930,7 +2035,8 @@
   <parameterDefinition name="ReportBufferLevelWarningEvent" typeNum="250" required="false">
     <annotation>
       <documentation>
-        reference 13.2.6.5 and 16.2.7.6.4
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=89&amp;view=fit">LLRP Specification Section 13.2.6.5</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=149&amp;view=fit">LLRP Specification Section 16.2.7.6.4</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>A Reader can warn the Client that the Reader's report buffer is filling up.  A Client can act upon this warning by requesting report data from the Reader, thereby freeing the Reader's report memory resources.</h:p>
@@ -1943,7 +2049,8 @@
   <parameterDefinition name="ReportBufferOverflowErrorEvent" typeNum="251" required="true">
     <annotation>
       <documentation>
-        reference 13.2.6.6 and 16.2.7.6.5
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=89&amp;view=fit">LLRP Specification Section 13.2.6.6</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=149&amp;view=fit">LLRP Specification Section 16.2.7.6.5</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
            <h:p>A Reader reports a buffer overflow event whenever report data is lost due to lack of memory resources.</h:p>
@@ -1955,7 +2062,8 @@
   <parameterDefinition name="ReaderExceptionEvent" typeNum="252" required="false">
     <annotation>
       <documentation>
-        reference 13.2.6.7 and 16.2.7.6.6
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=90&amp;view=fit">LLRP Specification Section 13.2.6.7</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=149&amp;view=fit">LLRP Specification Section 16.2.7.6.6</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>The reader exception status event notifies the client that an unexpected event has occurred on the reader.  Optional parameters provide more detail to the client as to the nature and scope of the event.</h:p>
@@ -1974,7 +2082,8 @@
   <parameterDefinition name="OpSpecID" typeNum="17" required="true">
     <annotation>
       <documentation>
-        reference 13.2.6.7.1 and 16.2.7.6.6.1
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=90&amp;view=fit">LLRP Specification Section 13.2.6.7.1</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=150&amp;view=fit">LLRP Specification Section 16.2.7.6.6.1</h:a>
       </documentation>
       <description>
           <h:p>Reports the OpSpecID in the reader exception event</h:p>
@@ -1986,7 +2095,8 @@
   <parameterDefinition name="RFSurveyEvent" typeNum="253" required="false">
     <annotation>
       <documentation>
-        reference 13.2.6.8 and 16.2.7.6.7
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=90&amp;view=fit">LLRP Specification Section 13.2.6.8</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=150&amp;view=fit">LLRP Specification Section 16.2.7.6.7</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>ROSpecID: The identifier of the ROSpec that contains the RFSurveySpec.</h:p>
@@ -2001,7 +2111,7 @@
   <enumerationDefinition name="RFSurveyEventType">
     <annotation>
       <documentation>
-        reference 13.2.6.8
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=90&amp;view=fit">LLRP Specification Section 13.2.6.8</h:a>
       </documentation>
     </annotation>
     <entry     value="0"    name="Start_Of_RFSurvey"/>
@@ -2011,7 +2121,8 @@
   <parameterDefinition name="AISpecEvent" typeNum="254" required="true">
     <annotation>
       <documentation>
-        reference 13.2.6.9 and 16.2.7.6.8
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=91&amp;view=fit">LLRP Specification Section 13.2.6.9</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=150&amp;view=fit">LLRP Specification Section 16.2.7.6.8</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>This parameter carries the AISpec event details. The EventType is the end of the AISpec. When reporting the end event, the AirProtocolSingulationDetails <h:b>MAY</h:b> be reported if it is supported by the Reader and EventType of 7 has been enabled (Section 13.2.5.1).</h:p>
@@ -2027,7 +2138,7 @@
   <enumerationDefinition name="AISpecEventType">
     <annotation>
       <documentation>
-        reference 13.2.6.9
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=91&amp;view=fit">LLRP Specification Section 13.2.6.9</h:a>
       </documentation>
     </annotation>
     <entry     value="0"    name="End_Of_AISpec"/>
@@ -2036,7 +2147,8 @@
   <parameterDefinition name="AntennaEvent" typeNum="255" required="false">
     <annotation>
       <documentation>
-        reference 13.2.6.10 and 16.2.7.6.9
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=91&amp;view=fit">LLRP Specification Section 13.2.6.10</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=150&amp;view=fit">LLRP Specification Section 16.2.7.6.9</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>This event is generated when the Reader detects that an antenna is connected or disconnected.</h:p>
@@ -2050,7 +2162,7 @@
   <enumerationDefinition name="AntennaEventType">
     <annotation>
       <documentation>
-        reference 13.2.6.10
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=91&amp;view=fit">LLRP Specification Section 13.2.6.10</h:a>
       </documentation>
 
     </annotation>
@@ -2061,7 +2173,8 @@
   <parameterDefinition name="ConnectionAttemptEvent" typeNum="256" required="true">
     <annotation>
       <documentation>
-        reference 13.2.6.11 and 16.2.7.6.10
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=92&amp;view=fit">LLRP Specification Section 13.2.6.11</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=151&amp;view=fit">LLRP Specification Section 16.2.7.6.10</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>This status report parameter establishes Reader connection status when the Client or Reader initiates a connection.  See section 18.1, TCP Transport, for more details regarding the use of this report.</h:p>
@@ -2074,7 +2187,7 @@
   <enumerationDefinition name="ConnectionAttemptStatusType">
     <annotation>
       <documentation>
-        reference 13.2.6.11
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=92&amp;view=fit">LLRP Specification Section 13.2.6.11</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
       </description>
@@ -2089,7 +2202,8 @@
   <parameterDefinition name="ConnectionCloseEvent" typeNum="257" required="true">
     <annotation>
       <documentation>
-        reference 13.2.6.12 and 16.2.7.6.11
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=92&amp;view=fit">LLRP Specification Section 13.2.6.12</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=151&amp;view=fit">LLRP Specification Section 16.2.7.6.11</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>This status report parameter informs the Client that, unsolicited by the Client, the Reader will close the connection between the Reader and Client.  Before the Reader closes a connection with the Client that is not solicited by the Client, the Reader <h:b>SHALL</h:b> first attempt to send a READER_EVENT_NOTIFICATION containing this parameter to the Client.</h:p>
@@ -2101,7 +2215,8 @@
   <messageDefinition name="ERROR_MESSAGE" typeNum="100" required="true">
     <annotation>
       <documentation>
-        reference 14.1.1 and 16.1.35
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=93&amp;view=fit">LLRP Specification Section 14.1.1</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=126&amp;view=fit">LLRP Specification Section 16.1.35</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>The Reader <h:b>SHALL</h:b> discard the message if there is at least one error in the message, or cannot be fully processed. In addition, no portion of the message containing an error <h:b>SHALL</h:b> be executed by the Reader. In case the message has one or more errors, the Reader <h:b>SHALL</h:b> return at least one error parameter for one of the errors. The Reader <h:b>MAY</h:b> return more than one error parameter, one for each error. The errors are conveyed using a combination of "generic error codes", a pointer to the culprit parameter/field, and a description of the error encoded as a string of UTF-8 characters.</h:p>
@@ -2117,7 +2232,7 @@
   <enumerationDefinition name="StatusCode">
     <annotation>
       <documentation>
-        reference 14.2.1
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=93&amp;view=fit">LLRP Specification Section 14.2.1</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>Status can be a success or one of the error conditions. This section lists a set of generic error conditions that, in combination with the identifier of the culprit field, conveys the error condition. The codes are broken into four scopes: message, parameter,  field and device. The device code indicates that the error is in the Reader device rather than the message, parameter or field.</h:p> 
@@ -2154,7 +2269,8 @@
   <parameterDefinition name="LLRPStatus" typeNum="287" required="true">
     <annotation>
       <documentation>
-        reference 14.2.2 and 16.2.8.1
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=95&amp;view=fit">LLRP Specification Section 14.2.2</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=151&amp;view=fit">LLRP Specification Section 16.2.8.1</h:a>
       </documentation>
     </annotation>
     <field     type="u16"   name="StatusCode"
@@ -2167,7 +2283,8 @@
   <parameterDefinition name="FieldError" typeNum="288" required="true">
     <annotation>
       <documentation>
-        reference 14.2.2.1 and 16.2.8.1.1
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=96&amp;view=fit">LLRP Specification Section 14.2.2.1</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=151&amp;view=fit">LLRP Specification Section 16.2.8.1.1</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>FieldNum: Field number for which the error applies. The fields are numbered after the order in which they appear in the parameter or message body.</h:p>
@@ -2181,7 +2298,8 @@
   <parameterDefinition name="ParameterError" typeNum="289" required="true">
     <annotation>
       <documentation>
-        reference 14.2.2.2 and 16.2.8.1.2
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=96&amp;view=fit">LLRP Specification Section 14.2.2.2</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=152&amp;view=fit">LLRP Specification Section 16.2.8.1.2</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>The parameter type that caused this error.</h:p>
@@ -2197,7 +2315,8 @@
   <parameterDefinition name="C1G2LLRPCapabilities" typeNum="327" required="true">
     <annotation>
       <documentation>
-        reference 15.2.1.1.1 and 16.3.1.1.1
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=98&amp;view=fit">LLRP Specification Section 15.2.1.1.1</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=153&amp;view=fit">LLRP Specification Section 16.3.1.1.1</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>Readers <h:b>MAY</h:b> support BlockErase, and <h:b>MAY</h:b> support BlockWrite. Readers <h:b>SHALL</h:b> support at least one select filter per query. </h:p>
@@ -2212,7 +2331,8 @@
   <parameterDefinition name="C1G2UHFRFModeTable" typeNum="328" required="true">
     <annotation>
       <documentation>
-        reference 15.2.1.1.2 and 16.3.1.1.2
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=98&amp;view=fit">LLRP Specification Section 15.2.1.1.2</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=153&amp;view=fit">LLRP Specification Section 16.3.1.1.2</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>This parameter carries the set of C1G2 RF modes that the Reader is capable of operating.</h:p>
@@ -2224,7 +2344,8 @@
   <parameterDefinition name="C1G2UHFRFModeTableEntry" typeNum="329" required="true">
     <annotation>
       <documentation>
-        reference 15.2.1.1.2.1 and 16.3.1.1.2.1
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=99&amp;view=fit">LLRP Specification Section 15.2.1.1.2.1</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=153&amp;view=fit">LLRP Specification Section 16.3.1.1.2.1</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>This parameter carries the information for each UHFC1G2 RF mode. A mode that has been tested for conformance by the EPCGlobal Hardware Action Group's Testing and Conformance (HAG T and C) group, is indicated using a conformance flag.</h:p>
@@ -2251,7 +2372,7 @@
   <enumerationDefinition name="C1G2DRValue">
     <annotation>
       <documentation>
-        reference 15.2.1.1.2.1
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=99&amp;view=fit">LLRP Specification Section 15.2.1.1.2.1</h:a>
       </documentation>
     </annotation>
     <entry     value="0"    name="DRV_8"/>
@@ -2261,7 +2382,7 @@
   <enumerationDefinition name="C1G2MValue">
     <annotation>
       <documentation>
-        reference 15.2.1.1.2.1
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=99&amp;view=fit">LLRP Specification Section 15.2.1.1.2.1</h:a>
       </documentation>
     </annotation>
     <entry     value="0"    name="MV_FM0"/>
@@ -2273,7 +2394,7 @@
   <enumerationDefinition name="C1G2ForwardLinkModulation">
     <annotation>
       <documentation>
-        reference 15.2.1.1.2.1
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=99&amp;view=fit">LLRP Specification Section 15.2.1.1.2.1</h:a>
       </documentation>
     </annotation>
     <entry     value="0"    name="PR_ASK"/>
@@ -2284,7 +2405,7 @@
   <enumerationDefinition name="C1G2SpectralMaskIndicator">
     <annotation>
       <documentation>
-        reference 15.2.1.1.2.1
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=100&amp;view=fit">LLRP Specification Section 15.2.1.1.2.1</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
         <h:p>Description</h:p>
@@ -2305,7 +2426,8 @@
   <parameterDefinition name="C1G2InventoryCommand" typeNum="330" required="true">
     <annotation>
       <documentation>
-        reference 15.2.1.2.1 and 16.3.1.2.1
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=100&amp;view=fit">LLRP Specification Section 15.2.1.2.1</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=154&amp;view=fit">LLRP Specification Section 16.3.1.2.1</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>This parameter defines the C1G2 inventory-specific settings to be used during a particular C1G2 inventory operation. This comprises of C1G2Filter Parameter, C1G2RF Parameter and C1G2Singulation Parameter. It is not necessary that the Filter, RF Control and Singulation Control Parameters be specified in each and every inventory command. They are optional parameters. If not specified, the default values in the Reader are used during the inventory operation. If multiple C1G2Filter parameters are encapsulated by the Client in the C1G2InventoryCommand parameter, the ordering of the filter parameters determine the order of C1G2 air-protocol commands (e.g., Select command) generated by the Reader.</h:p>
@@ -2323,7 +2445,8 @@
   <parameterDefinition name="C1G2Filter" typeNum="331" required="true">
     <annotation>
       <documentation>
-        reference 15.2.1.2.1.1 and 16.3.1.2.1.1
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=101&amp;view=fit">LLRP Specification Section 15.2.1.2.1.1</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=154&amp;view=fit">LLRP Specification Section 16.3.1.2.1.1</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>This parameter carries information specific to C1G2 filter (in particular, the parameters for the select command) operation, and are optionally sent with each inventory command from the Client to the Reader. This sets up the target tag population that gets inventoried. For an inventory operation with multiple filters, multiple instances of filter parameters are sent. A filter parameter contains the following fields:</h:p>
@@ -2346,7 +2469,7 @@
   <enumerationDefinition name="C1G2TruncateAction">
     <annotation>
       <documentation>
-        reference 15.2.1.2.1.1
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=102&amp;view=fit">LLRP Specification Section 15.2.1.2.1.1</h:a>
       </documentation>
     </annotation>
     <entry     value="0"    name="Unspecified"/>
@@ -2357,7 +2480,8 @@
   <parameterDefinition name="C1G2TagInventoryMask" typeNum="332" required="true">
     <annotation>
       <documentation>
-        reference 15.2.1.2.1.1.1 and 16.3.1.2.1.1.1
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=102&amp;view=fit">LLRP Specification Section 15.2.1.2.1.1.1</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=154&amp;view=fit">LLRP Specification Section 16.3.1.2.1.1.1</h:a>
       </documentation>
     </annotation>
     <field     type="u2"    name="MB"/>
@@ -2369,7 +2493,8 @@
   <parameterDefinition name="C1G2TagInventoryStateAwareFilterAction" typeNum="333" required="false">
     <annotation>
       <documentation>
-        reference 15.2.1.2.1.1.2 and 16.3.1.2.1.1.2
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=102&amp;view=fit">LLRP Specification Section 15.2.1.2.1.1.2</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=155&amp;view=fit">LLRP Specification Section 16.3.1.2.1.1.2</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>This parameter is used by the Client to manage the tag states during an inventory operation.  In order to use this parameter during inventory, the TagInventoryStateAware flag is set to true in the InventoryParameterSpec. This parameter contains:</h:p>
@@ -2389,7 +2514,7 @@
   <enumerationDefinition name="C1G2StateAwareTarget">
     <annotation>
       <documentation>
-        reference 15.2.1.2.1.1.2
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=103&amp;view=fit">LLRP Specification Section 15.2.1.2.1.1.2</h:a>
       </documentation>
     </annotation>
     <entry     value="0"    name="SL"/>
@@ -2402,7 +2527,7 @@
   <enumerationDefinition name="C1G2StateAwareAction">
     <annotation>
       <documentation>
-        reference 15.2.1.2.1.1.2
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=103&amp;view=fit">LLRP Specification Section 15.2.1.2.1.1.2</h:a>
       </documentation>
     </annotation>
     <entry     value="0"    name="AssertSLOrA_DeassertSLOrB"/>
@@ -2418,7 +2543,8 @@
   <parameterDefinition name="C1G2TagInventoryStateUnawareFilterAction" typeNum="334" required="true">
     <annotation>
       <documentation>
-        reference 15.2.1.2.1.1.3 and 16.3.1.2.1.1.3
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=103&amp;view=fit">LLRP Specification Section 15.2.1.2.1.1.3</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=155&amp;view=fit">LLRP Specification Section 16.3.1.2.1.1.3</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>This parameter is used by the Client if it does not want to manage the tag states during an inventory operation. Using this parameter, the Client instructs the Reader about the tags that should and should not participate in the inventory action.  In order to use this parameter during inventory, the TagInventoryStateAware flag is set to false in the InventoryParameterSpec. This parameter contains:</h:p>
@@ -2435,7 +2561,7 @@
   <enumerationDefinition name="C1G2StateUnawareAction">
     <annotation>
       <documentation>
-        reference 15.2.1.2.1.1.3
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=104&amp;view=fit">LLRP Specification Section 15.2.1.2.1.1.3</h:a>
       </documentation>
     </annotation>
     <entry     value="0"    name="Select_Unselect"/>
@@ -2449,7 +2575,8 @@
   <parameterDefinition name="C1G2RFControl" typeNum="335" required="true">
     <annotation>
       <documentation>
-        reference 15.2.1.2.1.2 and 16.3.1.2.1.2
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=104&amp;view=fit">LLRP Specification Section 15.2.1.2.1.2</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=155&amp;view=fit">LLRP Specification Section 16.3.1.2.1.2</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>This Parameter carries the settings relevant to RF forward and reverse link control in the C1G2 air protocol. This is basically the C1G2 RF Mode and the Tari value to use for the inventory operation.</h:p>
@@ -2463,7 +2590,8 @@
   <parameterDefinition name="C1G2SingulationControl" typeNum="336" required="true">
     <annotation>
       <documentation>
-        reference 15.2.1.2.1.3 and 16.3.1.2.1.3
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=104&amp;view=fit">LLRP Specification Section 15.2.1.2.1.3</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=155&amp;view=fit">LLRP Specification Section 16.3.1.2.1.3</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>This C1G2SingulationControl Parameter provides controls particular to the singulation process in the C1G2 air protocol. The singulation process is started using a Query command in the C1G2 protocol. The Query command describes the session number, tag state, the start Q value to use, and the RF link parameters. The RF link parameters are specified using the C1G2RFControl Parameter (see section 15.2.1.2.1.2). This Singulation Parameter specifies the session, tag state and description of the target singulation environment. The following attributes are specified to provide guidance to the Reader for the singulation algorithm:</h:p>  
@@ -2493,7 +2621,8 @@
   <parameterDefinition name="C1G2TagInventoryStateAwareSingulationAction" typeNum="337" required="false">
     <annotation>
       <documentation>
-        reference 15.2.1.2.1.3.1 and 16.3.1.2.1.3.1
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=105&amp;view=fit">LLRP Specification Section 15.2.1.2.1.3.1</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=156&amp;view=fit">LLRP Specification Section 16.3.1.2.1.3.1</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           Readers that do not support tag inventory state aware singulation <h:b>SHALL</h:b> set CanDoTagInventoryStateAwareSingulation to false in LLRPCapabilities.
@@ -2509,7 +2638,7 @@
   <enumerationDefinition name="C1G2TagInventoryStateAwareI">
     <annotation>
       <documentation>
-        reference 15.2.1.2.1.3.1 and 16.3.1.2.1.3.1
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=105&amp;view=fit">LLRP Specification Section 15.2.1.2.1.3.1</h:a>
       </documentation>
     </annotation>
     <entry     value="0"    name="State_A"/>
@@ -2519,7 +2648,7 @@
     <enumerationDefinition name="C1G2TagInventoryStateAwareS">
     <annotation>
       <documentation>
-        reference 15.2.1.2.1.3.1 and 16.3.1.2.1.3.1
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=106&amp;view=fit">LLRP Specification Section 15.2.1.2.1.3.1</h:a>
       </documentation>
     </annotation>
     <entry     value="0"    name="SL"/>
@@ -2529,7 +2658,8 @@
   <parameterDefinition name="C1G2TagSpec" typeNum="338" required="true">
     <annotation>
       <documentation>
-        reference 15.2.1.3.1 and 16.3.1.3.1
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=106&amp;view=fit">LLRP Specification Section 15.2.1.3.1</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=156&amp;view=fit">LLRP Specification Section 16.3.1.3.1</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>This parameter describes the target tag population on which certain operations have to be performed.  This Parameter is similar to the selection C1G2Filter Parameter described earlier. However, because these tags are stored in the Reader's memory and ternary comparisons are to be allowed for, each bit i in the target tag is represented using 2 bits - bit i in mask, and bit i in tag pattern.  If bit i in the mask is zero, then bit i of the target tag is a don't care (X); if bit i in the mask is one, then bit i of the target tag is bit i of the tag pattern. For example, "all tags" is specified using a mask length of zero.</h:p>
@@ -2543,7 +2673,8 @@
   <parameterDefinition name="C1G2TargetTag" typeNum="339" required="true">
     <annotation>
       <documentation>
-        reference 15.2.1.3.1.1 and 16.3.1.3.1.1
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=106&amp;view=fit">LLRP Specification Section 15.2.1.3.1.1</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=156&amp;view=fit">LLRP Specification Section 16.3.1.3.1.1</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>If Length is zero, this pattern will match all tags regardless of MB, pointer, mask and data.</h:p>
@@ -2560,7 +2691,8 @@
   <parameterDefinition name="C1G2Read" typeNum="341" required="true">
     <annotation>
       <documentation>
-        reference 15.2.1.3.2.1 and 16.3.1.3.2.1
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=107&amp;view=fit">LLRP Specification Section 15.2.1.3.2.1</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=157&amp;view=fit">LLRP Specification Section 16.3.1.3.2.1</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>MB is the memory bank to use. WordPtr is the starting word address. WordCount is the number of 16-bit words to be read. Following is text reproduced from the C1G2 specification regarding WordCount=0. [If WordCount = 0, the tag backscatters the contents of the chosen memory bank starting at WordPtr and ending at the end of the bank, unless MB = 1, in which case the Tag shall backscatter the EPC memory contents starting at WordPtr and ending at the length of the EPC specified by the first 5 bits of the PC if WordPtr lies within the EPC, and shall backscatter the EPC memory contents starting at WordPtr and ending at the end of EPC memory if WordPtr lies outside the EPC.]</h:p>
@@ -2578,7 +2710,8 @@
   <parameterDefinition name="C1G2Write" typeNum="342" required="true">
     <annotation>
       <documentation>
-        reference 15.2.1.3.2.2 and 16.3.1.3.2.2
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=107&amp;view=fit">LLRP Specification Section 15.2.1.3.2.2</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=157&amp;view=fit">LLRP Specification Section 16.3.1.3.2.2</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>MB is the memory bank to use. WordPtr is the starting word address. Write Data is the data to be written to the tag. Word Count is the number of words to be written. Depending on the word count, the Reader may have to execute multiple C1G2 air protocol Write commands. Access Password is the password used by the Reader to transition the tag to the secure state so that it can write to protected tag memory regions.</h:p>
@@ -2595,7 +2728,8 @@
   <parameterDefinition name="C1G2Kill" typeNum="343" required="true">
     <annotation>
       <documentation>
-        reference 15.2.1.3.2.3 and 16.3.1.3.2.3
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=108&amp;view=fit">LLRP Specification Section 15.2.1.3.2.3</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=157&amp;view=fit">LLRP Specification Section 16.3.1.3.2.3</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>Kill Password is the value of the kill password to be used or set.</h:p>
@@ -2608,7 +2742,8 @@
   <parameterDefinition name="C1G2Lock" typeNum="344" required="true">
     <annotation>
       <documentation>
-        reference 15.2.1.3.2.4 and 16.3.1.3.2.4
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=108&amp;view=fit">LLRP Specification Section 15.2.1.3.2.4</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=157&amp;view=fit">LLRP Specification Section 16.3.1.3.2.4</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>This parameter contains the definition of the access privilege updates (read/write/permalock) to be performed in various locations of the memory. The five data fields for which we can define access control using the lock command are: Kill Password, Access Password, EPC memory, TID memory and User memory. The access privilege updates are expressed as a list of C1G2LockPayload Parameters, one for each memory location.</h:p>
@@ -2623,7 +2758,8 @@
   <parameterDefinition name="C1G2LockPayload" typeNum="345" required="true">
     <annotation>
       <documentation>
-        reference 15.2.1.3.2.4.1 and 16.3.1.3.2.4.1
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=109&amp;view=fit">LLRP Specification Section 15.2.1.3.2.4.1</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=158&amp;view=fit">LLRP Specification Section 16.3.1.3.2.4.1</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>This parameter contains the definition of the access privilege updates (read/write/permalock) to be performed for a single location of the tag memory. The five data fields for which we can define access control using the lock command are: Kill Password, Access Password, EPC memory, TID memory and User memory.</h:p> 
@@ -2638,7 +2774,7 @@
   <enumerationDefinition name="C1G2LockPrivilege">
     <annotation>
       <documentation>
-        reference 15.2.1.3.2.4.1
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=109&amp;view=fit">LLRP Specification Section 15.2.1.3.2.4.1</h:a>
       </documentation>
       <description>
              <h:p>Read_Write means lock for either reading or writing (depends on memory bank).</h:p>
@@ -2653,7 +2789,7 @@
   <enumerationDefinition name="C1G2LockDataField">
     <annotation>
       <documentation>
-        reference 15.2.1.3.2.4.1
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=109&amp;view=fit">LLRP Specification Section 15.2.1.3.2.4.1</h:a>
       </documentation>
     </annotation>
     <entry     value="0"    name="Kill_Password"/>
@@ -2666,7 +2802,8 @@
   <parameterDefinition name="C1G2BlockErase" typeNum="346" required="false">
     <annotation>
       <documentation>
-        reference 15.2.1.3.2.5 and 16.3.1.3.2.5
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=109&amp;view=fit">LLRP Specification Section 15.2.1.3.2.5</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=158&amp;view=fit">LLRP Specification Section 16.3.1.3.2.5</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>MB is the memory bank to use. WordPtr is the starting word address. Word Count is the number of 16-bit words to be read. Access Password is the password used by the Reader to transition the tag to the secure state so that it can erase protected tag memory regions.</h:p>
@@ -2684,7 +2821,8 @@
   <parameterDefinition name="C1G2BlockWrite" typeNum="347" required="false">
     <annotation>
       <documentation>
-        reference 15.2.1.3.2.6 and 16.3.1.3.2.6
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=110&amp;view=fit">LLRP Specification Section 15.2.1.3.2.6</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=158&amp;view=fit">LLRP Specification Section 16.3.1.3.2.6</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>MB is the memory bank to use. WordPtr is the starting word address. Word Count is the number of 16-bit words to be written. Depending on the word count, the Reader may have to execute multiple C1G2 air protocol block write commands. Write Data is the data to be written to the tag. Access Password is the password used by the Reader to transition the tag to the secure state so that it can write to protected tag memory regions.</h:p>
@@ -2702,7 +2840,8 @@
   <parameterDefinition name="C1G2EPCMemorySelector" typeNum="348" required="true">
     <annotation>
       <documentation>
-        reference 15.2.1.5.1 and 16.3.1.5.1
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=110&amp;view=fit">LLRP Specification Section 15.2.1.5.1</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=159&amp;view=fit">LLRP Specification Section 16.3.1.5.1</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>This parameter is used to determine what contents are of interest in the C1G2EPC memory bank for reporting. If enableCRC and enablePC is set to false, only the EPC is returned in the RO Report. If enablePC is set to true, the PC bits and the EPC are returned in the RO Report. If enablePC and enableCRC is set to true, the EPC, PC bits and CRC are returned in the RO Report.</h:p>
@@ -2716,7 +2855,8 @@
   <parameterDefinition name="C1G2_PC" typeNum="12" required="true">
     <annotation>
       <documentation>
-        reference 15.2.1.5.2 and 16.3.1.5.2
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=111&amp;view=fit">LLRP Specification Section 15.2.1.5.2</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=159&amp;view=fit">LLRP Specification Section 16.3.1.5.2</h:a>
       </documentation>
       <description>
           <h:p>Protocol control bits from the UHF Gen2 Air Interface protocol</h:p>
@@ -2728,7 +2868,8 @@
   <parameterDefinition name="C1G2_CRC" typeNum="11" required="true">
     <annotation>
       <documentation>
-        reference 15.2.1.5.3 and 16.3.1.5.3
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=111&amp;view=fit">LLRP Specification Section 15.2.1.5.3</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=159&amp;view=fit">LLRP Specification Section 16.3.1.5.3</h:a>
       </documentation>
       <description>
               <h:p>CRC generated by the tag from the UHF Gen2 Air Interface Protocol</h:p>
@@ -2740,7 +2881,8 @@
   <parameterDefinition name="C1G2SingulationDetails" typeNum="18" required="false">
     <annotation>
       <documentation>
-        reference 15.2.1.5.4 and 16.3.1.5.4
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=111&amp;view=fit">LLRP Specification Section 15.2.1.5.4</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=159&amp;view=fit">LLRP Specification Section 16.3.1.5.4</h:a>
       </documentation>
     </annotation>
     <field     type="u16"   name="NumCollisionSlots"/>
@@ -2750,7 +2892,8 @@
   <parameterDefinition name="C1G2ReadOpSpecResult" typeNum="349" required="true">
     <annotation>
       <documentation>
-        reference 15.2.1.5.5.1 and 16.3.1.5.5.1
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=111&amp;view=fit">LLRP Specification Section 15.2.1.5.5.1</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=159&amp;view=fit">LLRP Specification Section 16.3.1.5.5.1</h:a>
       </documentation>
       <description>
           <h:p>Contains the results from a read operation.</h:p>
@@ -2765,7 +2908,7 @@
   <enumerationDefinition name="C1G2ReadResultType">
     <annotation>
       <documentation>
-        reference 15.2.1.5.5.1
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=112&amp;view=fit">LLRP Specification Section 15.2.1.5.5.1</h:a>
       </documentation>
     </annotation>
     <entry     value="0"    name="Success"/>
@@ -2777,7 +2920,8 @@
   <parameterDefinition name="C1G2WriteOpSpecResult" typeNum="350" required="true">
     <annotation>
       <documentation>
-        reference 15.2.1.5.5.2 and 16.3.1.5.5.2
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=112&amp;view=fit">LLRP Specification Section 15.2.1.5.5.2</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=160&amp;view=fit">LLRP Specification Section 16.3.1.5.5.2</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>Contains the result from a write operation.</h:p>
@@ -2793,7 +2937,7 @@
   <enumerationDefinition name="C1G2WriteResultType">
     <annotation>
       <documentation>
-        reference 15.2.1.5.5.2
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=112&amp;view=fit">LLRP Specification Section 15.2.1.5.5.2</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
       </description>
@@ -2810,7 +2954,8 @@
   <parameterDefinition name="C1G2KillOpSpecResult" typeNum="351" required="true">
     <annotation>
       <documentation>
-        reference 15.2.1.5.5.3 and 16.3.1.5.5.3
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=112&amp;view=fit">LLRP Specification Section 15.2.1.5.5.3</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=160&amp;view=fit">LLRP Specification Section 16.3.1.5.5.3</h:a>
       </documentation>
       <description>
           Contains the result from a kill operation.
@@ -2824,7 +2969,7 @@
   <enumerationDefinition name="C1G2KillResultType">
     <annotation>
       <documentation>
-        reference 15.2.1.5.5.3
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=112&amp;view=fit">LLRP Specification Section 15.2.1.5.5.3</h:a>
       </documentation>
     </annotation>
     <entry     value="0"    name="Success"/>
@@ -2838,7 +2983,8 @@
   <parameterDefinition name="C1G2LockOpSpecResult" typeNum="352" required="true">
     <annotation>
       <documentation>
-        reference 15.2.1.5.5.4 and 16.3.1.5.5.4
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=113&amp;view=fit">LLRP Specification Section 15.2.1.5.5.4</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=160&amp;view=fit">LLRP Specification Section 16.3.1.5.5.4</h:a>
       </documentation>
       <description>
           <h:p>Contains the result of a lock operation.</h:p>
@@ -2852,7 +2998,7 @@
   <enumerationDefinition name="C1G2LockResultType">
     <annotation>
       <documentation>
-        reference 15.2.1.5.5.4
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=113&amp;view=fit">LLRP Specification Section 15.2.1.5.5.4</h:a>
       </documentation>
     </annotation>
     <entry     value="0"    name="Success"/>
@@ -2865,7 +3011,8 @@
   <parameterDefinition name="C1G2BlockEraseOpSpecResult" typeNum="353" required="false">
     <annotation>
       <documentation>
-        reference 15.2.1.5.5.5 and 16.3.1.5.5.5
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=113&amp;view=fit">LLRP Specification Section 15.2.1.5.5.5</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=160&amp;view=fit">LLRP Specification Section 16.3.1.5.5.5</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>Contains the result of a block erase operation.</h:p>
@@ -2880,7 +3027,7 @@
   <enumerationDefinition name="C1G2BlockEraseResultType">
     <annotation>
       <documentation>
-        reference 15.2.1.5.5.5
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=113&amp;view=fit">LLRP Specification Section 15.2.1.5.5.5</h:a>
       </documentation>
     </annotation>
     <entry     value="0"    name="Success"/>
@@ -2895,7 +3042,8 @@
   <parameterDefinition name="C1G2BlockWriteOpSpecResult" typeNum="354" required="false">
     <annotation>
       <documentation>
-        reference 15.2.1.5.5.6 and 16.3.1.5.5.6
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=113&amp;view=fit">LLRP Specification Section 15.2.1.5.5.6</h:a>
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=161&amp;view=fit">LLRP Specification Section 16.3.1.5.5.6</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
           <h:p>Contains the result of a block write operation</h:p>
@@ -2911,7 +3059,7 @@
   <enumerationDefinition name="C1G2BlockWriteResultType">
     <annotation>
       <documentation>
-        reference 15.2.1.5.5.6
+        <h:a href="http://www.epcglobalinc.org/standards/llrp/llrp_1_0_1-standard-20070813.pdf#page=113&amp;view=fit">LLRP Specification Section 15.2.1.5.5.6</h:a>
       </documentation>
       <description copyright="Copyright 2006, 2007, EPCglobal Inc. The proprietary text of EPCglobal Inc. included here is in not a Contribution to the LLRP toolkit, under Apache License, Version 2.0. The right to use the proprietary text is limited to reproduction and display thereof within the work.">
       </description>

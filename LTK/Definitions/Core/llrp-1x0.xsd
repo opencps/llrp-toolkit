@@ -99,6 +99,12 @@
 		</xs:restriction>
 	</xs:simpleType>
 
+	<xs:simpleType name="hexByte">
+		<xs:restriction base="xs:hexBinary">
+			<xs:length value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
+	
 	<xs:simpleType name="hexDWord">
 		<xs:restriction base="xs:hexBinary">
 			<xs:length value="4"/>
