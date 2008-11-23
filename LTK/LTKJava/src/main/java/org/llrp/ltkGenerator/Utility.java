@@ -19,6 +19,7 @@ import org.llrp.ltkGenerator.generated.Description;
 import org.llrp.ltkGenerator.generated.Documentation;
 import org.llrp.ltkGenerator.generated.MessageDefinition;
 import org.llrp.ltkGenerator.generated.ParameterDefinition;
+
 import com.sun.org.apache.xerces.internal.dom.ElementNSImpl;
 
 public class Utility {
@@ -36,6 +37,9 @@ public class Utility {
 	private Map<String, String> customMessageMap;
 	private Map<String, String> prefixForParameterMap;
 	private static final String NOTYPE = "NoType";
+	private static final String HREF = "href";
+	private static final String REFERENCE_LINK = "@link ";
+	private static final String REFERENCE_TEXT = "See also ";
 
 	public Utility(PropertiesConfiguration properties) {
 		numberOfReserved = 0;
@@ -466,13 +470,21 @@ public class Utility {
 				description += '\n';
 			}
 			if (ob instanceof Documentation) {
-				documentation += "See EPCGlobal LLRP Specification section";
 				Documentation descOb = (Documentation) ob;
+				documentation += REFERENCE_TEXT;
+				boolean first = true;
 				for (Object ox : descOb.getContent()) {
 					// allowed are only Element or String
 					if (ox instanceof ElementNSImpl) {
+						if (!first){
+							documentation += " and ";
+						} else {
+							first = false;
+						}
 						ElementNSImpl el = (ElementNSImpl) ox;
-						documentation += el.getTextContent().replace('\n', ' ');
+						String uri = el.getAttribute(HREF);
+						String linkText = el.getChildNodes().item(0).getTextContent().replace('\n', ' ');
+						documentation += "{"+REFERENCE_LINK +"<a href=\""+uri+"\">"+linkText+"</a>}"+'\n';
 					} else {
 						documentation += ox.toString();
 					}
