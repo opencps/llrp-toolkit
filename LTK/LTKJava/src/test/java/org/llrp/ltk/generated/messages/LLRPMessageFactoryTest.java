@@ -39,6 +39,7 @@ import org.jdom.output.XMLOutputter;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.llrp.ltk.exceptions.InvalidLLRPMessageException;
+import org.llrp.ltk.generated.LLRPMessageFactory;
 import org.llrp.ltk.types.LLRPBitList;
 import org.llrp.ltk.types.LLRPMessage;
 import org.llrp.ltk.util.Util;
@@ -123,7 +124,7 @@ public class LLRPMessageFactoryTest extends XMLTestCase{
 			filename = testDirName + "/" + filenames[i];
 			LOGGER.debug("File name loaded: " + filename);
 			try {
-				LLRPBitList bits = Util.getBinaryFileContent(new File (filename));
+				LLRPBitList bits = Util.loadBinaryFileContent(new File (filename));
 				LOGGER.debug("Binary Message used to create Java message: " + bits);
 				message = LLRPMessageFactory.createLLRPMessage(bits);
 				
@@ -136,7 +137,7 @@ public class LLRPMessageFactoryTest extends XMLTestCase{
 				
 			    int dotPos = filename.lastIndexOf(".");
 			    filename = filename.substring(0, dotPos) + ".xml" ;
-				String xmlstring = Util.getTextFileContent(new File (filename));
+				String xmlstring = Util.loadTextFileContent(new File (filename));
 				LOGGER.debug("Expected XML representation: " + xmlstring);
 				LOGGER.debug("XML represenation generated: " + message.toXMLString());
 
@@ -218,7 +219,7 @@ public class LLRPMessageFactoryTest extends XMLTestCase{
 				
 				int dotPos = filename.lastIndexOf(".");
 			    filename = filename.substring(0, dotPos) + ".bin" ;
-				String bitstring = Util.getBinaryFileContent(new File(filename)).toString();
+				String bitstring = Util.loadBinaryFileContent(new File(filename)).toString();
 				
 				LOGGER.debug("Expected binary representation: " + bitstring);
 				LOGGER.debug("Binary Message after decoding/encoding: " + message.toBinaryString());
