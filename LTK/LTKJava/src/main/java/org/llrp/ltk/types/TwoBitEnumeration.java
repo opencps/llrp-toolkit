@@ -23,7 +23,7 @@ import org.jdom.Element;
  *
  * @author Basil Gasser - ETH Zurich
  */
-public class TwoBitEnumeration extends LLRPInteger {
+public class TwoBitEnumeration extends SignedByte {
     private static final int LENGTH = 2;
 
     /**

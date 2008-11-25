@@ -28,43 +28,43 @@ import org.jdom.Text;
  *
  * @author Basil Gasser - ETH Zurich
  */
-public class LLRPInteger extends LLRPNumberType {
+public class SignedByte extends LLRPNumberType {
     private static final Integer LENGTH = 8;
     protected Integer value;
 
     /**
-     * Creates a new LLRPInteger object.
+     * Creates a new SignedByte object.
      *
      * @param value to set
      */
-    public LLRPInteger(byte value) {
+    public SignedByte(byte value) {
         this.value = new Integer(value);
         signed = false;
     }
 
     /**
-     * Creates a new LLRPInteger object.
+     * Creates a new SignedByte object.
      *
      * @param stringValue value as string
      */
-    public LLRPInteger(String stringValue) {
+    public SignedByte(String stringValue) {
         this(new Byte(stringValue));
         if (!inRange(stringValue)){
-			throw new IllegalArgumentException("value "+stringValue+" not in range allowed for LLRPInteger");
+			throw new IllegalArgumentException("value "+stringValue+" not in range allowed for SignedByte");
 		}
     }
 
     /**
-     * Creates a new LLRPInteger object from Integer. One might loose precision.
+     * Creates a new SignedByte object from Integer. One might loose precision.
      *
      * @param value to set
      */
-    public LLRPInteger(Integer value) {
+    public SignedByte(Integer value) {
         this(value.byteValue());
     }
 
     
-    public LLRPInteger(int value){
+    public SignedByte(int value){
     	this(new Integer(value));
     	if (!inRange(value)){
 			throw new IllegalArgumentException("value "+value+" not in range");
@@ -75,35 +75,35 @@ public class LLRPInteger extends LLRPNumberType {
      * String representation in specified radix.
      *
      */
-    public LLRPInteger(String valueString, int radix) {
+    public SignedByte(String valueString, int radix) {
         this(new BigInteger(valueString, radix).intValue());
     }
 
     
     /**
-     * Creates a new LLRPInteger object.
+     * Creates a new SignedByte object.
      *
      * @param bitList to be decoded
      */
-    public LLRPInteger(LLRPBitList bitList) {
+    public SignedByte(LLRPBitList bitList) {
         decodeBinary(bitList);
         signed = false;
     }
 
     /**
-     * Creates a new LLRPInteger object.
+     * Creates a new SignedByte object.
      *
      * @param element to be decoded
      */
-    public LLRPInteger(Element element) {
+    public SignedByte(Element element) {
         decodeXML(element);
         signed = false;
     }
 
     /**
-     * Creates a new LLRPInteger object.
+     * Creates a new SignedByte object.
      */
-    public LLRPInteger() {
+    public SignedByte() {
         value = 0;
         signed = false;
     }

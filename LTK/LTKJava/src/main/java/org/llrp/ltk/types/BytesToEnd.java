@@ -31,13 +31,13 @@ import java.util.List;
  * @author Basil Gasser - ETH Zurich
  */
 public class BytesToEnd extends LLRPType {
-    protected List<LLRPInteger> bytes = new LinkedList<LLRPInteger>();
+    protected List<SignedByte> bytes = new LinkedList<SignedByte>();
 
     /**
          * Creates a new BytesToEnd object.
          */
     public BytesToEnd() {
-        bytes = new LinkedList<LLRPInteger>();
+        bytes = new LinkedList<SignedByte>();
     }
 
     /**
@@ -71,7 +71,7 @@ public class BytesToEnd extends LLRPType {
      *
      * @param aByte to be added
      */
-    public void add(LLRPInteger aByte) {
+    public void add(SignedByte aByte) {
         bytes.add(aByte);
     }
 
@@ -84,8 +84,8 @@ public class BytesToEnd extends LLRPType {
         
         int length = list.length();
 
-        for (int i = 0; i < length; i = i + LLRPInteger.length()) {
-            bytes.add(new LLRPInteger(list.subList(i, LLRPInteger.length())));
+        for (int i = 0; i < length; i = i + SignedByte.length()) {
+            bytes.add(new SignedByte(list.subList(i, SignedByte.length())));
         }
     }
 
@@ -97,7 +97,7 @@ public class BytesToEnd extends LLRPType {
     public LLRPBitList encodeBinary() {
         LLRPBitList result = new LLRPBitList();
 
-        for (LLRPInteger u : bytes) {
+        for (SignedByte u : bytes) {
             result.append(u.encodeBinary());
         }
 
@@ -109,9 +109,9 @@ public class BytesToEnd extends LLRPType {
      *
      * @param i position to be get
      *
-     * @return LLRPInteger
+     * @return SignedByte
      */
-    public LLRPInteger get(Integer i) {
+    public SignedByte get(Integer i) {
         return bytes.get(i);
     }
 
@@ -130,7 +130,7 @@ public class BytesToEnd extends LLRPType {
      * @return  length of BaseType
      */
     public static int length() {
-        return LLRPInteger.length();
+        return SignedByte.length();
     }
 
     /**
@@ -165,12 +165,12 @@ public class BytesToEnd extends LLRPType {
      */
     public void decodeXML(Element element) {
         String byteString = element.getText();
-        bytes = new LinkedList<LLRPInteger>();
+        bytes = new LinkedList<SignedByte>();
 
         int length = byteString.length();
 
         for (Integer i = 0; i < length; i++) {
-            bytes.add(new LLRPInteger(byteString.charAt(i)));
+            bytes.add(new SignedByte(byteString.charAt(i)));
         }
     }
     
@@ -178,7 +178,7 @@ public class BytesToEnd extends LLRPType {
 	public String toString() {
 		 String s = "";
 
-	        for (LLRPInteger b : bytes) {
+	        for (SignedByte b : bytes) {
 	            s += b.toString();
 	        }
 	        return s;
@@ -187,7 +187,7 @@ public class BytesToEnd extends LLRPType {
 	public String toString(int radix){
         String s = "";
 
-        for (LLRPInteger b : bytes) {
+        for (SignedByte b : bytes) {
             s += b.toString(radix);
         }
         return s;
@@ -201,7 +201,7 @@ public class BytesToEnd extends LLRPType {
 		// try do create each element. If one failes, the whole string is illegal
 		for (int i = 0; i < strings.length; i++) {
 			try {
-				new LLRPInteger(strings[i]);
+				new SignedByte(strings[i]);
 			} catch (IllegalArgumentException e){
 				return false;
 			}

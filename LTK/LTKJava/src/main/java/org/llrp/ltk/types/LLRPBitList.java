@@ -298,7 +298,7 @@ public class LLRPBitList {
         byte[] result = new byte[nOFb];
 
         for (int i = 0; i < nOFb; i++) {
-            result[i] = new Byte(new LLRPInteger(subList(8 * i, 8)).toByte());
+            result[i] = new Byte(new SignedByte(subList(8 * i, 8)).toByte());
         }
 
         return result;

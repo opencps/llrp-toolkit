@@ -66,7 +66,7 @@ public class BytesToEnd_HEX extends BytesToEnd {
 	 */
 	public void decodeXML(Element element) {
 		String hexString = element.getText().replaceAll(" ", "");
-		bytes = new LinkedList<LLRPInteger>();
+		bytes = new LinkedList<SignedByte>();
 
 		for (int a = 0; a < hexString.length(); a = a + 2) {
 			String twoHexDigits = "";
@@ -76,7 +76,7 @@ public class BytesToEnd_HEX extends BytesToEnd {
 				twoHexDigits = "0" + hexString.substring(a, a + 1);
 			}
 			Integer hexInt = Integer.parseInt(twoHexDigits + "", 16);
-			bytes.add(new LLRPInteger(hexInt));
+			bytes.add(new SignedByte(hexInt));
 		}
 	}
 
@@ -87,7 +87,7 @@ public class BytesToEnd_HEX extends BytesToEnd {
 	public String toString() {
 		String s = "";
 		int i = 0;
-		for (LLRPInteger b : bytes) {
+		for (SignedByte b : bytes) {
 
 			if (b != null) {
 				// a byte must always consitst of two hexadecimal digits. If

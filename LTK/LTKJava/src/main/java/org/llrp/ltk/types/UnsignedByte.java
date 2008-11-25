@@ -101,6 +101,11 @@ public class UnsignedByte extends LLRPNumberType {
 		this(new BigInteger(valueString, radix).intValue());
 	}
 
+	public UnsignedByte(Element element) {
+		decodeXML(element);
+	}
+	
+	
 	/**
 	 * number of bits used to represent this type
 	 * 

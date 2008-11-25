@@ -141,7 +141,7 @@ public class UnsignedByteArray extends LLRPType {
 	 * @return int
 	 */
 	public static int length() {
-		return LLRPInteger.length();
+		return SignedByte.length();
 	}
 
 	/**
@@ -168,7 +168,7 @@ public class UnsignedByteArray extends LLRPType {
 	 * @param i
 	 *            position
 	 * 
-	 * @return LLRPInteger
+	 * @return SignedByte
 	 */
 	public UnsignedByte get(int i) {
 		return bytes[i];
