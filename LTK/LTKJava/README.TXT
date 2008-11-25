@@ -1,7 +1,7 @@
 
 
 USING AND BUILDING THE LLRP Tool Kit for Java
-Last updated 17 November 2008
+Last updated 25 November 2008
 
 
 
@@ -15,6 +15,10 @@ The most recent versions of and news about the
 LLRP Tool Kit is available on SourceForge.net
 
     http://sourceforge.net/projects/llrp-toolkit/
+
+LTKJava was developed and is being maintained by:
+Christian Floerkemeier (MIT) & Basil Gasser (ETH Zurich)
+
 
 FEATURES 
 ==========
@@ -152,3 +156,11 @@ FOR FURTHER INFORMATION OR TO GET HELP
 Visit the LLRP Tool Kit project on SourceForge.net and use the information in the wiki
 
 http://llrp-toolkit.wiki.sourceforge.net/ 
+
+Visit the mailing list archive:
+
+http://sourceforge.net/mailarchive/forum.php?forum_name=llrp-toolkit-devel
+
+Send an email to the LTK mailing list
+
+llrp-toolkit-devel@lists.sourceforge.net
