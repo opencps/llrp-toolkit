@@ -76,8 +76,8 @@ $utility.clearImports()
 	$utility.addImport("LLRPConstants")
 
 
-	import org.llrp.ltk.types.LLRPInteger;
-	$utility.addImport("LLRPInteger")	
+	import org.llrp.ltk.types.SignedByte;
+	$utility.addImport("SignedByte")	
 	import org.llrp.ltk.types.LLRPBitList;
 	$utility.addImport("LLRPBitList")	
 	import org.llrp.ltk.types.LLRPMessage;
@@ -246,7 +246,7 @@ public class $message.getName() extends LLRPMessage {
 	#else 
 		public static final String RESPONSETYPE = "";
 	#end
-	private LLRPInteger messageSubtype;
+	private SignedByte messageSubtype;
 	
 ## field or reserved
 #foreach($field in $message.getFieldOrReserved())
@@ -373,9 +373,9 @@ $utility.clearNumberOfReserved()
 
 		// do not have to decode vendor identifier
         position += UnsignedInteger.length();
-        messageSubtype = new LLRPInteger(binary.subList(position,
-                    LLRPInteger.length()));
-        position += LLRPInteger.length();
+        messageSubtype = new SignedByte(binary.subList(position,
+                    SignedByte.length()));
+        position += SignedByte.length();
         		
 		
 		## field or reserved
@@ -1035,7 +1035,7 @@ $utility.clearNumberOfReserved()
 		return new SignedShort(1023);
 	}
 	
-	public LLRPInteger getMessageSubtype(){
+	public SignedByte getMessageSubtype(){
 		return messageSubtype;
 	}
 	

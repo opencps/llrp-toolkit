@@ -53,7 +53,7 @@ import org.llrp.ltk.types.Bit;
 import org.llrp.ltk.types.BitArray_HEX;
 import org.llrp.ltk.types.BytesToEnd_HEX;
 import org.llrp.ltk.types.Integer96_HEX;
-import org.llrp.ltk.types.LLRPInteger;
+import org.llrp.ltk.types.SignedByte;
 import org.llrp.ltk.types.SignedShort;
 import org.llrp.ltk.types.TwoBitField;
 import org.llrp.ltk.types.UTF8String_UTF_8;
