@@ -3,6 +3,8 @@ Changes with LTKJava 0.1.1 Snapshot (latest in version control)
 
 * added UnsignedByte_HEX (U8 format HEX) and included references to specification
 in Javadoc
+[Basil Gasser]
+
 * added SignedIntegerArray (S32v) and SignedShortArray(S16v) 
 [Basil Gasser]
 
