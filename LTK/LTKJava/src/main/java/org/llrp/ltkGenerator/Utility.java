@@ -125,11 +125,11 @@ public class Utility {
 		}
 
 		if (xmlType.equalsIgnoreCase("u8")) {
-			return "LLRPInteger";
+			return "UnsignedByte";
 		}
 
 		if (xmlType.equalsIgnoreCase("s8")) {
-			return "LLRPInteger";
+			return "SignedByte";
 		}
 
 		if (xmlType.equalsIgnoreCase("u8v")) {
