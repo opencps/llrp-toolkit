@@ -114,7 +114,7 @@ public class UnsignedByte_HEX extends UnsignedByte {
 	@Override
 	public Content encodeXML(String name, Namespace ns) {
 		Element element = new Element(name, ns);
-		element.setContent(new Text(Integer.toString(value)));
+		element.setContent(new Text(Integer.toHexString(value)));
 
 		return element;
 	}
