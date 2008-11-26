@@ -28,8 +28,8 @@
  * Version is four each 8-bit numbers:
  * major, minor, maintenance, progress number
  */
-#define LLRPORG_LTKC_VERSION        0x01000000
-#define LLRPORG_LTKC_VERSION_STR    "1.0.0.0"
+#define LLRPORG_LTKC_VERSION        0x01000005
+#define LLRPORG_LTKC_VERSION_STR    "1.0.0.5"
 
 #endif /* !_LLRPORG_LTKC_H */
 

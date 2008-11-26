@@ -22,8 +22,8 @@
  * Version is four each 8-bit numbers:
  * major, minor, maintenance, progress number
  */
-#define LTKC_VERSION        0x01000000
-#define LTKC_VERSION_STR    "1.0.0.0"
+#define LTKC_VERSION        0x01000005
+#define LTKC_VERSION_STR    "1.0.0.5"
 
 enum LLRP_ResultCode;
 struct LLRP_SErrorDetails;
