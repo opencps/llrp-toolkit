@@ -15,6 +15,7 @@
      <property name="llrpdef_xml" value="${def}/Core/llrp-1x0-def.xml"/>
      <property name="llrp_xsd" value="${def}/Core/llrp-1x0.xsd"/>
 	<!-- configure the property below with the path to the extension XSD, if applicable -->
+	<!-- it is also necessary to modify the src/main/resources/generator.properties file accordingly! -->
 	<!-- <property name="extension_xsd" value="Impinj.xsd"/> -->
      
 	<taskdef name="xjc" classname="com.sun.tools.xjc.XJCTask">
@@ -150,7 +151,9 @@
 	
 	<target name="jarWithDep" depends="compile">
 			<jar destfile="${build}/LTKJava_with_dep_${version}.jar">
-				<zipfileset dir="${build}/classes" prefix="" />
+				<fileset dir="${build}/classes"
+				includes="org/llrp/ltk/**" 
+				/>
 				<zipfileset src="lib/log4j-1.2.14.jar" />
 				<zipfileset src="lib/jdom.jar" />
 				<zipfileset src="lib/jargs.jar" />
@@ -182,7 +185,7 @@
 	
     <target name="generateJar" depends="generate"> 
 	 <echo message="Creating binary jar of generator without dependencies..."/>
-		  <jar destfile="${build}/LTKJava_Generator_${version}.jar">
+		  <jar destfile="${build}/LTKJavaGenerator_${version}.jar">
 		  	<fileset dir="${build}/classes"
 		  	includes="org/llrp/ltkGenerator/**"
             		 excludes="**/testing/"
@@ -243,6 +246,23 @@
 					      <include name="**/*.jar"/>
 			 </fileset>
 		  </scp>
+	</target>
+	
+	<!-- ===================================== -->
+	<!-- release zip file -->
+	<!-- ===================================== -->
+	<target name="release" depends="package,javadoc">
+		    <zip destfile="${build}/LTKJava_${version}.zip">
+		    <zipfileset dir="target" includes="LTKJava_with_dep_${version}.jar" prefix="lib" />
+		    <zipfileset dir="target" includes="LTKJava_${version}.jar" prefix="lib" />
+		    <zipfileset dir="target" includes="LTKJava_src_${version}.jar" prefix="lib" />
+			<zipfileset dir="target" includes="LTKJavaGenerator_${version}.jar" prefix="lib" />
+		    <zipfileset dir="target/docs" prefix="docs" />	
+		    <fileset dir="." includes="NOTICE.TXT"/>	
+		    <fileset dir="." includes="LICENSE.txt"/>	
+		    <fileset dir="." includes="README.TXT"/>	
+		    <fileset dir="." includes="CHANGELOG.txt"/>	
+  		</zip>		
 	</target>
 	
 	<!-- ===================================== -->
