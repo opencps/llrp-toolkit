@@ -21,7 +21,7 @@
 /**
  *****************************************************************************
  **
- ** @file  example.cpp
+ ** @file  example1.cpp
  **
  ** @brief Simple example of LTKCPP that talks to an actual reader
  **
