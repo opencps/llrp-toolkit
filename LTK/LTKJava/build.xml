@@ -299,7 +299,10 @@
 	<target name="test" depends="compile-test">
 	    <echo message="Running the test cases ..."/>
 		<junit printsummary="yes">
-			<test name="org.llrp.ltk.generated.messages.LLRPMessageFactoryTest"/>
+			<test name="org.llrp.ltk.types.SignedIntegerArrayTest"/>
+			<test name="org.llrp.ltk.types.SignedShortArrayTest"/>
+			<test name="org.llrp.ltk.types.UnsignedByte_HEXTest"/>
+			<test name="org.llrp.ltk.types.UnsignedLong_DATETIMETest"/>
 			  <!--<batchtest fork="no" todir="${build}/test-reports">
 			    <fileset dir="${src.test}">
 			      <include name="**/*Test*.java"/>
