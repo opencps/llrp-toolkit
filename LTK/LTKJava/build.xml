@@ -2,7 +2,7 @@
 <project name="LLRPGenerator" default="compile" basedir=".">
      <property name="src" value="src/main/java"/> 
      <property name="src.test" value="src/test/java"/> 
-     <property name="version" value="0_1_1_SNAPSHOT"/> 
+     <property name="version" value="1_0_0_beta_5"/> 
      <property name="res" value="src/main/resources"/> 
      <property name="build" value="target"/>
      <property name="docs" value="docs"/>
