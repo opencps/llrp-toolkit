@@ -3,6 +3,7 @@
      <property name="src" value="src/main/java"/> 
      <property name="src.test" value="src/test/java"/> 
      <property name="version" value="1_0_0_beta_5"/> 
+	 <property name="LTKName" value="ltkjava"/> 
      <property name="res" value="src/main/resources"/> 
      <property name="build" value="target"/>
      <property name="docs" value="docs"/>
@@ -138,7 +139,7 @@
         
 	<target name="jar" depends="compile"> 
 	 <echo message="Creating binary jar without dependencies..."/>
-		  <jar destfile="${build}/LTKJava_${version}.jar">
+		  <jar destfile="${build}/${LTKName}_${version}.jar">
 		  	<fileset dir="${build}/classes"
 		  	includes="org/llrp/ltk/**"
             		 excludes="**/testing/"
@@ -152,7 +153,7 @@
 	</target>
 	
 	<target name="jarWithDep" depends="compile">
-			<jar destfile="${build}/LTKJava_with_dep_${version}.jar">
+			<jar destfile="${build}/${LTKName}_with_dep_${version}.jar">
 				<fileset dir="${build}/classes"
 				includes="org/llrp/ltk/**" 
 				/>
@@ -176,7 +177,7 @@
 	
         <target name="sourceJar" depends="compile"> 
           <echo message="Creating source jar ..."/>
-			  <jar destfile="${build}/LTKJava_src_${version}.jar">
+			  <jar destfile="${build}/${LTKName}_src_${version}.jar">
 			  	<fileset dir="${src}"
 	            		 includes="org/llrp/ltk/**"
 	    		/>
@@ -187,7 +188,7 @@
 	
     <target name="generateJar" depends="generate"> 
 	 <echo message="Creating binary jar of generator without dependencies..."/>
-		  <jar destfile="${build}/LTKJavaGenerator_${version}.jar">
+		  <jar destfile="${build}/${LTKName}_generator_${version}.jar">
 		  	<fileset dir="${build}/classes"
 		  	includes="org/llrp/ltkGenerator/**"
             		 excludes="**/testing/"
@@ -223,12 +224,11 @@
 	        		<include name="**/*.jar"/>
 	      		</fileset>
 	         </classpath>
-		    <doctitle><![CDATA[<h1>LLRP Implementation</h1>]]></doctitle>
+		    <doctitle><![CDATA[<h1>LLRP Tool Kit in Java</h1>]]></doctitle>
 		    <bottom><![CDATA[<i>Copyright &#169; 2007 ETH Zurich.</i>]]></bottom>
 		    <tag name="todo" scope="all" description="To do:"/>
 		    <group title="org.llrp" packages="org.llrp*"/>
-		    <link offline="true" href="http://llrp-toolkit.cvs.sourceforge.net/llrp-toolkit/Java/" packagelistLoc="C:\temp"/>
-		    <link href="http://llrp-toolkit.cvs.sourceforge.net/llrp-toolkit/Java/"/>
+		    <link href="http://llrp-toolkit.cvs.sourceforge.net/llrp-toolkit/LTK/LTKJava/"/>
 	  	</javadoc>
 	</target>	
 	
@@ -254,11 +254,11 @@
 	<!-- release zip file -->
 	<!-- ===================================== -->
 	<target name="release" depends="package,javadoc">
-		    <zip destfile="${build}/LTKJava_${version}.zip">
-		    <zipfileset dir="target" includes="LTKJava_with_dep_${version}.jar" prefix="lib" />
-		    <zipfileset dir="target" includes="LTKJava_${version}.jar" prefix="lib" />
-		    <zipfileset dir="target" includes="LTKJava_src_${version}.jar" prefix="lib" />
-			<zipfileset dir="target" includes="LTKJavaGenerator_${version}.jar" prefix="lib" />
+		    <zip destfile="${build}/${LTKName}_${version}.zip">
+		    <zipfileset dir="target" includes="${LTKName}_with_dep_${version}.jar" prefix="lib" />
+		    <zipfileset dir="target" includes="${LTKName}_${version}.jar" prefix="lib" />
+		    <zipfileset dir="target" includes="${LTKName}_src_${version}.jar" prefix="lib" />
+			<zipfileset dir="target" includes="${LTKName}_generator_${version}.jar" prefix="lib" />
 		    <zipfileset dir="target/docs" prefix="docs" />	
 		    <fileset dir="." includes="NOTICE.TXT"/>	
 		    <fileset dir="." includes="LICENSE.txt"/>	
