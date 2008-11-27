@@ -108,6 +108,8 @@
 	
 	<target name="copyExtension.xsd" >  
 			<echo message="Copy ${extension_xsd} to org.llrp.ltk so it can be loaded as a resource"/>
+		    <echo message="This task will create a warning if the copy task failed."/>
+		    <echo message="If no extension was defined, the warning message can be disregarded."/>
 			<copy file="${extension_xsd}" todir="${build}/classes/org/llrp/ltk" failonerror="false"/>	
 	</target>
 	
