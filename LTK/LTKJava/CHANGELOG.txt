@@ -1,5 +1,7 @@
-Changes with LTKJava 0.1.1 Snapshot (latest in version control)
+Changes with LTKJava 1.0.0 BETA 5 (over 0.1.0 ALPHA release)
  
+* fixed bug in encodeXML of UnsignedByte_HEX
+[Christian Floerkemeier]
 
 * added UnsignedByte_HEX (U8 format HEX) and included references to specification
 in Javadoc
