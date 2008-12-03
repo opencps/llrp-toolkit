@@ -2,7 +2,8 @@
 <project name="LLRPGenerator" default="compile" basedir=".">
      <property name="src" value="src/main/java"/> 
      <property name="src.test" value="src/test/java"/> 
-     <property name="version" value="1_0_0_beta_5"/> 
+	 <property name="test_msg_dir" value="src/test/resources"/> 
+     <property name="version" value="1_0_0_5"/> 
 	 <property name="LTKName" value="ltkjava"/> 
      <property name="res" value="src/main/resources"/> 
      <property name="build" value="target"/>
@@ -250,22 +251,7 @@
 		  </scp>
 	</target>
 	
-	<!-- ===================================== -->
-	<!-- release zip file -->
-	<!-- ===================================== -->
-	<target name="release" depends="package,javadoc">
-		    <zip destfile="${build}/${LTKName}_${version}.zip">
-		    <zipfileset dir="target" includes="${LTKName}_with_dep_${version}.jar" prefix="lib" />
-		    <zipfileset dir="target" includes="${LTKName}_${version}.jar" prefix="lib" />
-		    <zipfileset dir="target" includes="${LTKName}_src_${version}.jar" prefix="lib" />
-			<zipfileset dir="target" includes="${LTKName}_generator_${version}.jar" prefix="lib" />
-		    <zipfileset dir="target/docs" prefix="docs" />	
-		    <fileset dir="." includes="NOTICE.TXT"/>	
-		    <fileset dir="." includes="LICENSE.txt"/>	
-		    <fileset dir="." includes="README.TXT"/>	
-		    <fileset dir="." includes="CHANGELOG.txt"/>	
-  		</zip>		
-	</target>
+
 	
 	<!-- ===================================== -->
 	<!-- Remove build directories -->
@@ -298,13 +284,16 @@
 	</target>
 	
 	
-	<target name="test" depends="compile-test">
-	    <echo message="Running the test cases ..."/>
+	<target name="unit-test" depends="compile-test">
+	    <echo message="Running the unit test cases ..."/>
+		<echo message="NOTE: org.llrp.ltk.types.UnsignedLong_DATETIMETest will fail unless you are running the test in the Eastern Standard Time Zone"/>	
 		<junit printsummary="yes">
 			<test name="org.llrp.ltk.types.SignedIntegerArrayTest"/>
 			<test name="org.llrp.ltk.types.SignedShortArrayTest"/>
 			<test name="org.llrp.ltk.types.UnsignedByte_HEXTest"/>
 			<test name="org.llrp.ltk.types.UnsignedLong_DATETIMETest"/>
+			
+			
 			  <!--<batchtest fork="no" todir="${build}/test-reports">
 			    <fileset dir="${src.test}">
 			      <include name="**/*Test*.java"/>
@@ -319,5 +308,53 @@
 			  </classpath>
 		</junit>
 	</target>
+	
+	<target name="xml-test" depends="unit-test">  
+		        <!-- format the java code -->
+		        <echo message="Running integration test (xml->binary) ..."/>
+				<java classname="org.llrp.ltk.util.LLRPConverter" fork="yes" >
+					<arg line="-x -d ${test_msg_dir}"/>
+			        <classpath>
+			        	<pathelement path="${classpath}"/>
+			      		<fileset dir="lib">
+			        		<include name="**/*.jar"/>
+			      		</fileset>
+			         </classpath>
+			  	</java>
+		</target>
+	
+	<target name="bin-test" depends="unit-test">  
+			        <!-- format the java code -->
+			        <echo message="Running integration test (xml->binary) ..."/>
+					<java classname="org.llrp.ltk.util.LLRPConverter" fork="yes" >
+						<arg line="-b -d ${test_msg_dir}"/>
+				        <classpath>
+				        	<pathelement path="${classpath}"/>
+				      		<fileset dir="lib">
+				        		<include name="**/*.jar"/>
+				      		</fileset>
+				         </classpath>
+				  	</java>
+			</target>
+	
+	<target name="test" depends="unit-test, bin-test, xml-test">  
+		</target>
+	
+	<!-- ===================================== -->
+	<!-- release zip file -->
+	<!-- ===================================== -->
+		<target name="release" depends="package,javadoc,bin-test,xml-test">
+			    <zip destfile="${build}/LTKJava_${version}.zip">
+			    <zipfileset dir="target" includes="LTKJava_with_dep_${version}.jar" prefix="lib" />
+			    <zipfileset dir="target" includes="LTKJava_${version}.jar" prefix="lib" />
+			    <zipfileset dir="target" includes="LTKJava_src_${version}.jar" prefix="lib" />
+				<zipfileset dir="target" includes="LTKJavaGenerator_${version}.jar" prefix="lib" />
+			    <zipfileset dir="target/docs" prefix="docs" />	
+			    <fileset dir="." includes="NOTICE.TXT"/>	
+			    <fileset dir="." includes="LICENSE.txt"/>	
+			    <fileset dir="." includes="README.TXT"/>	
+			    <fileset dir="." includes="CHANGELOG.txt"/>	
+	  		</zip>		
+		</target>
 	
 </project>
