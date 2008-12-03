@@ -19,6 +19,15 @@ or LLRP drivers for other languages, Please check http://sourceforge.net/project
 
 4. Bugs fixed and Feature added
 
+   November 27th 2008
+
+    1) NOTE: The LTK.NET namespace has changed to Org.LLRP.LTK.LLRPV1. This is a 
+	non-backward compatible change.
+    2) Occasionally the LTK.NET would loose sync with the reader and require a connection reset.  This
+	was due to packet stream processing in the tcp_connection layer.  It was corrected with a new
+	packet stream processing model
+
+
    Jan 20, 2008
 
    1). Removed "__" as prefix;
