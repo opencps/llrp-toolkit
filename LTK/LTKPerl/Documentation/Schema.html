@@ -1,7 +1,9 @@
+<?xml version="1.0" ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<title>LTK-Perl Schema</title>
+<title>../RFID/LLRP/Schema.pm</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 <link rev="made" href="mailto:root@localhost" />
 </head>
 
@@ -58,29 +60,28 @@ need... only one object is created (and cached) per filename string.</p>
 <hr />
 <h1><a name="api">API</a></h1>
 <dl>
-<dt><a name="item_read_schema"><code>read_schema($path)</code></a></dt>
+<dt><strong><a name="item_read_schema"><code>read_schema($path)</code></a></strong></dt>
+
 <dd>
-Returns a reference to the llrp binary format descriptor hash,
+<p>Returns a reference to the llrp binary format descriptor hash,
 and references to message, parameter and enumeration lookup
-tables.
-</dd>
-<dd>
+tables.</p>
 <p>The best way to understand these data structures is to print them using
 Data::Dumper. Builder.pm just peers directly into these tables as a ``layer'' and
 it seems hard, inefficient and more importantly, pointless (tight coupling with
 a layered API or tight coupling with a data structure, any way you go you will
 still have tight coupling) to obfuscate it with an API. If the layout doesn't
 suit your needs, build additional indexing data structures.</p>
-</dd>
-<dd>
 <p><a href="#item_read_schema"><code>read_schema</code></a> returns</p>
-</dd>
 <dl>
-<dt><a name="item__5c_25llrp_a_reference_to_the_llrp_schema"><code>\%llrp</code>
-a reference to the LLRP schema</a></dt>
-<dt><a name="item_up"><code>\%registry</code>
-A reference for looking up (mangled) LLRP types, including extensions</a></dt>
+<dt><strong><a name="item__5c_25llrp_a_reference_to_the_llrp_schema"><code>\%llrp</code>
+a reference to the LLRP schema</a></strong></dt>
+
+<dt><strong><a name="item_up"><code>\%registry</code>
+A reference for looking up (mangled) LLRP types, including extensions</a></strong></dt>
+
 </dl>
+</dd>
 </dl>
 <p>
 </p>

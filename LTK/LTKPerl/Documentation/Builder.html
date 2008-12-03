@@ -1,7 +1,9 @@
+<?xml version="1.0" ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<title>LTK-Perl Builder</title>
+<title>../RFID/LLRP/Builder.pm</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 <link rev="made" href="mailto:root@localhost" />
 </head>
 
@@ -73,48 +75,33 @@ can then be transmitted to an LLRP Reader.</p>
 <hr />
 <h1><a name="api">API</a></h1>
 <dl>
-<dt><a name="item_encode_message"><code>encode_message ($document, %options)</code></a></dt>
+<dt><strong><a name="item_encode_message"><code>encode_message ($document, %options)</code></a></strong></dt>
+
 <dd>
-This function will take an XML document and encode it as a LLRP Binary
-formatted message.
-</dd>
-<dd>
+<p>This function will take an XML document and encode it as a LLRP Binary
+formatted message.</p>
 <p><code>$document</code> can be a string, a file name, or a XML::LibXML document.</p>
-</dd>
-<dd>
 <p>To supply a string, call <a href="#item_encode_message"><code>encode_message ($str)</code></a>.</p>
-</dd>
-<dd>
 <p>To supply a file, call <a href="#item_encode_message"><code>encode_message ($fname, File =&gt; 1)</code></a>.</p>
-</dd>
-<dd>
 <p>To supply an XML::LibXML document, call <a href="#item_encode_message"><code>encode_message ($xmldoc, Tree =&gt; 1)</code></a>.</p>
-</dd>
-<dd>
 <p>This routine returns the LLRP Binary formatted message as a string.  In most
 cases, this string will be written to a socket associated with a reader that
 understands LLRP.</p>
 </dd>
-<p></p>
-<dt><a name="item_decode_message"><code>decode_message ($str)</code></a></dt>
+<dt><strong><a name="item_decode_message"><code>decode_message ($str)</code></a></strong></dt>
+
 <dd>
-This function accepts an LLRP Binary formatted message decodes it, and returns
-an analogous LLRP/XML formatted message.
-</dd>
-<dd>
+<p>This function accepts an LLRP Binary formatted message decodes it, and returns
+an analogous LLRP/XML formatted message.</p>
 <p>Once in XML format, the LLRP message can be subjected to further analysis or
 modification using the full power of XML::LibXML and XPath, validated against
 the LLRP W3C XML Schema (LLRP.xsd), or serialized to a text file for version
 control or archival purposes.</p>
-</dd>
-<dd>
 <p><code>QualifyCore</code></p>
-</dd>
-<dd>
 <p>This routine accepts the <code>QualifyCore</code> parameter. Its use and purpose is described
 in the POD for <code>RFID::LLRP::Link</code> <code>transact</code>.</p>
 </dd>
-<p></p></dl>
+</dl>
 <p>
 </p>
 <hr />

@@ -1,7 +1,9 @@
+<?xml version="1.0" ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<title>LTK-Perl Helper</title>
+<title>../RFID/LLRP/Helper.pm</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 <link rev="made" href="mailto:root@localhost" />
 </head>
 
@@ -52,70 +54,63 @@ into this module. At least, until this module needs refactoring.</p>
 <hr />
 <h1><a name="api">API</a></h1>
 <dl>
-<dt><a name="item_decode_gpi_state"><code>decode_gpi_state ($node)</code></a></dt>
+<dt><strong><a name="item_decode_gpi_state"><code>decode_gpi_state ($node)</code></a></strong></dt>
+
 <dd>
-This function decodes the GPI state froma GET_READER_CONFIG_RESPONSE document
+<p>This function decodes the GPI state froma GET_READER_CONFIG_RESPONSE document
 and returns the GPI values as an array (gpi1, gpi2, gpi3, gpi4)
 of zero and one values or, if called in a scalar context, the numerical
-equivalent (gpi1 = lsb, gpi4=msb)
+equivalent (gpi1 = lsb, gpi4=msb)</p>
 </dd>
-<p></p>
-<dt><a name="item_delete_rospecs"><code>delete_rospecs ($sock, %params)</code></a></dt>
+<dt><strong><a name="item_delete_rospecs"><code>delete_rospecs ($sock, %params)</code></a></strong></dt>
+
 <dd>
-This function deletes all ROSpecs from the reader, or if <code>spec_id</code>s are
-provided at the end of the argument list, it deletes the ones you ask it to.
+<p>This function deletes all ROSpecs from the reader, or if <code>spec_id</code>s are
+provided at the end of the argument list, it deletes the ones you ask it to.</p>
 </dd>
-<p></p>
-<dt><a name="item_decode_access_specs"><code>decode_access_specs ($sock, @spec_ids)</code></a></dt>
+<dt><strong><a name="item_decode_access_specs"><code>decode_access_specs ($sock, @spec_ids)</code></a></strong></dt>
+
 <dd>
-This function deletes all AccessSpecs from the reader, or if <code>spec_id</code>s are
-provided at the end of the argument list, it deletes the ones you ask it to.
+<p>This function deletes all AccessSpecs from the reader, or if <code>spec_id</code>s are
+provided at the end of the argument list, it deletes the ones you ask it to.</p>
 </dd>
-<p></p>
-<dt><a name="item_are_identical"><code>are_identical (@docs)</code></a></dt>
+<dt><strong><a name="item_are_identical"><code>are_identical (@docs)</code></a></strong></dt>
+
 <dd>
-This function attempts to normalize and compare a list of LLRP-XML DOM trees.
-</dd>
-<dd>
+<p>This function attempts to normalize and compare a list of LLRP-XML DOM trees.</p>
 <p>It returns false on the first match failure, or true if all trees appear
 identical.</p>
 </dd>
-<p></p>
-<dt><a name="item_compare_subtrees"><code>compare_subtrees (@docs)</code></a></dt>
+<dt><strong><a name="item_compare_subtrees"><code>compare_subtrees (@docs)</code></a></strong></dt>
+
 <dd>
-This function attempts to normalize and compare subtrees within a list of
-LLRP-XML DOM trees, based upon an XPath.
-</dd>
-<dd>
+<p>This function attempts to normalize and compare subtrees within a list of
+LLRP-XML DOM trees, based upon an XPath.</p>
 <p>It returns false on the first match failure, or true if all trees appear
 identical.</p>
 </dd>
-<p></p>
-<dt><a name="item_factory_default"><code>factory_default ($sock)</code></a></dt>
+<dt><strong><a name="item_factory_default"><code>factory_default ($sock)</code></a></strong></dt>
+
 <dd>
-This function returns the reader to ``factory default state,'' as defined
-by LLRP using a <code>SET_READER_CONFIG</code> message.
-</dd>
-<dd>
+<p>This function returns the reader to ``factory default state,'' as defined
+by LLRP using a <code>SET_READER_CONFIG</code> message.</p>
 <p>It returns false on the first match failure, or true if all trees appear
 identical.</p>
-</dd>
-<dd>
 <p>Additional parameters beyond $sock are passed through to the transact routine.</p>
 </dd>
-<p></p>
-<dt><a name="item_cleanup_all"><code>cleanup_all ($sock)</code></a></dt>
+<dt><strong><a name="item_cleanup_all"><code>cleanup_all ($sock)</code></a></strong></dt>
+
 <dd>
-This routine restores the reader to factory default state, deletes
-any <code>ROSpec</code>s and/or <code>AccessSpec</code>s.
+<p>This routine restores the reader to factory default state, deletes
+any <code>ROSpec</code>s and/or <code>AccessSpec</code>s.</p>
 </dd>
-<p></p>
-<dt><a name="item_cleanup_and_die"><code>cleanup_and_die ($sock, $msg, %params)</code></a></dt>
+<dt><strong><a name="item_cleanup_and_die"><code>cleanup_and_die ($sock, $msg, %params)</code></a></strong></dt>
+
 <dd>
-This routine restores the reader to factory default state, deletes
-any <code>ROSpec</code>s and/or <code>AccessSpec</code>s, disconnects and dies with $msg.
+<p>This routine restores the reader to factory default state, deletes
+any <code>ROSpec</code>s and/or <code>AccessSpec</code>s, disconnects and dies with $msg.</p>
 </dd>
-<p></p></dl>
+</dl>
 <p>
 </p>
 <hr />
