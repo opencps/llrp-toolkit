@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<llrp:RO_ACCESS_REPORT xmlns:llrp="http://www.llrp.org/ltk/schema/core/encoding/xml/1.0" Version="1" MessageID="0">
+  <llrp:TagReportData>
+    <llrp:EPC_96>
+      <llrp:EPC>306edd870775c77926b231a9</llrp:EPC>
+    </llrp:EPC_96>
+    <llrp:ROSpecID>
+      <llrp:ROSpecID>1</llrp:ROSpecID>
+    </llrp:ROSpecID>
+    <llrp:SpecIndex>
+      <llrp:SpecIndex>0</llrp:SpecIndex>
+    </llrp:SpecIndex>
+    <llrp:InventoryParameterSpecID>
+      <llrp:InventoryParameterSpecID>0</llrp:InventoryParameterSpecID>
+    </llrp:InventoryParameterSpecID>
+    <llrp:AntennaID>
+      <llrp:AntennaID>1</llrp:AntennaID>
+    </llrp:AntennaID>
+    <llrp:PeakRSSI>
+      <llrp:PeakRSSI>0</llrp:PeakRSSI>
+    </llrp:PeakRSSI>
+    <llrp:ChannelIndex>
+      <llrp:ChannelIndex>0</llrp:ChannelIndex>
+    </llrp:ChannelIndex>
+    <llrp:FirstSeenTimestampUTC>
+      <llrp:Microseconds>2008-09-22T09:51:17.000000-04:00</llrp:Microseconds>
+    </llrp:FirstSeenTimestampUTC>
+    <llrp:LastSeenTimestampUTC>
+      <llrp:Microseconds>2008-09-22T09:51:17.000000-04:00</llrp:Microseconds>
+    </llrp:LastSeenTimestampUTC>
+    <llrp:TagSeenCount>
+      <llrp:TagCount>1</llrp:TagCount>
+    </llrp:TagSeenCount>
+  </llrp:TagReportData>
+</llrp:RO_ACCESS_REPORT>
+

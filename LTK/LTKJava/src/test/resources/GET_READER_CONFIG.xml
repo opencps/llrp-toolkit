@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<llrp:GET_READER_CONFIG xmlns:llrp="http://www.llrp.org/ltk/schema/core/encoding/xml/1.0" Version="1" MessageID="2">
+  <llrp:AntennaID>0</llrp:AntennaID>
+  <llrp:RequestedData>All</llrp:RequestedData>
+  <llrp:GPIPortNum>0</llrp:GPIPortNum>
+  <llrp:GPOPortNum>0</llrp:GPOPortNum>
+</llrp:GET_READER_CONFIG>
+

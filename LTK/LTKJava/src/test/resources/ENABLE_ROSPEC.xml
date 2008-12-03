@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<llrp:ENABLE_ROSPEC xmlns:llrp="http://www.llrp.org/ltk/schema/core/encoding/xml/1.0" Version="1" MessageID="7">
+  <llrp:ROSpecID>1</llrp:ROSpecID>
+</llrp:ENABLE_ROSPEC>
+

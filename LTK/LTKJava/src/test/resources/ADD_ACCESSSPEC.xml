@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<llrp:ADD_ACCESSSPEC xmlns:llrp="http://www.llrp.org/ltk/schema/core/encoding/xml/1.0" Version="1" MessageID="5">
+  <llrp:AccessSpec>
+    <llrp:AccessSpecID>1</llrp:AccessSpecID>
+    <llrp:AntennaID>0</llrp:AntennaID>
+    <llrp:ProtocolID>EPCGlobalClass1Gen2</llrp:ProtocolID>
+    <llrp:CurrentState>Disabled</llrp:CurrentState>
+    <llrp:ROSpecID>1</llrp:ROSpecID>
+    <llrp:AccessSpecStopTrigger>
+      <llrp:AccessSpecStopTrigger>Null</llrp:AccessSpecStopTrigger>
+      <llrp:OperationCountValue>0</llrp:OperationCountValue>
+    </llrp:AccessSpecStopTrigger>
+    <llrp:AccessCommand>
+      <llrp:C1G2TagSpec>
+        <llrp:C1G2TargetTag>
+          <llrp:MB>0</llrp:MB>
+          <llrp:Match>1</llrp:Match>
+          <llrp:Pointer>0</llrp:Pointer>
+          <llrp:TagMask>ffffffff</llrp:TagMask>
+          <llrp:TagData>01010101</llrp:TagData>
+        </llrp:C1G2TargetTag>
+      </llrp:C1G2TagSpec>
+      <llrp:C1G2Write>
+        <llrp:OpSpecID>1</llrp:OpSpecID>
+        <llrp:AccessPassword>0</llrp:AccessPassword>
+        <llrp:MB>0</llrp:MB>
+        <llrp:WordPointer>0</llrp:WordPointer>
+        <llrp:WriteData>0000 ffff ffff ffff ffff ffff ffff ffff ffff</llrp:WriteData>
+      </llrp:C1G2Write>
+    </llrp:AccessCommand>
+  </llrp:AccessSpec>
+</llrp:ADD_ACCESSSPEC>
+

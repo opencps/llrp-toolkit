@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<llrp:GET_READER_CAPABILITIES xmlns:llrp="http://www.llrp.org/ltk/schema/core/encoding/xml/1.0" Version="1" MessageID="1">
+  <llrp:RequestedData>All</llrp:RequestedData>
+</llrp:GET_READER_CAPABILITIES>
+

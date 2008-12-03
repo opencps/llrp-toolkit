@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<llrp:READER_EVENT_NOTIFICATION xmlns:llrp="http://www.llrp.org/ltk/schema/core/encoding/xml/1.0" Version="1" MessageID="0">
+  <llrp:ReaderEventNotificationData>
+    <llrp:UTCTimestamp>
+      <llrp:Microseconds>2001-10-26T05:32:52.999999-04:00</llrp:Microseconds>
+    </llrp:UTCTimestamp>
+    <llrp:ConnectionAttemptEvent>
+      <llrp:Status>Success</llrp:Status>
+    </llrp:ConnectionAttemptEvent>
+  </llrp:ReaderEventNotificationData>
+</llrp:READER_EVENT_NOTIFICATION>
+
