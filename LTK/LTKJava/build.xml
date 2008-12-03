@@ -325,7 +325,7 @@
 	
 	<target name="bin-test" depends="unit-test">  
 			        <!-- format the java code -->
-			        <echo message="Running integration test (xml->binary) ..."/>
+			        <echo message="Running integration test (binary->xml) ..."/>
 					<java classname="org.llrp.ltk.util.LLRPConverter" fork="yes" >
 						<arg line="-b -d ${test_msg_dir}"/>
 				        <classpath>
