@@ -77,7 +77,7 @@
     <!--This portion defines the choice parameters in the LLRP xml file-->
     <xsl:for-each select="llrp:choiceDefinition">
       ///<xsl:text disable-output-escaping="yes">&lt;</xsl:text>summary<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
-      ///Allowed types: <xsl:for-each select="parameter">PARAM_<xsl:value-of select="@type"/>,</xsl:for-each>
+      ///Allowed types: <xsl:for-each select="llrp:parameter">PARAM_<xsl:value-of select="@type"/>,</xsl:for-each>
       ///<xsl:text disable-output-escaping="yes">&lt;</xsl:text>/summary<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
       public class UNION_<xsl:value-of select="@name"/> : ParamArrayList{}
     </xsl:for-each>
@@ -86,9 +86,7 @@
       <xsl:variable name="parameter_name">
         <xsl:value-of select="@name"/>
       </xsl:variable>
-        /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>summary<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
-        /// <xsl:for-each select ="llrp:annotation/llrp:description/h:p"><xsl:value-of select="."/></xsl:for-each>
-        /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>/summary<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
+      <xsl:call-template name ="Comments"/>
       public class PARAM_<xsl:value-of select="@name"/> : Parameter
       {
       public PARAM_<xsl:value-of select="@name"/>()

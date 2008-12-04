@@ -79,7 +79,7 @@
 
     <xsl:for-each select="llrp:customChoiceDefinition">
       ///<xsl:text disable-output-escaping="yes">&lt;</xsl:text>summary<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
-      ///Allowed types: <xsl:for-each select="parameter">PARAM_<xsl:value-of select="@type"/>,</xsl:for-each>
+      ///Allowed types: <xsl:for-each select="llrp:parameter">PARAM_<xsl:value-of select="@type"/>,</xsl:for-each>
       ///<xsl:text disable-output-escaping="yes">&lt;</xsl:text>/summary<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
       public class UNION_<xsl:value-of select="@name"/> : ParamArrayList{}
     </xsl:for-each>
@@ -93,9 +93,7 @@
     }
     
     <xsl:for-each select="llrp:customEnumerationDefinition">
-      /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>summary<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
-      /// <xsl:for-each select ="llrp:annotation/llrp:description/h:p"><xsl:value-of select="."/></xsl:for-each>
-      /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>/summary<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
+      <xsl:call-template name ="Comments"/>
       public enum ENUM_<xsl:value-of select="@name"/>
       {
       <xsl:for-each select="llrp:entry">
@@ -108,9 +106,7 @@
       <xsl:variable name="inherited_interfaces">
         <xsl:for-each select="llrp:allowedIn">,I<xsl:value-of select="@type"/>_Custom_Param</xsl:for-each>
       </xsl:variable>
-      /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>summary<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
-      /// <xsl:for-each select ="llrp:annotation/llrp:description/h:p"><xsl:value-of select="."/></xsl:for-each>
-      /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>/summary<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
+      <xsl:call-template name ="Comments"/>
       public class PARAM_<xsl:value-of select="@name"/> : PARAM_Custom<xsl:copy-of select="$inherited_interfaces"/>
       {
       public UInt32 VENDOR_ID{get{return VendorIdentifier;}}
@@ -169,16 +165,14 @@
 </xsl:for-each>
     
     <xsl:for-each select="llrp:customMessageDefinition">
-      /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>summary<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
-      /// <xsl:for-each select ="llrp:annotation/llrp:description/h:p"><xsl:value-of select="."/></xsl:for-each>
-      /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>/summary<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
-      public class MSG_<xsl:value-of select="@name"/> : Message
+      <xsl:call-template name ="Comments"/>
+    public class MSG_<xsl:value-of select="@name"/> : Message
     {
-    UInt32 vendor_id = <xsl:copy-of select="$vendor_id"/>;
-    byte sub_type = <xsl:value-of select="@subtype"/>;
+      UInt32 vendor_id = <xsl:copy-of select="$vendor_id"/>;
+      byte sub_type = <xsl:value-of select="@subtype"/>;
 
-    public UInt32 VENDOR_ID{get{return vendor_id;}}
-    public Byte SUB_TYPE{get{return sub_type;}}
+      public UInt32 VENDOR_ID{get{return vendor_id;}}
+      public Byte SUB_TYPE{get{return sub_type;}}
 
     <xsl:if test="contains(@name, 'ENABLE_EXTENSION') and not(contains(@name, 'RESPONSE'))">
       static MSG_<xsl:value-of select="@name"/>()

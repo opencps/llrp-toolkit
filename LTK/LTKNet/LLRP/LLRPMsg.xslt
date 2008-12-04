@@ -77,9 +77,7 @@
     
     //LLRP message definitions
     <xsl:for-each select="llrp:messageDefinition">
-        /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>summary<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
-        /// <xsl:for-each select ="llrp:annotation/llrp:description/h:p"><xsl:value-of select="."/></xsl:for-each> 
-        /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>/summary<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
+      <xsl:call-template name ="Comments"/>
       <xsl:variable name="msg_name">
         <xsl:value-of select="@name"/>
       </xsl:variable>

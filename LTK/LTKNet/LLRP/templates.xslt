@@ -600,7 +600,7 @@
     /// Decode bit array to a MSG_<xsl:value-of select="@name"/>
     /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>/summary<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
     /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>param name="bit_array"<xsl:text disable-output-escaping="yes">&gt;</xsl:text>input bit array<xsl:text disable-output-escaping="yes">&lt;</xsl:text>/param<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
-    /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>param name="cursor"<xsl:text disable-output-escaping="yes">&gt;</xsl:text>pointer to current position<xsl:text disable-output-escaping="yes">&gt;</xsl:text>/param<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
+    /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>param name="cursor"<xsl:text disable-output-escaping="yes">&gt;</xsl:text>pointer to current position<xsl:text disable-output-escaping="yes">&lt;</xsl:text>/param<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
     /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>param name="length"<xsl:text disable-output-escaping="yes">&gt;</xsl:text>data length<xsl:text disable-output-escaping="yes">&lt;</xsl:text>/param<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
     /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>returns<xsl:text disable-output-escaping="yes">&gt;</xsl:text>MSG_<xsl:value-of select="@name"/><xsl:text disable-output-escaping="yes">&lt;</xsl:text>/returns<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
     public new static MSG_<xsl:value-of select="@name"/> FromBitArray(ref BitArray bit_array, ref int cursor, int length)
@@ -847,7 +847,7 @@
     /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>summary<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
     /// Serialize native message to xml string
     /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>/summary<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
-    /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>returns>Xml string<xsl:text disable-output-escaping="yes">&lt;</xsl:text>/returns>
+    /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>returns<xsl:text disable-output-escaping="yes">&gt;</xsl:text>Xml string<xsl:text disable-output-escaping="yes">&lt;</xsl:text>/returns<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
     public override string ToString()
     {
     int len;
@@ -1071,6 +1071,19 @@
     </xsl:for-each>
     return msg;
     }
+  </xsl:template>
+
+  <xsl:template name ="Comments">
+    ///<xsl:text disable-output-escaping="yes">&lt;</xsl:text>summary<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
+    ///<xsl:for-each select ="llrp:annotation/llrp:description/h:p">
+    ///<xsl:value-of select="."/></xsl:for-each>
+    ///
+    ///
+    ///For more information, please refer to:
+    ///<xsl:for-each select ="llrp:annotation/llrp:documentation/h:a">
+    ///<xsl:text disable-output-escaping="yes">&lt;</xsl:text>see cref="<xsl:value-of select="@href"/>"<xsl:text disable-output-escaping="yes">&gt;</xsl:text><xsl:value-of select="."/>,<xsl:text disable-output-escaping="yes">&lt;</xsl:text>/see<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
+    </xsl:for-each>
+    ///<xsl:text disable-output-escaping="yes">&lt;</xsl:text>/summary<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
   </xsl:template>
 
 </xsl:stylesheet>
