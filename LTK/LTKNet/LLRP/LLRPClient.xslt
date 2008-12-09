@@ -288,7 +288,7 @@
 
     cI.Close();
     cI.OnMessageReceived -= new delegateMessageReceived(ProcesssMessage);
-
+    connected = false;
     return true;
     }
     catch
