@@ -1,5 +1,8 @@
 Changes with LTKJava 1.0.0 BETA 5 (over 0.1.0 ALPHA release)
- 
+
+* Changes to remove duplicated entries in build.xml. Added Custom ANT Task (CopySchemaFiles), changes in build.xml
+[Basil Gasser]
+
 * fixed bug in encodeXML of UnsignedByte_HEX
 [Christian Floerkemeier]
 
