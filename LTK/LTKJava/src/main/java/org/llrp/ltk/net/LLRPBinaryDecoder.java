@@ -21,6 +21,7 @@ import java.math.BigInteger;
 
 import org.apache.log4j.Logger;
 import org.apache.mina.common.ByteBuffer;
+import org.apache.mina.common.IoBuffer;
 import org.apache.mina.common.IoSession;
 import org.apache.mina.filter.codec.CumulativeProtocolDecoder;
 import org.apache.mina.filter.codec.ProtocolDecoderOutput;
@@ -39,7 +40,6 @@ public class LLRPBinaryDecoder extends CumulativeProtocolDecoder {
 	private Logger log = Logger.getLogger(LLRPBinaryDecoder.class);
 
 	
-	@Override
 	protected boolean doDecode(IoSession session, ByteBuffer in,
 			ProtocolDecoderOutput out) throws Exception {
 		// if 6 bytes in the buffer we can determine the next length to see
@@ -135,6 +135,13 @@ public class LLRPBinaryDecoder extends CumulativeProtocolDecoder {
 			log.debug("not enough bytes to determine length");
 			return false;
 		}
+		return false;
+	}
+
+
+	protected boolean doDecode(IoSession arg0, IoBuffer arg1,
+			ProtocolDecoderOutput arg2) throws Exception {
+		// TODO Auto-generated method stub
 		return false;
 	}
 

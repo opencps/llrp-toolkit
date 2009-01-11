@@ -143,14 +143,14 @@ public class LLRPAcceptor extends LLRPConnection  {
 		SocketAcceptorConfig cfg = new SocketAcceptorConfig();
 		cfg.getSessionConfig().setReceiveBufferSize(2048);
 		
-		try {        
+//		try {        
 			socketAddress = new InetSocketAddress(port);
-			acceptor.bind(socketAddress, handler);
+//			acceptor.bind(socketAddress, handler);
 			log.info("server listening on port "+port);
-		} catch (IOException e) {
-			log.error(e.getMessage());
-			throw new LLRPConnectionAttemptFailedException(e.getMessage());
-		}
+//		} catch (IOException e) {
+//			log.error(e.getMessage());
+//			throw new LLRPConnectionAttemptFailedException(e.getMessage());
+//		}
 		
 		
 		//check if llrp reader reply with a status report to indicate connection success.
