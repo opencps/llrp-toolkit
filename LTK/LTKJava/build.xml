@@ -2,9 +2,7 @@
 <project name="LLRPGenerator" default="compile" basedir=".">
      <property name="src" value="src/main/java"/> 
      <property name="src.test" value="src/test/java"/> 
-	 <property name="test_msg_dir" value="src/test/resources"/> 
-     <property name="version" value="1_0_0_5"/> 
-	 <property name="LTKName" value="ltkjava"/> 
+     <property name="version" value="0_1_1_SNAPSHOT"/> 
      <property name="res" value="src/main/resources"/> 
      <property name="build" value="target"/>
      <property name="docs" value="docs"/>
@@ -17,15 +15,21 @@
      <property name="llrpdef_xml" value="${def}/Core/llrp-1x0-def.xml"/>
      <property name="llrp_xsd" value="${def}/Core/llrp-1x0.xsd"/>
 	<!-- configure the property below with the path to the extension XSD, if applicable -->
-	<!-- it is also necessary to modify the src/main/resources/generator.properties file accordingly! -->
 	<!-- <property name="extension_xsd" value="Impinj.xsd"/> -->
      
+	<taskdef name="copySchemas" classname="org.llrp.ltkGenerator.ant.CopySchemaFiles"> 	
+        <classpath>
+			<pathelement location="src/main/resources/ant"/>
+	        <fileset dir="lib" includes="*.jar" />
+  	    </classpath>
+	</taskdef>
+ 
 	<taskdef name="xjc" classname="com.sun.tools.xjc.XJCTask">
              <classpath>
 	        <fileset dir="lib" includes="*.jar" />
   	     </classpath>
      </taskdef>
-	
+	 
                
      <target name="init"> 
      	  <echo>using ant version '${ant.version}'</echo>
@@ -102,20 +106,17 @@
 		  	</java>
 	</target>
 	
+ 
+ 
+ 
+	<target name="copySchemas">
+		<echo message="Copy schemas"/>
+		<copySchemas propertyPath="${propertiesFile}" destination="${build}/classes/org/llrp/ltk" statusMessage="msg"/>
+		<echo message="${msg}"/>	
+	</target>
 
-	<target name="copyLLRP.xsd">  
-		<echo message="Copy LLRP.xsd from Definitions directory to org.llrp.ltk so it can be loaded as a resource"/>
-		<copy file="${llrp_xsd}" todir="${build}/classes/org/llrp/ltk"/>	
-	</target>
 	
-	<target name="copyExtension.xsd" >  
-			<echo message="Copy ${extension_xsd} to org.llrp.ltk so it can be loaded as a resource"/>
-		    <echo message="This task will create a warning if the copy task failed."/>
-		    <echo message="If no extension was defined, the warning message can be disregarded."/>
-			<copy file="${extension_xsd}" todir="${build}/classes/org/llrp/ltk" failonerror="false"/>	
-	</target>
-	
-	<target name="compile" depends="format,copyLLRP.xsd,copyExtension.xsd"> 
+	<target name="compile" depends="format,copySchemas"> 
           <!-- Compile the java code -->
           	<echo message="Compiling LTKJava (generated classes and non-generated classes)..."/>
 		  <javac srcdir="${src}" 
@@ -140,7 +141,7 @@
         
 	<target name="jar" depends="compile"> 
 	 <echo message="Creating binary jar without dependencies..."/>
-		  <jar destfile="${build}/${LTKName}_${version}.jar">
+		  <jar destfile="${build}/LTKJava_${version}.jar">
 		  	<fileset dir="${build}/classes"
 		  	includes="org/llrp/ltk/**"
             		 excludes="**/testing/"
@@ -154,10 +155,8 @@
 	</target>
 	
 	<target name="jarWithDep" depends="compile">
-			<jar destfile="${build}/${LTKName}_with_dep_${version}.jar">
-				<fileset dir="${build}/classes"
-				includes="org/llrp/ltk/**" 
-				/>
+			<jar destfile="${build}/LTKJava_with_dep_${version}.jar">
+				<zipfileset dir="${build}/classes" prefix="" />
 				<zipfileset src="lib/log4j-1.2.14.jar" />
 				<zipfileset src="lib/jdom.jar" />
 				<zipfileset src="lib/jargs.jar" />
@@ -178,7 +177,7 @@
 	
         <target name="sourceJar" depends="compile"> 
           <echo message="Creating source jar ..."/>
-			  <jar destfile="${build}/${LTKName}_src_${version}.jar">
+			  <jar destfile="${build}/LTKJava_src_${version}.jar">
 			  	<fileset dir="${src}"
 	            		 includes="org/llrp/ltk/**"
 	    		/>
@@ -189,7 +188,7 @@
 	
     <target name="generateJar" depends="generate"> 
 	 <echo message="Creating binary jar of generator without dependencies..."/>
-		  <jar destfile="${build}/${LTKName}_generator_${version}.jar">
+		  <jar destfile="${build}/LTKJava_Generator_${version}.jar">
 		  	<fileset dir="${build}/classes"
 		  	includes="org/llrp/ltkGenerator/**"
             		 excludes="**/testing/"
@@ -225,11 +224,12 @@
 	        		<include name="**/*.jar"/>
 	      		</fileset>
 	         </classpath>
-		    <doctitle><![CDATA[<h1>LLRP Tool Kit in Java</h1>]]></doctitle>
+		    <doctitle><![CDATA[<h1>LLRP Implementation</h1>]]></doctitle>
 		    <bottom><![CDATA[<i>Copyright &#169; 2007 ETH Zurich.</i>]]></bottom>
 		    <tag name="todo" scope="all" description="To do:"/>
 		    <group title="org.llrp" packages="org.llrp*"/>
-		    <link href="http://llrp-toolkit.cvs.sourceforge.net/llrp-toolkit/LTK/LTKJava/"/>
+		    <link offline="true" href="http://llrp-toolkit.cvs.sourceforge.net/llrp-toolkit/Java/" packagelistLoc="C:\temp"/>
+		    <link href="http://llrp-toolkit.cvs.sourceforge.net/llrp-toolkit/Java/"/>
 	  	</javadoc>
 	</target>	
 	
@@ -250,8 +250,6 @@
 			 </fileset>
 		  </scp>
 	</target>
-	
-
 	
 	<!-- ===================================== -->
 	<!-- Remove build directories -->
@@ -284,16 +282,10 @@
 	</target>
 	
 	
-	<target name="unit-test" depends="compile-test">
-	    <echo message="Running the unit test cases ..."/>
-		<echo message="NOTE: org.llrp.ltk.types.UnsignedLong_DATETIMETest will fail unless you are running the test in the Eastern Standard Time Zone"/>	
+	<target name="test" depends="compile-test">
+	    <echo message="Running the test cases ..."/>
 		<junit printsummary="yes">
-			<test name="org.llrp.ltk.types.SignedIntegerArrayTest"/>
-			<test name="org.llrp.ltk.types.SignedShortArrayTest"/>
-			<test name="org.llrp.ltk.types.UnsignedByte_HEXTest"/>
-			<test name="org.llrp.ltk.types.UnsignedLong_DATETIMETest"/>
-			
-			
+			<test name="org.llrp.ltk.generated.messages.LLRPMessageFactoryTest"/>
 			  <!--<batchtest fork="no" todir="${build}/test-reports">
 			    <fileset dir="${src.test}">
 			      <include name="**/*Test*.java"/>
@@ -308,53 +300,5 @@
 			  </classpath>
 		</junit>
 	</target>
-	
-	<target name="xml-test" depends="unit-test">  
-		        <!-- format the java code -->
-		        <echo message="Running integration test (xml->binary) ..."/>
-				<java classname="org.llrp.ltk.util.LLRPConverter" fork="yes" >
-					<arg line="-x -d ${test_msg_dir}"/>
-			        <classpath>
-			        	<pathelement path="${classpath}"/>
-			      		<fileset dir="lib">
-			        		<include name="**/*.jar"/>
-			      		</fileset>
-			         </classpath>
-			  	</java>
-		</target>
-	
-	<target name="bin-test" depends="unit-test">  
-			        <!-- format the java code -->
-			        <echo message="Running integration test (binary->xml) ..."/>
-					<java classname="org.llrp.ltk.util.LLRPConverter" fork="yes" >
-						<arg line="-b -d ${test_msg_dir}"/>
-				        <classpath>
-				        	<pathelement path="${classpath}"/>
-				      		<fileset dir="lib">
-				        		<include name="**/*.jar"/>
-				      		</fileset>
-				         </classpath>
-				  	</java>
-			</target>
-	
-	<target name="test" depends="unit-test, bin-test, xml-test">  
-		</target>
-	
-	<!-- ===================================== -->
-	<!-- release zip file -->
-	<!-- ===================================== -->
-		<target name="release" depends="package,javadoc,bin-test,xml-test">
-			    <zip destfile="${build}/LTKJava_${version}.zip">
-			    <zipfileset dir="target" includes="LTKJava_with_dep_${version}.jar" prefix="lib" />
-			    <zipfileset dir="target" includes="LTKJava_${version}.jar" prefix="lib" />
-			    <zipfileset dir="target" includes="LTKJava_src_${version}.jar" prefix="lib" />
-				<zipfileset dir="target" includes="LTKJavaGenerator_${version}.jar" prefix="lib" />
-			    <zipfileset dir="target/docs" prefix="docs" />	
-			    <fileset dir="." includes="NOTICE.TXT"/>	
-			    <fileset dir="." includes="LICENSE.txt"/>	
-			    <fileset dir="." includes="README.TXT"/>	
-			    <fileset dir="." includes="CHANGELOG.txt"/>	
-	  		</zip>		
-		</target>
 	
 </project>
