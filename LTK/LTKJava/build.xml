@@ -17,12 +17,7 @@
 	<!-- configure the property below with the path to the extension XSD, if applicable -->
 	<!-- <property name="extension_xsd" value="Impinj.xsd"/> -->
      
-	<taskdef name="copySchemas" classname="org.llrp.ltkGenerator.ant.CopySchemaFiles"> 	
-        <classpath>
-			<pathelement location="src/main/resources/ant"/>
-	        <fileset dir="lib" includes="*.jar" />
-  	    </classpath>
-	</taskdef>
+
  
 	<taskdef name="xjc" classname="com.sun.tools.xjc.XJCTask">
              <classpath>
@@ -108,11 +103,9 @@
 	
  
  
- 
 	<target name="copySchemas">
 		<echo message="Copy schemas"/>
-		<copySchemas propertyPath="${propertiesFile}" destination="${build}/classes/org/llrp/ltk" statusMessage="msg"/>
-		<echo message="${msg}"/>	
+		<ant antfile="LoadTask.xml"/>	
 	</target>
 
 	
