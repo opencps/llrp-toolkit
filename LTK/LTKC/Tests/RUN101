@@ -23,8 +23,9 @@ rm -f *.tmp
 echo "================================================================"
 echo "== Run dx101 on standard 'a' input to verify function."
 echo "================================================================"
-./dx101 $STD_TESTS_DX101/dx101_a_in.bin > dx101_a_out.tmp
-if cmp -s dx101_a_out.tmp $STD_TESTS_DX101/dx101_a_out.txt
+dos2unix $STD_TESTS_DX101/dx101_a.xml
+./dx101 $STD_TESTS_DX101/dx101_a.bin > dx101_a.tmp
+if cmp -s dx101_a.tmp $STD_TESTS_DX101/dx101_a.xml
 then
     echo DX101 A -- PASSED
 else
@@ -37,6 +38,23 @@ echo ""
 
 
 
+echo "================================================================"
+echo "== Run dx101 on standard 'c' input to verify function."
+echo "== Includes tag report variations including a very large report"
+echo "================================================================"
+dos2unix $STD_TESTS_DX101/dx101_c.xml
+./dx101 $STD_TESTS_DX101/dx101_c.bin > dx101_c.tmp
+if cmp -s dx101_c.tmp $STD_TESTS_DX101/dx101_c.xml
+then
+    echo DX101 C -- PASSED
+else
+    echo DX101 C -- FAILED
+    exit
+fi
+echo ""
+echo ""
+echo ""
+
 echo "===================================================="
 echo "== Run dx101 on standard 'a' input with valgrind."
 echo "== This verifies no memory leak."
@@ -44,7 +62,27 @@ echo "== Please inspect the output."
 echo "== The line that says 'malloc/free: in use at exit:'"
 echo "== should say ' 0 bytes in 0 blocks.'"
 echo "===================================================="
-valgrind ./dx101 $STD_TESTS_DX101/dx101_a_in.bin > /dev/null
+valgrind ./dx101 $STD_TESTS_DX101/dx101_a.bin > /dev/null
+echo ""
+echo ""
+echo ""
+
+
+
+echo "===================================================="
+echo "== Run dx101 on standard 'c' input with valgrind."
+echo "== This verifies no memory leak."
+echo "== Please inspect the output."
+echo "== The line that says 'malloc/free: in use at exit:'"
+echo "== should say ' 0 bytes in 0 blocks.'"
+echo "===================================================="
+valgrind ./dx101 $STD_TESTS_DX101/dx101_c.bin > /dev/null
+echo ""
+echo ""
+echo ""
+
+
+
 echo ""
 echo ""
 echo ""

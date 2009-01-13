@@ -73,6 +73,18 @@ namespace Org.LLRP.LTK.LLRPV1.DataType
     }
 
     /// <summary>
+    ///  Small Message ID class to hold a unique message ID number for packets
+    /// </summary>
+    public class MessageID
+    {
+        protected static UInt32 sequence_num = 0;
+        public static UInt32 getNewMessageID()
+        {
+            return ++sequence_num;
+        }
+    }
+
+    /// <summary>
     /// LLRP Message
     /// </summary>
     public abstract class Message
@@ -699,7 +711,7 @@ namespace Org.LLRP.LTK.LLRPV1.DataType
             {
                 try
                 {
-                    Arr.Add(Convert.ToUInt32(s[i], 16));
+                    Arr.Add(Convert.ToUInt32(s[i], 10));
                 }
                 catch
                 {

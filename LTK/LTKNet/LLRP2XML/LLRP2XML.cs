@@ -48,8 +48,10 @@ namespace LTK
         static void Main(string[] args)
         {
             Stream s;
+            UInt32 byteCount = 0;
+            TextWriter errorWriter = Console.Error;
 
-            if (args.GetLength(0) == 1)
+            if (args.GetLength(0) >= 1)
             {
                 s = new FileStream(args[0], FileMode.Open, FileAccess.Read);
             }
@@ -58,6 +60,7 @@ namespace LTK
                 s = Console.OpenStandardInput();
             }
 
+            Console.WriteLine("<packetSequence>\r\n");
             UInt32 msg_no = 0;
             while (true)
             {
@@ -74,12 +77,18 @@ namespace LTK
                     throw new MalformedPacket ("Header fragment at end-of-file");
                 }
 
+
                 /* get the full message */
                 LLRPBinaryDecoder.LLRP_Envelope env;
                 LLRPBinaryDecoder.Decode_Envelope(hdr, out env);
+                
+                // turn me on to find out where each packet starts
+                //errorWriter.Write("packet {0} offset {1}({1:x}) ", msg_no, byteCount);
+                //errorWriter.Write(env.msg_type.ToString() + "\n");
+                
                 byte[] packet;
                 read_msg(s, hdr, ref env, out packet);
-
+                byteCount += env.msg_len;
                 Message msg;
 
                 try
@@ -118,7 +127,8 @@ namespace LTK
 
                 msg_no++;
             }
-              
+
+            Console.WriteLine("</packetSequence>\r\n"); 
         }
     }
 

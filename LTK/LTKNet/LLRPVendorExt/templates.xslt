@@ -127,17 +127,10 @@
     if(bit_array[cursor])obj.tvCoding = true;
     if(obj.tvCoding)
     {
-    cursor ++;
-    param_type = (int)(UInt64)Util.CalculateVal(ref bit_array, ref cursor, 7);
-
-    if(param_type!= obj.TypeID)
-    {
-    cursor -=8;
+    // LLRP Doesn't support tv encoding for custom parameters 
     return null;
     }
-    }
-    else
-    {
+    //skip the reserved bits and tv Bit
     cursor += 6;
     param_type = (int)(UInt64)Util.CalculateVal(ref bit_array, ref cursor, 10);
 
@@ -147,10 +140,15 @@
     return null;
     }
     obj.length = (UInt16)(int)Util.DetermineFieldLength(ref bit_array, ref cursor);
-    }
 
-    obj.VendorIdentifier = (UInt32)(UInt64)Util.CalculateVal(ref bit_array, ref cursor, 32);
-    obj.ParameterSubtype = (UInt32)(UInt64)Util.CalculateVal(ref bit_array, ref cursor, 32);
+    UInt32 vendorIdentifier = (UInt32)(UInt64)Util.CalculateVal(ref bit_array, ref cursor, 32);
+    UInt32 parameterSubtype = (UInt32)(UInt64)Util.CalculateVal(ref bit_array, ref cursor, 32);
+
+    if (obj.VendorIdentifier != vendorIdentifier || obj.ParameterSubtype != parameterSubtype)
+    {
+    cursor -= 96;
+    return null;
+    }
 
     <xsl:for-each select="*">
       <xsl:if test="name()='field'">
@@ -782,19 +780,6 @@
     </xsl:for-each>
     return param;
     }
-  </xsl:template>
-
-  <xsl:template name ="Comments">
-  ///<xsl:text disable-output-escaping="yes">&lt;</xsl:text>summary<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
-  ///<xsl:for-each select ="llrp:annotation/llrp:description/h:p">
-  ///<xsl:value-of select="."/></xsl:for-each>
-  ///
-  ///
-  ///For more information, please refer to:
-  ///<xsl:for-each select ="llrp:annotation/llrp:documentation/h:a">
-  ///<xsl:text disable-output-escaping="yes">&lt;</xsl:text>see cref="<xsl:value-of select="@href"/>"<xsl:text disable-output-escaping="yes">&gt;</xsl:text><xsl:value-of select="."/>,<xsl:text disable-output-escaping="yes">&lt;</xsl:text>/see<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
-  </xsl:for-each>
-  ///<xsl:text disable-output-escaping="yes">&lt;</xsl:text>/summary<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
   </xsl:template>
   
 </xsl:stylesheet>

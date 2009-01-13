@@ -267,7 +267,13 @@ namespace Org.LLRP.LTK.LLRPV1.DataType
                     }
                 }
 
-                if (field_len > 1 && s[field_len - 1] == 0) s = s.Substring(0, field_len - 1);
+                if (field_len > 1 && s[field_len - 1] == 0)
+                {
+                    // remove trailing NULL and replace so packet length is consistent
+                    s = s.Substring(0, field_len - 1);
+                    s += '.';
+                }
+                
                 obj = s;
             }
             else if (type.Equals(typeof(ByteArray)))
@@ -371,6 +377,7 @@ namespace Org.LLRP.LTK.LLRPV1.DataType
             {
                 bit_arr = new BitArray(8);
                 s = Convert.ToString((sbyte)obj, 2).PadLeft(8, '0');
+                s = s.Substring(s.Length - 8);
                 for (int i = 0; i < 8; i++) bit_arr[i] = (s[i] == '1');
                 return bit_arr;
             }
@@ -1129,7 +1136,7 @@ namespace Org.LLRP.LTK.LLRPV1.DataType
             long ticks_utc = dt.Ticks + (long)(10 * microseconds);
 
             dt =  new DateTime(ticks_utc, DateTimeKind.Utc);
-            return String.Format("{00}.{1:00000}", dt.ToString("s"), ((UInt64)microseconds) % 1000000);
+            return String.Format("{00}.{1:000000}", dt.ToString("s"), ((UInt64)microseconds) % 1000000);
 
         }
         private static UInt64 ConvertUTCTimeToMicroseconds(string utcTime)

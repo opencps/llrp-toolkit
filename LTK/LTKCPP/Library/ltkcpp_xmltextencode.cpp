@@ -508,10 +508,10 @@ CXMLTextEncoderStream::put_u64 (
             char                aBuf[64];
             time_t              CurSec  = (time_t)(Value / 1000000u);
             llrp_u32_t          CurUSec = (llrp_u32_t)(Value % 1000000u);
-            struct tm *         pLclTime;
+            struct tm *         pGMTime;
 
-            pLclTime = localtime(&CurSec);
-            strftime(aBuf, sizeof aBuf, "%Y-%m-%dT%H:%M:%S", pLclTime);
+            pGMTime = gmtime(&CurSec);
+            strftime(aBuf, sizeof aBuf, "%Y-%m-%dT%H:%M:%S", pGMTime);
             appendFormat("%s.%06d", aBuf, CurUSec);
         }
         break;

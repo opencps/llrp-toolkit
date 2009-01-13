@@ -59,12 +59,49 @@
 
 #include "ltkc.h"
 
+/* Buffer sizes */
+#define FRAME_BUF_SIZE          (1u*1024u*1024u)
+#define XML_TEXT_BUF_SIZE       (10u * FRAME_BUF_SIZE)
+
 
 /* forward declaration */
 void
 dump (
   unsigned char *               pBuffer,
   unsigned int                  nBuffer);
+
+
+/*
+ * XML header and footer enclosing the sequence of messages.
+ */
+static char
+g_aPacketSequenceHeader[] =
+{
+  "<ps:packetSequence\n"
+  "  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'\n"
+  "  xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'\n"
+  "  xmlns:ps='http://www.llrp.org/ltk/schema/testing/encoding/xml/0.5'\n"
+  "  xsi:schemaLocation='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0\n"
+  "     http://www.llrp.org/ltk/schema/core/encoding/xml/1.0/LLRP.xs\n"
+  "     http://www.llrp.org/ltk/schema/testing/encoding/xml/0.5\n"
+  "     ../../Tests/Definitions/llrpSequence.xsd'>\n"
+};
+
+static char
+g_aPacketSequenceFooter[] =
+{
+  "</ps:packetSequence>\n"
+};
+
+
+/*
+ * These used to be allocated as local (auto) variables.
+ * But they are really, really big and Linux has a 10mb
+ * stack limit. So they had to be moved here.
+ */
+unsigned char                   aInBuffer[FRAME_BUF_SIZE];
+char                            aXMLTextBuf[XML_TEXT_BUF_SIZE];
+unsigned char                   aOutBuffer[FRAME_BUF_SIZE];
 
 
 /**
@@ -107,7 +144,7 @@ main (int ac, char *av[])
         exit(2);
     }
 
-    printf ("Starting\n");
+    printf ("%s\n", g_aPacketSequenceHeader);
 
     /*
      * Construct the type registry. This is needed for decode.
@@ -119,8 +156,8 @@ main (int ac, char *av[])
      */
     for(;;)
     {
-        unsigned char           aInBuffer[16u*1024u];
-        unsigned int            nInBuffer;
+//       unsigned char            aInBuffer[FRAME_BUF_SIZE];
+        unsigned int            nInBuffer = sizeof aInBuffer;
         int                     bEOF;
         LLRP_tSFrameDecoder *   pDecoder;
         LLRP_tSMessage *        pMessage;
@@ -129,7 +166,7 @@ main (int ac, char *av[])
          * Zero fill the buffer to make things easier
          * for printing the buffer on the debugger.
          */
-        memset(aInBuffer, 0, sizeof aInBuffer);
+        memset(aInBuffer, 0, nInBuffer);
 
         /*
          * Set status variables before entering the frame read loop.
@@ -178,6 +215,13 @@ main (int ac, char *av[])
             {
                 int             rc;
 
+                if (sizeof aInBuffer <
+                        nInBuffer + MyFrameExtract.nBytesNeeded)
+                {
+                    printf ("Input frame too big\n");
+                    exit(3);
+                }
+
                 rc = fread(&aInBuffer[nInBuffer], 1u,
                             MyFrameExtract.nBytesNeeded, infp);
                 if(rc <= 0)
@@ -206,6 +250,7 @@ main (int ac, char *av[])
                 break;
             }
 
+#if 0
             /*
              * The input buffer is ready -- it contains a complete frame.
              * Tattle on key FrameExtract values and exit this
@@ -217,6 +262,7 @@ main (int ac, char *av[])
                 MyFrameExtract.MessageID,
                 MyFrameExtract.MessageType,
                 MyFrameExtract.ProtocolVersion);
+#endif
 
             break;
         }
@@ -233,6 +279,9 @@ main (int ac, char *av[])
             }
             break;
         }
+
+        /* Put a blank line between messages */
+        printf ("\n");
 
         /*
          * Construct a frame decoder. It references the
@@ -284,15 +333,17 @@ main (int ac, char *av[])
          * Print as XML text the LLRP message to stdout.
          */
         {
-            char                    aBuf[100*1024];
+//            char                    aXMLTextBuf[XML_TEXT_BUF_SIZE];
             LLRP_tSXMLTextEncoder * pEncoder;
 
-            pEncoder = LLRP_XMLTextEncoder_construct(aBuf, sizeof aBuf);
+            pEncoder = LLRP_XMLTextEncoder_construct(aXMLTextBuf,
+                    sizeof aXMLTextBuf);
+
             LLRP_Encoder_encodeElement(&pEncoder->encoderHdr,
                     &pMessage->elementHdr);
             if(!pEncoder->bOverflow)
             {
-                printf("%s", aBuf);
+                printf("%s", aXMLTextBuf);
             }
             else
             {
@@ -307,7 +358,7 @@ main (int ac, char *av[])
          * Tattle on any differences.
          */
         {
-            unsigned char           aOutBuffer[16u*1024u];
+//            unsigned char           aOutBuffer[FRAME_BUF_SIZE];
             unsigned int            nOutBuffer;
             LLRP_tSFrameEncoder *   pEncoder;
 
@@ -386,7 +437,7 @@ main (int ac, char *av[])
         LLRP_Element_destruct(&pMessage->elementHdr);
     }
 
-    printf ("Finished\n");
+    printf ("%s\n", g_aPacketSequenceFooter);
 
     /*
      * Done with the type registry.

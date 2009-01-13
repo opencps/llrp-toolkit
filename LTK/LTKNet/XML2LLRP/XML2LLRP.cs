@@ -51,6 +51,7 @@ namespace LTK
         static void Main(string[] args)
         {
             Stream s;
+            TextWriter errorWriter = Console.Error;
 
             if (args.Length == 1)
             {
@@ -67,7 +68,6 @@ namespace LTK
             {
                 throw new System.FormatException("Not a packetSequence");
             }
-
             int result = nextElement(ref xr);
 
             UInt32 msg_no = 0;
@@ -85,7 +85,10 @@ namespace LTK
                 XmlDocument doc = new XmlDocument();
                 doc.Load(xr.ReadSubtree());
                 doc.WriteContentTo(tw);
-                
+
+                //turn me on to find out where each packet starts
+                //errorWriter.Write("packet {0}  \n", msg_no);
+
                 LTKD.Message msg;
                 ENUM_LLRP_MSG_TYPE dummy;
 

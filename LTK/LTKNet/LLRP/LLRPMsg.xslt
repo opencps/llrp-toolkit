@@ -83,8 +83,6 @@
       </xsl:variable>
       public class MSG_<xsl:value-of select="@name"/> : Message
       {
-        protected new static UInt32 sequence_num = 0;                     //used for generating message id automatically
-
       <xsl:for-each select="*">
         <xsl:if test="name()='field'">
           public <xsl:call-template name='DefineDataType'/><xsl:text> </xsl:text><xsl:value-of select="@name"/><xsl:call-template name='DefineDefaultValue'/>
@@ -131,7 +129,10 @@
         </xsl:if>
       </xsl:for-each>
 
-        public MSG_<xsl:value-of select="@name"/>(){msgType = <xsl:value-of select="@typeNum"/>; sequence_num++;}
+        public MSG_<xsl:value-of select="@name"/>()
+        {msgType = <xsl:value-of select="@typeNum"/>; 
+        MSG_ID=MessageID.getNewMessageID();  //Give each message a unique ID by default
+        }
 
       <xsl:call-template name="MSGToString"/>
       <xsl:call-template name="MSGFromString"/>
