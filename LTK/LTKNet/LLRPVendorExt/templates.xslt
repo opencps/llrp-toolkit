@@ -781,5 +781,18 @@
     return param;
     }
   </xsl:template>
+
+  <xsl:template name ="Comments">
+  ///<xsl:text disable-output-escaping="yes">&lt;</xsl:text>summary<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
+  ///<xsl:for-each select ="llrp:annotation/llrp:description/h:p">
+  ///<xsl:value-of select="."/></xsl:for-each>
+  ///
+  ///
+  ///For more information, please refer to:
+  ///<xsl:for-each select ="llrp:annotation/llrp:documentation/h:a">
+  ///<xsl:text disable-output-escaping="yes">&lt;</xsl:text>see cref="<xsl:value-of select="@href"/>"<xsl:text disable-output-escaping="yes">&gt;</xsl:text><xsl:value-of select="."/>,<xsl:text disable-output-escaping="yes">&lt;</xsl:text>/see<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
+  </xsl:for-each>
+  ///<xsl:text disable-output-escaping="yes">&lt;</xsl:text>/summary<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
+  </xsl:template>
   
 </xsl:stylesheet>
