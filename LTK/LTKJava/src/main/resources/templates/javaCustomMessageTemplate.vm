@@ -240,7 +240,8 @@ public class $message.getName() extends LLRPMessage {
 	public static final UTF8String vendor = new UTF8String("$message.getVendor()");
 	public static final UnsignedByte subtype = new UnsignedByte((new Integer($message.getSubtype())).byteValue());
 	public static final UnsignedInteger vendorIdentifier = new UnsignedInteger($vendorID);
-	private static final Logger LOGGER = Logger.getLogger("$message.getName()");
+	#set($class = ".class")
+	private static final Logger LOGGER = Logger.getLogger($message.getName()$class);
 	#if ($message.getResponseType())
 		public static final String RESPONSETYPE = "$message.getResponseType()";
 	#else 

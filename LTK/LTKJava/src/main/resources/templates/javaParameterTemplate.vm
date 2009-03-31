@@ -254,7 +254,8 @@ public class $parameter.Name extends $superType $interfaces{
 ##TYPENUM is always needed
 	public static final SignedShort TYPENUM = new SignedShort($parameter.getTypeNum());
 ##need always a LOGGER
-	private static final Logger LOGGER = Logger.getLogger("$parameter.getName()");
+	#set($class = ".class")
+	private static final Logger LOGGER = Logger.getLogger($parameter.Name$class);
 	
 	
 ## field or reserved

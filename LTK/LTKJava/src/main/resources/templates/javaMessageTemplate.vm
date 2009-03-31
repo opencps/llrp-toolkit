@@ -213,7 +213,8 @@ public class $message.getName() extends LLRPMessage{
 
 ##typeNum is always needed
 	public static final SignedShort TYPENUM = new SignedShort($message.getTypeNum());
-	private static final Logger LOGGER = Logger.getLogger("$message.getName()");
+	#set($class = ".class")
+	private static final Logger LOGGER = Logger.getLogger($message.getName()$class);
 	#if ($message.getResponseType())
 		public static final String RESPONSETYPE = "$message.getResponseType()";
 	#else 
