@@ -20,6 +20,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.xml.XMLConstants;
 import javax.xml.transform.stream.StreamSource;
@@ -63,7 +65,8 @@ public abstract class LLRPMessage {
 	protected UnsignedInteger messageID = new UnsignedInteger();
 	protected UnsignedInteger messageLength = new UnsignedInteger();
 	
-	private static Validator validator;
+	private Validator validator;
+	private static Map<String,Validator> validators = new HashMap<String,Validator>();
 	private static byte[] mutex = new byte[0];
 
 	/**
@@ -355,6 +358,10 @@ public abstract class LLRPMessage {
 			InputStream is = new ByteArrayInputStream(a);
 			
 			synchronized (mutex) {
+				
+				// get the validator for the schemaPath specified
+				validator = validators.get(schemaPath);
+				
 				if(validator == null){//first access
 					//create a SchemaFactory capable of understanding WXS schemas
 					SchemaFactory factory = SchemaFactory
@@ -367,6 +374,8 @@ public abstract class LLRPMessage {
 					// create a Validator instance, which can be used to validate an
 					// instance document
 					validator = schema.newValidator();
+					// add validator to Map of existing validators
+					validators.put(schemaPath, validator);
 				}
 				//validate the DOM tree
 				validator.validate(new StreamSource(is));
