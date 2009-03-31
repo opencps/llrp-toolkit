@@ -1,4 +1,12 @@
-Changes with LTKJava 1.0.0 BETA 5 (over 0.1.0 ALPHA release)
+Changes in current snapshot (over LTKJava 1.0.0.5) 
+
+* fixed bug that prevented validation of extension schemas [tracker: 2723967] -  bug reported by Pradeep Gopal
+[Christian Floerkemeier]
+
+* fixed issue with incorrect instantiation of the logger in generated classes [tracker: 2723972] -  bug reported by Kyle Neumeier
+[Christian Floerkemeier]
+
+Changes with LTKJava 1.0.0.5 production (over previous 0.1.0 ALPHA release)
 
 * Changes to remove duplicated entries in build.xml. Added Custom ANT Task (CopySchemaFiles), changes in build.xml
 [Basil Gasser]
