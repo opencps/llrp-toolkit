@@ -16,6 +16,10 @@
  */
 package org.llrp.ltk.exceptions;
 
+import java.io.IOException;
+
+import org.xml.sax.SAXException;
+
 
 /**
  * Main LLRP Exception - this exception is thrown whenever an invalid
@@ -37,4 +41,9 @@ public class InvalidLLRPMessageException extends Exception {
     public InvalidLLRPMessageException(final String message) {
         super(message);
     }
+
+	public InvalidLLRPMessageException(String string, Exception e) {
+		super(string,e);
+	}
+
 }
