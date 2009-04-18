@@ -35,6 +35,7 @@ import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 import org.llrp.ltk.exceptions.InvalidLLRPMessageException;
 import org.llrp.ltk.exceptions.MissingParameterException;
+import org.llrp.ltk.util.LLRPExternalResourceResolver;
 import org.xml.sax.SAXException;
 
 /**
@@ -101,9 +102,9 @@ public abstract class LLRPMessage {
 			return result.toByteArray();
 
 		} catch (IllegalArgumentException e) {
-			throw new InvalidLLRPMessageException(e.getMessage());
+			throw new InvalidLLRPMessageException(e.getMessage(),e);
 		} catch (MissingParameterException e) {
-			throw new InvalidLLRPMessageException(e.getMessage());
+			throw new InvalidLLRPMessageException(e.getMessage(),e);
 		}
 	}
 
@@ -194,9 +195,9 @@ public abstract class LLRPMessage {
 			}
 
 		} catch (IllegalArgumentException e) {
-			throw new InvalidLLRPMessageException(e.getMessage());
+			throw new InvalidLLRPMessageException(e.getMessage(),e);
 		} catch (MissingParameterException e) {
-			throw new InvalidLLRPMessageException(e.getMessage());
+			throw new InvalidLLRPMessageException(e.getMessage(),e);
 		}
 
 	}
@@ -366,6 +367,7 @@ public abstract class LLRPMessage {
 					//create a SchemaFactory capable of understanding WXS schemas
 					SchemaFactory factory = SchemaFactory
 							.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+					factory.setResourceResolver(new LLRPExternalResourceResolver());
 					// load a WXS schema, represented by a Schema instance
 					ClassLoader cl = getClass().getClassLoader();
 					InputStream s = new BufferedInputStream(cl
@@ -390,13 +392,13 @@ public abstract class LLRPMessage {
 			throw new InvalidLLRPMessageException(
 					"LTK XML message can not be validated against schema "
 							+ schemaPath + output.outputString(jdomDoc)
-							+ "because " + e.getMessage());
+							+ "because " + e.getMessage(),e);
 
 		} catch (IOException e) {
 			LOGGER.warn("LLRP.xsd schema cannot be found " + schemaPath);
 
 			throw new InvalidLLRPMessageException(
-					"LLRP.xsd schema cannot be found " + schemaPath);
+					"LLRP.xsd schema cannot be found " + schemaPath,e);
 		}
 
 		return true;
