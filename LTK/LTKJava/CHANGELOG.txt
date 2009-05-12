@@ -1,5 +1,8 @@
 Changes in current snapshot (over LTKJava 1.0.0.5) 
 
+* fixed bug that prevented correct decoding of xs:unsignedByte elements in LTK-XML messages
+[Christian Floerkemeier]
+
 * fixed bug that prevented validation of extension schemas [tracker: 2723967] -  bug reported by Pradeep Gopal
 [Christian Floerkemeier]
 
