@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<llrp:CUSTOM_MESSAGE xmlns:llrp="http://www.llrp.org/ltk/schema/core/encoding/xml/1.0" Version="1" MessageID="1">
+  <llrp:VendorIdentifier>25882</llrp:VendorIdentifier>
+  <llrp:MessageSubtype>22</llrp:MessageSubtype>
+  <llrp:Data>011f000800000000</llrp:Data>
+</llrp:CUSTOM_MESSAGE>
+
