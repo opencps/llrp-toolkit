@@ -140,7 +140,7 @@ public class UnsignedByte extends LLRPNumberType {
 
 	@Override
 	public void decodeXML(Element element) {
-		value = Integer.parseInt(element.getText(), 2);
+		value = Integer.parseInt(element.getText());
 	}
 
 	@Override
