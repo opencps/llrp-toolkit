@@ -1,0 +1,10 @@
+Bundle-SymbolicName: org.llrp.ltk
+Bundle-Name: ltkjava
+Export-Package: \
+  *
+Private-Package: \
+  *
+Import-Package: \
+  *
+
+
