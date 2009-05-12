@@ -18,7 +18,7 @@
      <property name="llrp_xsd" value="${def}/Core/llrp-1x0.xsd"/>
 	<!-- configure the property below with the path to the extension XSD, if applicable -->
 	<!-- it is also necessary to modify the src/main/resources/generator.properties file accordingly! -->
-	<!-- <property name="extension_xsd" value="impinj/Impinj.xsd"/> -->
+	<!--<property name="extension_xsd" value="impinj/Impinj.xsd"/> -->
      
 	<taskdef name="xjc" classname="com.sun.tools.xjc.XJCTask">
              <classpath>
@@ -26,7 +26,8 @@
   	     </classpath>
      </taskdef>
 	
-               
+	
+              
      <target name="init"> 
      	  <echo>using ant version '${ant.version}'</echo>
    	<echo>using java version '${java.version}'</echo>
@@ -252,6 +253,16 @@
 	</target>
 	
 
+	<target name="osgi-bundle" depends="compile">
+		<taskdef resource="aQute/bnd/ant/taskdef.properties" 
+			             classpath="lib/bnd-0.0.313.jar"/>
+		  <bnd classpath="${classpath}" 
+		                 eclipse="false" 
+		                 failok="false" 
+		                 exceptions="true" 
+		                 files="ltkjava.bnd"
+		                 output="${build}/${LTKName}_${version}.zip"/> 
+	</target>
 	
 	<!-- ===================================== -->
 	<!-- Remove build directories -->
@@ -337,8 +348,14 @@
 				  	</java>
 			</target>
 	
+	
 	<target name="test" depends="unit-test, bin-test, xml-test">  
 		</target>
+	
+
+	
+	
+	
 	
 	<!-- ===================================== -->
 	<!-- release zip file -->
