@@ -18,7 +18,7 @@
      <property name="llrp_xsd" value="${def}/Core/llrp-1x0.xsd"/>
 	<!-- configure the property below with the path to the extension XSD, if applicable -->
 	<!-- it is also necessary to modify the src/main/resources/generator.properties file accordingly! -->
-	<!--<property name="extension_xsd" value="impinj/Impinj.xsd"/> -->
+	<!-- <property name="extension_xsd" value="impinj/Impinj.xsd"/> -->
      
 	<taskdef name="xjc" classname="com.sun.tools.xjc.XJCTask">
              <classpath>
@@ -165,6 +165,7 @@
 				<zipfileset src="lib/jaxb-api.jar" />
 				<zipfileset src="lib/mina-core-1.1.7.jar" />
 				<zipfileset src="lib/slf4j-api-1.5.0.jar" />
+				<zipfileset src="lib/xercesImpl.jar" />
 				<zipfileset src="lib/slf4j-log4j12-1.5.0.jar" />
 				<zipfileset dir="." includes="NOTICE.TXT" prefix="" />
 				<zipfileset dir="." includes="README.TXT" prefix="" />
