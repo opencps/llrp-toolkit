@@ -20,7 +20,7 @@ import org.llrp.ltkGenerator.generated.Documentation;
 import org.llrp.ltkGenerator.generated.MessageDefinition;
 import org.llrp.ltkGenerator.generated.ParameterDefinition;
 
-import com.sun.org.apache.xerces.internal.dom.ElementNSImpl;
+import org.apache.xerces.dom.ElementNSImpl;
 
 public class Utility {
 	private Map<String, String> superTypes;

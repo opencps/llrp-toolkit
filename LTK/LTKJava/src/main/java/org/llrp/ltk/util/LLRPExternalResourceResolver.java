@@ -5,7 +5,7 @@ import org.llrp.ltk.generated.LLRPConstants;
 import org.w3c.dom.ls.LSInput;
 import org.w3c.dom.ls.LSResourceResolver;
 
-import com.sun.org.apache.xerces.internal.dom.DOMInputImpl;
+import org.apache.xerces.dom.DOMInputImpl;
 
 
 public class LLRPExternalResourceResolver implements LSResourceResolver {
