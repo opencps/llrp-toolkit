@@ -98,9 +98,8 @@ public class CopySchemaFiles extends Task {
 					parent = System.getProperty("user.dir");
 				File dir = new File(parent);
 				if (!dir.exists()) {
-					log("destination " + destination
-							+ " directory does not exist", Project.MSG_ERR);
-					return false;
+					dir.mkdirs();
+					log(dir.getAbsolutePath()+ " created", Project.MSG_DEBUG);
 				}
 				if (dir.isFile()) {
 					log("destination folder is a file", Project.MSG_ERR);
