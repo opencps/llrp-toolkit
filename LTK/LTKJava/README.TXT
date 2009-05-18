@@ -119,6 +119,8 @@ jargs 		1.0			http://sourceforge.net/project/showfiles.php?group_id=33024
 mina 		1.1.7 		http://mina.apache.org
 slf4j-log4j12 1.5.0 		http://www.slf4j.org
 slf4j-api 1.5.0 		http://www.slf4j.org
+xerces-j  2.4.0			http://xerces.apache.org/
+
 
 COMPILE DEPENDENCIES
 
