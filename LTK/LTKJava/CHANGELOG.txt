@@ -1,5 +1,9 @@
 Changes in current snapshot (over LTKJava 1.0.0.5) 
 
+* added feature that overwrites schemaLocation for imports of llrp.xsd in extension XSDs. Previously, importing llrp xsd in an extension schema
+and specifying www.llrp.org/... as the schemaLocation made the schema validator download llrp.xsd from llrp.org instead of accessing the local version 
+in the jar.
+[Basil Gasser, Christian Floerkemeier]
 
 * added xerces as a dependency and adjusted import statements in org.llrp.ltkGenerator.Utility to eliminate compiler warnings 
 [Christian Floerkemeier]
