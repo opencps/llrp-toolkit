@@ -39,8 +39,13 @@ public class TwoBitField extends LLRPType {
 	 */
 	public TwoBitField(Bit[] bits) {
 		this.bits = new Bit[length];
-		this.bits[0] = bits[0];
-		this.bits[1] = bits[1];
+		if (bits.length<2){
+			this.bits[0] = new Bit(0);
+			this.bits[1] = new Bit(0);
+		} else {
+			this.bits[0] = bits[0];
+			this.bits[1] = bits[1];
+		}
 	}
 
 	/**
@@ -51,8 +56,8 @@ public class TwoBitField extends LLRPType {
 	 */
 	public TwoBitField(LLRPBitList list) {
 		this.bits = new Bit[length];
-		this.bits[0] = bits[0];
-		this.bits[1] = bits[1];
+		this.bits[0] = new Bit(0);
+		this.bits[1] = new Bit(0);
 		decodeBinary(list);
 	}
 
@@ -97,7 +102,7 @@ public class TwoBitField extends LLRPType {
 		if ((i < 0) || (i > bits.length)) {
 			return;
 		} else {
-			bits[i] = new Bit(false);
+			bits[i] = new Bit(0);
 		}
 	}
 
@@ -162,7 +167,7 @@ public class TwoBitField extends LLRPType {
 	 * @return int
 	 */
 	public int intValue() {
-		String s = bits[1].toString() + "" + bits[0].toString();
+		String s = bits[0].toString() + "" + bits[1].toString();
 		return new BigInteger(s, 2).intValue();
 	}
 
@@ -199,11 +204,11 @@ public class TwoBitField extends LLRPType {
 				this.bits[0] = new Bit(0);
 				this.bits[1] = new Bit(0);
 			} else if (i == 1) {
-				this.bits[0] = new Bit(1);
-				this.bits[1] = new Bit(0);
-			} else if (i == 2) {
 				this.bits[0] = new Bit(0);
 				this.bits[1] = new Bit(1);
+			} else if (i == 2) {
+				this.bits[0] = new Bit(1);
+				this.bits[1] = new Bit(0);
 			} else if (i == 3) {
 				this.bits[0] = new Bit(1);
 				this.bits[1] = new Bit(1);
@@ -219,13 +224,17 @@ public class TwoBitField extends LLRPType {
 	}
 
 	public String toString() {
-		Integer s = bits[0].toInteger() + (bits[1].toInteger() * 2);
+		Integer s = bits[1].toInteger() + (bits[0].toInteger() * 2);
 		return s.toString();
 
 	}
 
 	public String toString(int radix) {
-		return Integer.toString(intValue(), radix);
+		if (radix == 2){
+			return bits[0].toString() + "" + bits[1].toString();
+		} else {
+			return Integer.toString(intValue(), radix);
+		}
 	}
 
 	/**
