@@ -11,6 +11,7 @@
 	<target name="copySchemas">
 		<echo message="Copy schemas"/>
 		<copySchemas propertyPath="${propertiesFile}" destination="${build}/classes/org/llrp/ltk" statusMessage="msg"/>
+		<echo message="copy files to ${build}/classes/org/llrp/ltk"/>
 		<echo message="${msg}"/>	
 	</target>
 </project>

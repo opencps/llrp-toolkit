@@ -16,10 +16,7 @@
      <property name="llrpdef_xsd" value="${def}/llrpdef.xsd"/>
      <property name="llrpdef_xml" value="${def}/Core/llrp-1x0-def.xml"/>
      <property name="llrp_xsd" value="${def}/Core/llrp-1x0.xsd"/>
-	<!-- configure the property below with the path to the extension XSD, if applicable -->
-	<!-- it is also necessary to modify the src/main/resources/generator.properties file accordingly! -->
-	<!-- <property name="extension_xsd" value="impinj/Impinj.xsd"/> -->
-     
+	 
 	<taskdef name="xjc" classname="com.sun.tools.xjc.XJCTask">
              <classpath>
 	        <fileset dir="lib" includes="*.jar" />
@@ -103,20 +100,13 @@
 		  	</java>
 	</target>
 	
-
-	<target name="copyLLRP.xsd">  
-		<echo message="Copy LLRP.xsd from Definitions directory to org.llrp.ltk so it can be loaded as a resource"/>
-		<copy file="${llrp_xsd}" todir="${build}/classes/org/llrp/ltk"/>	
-	</target>
+	 
+		<target name="copySchemas">
+			<echo message="Copy schemas"/>
+			<ant antfile="LoadTask.xml"/>	
+		</target>
 	
-	<target name="copyExtension.xsd" >  
-			<echo message="Copy ${extension_xsd} to org.llrp.ltk so it can be loaded as a resource"/>
-		    <echo message="This task will create a warning if the copy task failed."/>
-		    <echo message="If no extension was defined, the warning message can be disregarded."/>
-			<copy file="${extension_xsd}" todir="${build}/classes/org/llrp/ltk" failonerror="false"/>	
-	</target>
-	
-	<target name="compile" depends="format,copyLLRP.xsd,copyExtension.xsd"> 
+	<target name="compile" depends="format,copySchemas"> 
           <!-- Compile the java code -->
           	<echo message="Compiling LTKJava (generated classes and non-generated classes)..."/>
 		  <javac srcdir="${src}" 
