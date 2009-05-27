@@ -1,7 +1,7 @@
 
 
 USING AND BUILDING THE LLRP Tool Kit for Java
-Last updated 25 November 2008
+Last updated 20 May 2009
 
 
 
@@ -29,6 +29,14 @@ FEATURES
 - synchronous and asynchronous messaging
 - client and reader-initiated connections
 - automatic acknowledgement of KEEP_ALIVE messages
+
+CHANGELOg
+==========
+
+A changelog is available at:
+
+http://llrp-toolkit.cvs.sourceforge.net/viewvc/llrp-toolkit/LTK/LTKJava/CHANGELOG.txt
+
 
 
 USER GUIDE
