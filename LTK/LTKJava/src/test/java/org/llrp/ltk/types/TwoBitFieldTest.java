@@ -34,10 +34,31 @@ public class TwoBitFieldTest extends TestCase {
 	}
 	
 	public void testDecodeXML() {		
-		TwoBitField twoBitA = new TwoBitField(bits01);
+		TwoBitField twoBitA = new TwoBitField(bits00);
 		Element element = new Element("foo", "ns");
-		element.setText("01");
+		element.setText("0");
 		TwoBitField twoBitB = new TwoBitField();
+		twoBitB.decodeXML(element);
+		assertEquals("Two bit field is not decoded correctly", twoBitB.toString(), twoBitA.toString());
+		
+		twoBitA = new TwoBitField(bits01);
+		element = new Element("foo", "ns");
+		element.setText("2");
+		twoBitB = new TwoBitField();
+		twoBitB.decodeXML(element);
+		assertEquals("Two bit field is not decoded correctly", twoBitB.toString(), twoBitA.toString());
+		
+		twoBitA = new TwoBitField(bits10);
+		element = new Element("foo", "ns");
+		element.setText("1");
+		twoBitB = new TwoBitField();
+		twoBitB.decodeXML(element);
+		assertEquals("Two bit field is not decoded correctly", twoBitB.toString(), twoBitA.toString());
+		
+		twoBitA = new TwoBitField(bits11);
+		element = new Element("foo", "ns");
+		element.setText("3");
+		twoBitB = new TwoBitField();
 		twoBitB.decodeXML(element);
 		assertEquals("Two bit field is not decoded correctly", twoBitB.toString(), twoBitA.toString());
 	}
@@ -48,13 +69,16 @@ public class TwoBitFieldTest extends TestCase {
 		Namespace ns = Namespace.getNamespace("www.llrp.org");
 		TwoBitField twoBitA = new TwoBitField(bits01);
 		Content e = twoBitA.encodeXML(name, ns);
-		assertEquals("Two bit field is not encoded correctly", e.getValue(), "1");
+		assertEquals("Two bit field is not encoded correctly", e.getValue(), "2");
+		
 		twoBitA = new TwoBitField(bits10);
 		e = twoBitA.encodeXML(name, ns);
-		assertEquals("Two bit field is not encoded correctly", e.getValue(), "2");
+		assertEquals("Two bit field is not encoded correctly", e.getValue(), "1");
+		
 		twoBitA = new TwoBitField(bits00);
 		e = twoBitA.encodeXML(name, ns);
 		assertEquals("Two bit field is not encoded correctly", e.getValue(), "0");
+		
 		twoBitA = new TwoBitField(bits11);
 		e = twoBitA.encodeXML(name, ns);
 		assertEquals("Two bit field is not encoded correctly", e.getValue(), "3");	
@@ -82,10 +106,10 @@ public class TwoBitFieldTest extends TestCase {
 		assertEquals("Two Bit field not decoded from binary correctly",twoBitField.intValue(),0);
 		e = new LLRPBitList("01");
 		twoBitField = new TwoBitField(e);
-		assertEquals("Two Bit field not decoded from binary correctly",twoBitField.intValue(),1);
+		assertEquals("Two Bit field not decoded from binary correctly",twoBitField.intValue(),2);
 		e = new LLRPBitList("10");
 		twoBitField = new TwoBitField(e);
-		assertEquals("Two Bit field not decoded from binary correctly",twoBitField.intValue(),2);
+		assertEquals("Two Bit field not decoded from binary correctly",twoBitField.intValue(),1);
 		e = new LLRPBitList("11");
 		twoBitField = new TwoBitField(e);
 		assertEquals("Two Bit field not decoded from binary correctly",twoBitField.intValue(),3);
