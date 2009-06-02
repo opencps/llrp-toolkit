@@ -1,7 +1,7 @@
-Changes in current snapshot (over LTKJava 1.0.0.5) 
+Changes in LTKJava 1.0.0.6 (over previous LTKJava 1.0.0.5) 
 
 
-* Fixed inconsistency in String representation. Default is now always radix 10. Internal representation is now LSB first 
+* Fixed inconsistency in String representation. Default is now always radix 10. Internal representation is now LSB at bit 0 and MSB in bit 1 
 [Basil Gasser]
 
 * changed build.xml to remove duplicated path entries for extension xsd. Now paths have only to be configured in generator.properties.

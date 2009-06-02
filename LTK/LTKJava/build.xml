@@ -6,7 +6,7 @@
      <property name="src" value="src/main/java"/> 
      <property name="src.test" value="src/test/java"/> 
 	 <property name="test_msg_dir" value="src/test/resources"/> 
-     <property name="version" value="1.0.0.6-SNAPSHOT"/> 
+     <property name="version" value="1.0.0.6"/> 
 	 <property name="LTKName" value="ltkjava"/> 
      <property name="res" value="src/main/resources"/> 
      <property name="build" value="target"/>
