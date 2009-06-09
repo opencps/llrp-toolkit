@@ -1,31 +1,25 @@
 
 /*
- ***************************************************************************
- *  Copyright 2007,2008 Impinj, Inc.
- *
- *  Licensed under the Apache License, Version 2.0 (the "License");
- *  you may not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
- *
- ***************************************************************************
- */
+ *****************************************************************************
+ *                                                                           *
+ *                 IMPINJ CONFIDENTIAL AND PROPRIETARY                       *
+ *                                                                           *
+ * This source code is the sole property of Impinj, Inc.  Reproduction or    *
+ * utilization of this source code in whole or in part is forbidden without  *
+ * the prior written consent of Impinj, Inc.                                 *
+ *                                                                           *
+ * (c) Copyright Impinj, Inc. 2007,2008. All rights reserved.                *
+ *                                                                           *
+ *****************************************************************************/
 
-/** 
+/**
  *****************************************************************************
  **
  ** @file ltkcpp_base.h
  **
  ** @brief Based type descriptions for the LTKCPP library
- ** 
- ** Contains the basic types, enumerations, and classes for the LTKCPP 
+ **
+ ** Contains the basic types, enumerations, and classes for the LTKCPP
  **
  *****************************************************************************/
 
@@ -38,8 +32,8 @@
 /** @def LTKCPP_VERSION_STR
  ** @brief The current version of the LTKCPP build in string format
  **/
-#define LTKCPP_VERSION      0x01000005
-#define LTKCPP_VERSION_STR  "1.0.0.5"
+#define LTKCPP_VERSION      0x01000006
+#define LTKCPP_VERSION_STR  "1.0.0.6"
 
 /**
  ** @defgroup LTKCoreElement Core LTK Library classes and functions
@@ -48,8 +42,8 @@
 
 #define BOOL int
 
-/** 
- ** @\brief The namespace for the LTKCPP library 
+/**
+ ** @\brief The namespace for the LTKCPP library
  **
  ** The namespace for the LTKCPP library
  **/
@@ -112,26 +106,26 @@ class CEncoderStream;
 class llrp_u8v_t
 {
   public:
-	/** @brief The number of arrray elements */
-    llrp_u16_t                  m_nValue; 
-	/** @brief Pointer to the first array element */
-    llrp_u8_t *                 m_pValue; 
+    /** @brief The number of arrray elements */
+    llrp_u16_t                  m_nValue;
+    /** @brief Pointer to the first array element */
+    llrp_u8_t *                 m_pValue;
 
-	/** @brief Default Constructer. Sets members fields to zero */
+    /** @brief Default Constructer. Sets members fields to zero */
     llrp_u8v_t(void);
 
-	/** @brief Constructor. Allocates spaec for nValue arrays and sets to zero */
-	llrp_u8v_t (
+    /** @brief Constructor. Allocates spaec for nValue arrays and sets to zero */
+    llrp_u8v_t (
       unsigned int              nValue);
 
-	/** @brief Copy Constructor */
+    /** @brief Copy Constructor */
     llrp_u8v_t (
       const llrp_u8v_t &        rOther);
 
-	/** @brief Destructor. Deletes m_pValue in cases where it is allocated */
+    /** @brief Destructor. Deletes m_pValue in cases where it is allocated */
     ~llrp_u8v_t(void);
 
-	/** @brief Assignement operator.  Used to copy an existing instance. */
+    /** @brief Assignement operator.  Used to copy an existing instance. */
     llrp_u8v_t &
     operator= (
       const llrp_u8v_t &        rValue);
@@ -155,26 +149,26 @@ class llrp_u8v_t
 class llrp_s8v_t
 {
   public:
-	/** @brief The number of arrray elements */
+    /** @brief The number of arrray elements */
     llrp_u16_t                  m_nValue;
-	/** @brief Pointer to the first array element */
+    /** @brief Pointer to the first array element */
     llrp_s8_t *                 m_pValue;
 
-	/** @brief Default Constructer. Sets members fields to zero */
+    /** @brief Default Constructer. Sets members fields to zero */
     llrp_s8v_t(void);
 
-	/** @brief Constructor. Allocates spaec for nValue arrays and sets to zero */
+    /** @brief Constructor. Allocates spaec for nValue arrays and sets to zero */
     llrp_s8v_t (
       unsigned int              nValue);
 
-	/** @brief Copy Constructor */
+    /** @brief Copy Constructor */
     llrp_s8v_t (
       const llrp_s8v_t &        rOther);
 
-	/** @brief Destructor. Deletes m_pValue in cases where it is allocated */
+    /** @brief Destructor. Deletes m_pValue in cases where it is allocated */
     ~llrp_s8v_t(void);
 
-	/** @brief Assignement operator.  Used to copy an existing instance. */
+    /** @brief Assignement operator.  Used to copy an existing instance. */
     llrp_s8v_t &
     operator= (
       const llrp_s8v_t &        rValue);
@@ -198,26 +192,26 @@ class llrp_s8v_t
 class llrp_u16v_t
 {
   public:
-	/** @brief The number of arrray elements */
+    /** @brief The number of arrray elements */
     llrp_u16_t                  m_nValue;
-	/** @brief Pointer to the first array element */
+    /** @brief Pointer to the first array element */
     llrp_u16_t *                m_pValue;
 
-	/** @brief Default Constructer. Sets members fields to zero */
+    /** @brief Default Constructer. Sets members fields to zero */
     llrp_u16v_t(void);
 
-	/** @brief Constructor. Allocates spaec for nValue arrays and sets to zero */
+    /** @brief Constructor. Allocates spaec for nValue arrays and sets to zero */
     llrp_u16v_t (
       unsigned int              nValue);
 
-	/** @brief Copy Constructor */
+    /** @brief Copy Constructor */
     llrp_u16v_t (
       const llrp_u16v_t &       rOther);
 
-	/** @brief Destructor. Deletes m_pValue in cases where it is allocated */
+    /** @brief Destructor. Deletes m_pValue in cases where it is allocated */
     ~llrp_u16v_t(void);
 
-	/** @brief Assignement operator.  Used to copy an existing instance. */
+    /** @brief Assignement operator.  Used to copy an existing instance. */
     llrp_u16v_t &
     operator= (
       const llrp_u16v_t &       rValue);
@@ -241,26 +235,26 @@ class llrp_u16v_t
 class llrp_s16v_t
 {
   public:
-	/** @brief The number of arrray elements */
+    /** @brief The number of arrray elements */
     llrp_u16_t                  m_nValue;
-	/** @brief Pointer to the first array element */
+    /** @brief Pointer to the first array element */
     llrp_s16_t *                m_pValue;
 
-	/** @brief Default Constructer. Sets members fields to zero */
+    /** @brief Default Constructer. Sets members fields to zero */
     llrp_s16v_t(void);
 
-	/** @brief Constructor. Allocates spaec for nValue arrays and sets to zero */
+    /** @brief Constructor. Allocates spaec for nValue arrays and sets to zero */
     llrp_s16v_t (
       unsigned int              nValue);
 
-	/** @brief Copy Constructor */
+    /** @brief Copy Constructor */
     llrp_s16v_t (
       const llrp_s16v_t &       rOther);
 
-	/** @brief Destructor. Deletes m_pValue in cases where it is allocated */
+    /** @brief Destructor. Deletes m_pValue in cases where it is allocated */
     ~llrp_s16v_t(void);
 
-	/** @brief Assignement operator.  Used to copy an existing instance. */
+    /** @brief Assignement operator.  Used to copy an existing instance. */
     llrp_s16v_t &
     operator= (
       const llrp_s16v_t &       rValue);
@@ -284,26 +278,26 @@ class llrp_s16v_t
 class llrp_u32v_t
 {
   public:
-	/** @brief The number of arrray elements */
+    /** @brief The number of arrray elements */
     llrp_u16_t                  m_nValue;
-	/** @brief Pointer to the first array element */
+    /** @brief Pointer to the first array element */
     llrp_u32_t *                m_pValue;
 
-	/** @brief Default Constructer. Sets members fields to zero */
+    /** @brief Default Constructer. Sets members fields to zero */
     llrp_u32v_t(void);
 
-	/** @brief Constructor. Allocates spaec for nValue arrays and sets to zero */
+    /** @brief Constructor. Allocates spaec for nValue arrays and sets to zero */
     llrp_u32v_t (
       unsigned int              nValue);
 
-	/** @brief Copy Constructor */
+    /** @brief Copy Constructor */
     llrp_u32v_t (
       const llrp_u32v_t &       rOther);
 
-	/** @brief Destructor. Deletes m_pValue in cases where it is allocated */
+    /** @brief Destructor. Deletes m_pValue in cases where it is allocated */
     ~llrp_u32v_t(void);
 
-	/** @brief Assignement operator.  Used to copy an existing instance. */
+    /** @brief Assignement operator.  Used to copy an existing instance. */
     llrp_u32v_t &
     operator= (
       const llrp_u32v_t &       rValue);
@@ -327,26 +321,26 @@ class llrp_u32v_t
 class llrp_s32v_t
 {
   public:
-	/** @brief The number of arrray elements */
+    /** @brief The number of arrray elements */
     llrp_u16_t                  m_nValue;
-	/** @brief Pointer to the first array element */
+    /** @brief Pointer to the first array element */
     llrp_s32_t *                m_pValue;
 
-	/** @brief Default Constructer. Sets members fields to zero */
+    /** @brief Default Constructer. Sets members fields to zero */
     llrp_s32v_t(void);
 
-	/** @brief Constructor. Allocates spaec for nValue arrays and sets to zero */
+    /** @brief Constructor. Allocates spaec for nValue arrays and sets to zero */
     llrp_s32v_t (
       unsigned int              nValue);
 
-	/** @brief Copy Constructor */
+    /** @brief Copy Constructor */
     llrp_s32v_t (
       const llrp_s32v_t &       rOther);
 
-	/** @brief Destructor. Deletes m_pValue in cases where it is allocated */
+    /** @brief Destructor. Deletes m_pValue in cases where it is allocated */
     ~llrp_s32v_t(void);
 
-	/** @brief Assignement operator.  Used to copy an existing instance. */
+    /** @brief Assignement operator.  Used to copy an existing instance. */
     llrp_s32v_t &
     operator= (
       const llrp_s32v_t &       rValue);
@@ -370,26 +364,26 @@ class llrp_s32v_t
 class llrp_u64v_t
 {
   public:
-	/** @brief The number of arrray elements */
+    /** @brief The number of arrray elements */
     llrp_u16_t                  m_nValue;
-	/** @brief Pointer to the first array element */
+    /** @brief Pointer to the first array element */
     llrp_u64_t *                m_pValue;
 
-	/** @brief Default Constructer. Sets members fields to zero */
+    /** @brief Default Constructer. Sets members fields to zero */
     llrp_u64v_t(void);
 
-	/** @brief Constructor. Allocates spaec for nValue arrays and sets to zero */
+    /** @brief Constructor. Allocates spaec for nValue arrays and sets to zero */
     llrp_u64v_t (
       unsigned int              nValue);
 
-	/** @brief Copy Constructor */
+    /** @brief Copy Constructor */
     llrp_u64v_t (
       const llrp_u64v_t &       rOther);
 
-	/** @brief Destructor. Deletes m_pValue in cases where it is allocated */
+    /** @brief Destructor. Deletes m_pValue in cases where it is allocated */
     ~llrp_u64v_t(void);
 
-	/** @brief Assignement operator.  Used to copy an existing instance. */
+    /** @brief Assignement operator.  Used to copy an existing instance. */
     llrp_u64v_t &
     operator= (
       const llrp_u64v_t &       rValue);
@@ -413,26 +407,26 @@ class llrp_u64v_t
 class llrp_s64v_t
 {
   public:
-	/** @brief The number of arrray elements */
+    /** @brief The number of arrray elements */
     llrp_u16_t                  m_nValue;
-	/** @brief Pointer to the first array element */
+    /** @brief Pointer to the first array element */
     llrp_s64_t *                m_pValue;
 
-	/** @brief Default Constructer. Sets members fields to zero */
+    /** @brief Default Constructer. Sets members fields to zero */
     llrp_s64v_t(void);
 
-	/** @brief Constructor. Allocates spaec for nValue arrays and sets to zero */
+    /** @brief Constructor. Allocates spaec for nValue arrays and sets to zero */
     llrp_s64v_t (
       unsigned int              nValue);
 
-	/** @brief Copy Constructor */
+    /** @brief Copy Constructor */
     llrp_s64v_t (
       const llrp_s64v_t &       rOther);
 
-	/** @brief Destructor. Deletes m_pValue in cases where it is allocated */
+    /** @brief Destructor. Deletes m_pValue in cases where it is allocated */
     ~llrp_s64v_t(void);
 
-	/** @brief Assignement operator.  Used to copy an existing instance. */
+    /** @brief Assignement operator.  Used to copy an existing instance. */
     llrp_s64v_t &
     operator= (
       const llrp_s64v_t &       rValue);
@@ -456,26 +450,26 @@ class llrp_s64v_t
 class llrp_u1v_t
 {
   public:
-	/** @brief The number of arrray elements */
+    /** @brief The number of arrray elements */
     llrp_u16_t                  m_nBit;
-	/** @brief Pointer to the first array element */
+    /** @brief Pointer to the first array element */
     llrp_u8_t *                 m_pValue;
 
-	/** @brief Default Constructer. Sets members fields to zero */
+    /** @brief Default Constructer. Sets members fields to zero */
     llrp_u1v_t(void);
 
-	/** @brief Constructor. Allocates spaec for nValue arrays and sets to zero */
+    /** @brief Constructor. Allocates spaec for nValue arrays and sets to zero */
     llrp_u1v_t (
       unsigned int              nBit);
 
-	/** @brief Copy Constructor */
+    /** @brief Copy Constructor */
     llrp_u1v_t (
       const llrp_u1v_t &        rOther);
 
-	/** @brief Destructor. Deletes m_pValue in cases where it is allocated */
+    /** @brief Destructor. Deletes m_pValue in cases where it is allocated */
     ~llrp_u1v_t(void);
 
-	/** @brief Assignement operator.  Used to copy an existing instance. */
+    /** @brief Assignement operator.  Used to copy an existing instance. */
     llrp_u1v_t &
     operator= (
       const llrp_u1v_t &        rValue);
@@ -492,33 +486,33 @@ class llrp_u1v_t
 /**
  *****************************************************************************
  **
- ** @brief Class for LLRP basic type utf8v (vector of utf-8 encoded characters) 
+ ** @brief Class for LLRP basic type utf8v (vector of utf-8 encoded characters)
  **
  *****************************************************************************
  **/
 class llrp_utf8v_t
 {
   public:
-	/** @brief The number of arrray elements */
+    /** @brief The number of arrray elements */
     llrp_u16_t                  m_nValue;
-	/** @brief Pointer to the first array element */
+    /** @brief Pointer to the first array element */
     llrp_utf8_t *               m_pValue;
 
-	/** @brief Default Constructer. Sets members fields to zero */
+    /** @brief Default Constructer. Sets members fields to zero */
     llrp_utf8v_t(void);
 
-	/** @brief Constructor. Allocates spaec for nValue arrays and sets to zero */
+    /** @brief Constructor. Allocates spaec for nValue arrays and sets to zero */
     llrp_utf8v_t (
       unsigned int              nValue);
 
-	/** @brief Copy Constructor */
+    /** @brief Copy Constructor */
     llrp_utf8v_t (
       const llrp_utf8v_t &      rOther);
 
-	/** @brief Destructor. Deletes m_pValue in cases where it is allocated */
+    /** @brief Destructor. Deletes m_pValue in cases where it is allocated */
     ~llrp_utf8v_t(void);
 
-	/** @brief Assignement operator.  Used to copy an existing instance. */
+    /** @brief Assignement operator.  Used to copy an existing instance. */
     llrp_utf8v_t &
     operator= (
       const llrp_utf8v_t &      rValue);
@@ -535,33 +529,33 @@ class llrp_utf8v_t
 /**
  *****************************************************************************
  **
- ** @brief Class for LLRP basic type bytesToEnd (vector of unsigned bytes) 
+ ** @brief Class for LLRP basic type bytesToEnd (vector of unsigned bytes)
  **
  *****************************************************************************
  **/
 class llrp_bytesToEnd_t
 {
   public:
-	/** @brief The number of arrray elements */
+    /** @brief The number of arrray elements */
     llrp_u16_t                  m_nValue;
-	/** @brief Pointer to the first array element */
+    /** @brief Pointer to the first array element */
     llrp_byte_t *               m_pValue;
 
-	/** @brief Default Constructer. Sets members fields to zero */
+    /** @brief Default Constructer. Sets members fields to zero */
     llrp_bytesToEnd_t(void);
 
-	/** @brief Constructor. Allocates spaec for nValue arrays and sets to zero */
+    /** @brief Constructor. Allocates spaec for nValue arrays and sets to zero */
     llrp_bytesToEnd_t (
       unsigned int              nValue);
 
-	/** @brief Copy Constructor */
+    /** @brief Copy Constructor */
     llrp_bytesToEnd_t (
       const llrp_bytesToEnd_t & rOther);
 
-	/** @brief Destructor. Deletes m_pValue in cases where it is allocated */
+    /** @brief Destructor. Deletes m_pValue in cases where it is allocated */
     ~llrp_bytesToEnd_t(void);
 
-	/** @brief Assignement operator.  Used to copy an existing instance. */
+    /** @brief Assignement operator.  Used to copy an existing instance. */
     llrp_bytesToEnd_t &
     operator= (
       const llrp_bytesToEnd_t & rValue);
@@ -578,22 +572,22 @@ class llrp_bytesToEnd_t
 /**
  *****************************************************************************
  **
- ** @brief Class for LLRP basic type u96  (96-bit value) 
+ ** @brief Class for LLRP basic type u96  (96-bit value)
  **
  *****************************************************************************
  **/
 class llrp_u96_t
 {
   public:
-	/** @brief Simple array of basic type llrp_u8_t */
+    /** @brief Simple array of basic type llrp_u8_t */
     llrp_u8_t                   m_aValue[12];
 };
 
 
-/** @enum EResultCode 
+/** @enum EResultCode
  *****************************************************************************
  **
- ** @brief Error result codes for LTK operations 
+ ** @brief Error result codes for LTK operations
  **
  ** These error codes are common across many LTKCPP functions.
  **
@@ -609,6 +603,7 @@ enum EResultCode
     RC_RecvEOF,                        /**< Error */
     RC_RecvTimeout,                    /**< Error */
     RC_RecvFramingError,               /**< Error */
+    RC_RecvBufferOverflow,             /**< Error */
     RC_BadVersion,                     /**< Error */
     RC_MissingResponseType,            /**< Error */
     RC_UnknownMessageType,             /**< Error */
@@ -635,10 +630,10 @@ enum EResultCode
 /**
  *****************************************************************************
  **
- ** @brief Class to return error details in LTKCPP operations 
+ ** @brief Class to return error details in LTKCPP operations
  **
  ** @ingroup LTKCoreElement
- ** 
+ **
  *****************************************************************************
  **/
 class CErrorDetails
@@ -648,40 +643,40 @@ class CErrorDetails
     EResultCode                 m_eResultCode;
     /** @brief Descriptive printable error string */
     const char *                m_pWhatStr;
-	/** @brief If non-NULL this is the type descriptors for the errored type */
+    /** @brief If non-NULL this is the type descriptors for the errored type */
     const CTypeDescriptor *     m_pRefType;
-	/** @brief If non-NULL this is the field descriptors for the errored field */
+    /** @brief If non-NULL this is the field descriptors for the errored field */
     const CFieldDescriptor *    m_pRefField;
 
     int                         m_OtherDetail;
 
-	/** @brief Default Constructor */
+    /** @brief Default Constructor */
     CErrorDetails (void);
 
-	/** @brief Clears the contents of a CErrorDetails */
+    /** @brief Clears the contents of a CErrorDetails */
     void
     clear (void);
 
-	/**
-	 ** @brief Convenience function used by the toolkit to set CErrorDetails
-	 **        when it encounters an missing parameters
-	 **/
+    /**
+     ** @brief Convenience function used by the toolkit to set CErrorDetails
+     **        when it encounters an missing parameters
+     **/
     void
     missingParameter (
       const CTypeDescriptor *   pRefType);
 
-	/**
-	 ** @brief Convenience function used by the toolkit to set CErrorDetails
-	 **        when it encounters an unexpected parameters
-	 **/
+    /**
+     ** @brief Convenience function used by the toolkit to set CErrorDetails
+     **        when it encounters an unexpected parameters
+     **/
     void
     unexpectedParameter (
       const CParameter *        pParameter);
 
-	/**
-	 ** @brief Convenience function used by the toolkit to set CErrorDetails
-	 **        result code and pWhatStr
-	 **/
+    /**
+     ** @brief Convenience function used by the toolkit to set CErrorDetails
+     **        result code and pWhatStr
+     **/
     void
     resultCodeAndWhatStr (
       EResultCode               eResultCode,
@@ -691,8 +686,8 @@ class CErrorDetails
 /**
  *****************************************************************************
  **
- ** @brief Describes the vendor information for vendor extension classes 
- ** 
+ ** @brief Describes the vendor information for vendor extension classes
+ **
  *****************************************************************************
  **/
 class CVendorDescriptor
@@ -705,9 +700,9 @@ class CVendorDescriptor
     llrp_u32_t                  m_VendorID;
 };
 
-/** 
+/**
  *******************************************************************************
- ** @brief Describes the namespae information for converting LLRP messages to LTK-XML 
+ ** @brief Describes the namespae information for converting LLRP messages to LTK-XML
  *****************************************************************************
  **/
 class CNamespaceDescriptor
@@ -820,7 +815,7 @@ class CTypeDescriptor
 class CFieldDescriptor
 {
   public:
-	  /** @brief Describes the basic field type */
+      /** @brief Describes the basic field type */
     enum FieldType {
         FT_U8,  FT_S8,  FT_U8V,  FT_S8V,
         FT_U16, FT_S16, FT_U16V, FT_S16V,
@@ -836,7 +831,7 @@ class CFieldDescriptor
         FT_BYTESTOEND,
     };
 
-	/** @brief Describes the fields display format */
+    /** @brief Describes the fields display format */
     enum FieldFormat {
         FMT_NORMAL,
         FMT_DEC,
@@ -888,7 +883,7 @@ struct SEnumTableEntry
  ** CTypeRegistry
  **
  ** @brief A collection of pointers to CTypeDescriptors.
- ** 
+ **
  ** During decode operations types can be looked up
  ** by code (vendor and typenum) or by name.
  **
@@ -990,11 +985,11 @@ class CElement
     ~CElement(void);
 
     /** @brief Add a subparameter to m_listAllSubParameters. Called
-     ** by the accessor functions setXXX and addXXX. 
+     ** by the accessor functions setXXX and addXXX.
      **
-     ** @param[in] pParameter The list of sub-parameteters to add 
+     ** @param[in] pParameter The list of sub-parameteters to add
      **
-     ** @return void 
+     ** @return void
      **/
     void
     addSubParameterToAllList (
@@ -1002,22 +997,22 @@ class CElement
 
     /** @brief Delete a subparameter from m_listAllSubParameters. Called
      ** by the accessor functions setXXX (to remove prior reference)
-     ** clearXXX(). 
+     ** clearXXX().
      **
-     ** @param[in] *pParameter  The parameter to delete 
+     ** @param[in] *pParameter  The parameter to delete
      **
-     ** @return void 
+     ** @return void
      **/
     void
     removeSubParameterFromAllList (
       CParameter *              pParameter);
 
     /** @brief Clear a list of subparameters. For each entry apply
-     ** removeSubParameter(). 
-     ** 
+     ** removeSubParameter().
+     **
      ** @param[in] pParameterList  The list of parameters to clear
      **
-     ** @return void 
+     ** @return void
      **/
     void
     clearSubParameterList (
@@ -1034,10 +1029,10 @@ class CElement
       int                       nMaxDepth) const;
 
 
-    /** 
-     ** @brief A wrapper around LLRP::toXMLString() 
+    /**
+     ** @brief A wrapper around LLRP::toXMLString()
      ** @param[in] pBuffer Pointer to the buffer to store the result
-     ** @param[in] nBuffer size of the result buffer 
+     ** @param[in] nBuffer size of the result buffer
      ** @return EResultCode Result code from the operation
      **/
     EResultCode
@@ -1046,10 +1041,10 @@ class CElement
       int                       nBuffer);
 
 
-    /** 
+    /**
      ** @brief Virtual function provided by each specific element type
      ** to decode fields (simple values). Leaves pDecoderStream
-     ** at first subparameter. 
+     ** at first subparameter.
      **
      ** @param[in] pDecoderStream The stream from which to decode fields
      ** @return void
@@ -1072,7 +1067,7 @@ class CElement
     assimilateSubParameters (
       CErrorDetails *           pError) = 0;
 
-    /** @brief Encode fields and subparameters 
+    /** @brief Encode fields and subparameters
      **
      ** @param[in] pEncoderStream Stream to encode
      ** @return void
@@ -1121,7 +1116,7 @@ class CMessage : public CElement
 /**
  *****************************************************************************
  **
- ** @brief  Base Class for All LLRP LTK Parameters 
+ ** @brief  Base Class for All LLRP LTK Parameters
  **
  ** @ingroup LTKCoreElement
  *****************************************************************************
@@ -1130,23 +1125,23 @@ class CParameter : public CElement
 {
   public:
     /** @brief Validate whether the element is allowed as a base type in the enclosing element
-	 **
-	 ** @param[in] pEnclosingTypeDescriptor A pointer to the enclosing type
-	 ** 
-	 ** @return TRUE if the element is allowed to be encoded within the EnclosingElement
-	 ** @return FALSE if the element is not allowed to be encoded within the EnclosingElement
-	 **/
+     **
+     ** @param[in] pEnclosingTypeDescriptor A pointer to the enclosing type
+     **
+     ** @return TRUE if the element is allowed to be encoded within the EnclosingElement
+     ** @return FALSE if the element is not allowed to be encoded within the EnclosingElement
+     **/
     virtual llrp_bool_t
     isAllowedIn (
       const CTypeDescriptor *   pEnclosingTypeDescriptor) const;
 
     /** @brief Validate whether the element is allowed as an extension in the enclosing element
-	 **
-	 ** @param[in] pEnclosingTypeDescriptor A pointer to the enclosing type
-	 ** 
-	 ** @return TRUE if the element is allowed to be encoded within the EnclosingElement
-	 ** @return FALSE if the element is not allowed to be encoded within the EnclosingElement
-	 **/
+     **
+     ** @param[in] pEnclosingTypeDescriptor A pointer to the enclosing type
+     **
+     ** @return TRUE if the element is allowed to be encoded within the EnclosingElement
+     ** @return FALSE if the element is not allowed to be encoded within the EnclosingElement
+     **/
     llrp_bool_t
     isAllowedExtension (
       const CTypeDescriptor *   pEnclosingTypeDescriptor);
@@ -1209,19 +1204,19 @@ class CParameter : public CElement
 class CDecoder
 {
   public:
-	/** @brief The error details from the last decode operation */
+    /** @brief The error details from the last decode operation */
     CErrorDetails               m_ErrorDetails;
 
     CDecoder (void);
 
-	/** @brief Constructor to build a decoder for the given type registry */
+    /** @brief Constructor to build a decoder for the given type registry */
     CDecoder (
       const CTypeRegistry *     pTypeRegistry);
 
     virtual
     ~CDecoder (void) = 0;
 
-	/** @brief Decodes a message into the return value CMessage */
+    /** @brief Decodes a message into the return value CMessage */
     virtual CMessage *
     decodeMessage (void) = 0;
 
@@ -1246,22 +1241,22 @@ class CDecoderStream
      * 8-bit types
      */
 
-	/** @brief Decodes an llrp_u8_t (unsigned 8-bit number) into the specified field descriptor */
+    /** @brief Decodes an llrp_u8_t (unsigned 8-bit number) into the specified field descriptor */
     virtual llrp_u8_t
     get_u8 (
       const CFieldDescriptor *  pFieldDesc) = 0;
 
-	/** @brief Decodes a llrp_s8_t (signed 8-bit number) into the specified field descriptor */
+    /** @brief Decodes a llrp_s8_t (signed 8-bit number) into the specified field descriptor */
     virtual llrp_s8_t
     get_s8 (
       const CFieldDescriptor *  pFieldDesc) = 0;
 
-	/** @brief Decodes an llrp_u8v_t into the specified field descriptor */
+    /** @brief Decodes an llrp_u8v_t into the specified field descriptor */
     virtual llrp_u8v_t
     get_u8v (
       const CFieldDescriptor *  pFieldDesc) = 0;
 
-	/** @brief Decodes an llrp_s8v_t into the specified field descriptor */
+    /** @brief Decodes an llrp_s8v_t into the specified field descriptor */
     virtual llrp_s8v_t
     get_s8v (
       const CFieldDescriptor *  pFieldDesc) = 0;
@@ -1270,22 +1265,22 @@ class CDecoderStream
      * 16-bit types
      */
 
-	/** @brief Decodes an llrp_u16_t (unsigned 16-bit number) into the specified field descriptor */
+    /** @brief Decodes an llrp_u16_t (unsigned 16-bit number) into the specified field descriptor */
     virtual llrp_u16_t
     get_u16 (
       const CFieldDescriptor *  pFieldDesc) = 0;
 
-	/** @brief Decodes a llrp_s16_t (signed 16-bit number) into the specified field descriptor */
+    /** @brief Decodes a llrp_s16_t (signed 16-bit number) into the specified field descriptor */
     virtual llrp_s16_t
     get_s16 (
       const CFieldDescriptor *  pFieldDesc) = 0;
 
-	/** @brief Decodes a llrp_u16v_t into the specified field descriptor */
+    /** @brief Decodes a llrp_u16v_t into the specified field descriptor */
     virtual llrp_u16v_t
     get_u16v (
       const CFieldDescriptor *  pFieldDesc) = 0;
 
-	/** @brief Decodes an llrp_u16v_t into the specified field descriptor */
+    /** @brief Decodes an llrp_u16v_t into the specified field descriptor */
     virtual llrp_s16v_t
     get_s16v (
       const CFieldDescriptor *  pFieldDesc) = 0;
@@ -1294,22 +1289,22 @@ class CDecoderStream
      * 32-bit types
      */
 
-	/** @brief Decodes an llrp_u32_t (unsigned 32-bit number) into the specified field descriptor */
+    /** @brief Decodes an llrp_u32_t (unsigned 32-bit number) into the specified field descriptor */
     virtual llrp_u32_t
     get_u32 (
       const CFieldDescriptor *  pFieldDesc) = 0;
 
-	/** @brief Decodes an llrp_s32_t (signed 32-bit number) into the specified field descriptor */
+    /** @brief Decodes an llrp_s32_t (signed 32-bit number) into the specified field descriptor */
     virtual llrp_s32_t
     get_s32 (
       const CFieldDescriptor *  pFieldDesc) = 0;
 
-	/** @brief Decodes an llrp_u32v_t into the specified field descriptor */
+    /** @brief Decodes an llrp_u32v_t into the specified field descriptor */
     virtual llrp_u32v_t
     get_u32v (
       const CFieldDescriptor *  pFieldDesc) = 0;
 
-	/** @brief Decodes an llrp_s32v_t into the specified field descriptor */
+    /** @brief Decodes an llrp_s32v_t into the specified field descriptor */
     virtual llrp_s32v_t
     get_s32v (
       const CFieldDescriptor *  pFieldDesc) = 0;
@@ -1318,22 +1313,22 @@ class CDecoderStream
      * 64-bit types
      */
 
-	/** @brief Decodes an llrp_u64_t (unsigned 64-bit number) into the specified field descriptor */
+    /** @brief Decodes an llrp_u64_t (unsigned 64-bit number) into the specified field descriptor */
     virtual llrp_u64_t
     get_u64 (
       const CFieldDescriptor *  pFieldDesc) = 0;
 
-	/** @brief Decodes an llrp_s64_t (signed 64-bit number) into the specified field descriptor */
+    /** @brief Decodes an llrp_s64_t (signed 64-bit number) into the specified field descriptor */
     virtual llrp_s64_t
     get_s64 (
       const CFieldDescriptor *  pFieldDesc) = 0;
 
-	/** @brief Decodes an llrp_u64v_t into the specified field descriptor */
+    /** @brief Decodes an llrp_u64v_t into the specified field descriptor */
     virtual llrp_u64v_t
     get_u64v (
       const CFieldDescriptor *  pFieldDesc) = 0;
 
-	/** @brief Decodes an llrp_s64v_t into the specified field descriptor */
+    /** @brief Decodes an llrp_s64v_t into the specified field descriptor */
     virtual llrp_s64v_t
     get_s64v (
       const CFieldDescriptor *  pFieldDesc) = 0;
@@ -1342,32 +1337,32 @@ class CDecoderStream
      * Special types
      */
 
-	/** @brief Decodes an llrp_u1_t (unsigned 1 bit number) into the specified field descriptor */
+    /** @brief Decodes an llrp_u1_t (unsigned 1 bit number) into the specified field descriptor */
     virtual llrp_u1_t
     get_u1 (
       const CFieldDescriptor *  pFieldDesc) = 0;
 
-	/** @brief Decodes an llrp_u1v_t into the specified field descriptor */
+    /** @brief Decodes an llrp_u1v_t into the specified field descriptor */
     virtual llrp_u1v_t
     get_u1v (
       const CFieldDescriptor *  pFieldDesc) = 0;
 
-	/** @brief Decodes an llrp_u2_t into the specified field descriptor */
+    /** @brief Decodes an llrp_u2_t into the specified field descriptor */
     virtual llrp_u2_t
     get_u2 (
       const CFieldDescriptor *  pFieldDesc) = 0;
 
-	/** @brief Decodes an llrp_u96_t into the specified field descriptor */
+    /** @brief Decodes an llrp_u96_t into the specified field descriptor */
     virtual llrp_u96_t
     get_u96 (
       const CFieldDescriptor *  pFieldDesc) = 0;
 
-	/** @brief Decodes an llrp_utf8v_t into the specified field descriptor */
+    /** @brief Decodes an llrp_utf8v_t into the specified field descriptor */
     virtual llrp_utf8v_t
     get_utf8v (
       const CFieldDescriptor *  pFieldDesc) = 0;
 
-	/** @brief Decodes an llrp_bytesToEnd_t into the specified field descriptor */
+    /** @brief Decodes an llrp_bytesToEnd_t into the specified field descriptor */
     virtual llrp_bytesToEnd_t
     get_bytesToEnd (
       const CFieldDescriptor *  pFieldDesc) = 0;
@@ -1376,32 +1371,32 @@ class CDecoderStream
      * Enumerated types of various sizes
      */
 
-	/** @brief Decodes a 1 bit enumerated field into the specified field descriptor */
+    /** @brief Decodes a 1 bit enumerated field into the specified field descriptor */
     virtual int
     get_e1 (
       const CFieldDescriptor *  pFieldDesc) = 0;
 
-	/** @brief Decodes a 2 bit enumerated field into the specified field descriptor */
+    /** @brief Decodes a 2 bit enumerated field into the specified field descriptor */
     virtual int
     get_e2 (
       const CFieldDescriptor *  pFieldDesc) = 0;
 
-	/** @brief Decodes a 8 bit enumerated field into the specified field descriptor */
+    /** @brief Decodes a 8 bit enumerated field into the specified field descriptor */
     virtual int
     get_e8 (
       const CFieldDescriptor *  pFieldDesc) = 0;
 
-	/** @brief Decodes a 16 bit enumerated field into the specified field descriptor */
+    /** @brief Decodes a 16 bit enumerated field into the specified field descriptor */
     virtual int
     get_e16 (
       const CFieldDescriptor *  pFieldDesc) = 0;
 
-	/** @brief Decodes a 32 bit enumerated field into the specified field descriptor */
+    /** @brief Decodes a 32 bit enumerated field into the specified field descriptor */
     virtual int
     get_e32 (
       const CFieldDescriptor *  pFieldDesc) = 0;
 
-	/** @brief Decodes an enumerated u8v field into the specified field descriptor */
+    /** @brief Decodes an enumerated u8v field into the specified field descriptor */
     virtual llrp_u8v_t
     get_e8v (
       const CFieldDescriptor *  pFieldDesc) = 0;
@@ -1454,36 +1449,36 @@ class CEncoderStream
     virtual
     ~CEncoderStream(void) = 0;
 
-	/** @brief Encodes the requiredSubParameter into the encode stream 
+    /** @brief Encodes the requiredSubParameter into the encode stream
      ** @param[in] pParameter   The parameter instance to encode
-	 ** @param[in] pRefType     The type of the parameter:w
+     ** @param[in] pRefType     The type of the parameter:w
      **/
     virtual void
     putRequiredSubParameter (
       const CParameter *        pParameter,
       const CTypeDescriptor *   pRefType) = 0;
 
-	/** @brief Encodes the optionalSubParameter into the encode stream 
+    /** @brief Encodes the optionalSubParameter into the encode stream
      ** @param[in] pParameter   The parameter instance to encode
-	 ** @param[in] pRefType     The type of the parameter:w
+     ** @param[in] pRefType     The type of the parameter:w
      **/
     virtual void
     putOptionalSubParameter (
       const CParameter *        pParameter,
       const CTypeDescriptor *   pRefType) = 0;
 
-	/** @brief Encodes the requiredSubParameterList into the encode stream 
+    /** @brief Encodes the requiredSubParameterList into the encode stream
      ** @param[in] pParameterList   The parameter instance to encode
-	 ** @param[in] pRefType     The type of the parameter:w
+     ** @param[in] pRefType     The type of the parameter:w
      **/
     virtual void
     putRequiredSubParameterList (
       const tListOfParameters * pParameterList,
       const CTypeDescriptor *   pRefType) = 0;
 
-	/** @brief Encodes the optionalSubParameterList into the encode stream 
+    /** @brief Encodes the optionalSubParameterList into the encode stream
      ** @param[in] pParameterList   The parameter instance to encode
-	 ** @param[in] pRefType     The type of the parameter:w
+     ** @param[in] pRefType     The type of the parameter:w
      **/
     virtual void
     putOptionalSubParameterList (
@@ -1494,37 +1489,37 @@ class CEncoderStream
      * 8-bit types
      */
 
-	/** @brief Encodes an llrp_u8_t (unsigned 8-bit number) into the encode stream
-	 ** @param[in] Value      The value to encode
-	 ** @param[in] pFieldDesc The field descriptor that describes the encoding 
-	 **/
+    /** @brief Encodes an llrp_u8_t (unsigned 8-bit number) into the encode stream
+     ** @param[in] Value      The value to encode
+     ** @param[in] pFieldDesc The field descriptor that describes the encoding
+     **/
     virtual void
     put_u8 (
       llrp_u8_t                 Value,
       const CFieldDescriptor *  pFieldDesc) = 0;
 
-	/** @brief Encodes an llrp_s8_t (signed 8-bit number) into the encode stream
-	 ** @param[in] Value      The value to encode
-	 ** @param[in] pFieldDesc The field descriptor that describes the encoding 
-	 **/
+    /** @brief Encodes an llrp_s8_t (signed 8-bit number) into the encode stream
+     ** @param[in] Value      The value to encode
+     ** @param[in] pFieldDesc The field descriptor that describes the encoding
+     **/
     virtual void
     put_s8 (
       llrp_s8_t                 Value,
       const CFieldDescriptor *  pFieldDesc) = 0;
 
-	/** @brief Encodes an llrp_u8v_t into the encode stream
-	 ** @param[in] Value      The value to encode
-	 ** @param[in] pFieldDesc The field descriptor that describes the encoding 
-	 **/
+    /** @brief Encodes an llrp_u8v_t into the encode stream
+     ** @param[in] Value      The value to encode
+     ** @param[in] pFieldDesc The field descriptor that describes the encoding
+     **/
     virtual void
     put_u8v (
       llrp_u8v_t                Value,
       const CFieldDescriptor *  pFieldDesc) = 0;
 
-	/** @brief Encodes an llrp_u8_t (unsigned 8-bit number) into the encode stream
-	 ** @param[in] Value      The value to encode
-	 ** @param[in] pFieldDesc The field descriptor that describes the encoding 
-	 **/
+    /** @brief Encodes an llrp_u8_t (unsigned 8-bit number) into the encode stream
+     ** @param[in] Value      The value to encode
+     ** @param[in] pFieldDesc The field descriptor that describes the encoding
+     **/
     virtual void
     put_s8v (
       llrp_s8v_t                Value,
@@ -1534,37 +1529,37 @@ class CEncoderStream
      * 16-bit types
      */
 
-	/** @brief Encodes an llrp_u16_t (unsigned 16-bit number) into the encode stream
-	 ** @param[in] Value      The value to encode
-	 ** @param[in] pFieldDesc The field descriptor that describes the encoding 
-	 **/
+    /** @brief Encodes an llrp_u16_t (unsigned 16-bit number) into the encode stream
+     ** @param[in] Value      The value to encode
+     ** @param[in] pFieldDesc The field descriptor that describes the encoding
+     **/
     virtual void
     put_u16 (
       llrp_u16_t                Value,
       const CFieldDescriptor *  pFieldDesc) = 0;
-	
-	/** @brief Encodes an llrp_s16_t (signed 16-bit number) into the encode stream
-	 ** @param[in] Value      The value to encode
-	 ** @param[in] pFieldDesc The field descriptor that describes the encoding 
-	 **/
+
+    /** @brief Encodes an llrp_s16_t (signed 16-bit number) into the encode stream
+     ** @param[in] Value      The value to encode
+     ** @param[in] pFieldDesc The field descriptor that describes the encoding
+     **/
     virtual void
     put_s16 (
       llrp_s16_t                Value,
       const CFieldDescriptor *  pFieldDesc) = 0;
 
-	/** @brief Encodes an llrp_u16v_t into the encode stream
-	 ** @param[in] Value      The value to encode
-	 ** @param[in] pFieldDesc The field descriptor that describes the encoding 
-	 **/
+    /** @brief Encodes an llrp_u16v_t into the encode stream
+     ** @param[in] Value      The value to encode
+     ** @param[in] pFieldDesc The field descriptor that describes the encoding
+     **/
     virtual void
     put_u16v (
       llrp_u16v_t               Value,
       const CFieldDescriptor *  pFieldDesc) = 0;
 
-	/** @brief Encodes an put_s16v into the encode stream
-	 ** @param[in] Value      The value to encode
-	 ** @param[in] pFieldDesc The field descriptor that describes the encoding 
-	 **/
+    /** @brief Encodes an put_s16v into the encode stream
+     ** @param[in] Value      The value to encode
+     ** @param[in] pFieldDesc The field descriptor that describes the encoding
+     **/
     virtual void
     put_s16v (
       llrp_s16v_t               Value,
@@ -1574,38 +1569,38 @@ class CEncoderStream
      * 32-bit types
      */
 
-	/** @brief Encodes an llrp_u32_t (unsigned 32-bit number) into the encode stream
-	 ** @param[in] Value      The value to encode
-	 ** @param[in] pFieldDesc The field descriptor that describes the encoding 
-	 **/
-	virtual void
+    /** @brief Encodes an llrp_u32_t (unsigned 32-bit number) into the encode stream
+     ** @param[in] Value      The value to encode
+     ** @param[in] pFieldDesc The field descriptor that describes the encoding
+     **/
+    virtual void
     put_u32 (
       llrp_u32_t                Value,
       const CFieldDescriptor *  pFieldDesc) = 0;
 
-	/** @brief Encodes an llrp_s32_t (signed 32-bit number) into the encode stream
-	 ** @param[in] Value      The value to encode
-	 ** @param[in] pFieldDesc The field descriptor that describes the encoding 
-	 **/
-	virtual void
+    /** @brief Encodes an llrp_s32_t (signed 32-bit number) into the encode stream
+     ** @param[in] Value      The value to encode
+     ** @param[in] pFieldDesc The field descriptor that describes the encoding
+     **/
+    virtual void
     put_s32 (
       llrp_s32_t                Value,
       const CFieldDescriptor *  pFieldDesc) = 0;
 
-	/** @brief Encodes an llrp_u32v_t into the encode stream
-	 ** @param[in] Value      The value to encode
-	 ** @param[in] pFieldDesc The field descriptor that describes the encoding 
-	 **/
-	virtual void
+    /** @brief Encodes an llrp_u32v_t into the encode stream
+     ** @param[in] Value      The value to encode
+     ** @param[in] pFieldDesc The field descriptor that describes the encoding
+     **/
+    virtual void
     put_u32v (
       llrp_u32v_t               Value,
       const CFieldDescriptor *  pFieldDesc) = 0;
 
-	/** @brief Encodes an llrp_s32v_t into the encode stream
-	 ** @param[in] Value      The value to encode
-	 ** @param[in] pFieldDesc The field descriptor that describes the encoding 
-	 **/
-	virtual void
+    /** @brief Encodes an llrp_s32v_t into the encode stream
+     ** @param[in] Value      The value to encode
+     ** @param[in] pFieldDesc The field descriptor that describes the encoding
+     **/
+    virtual void
     put_s32v (
       llrp_s32v_t               Value,
       const CFieldDescriptor *  pFieldDesc) = 0;
@@ -1614,38 +1609,38 @@ class CEncoderStream
      * 64-bit types
      */
 
-	/** @brief Encodes an llrp_u64_t (unsigned 64-bit number) into the encode stream
-	 ** @param[in] Value      The value to encode
-	 ** @param[in] pFieldDesc The field descriptor that describes the encoding 
-	 **/
-	virtual void
+    /** @brief Encodes an llrp_u64_t (unsigned 64-bit number) into the encode stream
+     ** @param[in] Value      The value to encode
+     ** @param[in] pFieldDesc The field descriptor that describes the encoding
+     **/
+    virtual void
     put_u64 (
       llrp_u64_t                Value,
       const CFieldDescriptor *  pFieldDesc) = 0;
 
-	/** @brief Encodes an llrp_s64_t (signed 64-bit number) into the encode stream
-	 ** @param[in] Value      The value to encode
-	 ** @param[in] pFieldDesc The field descriptor that describes the encoding 
-	 **/
-	virtual void
+    /** @brief Encodes an llrp_s64_t (signed 64-bit number) into the encode stream
+     ** @param[in] Value      The value to encode
+     ** @param[in] pFieldDesc The field descriptor that describes the encoding
+     **/
+    virtual void
     put_s64 (
       llrp_s64_t                Value,
       const CFieldDescriptor *  pFieldDesc) = 0;
 
-	/** @brief Encodes an llrp_u64v_t into the encode stream
-	 ** @param[in] Value      The value to encode
-	 ** @param[in] pFieldDesc The field descriptor that describes the encoding 
-	 **/
-	virtual void
+    /** @brief Encodes an llrp_u64v_t into the encode stream
+     ** @param[in] Value      The value to encode
+     ** @param[in] pFieldDesc The field descriptor that describes the encoding
+     **/
+    virtual void
     put_u64v (
       llrp_u64v_t               Value,
       const CFieldDescriptor *  pFieldDesc) = 0;
 
-	/** @brief Encodes an llrp_s64v_t into the encode stream
-	 ** @param[in] Value      The value to encode
-	 ** @param[in] pFieldDesc The field descriptor that describes the encoding 
-	 **/
-	virtual void
+    /** @brief Encodes an llrp_s64v_t into the encode stream
+     ** @param[in] Value      The value to encode
+     ** @param[in] pFieldDesc The field descriptor that describes the encoding
+     **/
+    virtual void
     put_s64v (
       llrp_s64v_t               Value,
       const CFieldDescriptor *  pFieldDesc) = 0;
@@ -1654,55 +1649,55 @@ class CEncoderStream
      * Special types
      */
 
-	/** @brief Encodes an llrp_u64_t (unsigned 64-bit number) into the encode stream
-	 ** @param[in] Value      The value to encode
-	 ** @param[in] pFieldDesc The field descriptor that describes the encoding 
-	 **/
+    /** @brief Encodes an llrp_u64_t (unsigned 64-bit number) into the encode stream
+     ** @param[in] Value      The value to encode
+     ** @param[in] pFieldDesc The field descriptor that describes the encoding
+     **/
     virtual void
     put_u1 (
       llrp_u1_t                 Value,
       const CFieldDescriptor *  pFieldDesc) = 0;
 
-	/** @brief Encodes an llrp_u1v_t (unsigned 1-bit number) into the encode stream
-	 ** @param[in] Value      The value to encode
-	 ** @param[in] pFieldDesc The field descriptor that describes the encoding 
-	 **/
+    /** @brief Encodes an llrp_u1v_t (unsigned 1-bit number) into the encode stream
+     ** @param[in] Value      The value to encode
+     ** @param[in] pFieldDesc The field descriptor that describes the encoding
+     **/
     virtual void
     put_u1v (
       llrp_u1v_t                Value,
       const CFieldDescriptor *  pFieldDesc) = 0;
 
-	/** @brief Encodes an llrp_u2_t (unsigned 2-bit number) into the encode stream
-	 ** @param[in] Value      The value to encode
-	 ** @param[in] pFieldDesc The field descriptor that describes the encoding 
-	 **/
+    /** @brief Encodes an llrp_u2_t (unsigned 2-bit number) into the encode stream
+     ** @param[in] Value      The value to encode
+     ** @param[in] pFieldDesc The field descriptor that describes the encoding
+     **/
     virtual void
     put_u2 (
       llrp_u2_t                 Value,
       const CFieldDescriptor *  pFieldDesc) = 0;
 
-	/** @brief Encodes an llrp_u96_t (unsigned 96-bit number) into the encode stream
-	 ** @param[in] Value      The value to encode
-	 ** @param[in] pFieldDesc The field descriptor that describes the encoding 
-	 **/
+    /** @brief Encodes an llrp_u96_t (unsigned 96-bit number) into the encode stream
+     ** @param[in] Value      The value to encode
+     ** @param[in] pFieldDesc The field descriptor that describes the encoding
+     **/
     virtual void
     put_u96 (
       llrp_u96_t                Value,
       const CFieldDescriptor *  pFieldDesc) = 0;
 
-	/** @brief Encodes an put_utf8v (utf8 character string) into the encode stream
-	 ** @param[in] Value      The value to encode
-	 ** @param[in] pFieldDesc The field descriptor that describes the encoding 
-	 **/
+    /** @brief Encodes an put_utf8v (utf8 character string) into the encode stream
+     ** @param[in] Value      The value to encode
+     ** @param[in] pFieldDesc The field descriptor that describes the encoding
+     **/
     virtual void
     put_utf8v (
       llrp_utf8v_t              Value,
       const CFieldDescriptor *  pFieldDesc) = 0;
 
-	/** @brief Encodes an put_bytesToEnd into the encode stream
-	 ** @param[in] Value      The value to encode
-	 ** @param[in] pFieldDesc The field descriptor that describes the encoding 
-	 **/
+    /** @brief Encodes an put_bytesToEnd into the encode stream
+     ** @param[in] Value      The value to encode
+     ** @param[in] pFieldDesc The field descriptor that describes the encoding
+     **/
     virtual void
     put_bytesToEnd (
       llrp_bytesToEnd_t         Value,
@@ -1712,55 +1707,55 @@ class CEncoderStream
      * Enumerated types of various sizes
      */
 
-	/** @brief Encodes a 1-bit enumerated type into the encode stream
-	 ** @param[in] eValue      The value to encode
-	 ** @param[in] pFieldDesc The field descriptor that describes the encoding 
-	 **/
+    /** @brief Encodes a 1-bit enumerated type into the encode stream
+     ** @param[in] eValue      The value to encode
+     ** @param[in] pFieldDesc The field descriptor that describes the encoding
+     **/
     virtual void
     put_e1 (
       int                       eValue,
       const CFieldDescriptor *  pFieldDesc) = 0;
 
-	/** @brief Encodes a 2-bit enumerated type into the encode stream
-	 ** @param[in] eValue      The value to encode
-	 ** @param[in] pFieldDesc The field descriptor that describes the encoding 
-	 **/
+    /** @brief Encodes a 2-bit enumerated type into the encode stream
+     ** @param[in] eValue      The value to encode
+     ** @param[in] pFieldDesc The field descriptor that describes the encoding
+     **/
     virtual void
     put_e2 (
       int                       eValue,
       const CFieldDescriptor *  pFieldDesc) = 0;
 
-	/** @brief Encodes an 8-bit enumerated type into the encode stream
-	 ** @param[in] eValue      The value to encode
-	 ** @param[in] pFieldDesc The field descriptor that describes the encoding 
-	 **/
+    /** @brief Encodes an 8-bit enumerated type into the encode stream
+     ** @param[in] eValue      The value to encode
+     ** @param[in] pFieldDesc The field descriptor that describes the encoding
+     **/
     virtual void
     put_e8 (
       int                       eValue,
       const CFieldDescriptor *  pFieldDesc) = 0;
 
-	/** @brief Encodes a 16-bit enumerated type into the encode stream
-	 ** @param[in] eValue      The value to encode
-	 ** @param[in] pFieldDesc The field descriptor that describes the encoding 
-	 **/
+    /** @brief Encodes a 16-bit enumerated type into the encode stream
+     ** @param[in] eValue      The value to encode
+     ** @param[in] pFieldDesc The field descriptor that describes the encoding
+     **/
     virtual void
     put_e16 (
       int                       eValue,
       const CFieldDescriptor *  pFieldDesc) = 0;
 
-	/** @brief Encodes a32-bit enumerated type into the encode stream
-	 ** @param[in] eValue      The value to encode
-	 ** @param[in] pFieldDesc The field descriptor that describes the encoding 
-	 **/
+    /** @brief Encodes a32-bit enumerated type into the encode stream
+     ** @param[in] eValue      The value to encode
+     ** @param[in] pFieldDesc The field descriptor that describes the encoding
+     **/
     virtual void
     put_e32 (
       int                       eValue,
       const CFieldDescriptor *  pFieldDesc) = 0;
 
-	/** @brief Encodes an enumerated u8v type into the encode stream
-	 ** @param[in] Value      The value to encode
-	 ** @param[in] pFieldDesc The field descriptor that describes the encoding 
-	 **/
+    /** @brief Encodes an enumerated u8v type into the encode stream
+     ** @param[in] Value      The value to encode
+     ** @param[in] pFieldDesc The field descriptor that describes the encoding
+     **/
     virtual void
     put_e8v (
       llrp_u8v_t                Value,
@@ -1778,7 +1773,7 @@ class CEncoderStream
 
 
 /*
-** @brief Encodes a CElement into an XML string 
+** @brief Encodes a CElement into an XML string
 **
 ** @param[in]  pElement      The CElement to encode to XML
 ** @param[out] pBuffer       The pointer to the buffer in which to place the XML result

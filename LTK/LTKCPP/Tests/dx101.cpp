@@ -64,7 +64,7 @@ using namespace LLRP;
 
 
 /* Buffer sizes */
-#define FRAME_BUF_SIZE          (1u*1024u*1024u)
+#define FRAME_BUF_SIZE          (4u*1024u*1024u)
 #define XML_TEXT_BUF_SIZE       (10u * FRAME_BUF_SIZE)
 
 
@@ -81,20 +81,20 @@ dump (
 static char
 g_aPacketSequenceHeader[] =
 {
+  "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
+  "\n"
   "<ps:packetSequence\n"
   "  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'\n"
   "  xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'\n"
-  "  xmlns:ps='http://www.llrp.org/ltk/schema/testing/encoding/xml/0.5'\n"
+  "  xmlns:ps='http://www.llrp.org/ltk/schema/testing/encoding/xml/0.6'\n"
   "  xsi:schemaLocation='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0\n"
-  "     http://www.llrp.org/ltk/schema/core/encoding/xml/1.0/LLRP.xs\n"
-  "     http://www.llrp.org/ltk/schema/testing/encoding/xml/0.5\n"
-  "     ../../Tests/Definitions/llrpSequence.xsd'>\n"
+  "                      http://www.llrp.org/ltk/schema/core/encoding/xml/1.0/llrp.xsd>\n"
 };
 
 static char
 g_aPacketSequenceFooter[] =
 {
-  "</ps:packetSequence>\n"
+  "\n</ps:packetSequence>\n"
 };
 
 

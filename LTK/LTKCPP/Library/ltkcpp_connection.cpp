@@ -889,6 +889,10 @@ CConnection::recvResponse (
  **             RC_RecvFramingError LLRP_FrameExtract() detected an
  **                                 impossible situation. Recovery unlikely.
  **             RC_RecvTimeout      Frame didn't complete within allowed time
+ **             RC_RecvBufferOverflow
+ **                                 LLRP_FrameExtract() detected an inbound
+ **                                 message that would overflow the receive
+ **                                 buffer.
  **             RC_...              Decoder error.
  **
  *****************************************************************************/
@@ -971,6 +975,17 @@ CConnection::recvAdvance (
                             "timeout");
                     break;
                 }
+            }
+
+            /*
+             * The frame extractor needs more data, make sure the
+             * frame size fits in the receive buffer.
+             */
+            if(m_Recv.nBuffer + nRead > m_nBufferSize)
+            {
+                pError->resultCodeAndWhatStr(RC_RecvBufferOverflow,
+                        "buffer overflow");
+                break;
             }
 
             /*

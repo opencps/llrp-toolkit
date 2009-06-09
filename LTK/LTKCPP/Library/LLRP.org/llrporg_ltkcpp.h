@@ -26,8 +26,8 @@
  * Version is four each 8-bit numbers:
  * major, minor, maintenance, progress number
  */
-#define LLRPORG_LTKCPP_VERSION      0x01000005
-#define LLRPORG_LTKCPP_VERSION_STR  "1.0.0.5"
+#define LLRPORG_LTKCPP_VERSION      0x01000006
+#define LLRPORG_LTKCPP_VERSION_STR  "1.0.0.6"
 
 namespace LLRP
 {
