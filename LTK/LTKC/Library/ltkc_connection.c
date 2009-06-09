@@ -887,6 +887,10 @@ LLRP_Conn_recvResponse (
  **                                 LLRP_FrameExtract() detected an
  **                                 impossible situation. Recovery unlikely.
  **             LLRP_RC_RecvTimeout Frame didn't complete within allowed time
+ **             LLRP_RC_RecvBufferOverflow
+ **                                 LLRP_FrameExtract() detected an inbound
+ **                                 message that would overflow the receive
+ **                                 buffer.
  **             LLRP_RC_...         Decoder error.
  **
  *****************************************************************************/
@@ -972,6 +976,18 @@ recvAdvance (
                         LLRP_RC_RecvTimeout, "timeout");
                     break;
                 }
+            }
+
+            /*
+             * The frame extractor needs more data, make sure the
+             * frame size fits in the receive buffer.
+             */
+            if(pConn->Recv.nBuffer + nRead > pConn->nBufferSize)
+            {
+                /* Buffer overflow */
+                LLRP_Error_resultCodeAndWhatStr(pError,
+                    LLRP_RC_RecvBufferOverflow, "buffer overflow");
+                break;
             }
 
             /*

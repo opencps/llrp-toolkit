@@ -37,6 +37,22 @@ echo ""
 echo ""
 
 
+echo "================================================================"
+echo "== Run dx101 on standard 'b' input to verify function."
+echo "================================================================"
+dos2unix $STD_TESTS_DX101/dx101_b.xml
+./dx101 $STD_TESTS_DX101/dx101_b.bin > dx101_b.tmp
+if cmp -s dx101_b.tmp $STD_TESTS_DX101/dx101_b.xml
+then
+    echo DX101 B -- PASSED
+else
+    echo DX101 B -- FAILED
+    exit
+fi
+echo ""
+echo ""
+echo ""
+
 
 echo "================================================================"
 echo "== Run dx101 on standard 'c' input to verify function."
