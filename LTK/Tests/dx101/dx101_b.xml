@@ -1,17 +1,29 @@
-<ps:packetSequence  xmlns="http://www.llrp.org/ltk/schema/core/encoding/xml/0.9"
-  		    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		    xmlns:ps="http://www.llrp.org/ltk/schema/testing/encoding/xml/0.5"
-		     xsi:schemaLocation="http://www.llrp.org/ltk/schema/core/encoding/xml/0.9 http://www.llrp.org/ltk/schema/core/encoding/xml/0.9/LLRP.xsd
-					 http://www.llrp.org/ltk/schema/testing/encoding/xml/0.5 ../../Tests/Definitions/llrpSequence.xsd">
-<RO_ACCESS_REPORT Version="1" MessageID="0">  <TagReportData>
+<?xml version="1.0" encoding="utf-8"?>
+
+<ps:packetSequence
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+  xmlns:ps='http://www.llrp.org/ltk/schema/testing/encoding/xml/0.6'
+  xsi:schemaLocation='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0
+                      http://www.llrp.org/ltk/schema/core/encoding/xml/1.0/llrp.xsd>
+
+
+<RO_ACCESS_REPORT MessageID='0'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <TagReportData>
     <EPCData>
-      <EPC Count="1">54</EPC>
+      <EPC Count='1'>54</EPC>
     </EPCData>
   </TagReportData>
 </RO_ACCESS_REPORT>
-<RO_ACCESS_REPORT Version="1" MessageID="1">  <TagReportData>
+
+<RO_ACCESS_REPORT MessageID='1'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <TagReportData>
     <EPCData>
-      <EPC Count="1">a1</EPC>
+      <EPC Count='1'>A1</EPC>
     </EPCData>
     <ROSpecID>
       <ROSpecID>1837236224</ROSpecID>
@@ -26,10 +38,10 @@
       <AntennaID>25838</AntennaID>
     </AntennaID>
     <FirstSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </FirstSeenTimestampUTC>
     <LastSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </LastSeenTimestampUTC>
     <TagSeenCount>
       <TagCount>8610</TagCount>
@@ -42,60 +54,68 @@
     </C1G2_CRC>
   </TagReportData>
 </RO_ACCESS_REPORT>
-<RO_ACCESS_REPORT Version="1" MessageID="2">  <TagReportData>
+
+<RO_ACCESS_REPORT MessageID='2'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <TagReportData>
     <EPCData>
-      <EPC Count="1">da</EPC>
+      <EPC Count='1'>DA</EPC>
     </EPCData>
   </TagReportData>
   <TagReportData>
     <EPCData>
-      <EPC Count="1">fe</EPC>
+      <EPC Count='1'>FE</EPC>
     </EPCData>
   </TagReportData>
   <TagReportData>
     <EPCData>
-      <EPC Count="1">fc</EPC>
+      <EPC Count='1'>FC</EPC>
     </EPCData>
   </TagReportData>
   <TagReportData>
     <EPCData>
-      <EPC Count="1">8b</EPC>
+      <EPC Count='1'>8B</EPC>
     </EPCData>
   </TagReportData>
   <TagReportData>
     <EPCData>
-      <EPC Count="1">5f</EPC>
+      <EPC Count='1'>5F</EPC>
     </EPCData>
   </TagReportData>
   <TagReportData>
     <EPCData>
-      <EPC Count="1">9a</EPC>
+      <EPC Count='1'>9A</EPC>
     </EPCData>
   </TagReportData>
   <TagReportData>
     <EPCData>
-      <EPC Count="1">aa</EPC>
+      <EPC Count='1'>AA</EPC>
     </EPCData>
   </TagReportData>
   <TagReportData>
     <EPCData>
-      <EPC Count="1">06</EPC>
+      <EPC Count='1'>06</EPC>
     </EPCData>
   </TagReportData>
   <TagReportData>
     <EPCData>
-      <EPC Count="1">52</EPC>
+      <EPC Count='1'>52</EPC>
     </EPCData>
   </TagReportData>
   <TagReportData>
     <EPCData>
-      <EPC Count="1">b9</EPC>
+      <EPC Count='1'>B9</EPC>
     </EPCData>
   </TagReportData>
 </RO_ACCESS_REPORT>
-<RO_ACCESS_REPORT Version="1" MessageID="3">  <TagReportData>
+
+<RO_ACCESS_REPORT MessageID='3'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <TagReportData>
     <EPCData>
-      <EPC Count="1">e5</EPC>
+      <EPC Count='1'>E5</EPC>
     </EPCData>
     <ROSpecID>
       <ROSpecID>4265213952</ROSpecID>
@@ -110,10 +130,10 @@
       <AntennaID>17488</AntennaID>
     </AntennaID>
     <FirstSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </FirstSeenTimestampUTC>
     <LastSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </LastSeenTimestampUTC>
     <TagSeenCount>
       <TagCount>818</TagCount>
@@ -127,7 +147,7 @@
   </TagReportData>
   <TagReportData>
     <EPCData>
-      <EPC Count="1">3c</EPC>
+      <EPC Count='1'>3C</EPC>
     </EPCData>
     <ROSpecID>
       <ROSpecID>342228992</ROSpecID>
@@ -142,10 +162,10 @@
       <AntennaID>58788</AntennaID>
     </AntennaID>
     <FirstSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </FirstSeenTimestampUTC>
     <LastSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </LastSeenTimestampUTC>
     <TagSeenCount>
       <TagCount>59724</TagCount>
@@ -159,7 +179,7 @@
   </TagReportData>
   <TagReportData>
     <EPCData>
-      <EPC Count="1">a5</EPC>
+      <EPC Count='1'>A5</EPC>
     </EPCData>
     <ROSpecID>
       <ROSpecID>2367946752</ROSpecID>
@@ -174,10 +194,10 @@
       <AntennaID>11314</AntennaID>
     </AntennaID>
     <FirstSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </FirstSeenTimestampUTC>
     <LastSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </LastSeenTimestampUTC>
     <TagSeenCount>
       <TagCount>5370</TagCount>
@@ -191,7 +211,7 @@
   </TagReportData>
   <TagReportData>
     <EPCData>
-      <EPC Count="1">9c</EPC>
+      <EPC Count='1'>9C</EPC>
     </EPCData>
     <ROSpecID>
       <ROSpecID>3090022400</ROSpecID>
@@ -206,10 +226,10 @@
       <AntennaID>23184</AntennaID>
     </AntennaID>
     <FirstSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </FirstSeenTimestampUTC>
     <LastSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </LastSeenTimestampUTC>
     <TagSeenCount>
       <TagCount>4996</TagCount>
@@ -223,7 +243,7 @@
   </TagReportData>
   <TagReportData>
     <EPCData>
-      <EPC Count="1">55</EPC>
+      <EPC Count='1'>55</EPC>
     </EPCData>
     <ROSpecID>
       <ROSpecID>3735158784</ROSpecID>
@@ -238,10 +258,10 @@
       <AntennaID>17748</AntennaID>
     </AntennaID>
     <FirstSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </FirstSeenTimestampUTC>
     <LastSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </LastSeenTimestampUTC>
     <TagSeenCount>
       <TagCount>56352</TagCount>
@@ -255,7 +275,7 @@
   </TagReportData>
   <TagReportData>
     <EPCData>
-      <EPC Count="1">b8</EPC>
+      <EPC Count='1'>B8</EPC>
     </EPCData>
     <ROSpecID>
       <ROSpecID>1275723776</ROSpecID>
@@ -270,10 +290,10 @@
       <AntennaID>24610</AntennaID>
     </AntennaID>
     <FirstSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </FirstSeenTimestampUTC>
     <LastSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </LastSeenTimestampUTC>
     <TagSeenCount>
       <TagCount>43244</TagCount>
@@ -287,7 +307,7 @@
   </TagReportData>
   <TagReportData>
     <EPCData>
-      <EPC Count="1">7f</EPC>
+      <EPC Count='1'>7F</EPC>
     </EPCData>
     <ROSpecID>
       <ROSpecID>4149739520</ROSpecID>
@@ -302,10 +322,10 @@
       <AntennaID>60066</AntennaID>
     </AntennaID>
     <FirstSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </FirstSeenTimestampUTC>
     <LastSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </LastSeenTimestampUTC>
     <TagSeenCount>
       <TagCount>28652</TagCount>
@@ -319,7 +339,7 @@
   </TagReportData>
   <TagReportData>
     <EPCData>
-      <EPC Count="1">73</EPC>
+      <EPC Count='1'>73</EPC>
     </EPCData>
     <ROSpecID>
       <ROSpecID>3420454912</ROSpecID>
@@ -334,10 +354,10 @@
       <AntennaID>15746</AntennaID>
     </AntennaID>
     <FirstSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </FirstSeenTimestampUTC>
     <LastSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </LastSeenTimestampUTC>
     <TagSeenCount>
       <TagCount>64520</TagCount>
@@ -351,7 +371,7 @@
   </TagReportData>
   <TagReportData>
     <EPCData>
-      <EPC Count="1">c9</EPC>
+      <EPC Count='1'>C9</EPC>
     </EPCData>
     <ROSpecID>
       <ROSpecID>2456027136</ROSpecID>
@@ -366,10 +386,10 @@
       <AntennaID>14208</AntennaID>
     </AntennaID>
     <FirstSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </FirstSeenTimestampUTC>
     <LastSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </LastSeenTimestampUTC>
     <TagSeenCount>
       <TagCount>42522</TagCount>
@@ -383,7 +403,7 @@
   </TagReportData>
   <TagReportData>
     <EPCData>
-      <EPC Count="1">9b</EPC>
+      <EPC Count='1'>9B</EPC>
     </EPCData>
     <ROSpecID>
       <ROSpecID>2047606784</ROSpecID>
@@ -398,10 +418,10 @@
       <AntennaID>51804</AntennaID>
     </AntennaID>
     <FirstSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </FirstSeenTimestampUTC>
     <LastSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </LastSeenTimestampUTC>
     <TagSeenCount>
       <TagCount>44506</TagCount>
@@ -414,15 +434,23 @@
     </C1G2_CRC>
   </TagReportData>
 </RO_ACCESS_REPORT>
-<RO_ACCESS_REPORT Version="1" MessageID="4">  <TagReportData>
+
+<RO_ACCESS_REPORT MessageID='4'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <TagReportData>
     <EPCData>
-      <EPC Count="8">8e</EPC>
+      <EPC Count='8'>8E</EPC>
     </EPCData>
   </TagReportData>
 </RO_ACCESS_REPORT>
-<RO_ACCESS_REPORT Version="1" MessageID="5">  <TagReportData>
+
+<RO_ACCESS_REPORT MessageID='5'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <TagReportData>
     <EPCData>
-      <EPC Count="8">41</EPC>
+      <EPC Count='8'>41</EPC>
     </EPCData>
     <ROSpecID>
       <ROSpecID>1315045376</ROSpecID>
@@ -437,10 +465,10 @@
       <AntennaID>13040</AntennaID>
     </AntennaID>
     <FirstSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </FirstSeenTimestampUTC>
     <LastSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </LastSeenTimestampUTC>
     <TagSeenCount>
       <TagCount>24382</TagCount>
@@ -453,60 +481,68 @@
     </C1G2_CRC>
   </TagReportData>
 </RO_ACCESS_REPORT>
-<RO_ACCESS_REPORT Version="1" MessageID="6">  <TagReportData>
+
+<RO_ACCESS_REPORT MessageID='6'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <TagReportData>
     <EPCData>
-      <EPC Count="8">ff</EPC>
+      <EPC Count='8'>FF</EPC>
     </EPCData>
   </TagReportData>
   <TagReportData>
     <EPCData>
-      <EPC Count="8">3a</EPC>
+      <EPC Count='8'>3A</EPC>
     </EPCData>
   </TagReportData>
   <TagReportData>
     <EPCData>
-      <EPC Count="8">49</EPC>
+      <EPC Count='8'>49</EPC>
     </EPCData>
   </TagReportData>
   <TagReportData>
     <EPCData>
-      <EPC Count="8">0e</EPC>
+      <EPC Count='8'>0E</EPC>
     </EPCData>
   </TagReportData>
   <TagReportData>
     <EPCData>
-      <EPC Count="8">cd</EPC>
+      <EPC Count='8'>CD</EPC>
     </EPCData>
   </TagReportData>
   <TagReportData>
     <EPCData>
-      <EPC Count="8">3b</EPC>
+      <EPC Count='8'>3B</EPC>
     </EPCData>
   </TagReportData>
   <TagReportData>
     <EPCData>
-      <EPC Count="8">eb</EPC>
+      <EPC Count='8'>EB</EPC>
     </EPCData>
   </TagReportData>
   <TagReportData>
     <EPCData>
-      <EPC Count="8">84</EPC>
+      <EPC Count='8'>84</EPC>
     </EPCData>
   </TagReportData>
   <TagReportData>
     <EPCData>
-      <EPC Count="8">8c</EPC>
+      <EPC Count='8'>8C</EPC>
     </EPCData>
   </TagReportData>
   <TagReportData>
     <EPCData>
-      <EPC Count="8">1f</EPC>
+      <EPC Count='8'>1F</EPC>
     </EPCData>
   </TagReportData>
 </RO_ACCESS_REPORT>
-<RO_ACCESS_REPORT Version="1" MessageID="7">  <TagReportData>
+
+<RO_ACCESS_REPORT MessageID='7'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <TagReportData>
     <EPCData>
-      <EPC Count="8">6e</EPC>
+      <EPC Count='8'>6E</EPC>
     </EPCData>
     <ROSpecID>
       <ROSpecID>3089367040</ROSpecID>
@@ -521,10 +557,10 @@
       <AntennaID>64734</AntennaID>
     </AntennaID>
     <FirstSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </FirstSeenTimestampUTC>
     <LastSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </LastSeenTimestampUTC>
     <TagSeenCount>
       <TagCount>44182</TagCount>
@@ -538,7 +574,7 @@
   </TagReportData>
   <TagReportData>
     <EPCData>
-      <EPC Count="8">2c</EPC>
+      <EPC Count='8'>2C</EPC>
     </EPCData>
     <ROSpecID>
       <ROSpecID>3819044864</ROSpecID>
@@ -553,10 +589,10 @@
       <AntennaID>3778</AntennaID>
     </AntennaID>
     <FirstSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </FirstSeenTimestampUTC>
     <LastSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </LastSeenTimestampUTC>
     <TagSeenCount>
       <TagCount>22722</TagCount>
@@ -570,7 +606,7 @@
   </TagReportData>
   <TagReportData>
     <EPCData>
-      <EPC Count="8">e4</EPC>
+      <EPC Count='8'>E4</EPC>
     </EPCData>
     <ROSpecID>
       <ROSpecID>2235301888</ROSpecID>
@@ -585,10 +621,10 @@
       <AntennaID>32340</AntennaID>
     </AntennaID>
     <FirstSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </FirstSeenTimestampUTC>
     <LastSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </LastSeenTimestampUTC>
     <TagSeenCount>
       <TagCount>22864</TagCount>
@@ -602,7 +638,7 @@
   </TagReportData>
   <TagReportData>
     <EPCData>
-      <EPC Count="8">d7</EPC>
+      <EPC Count='8'>D7</EPC>
     </EPCData>
     <ROSpecID>
       <ROSpecID>2447507456</ROSpecID>
@@ -617,10 +653,10 @@
       <AntennaID>60702</AntennaID>
     </AntennaID>
     <FirstSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </FirstSeenTimestampUTC>
     <LastSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </LastSeenTimestampUTC>
     <TagSeenCount>
       <TagCount>21144</TagCount>
@@ -634,7 +670,7 @@
   </TagReportData>
   <TagReportData>
     <EPCData>
-      <EPC Count="8">59</EPC>
+      <EPC Count='8'>59</EPC>
     </EPCData>
     <ROSpecID>
       <ROSpecID>1821245440</ROSpecID>
@@ -649,10 +685,10 @@
       <AntennaID>49626</AntennaID>
     </AntennaID>
     <FirstSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </FirstSeenTimestampUTC>
     <LastSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </LastSeenTimestampUTC>
     <TagSeenCount>
       <TagCount>14710</TagCount>
@@ -666,7 +702,7 @@
   </TagReportData>
   <TagReportData>
     <EPCData>
-      <EPC Count="8">9b</EPC>
+      <EPC Count='8'>9B</EPC>
     </EPCData>
     <ROSpecID>
       <ROSpecID>1933705216</ROSpecID>
@@ -681,10 +717,10 @@
       <AntennaID>18788</AntennaID>
     </AntennaID>
     <FirstSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </FirstSeenTimestampUTC>
     <LastSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </LastSeenTimestampUTC>
     <TagSeenCount>
       <TagCount>61518</TagCount>
@@ -698,7 +734,7 @@
   </TagReportData>
   <TagReportData>
     <EPCData>
-      <EPC Count="8">25</EPC>
+      <EPC Count='8'>25</EPC>
     </EPCData>
     <ROSpecID>
       <ROSpecID>2886205440</ROSpecID>
@@ -713,10 +749,10 @@
       <AntennaID>30660</AntennaID>
     </AntennaID>
     <FirstSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </FirstSeenTimestampUTC>
     <LastSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </LastSeenTimestampUTC>
     <TagSeenCount>
       <TagCount>1040</TagCount>
@@ -730,7 +766,7 @@
   </TagReportData>
   <TagReportData>
     <EPCData>
-      <EPC Count="8">e1</EPC>
+      <EPC Count='8'>E1</EPC>
     </EPCData>
     <ROSpecID>
       <ROSpecID>2448293888</ROSpecID>
@@ -745,10 +781,10 @@
       <AntennaID>18726</AntennaID>
     </AntennaID>
     <FirstSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </FirstSeenTimestampUTC>
     <LastSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </LastSeenTimestampUTC>
     <TagSeenCount>
       <TagCount>35118</TagCount>
@@ -762,7 +798,7 @@
   </TagReportData>
   <TagReportData>
     <EPCData>
-      <EPC Count="8">cd</EPC>
+      <EPC Count='8'>CD</EPC>
     </EPCData>
     <ROSpecID>
       <ROSpecID>34603008</ROSpecID>
@@ -777,10 +813,10 @@
       <AntennaID>49892</AntennaID>
     </AntennaID>
     <FirstSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </FirstSeenTimestampUTC>
     <LastSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </LastSeenTimestampUTC>
     <TagSeenCount>
       <TagCount>6312</TagCount>
@@ -794,7 +830,7 @@
   </TagReportData>
   <TagReportData>
     <EPCData>
-      <EPC Count="8">4d</EPC>
+      <EPC Count='8'>4D</EPC>
     </EPCData>
     <ROSpecID>
       <ROSpecID>1217265664</ROSpecID>
@@ -809,10 +845,10 @@
       <AntennaID>38008</AntennaID>
     </AntennaID>
     <FirstSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </FirstSeenTimestampUTC>
     <LastSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </LastSeenTimestampUTC>
     <TagSeenCount>
       <TagCount>60674</TagCount>
@@ -825,15 +861,23 @@
     </C1G2_CRC>
   </TagReportData>
 </RO_ACCESS_REPORT>
-<RO_ACCESS_REPORT Version="1" MessageID="8">  <TagReportData>
+
+<RO_ACCESS_REPORT MessageID='8'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <TagReportData>
     <EPCData>
-      <EPC Count="9">1d4d</EPC>
+      <EPC Count='9'>1D4D</EPC>
     </EPCData>
   </TagReportData>
 </RO_ACCESS_REPORT>
-<RO_ACCESS_REPORT Version="1" MessageID="9">  <TagReportData>
+
+<RO_ACCESS_REPORT MessageID='9'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <TagReportData>
     <EPCData>
-      <EPC Count="9">0d0b</EPC>
+      <EPC Count='9'>0D0B</EPC>
     </EPCData>
     <ROSpecID>
       <ROSpecID>1485570048</ROSpecID>
@@ -848,10 +892,10 @@
       <AntennaID>7032</AntennaID>
     </AntennaID>
     <FirstSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </FirstSeenTimestampUTC>
     <LastSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </LastSeenTimestampUTC>
     <TagSeenCount>
       <TagCount>57212</TagCount>
@@ -864,60 +908,68 @@
     </C1G2_CRC>
   </TagReportData>
 </RO_ACCESS_REPORT>
-<RO_ACCESS_REPORT Version="1" MessageID="10">  <TagReportData>
+
+<RO_ACCESS_REPORT MessageID='10'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <TagReportData>
     <EPCData>
-      <EPC Count="9">7b75</EPC>
+      <EPC Count='9'>7B75</EPC>
     </EPCData>
   </TagReportData>
   <TagReportData>
     <EPCData>
-      <EPC Count="9">04b8</EPC>
+      <EPC Count='9'>04B8</EPC>
     </EPCData>
   </TagReportData>
   <TagReportData>
     <EPCData>
-      <EPC Count="9">754e</EPC>
+      <EPC Count='9'>754E</EPC>
     </EPCData>
   </TagReportData>
   <TagReportData>
     <EPCData>
-      <EPC Count="9">2df1</EPC>
+      <EPC Count='9'>2DF1</EPC>
     </EPCData>
   </TagReportData>
   <TagReportData>
     <EPCData>
-      <EPC Count="9">26a0</EPC>
+      <EPC Count='9'>26A0</EPC>
     </EPCData>
   </TagReportData>
   <TagReportData>
     <EPCData>
-      <EPC Count="9">a86e</EPC>
+      <EPC Count='9'>A86E</EPC>
     </EPCData>
   </TagReportData>
   <TagReportData>
     <EPCData>
-      <EPC Count="9">3210</EPC>
+      <EPC Count='9'>3210</EPC>
     </EPCData>
   </TagReportData>
   <TagReportData>
     <EPCData>
-      <EPC Count="9">3a37</EPC>
+      <EPC Count='9'>3A37</EPC>
     </EPCData>
   </TagReportData>
   <TagReportData>
     <EPCData>
-      <EPC Count="9">e9fa</EPC>
+      <EPC Count='9'>E9FA</EPC>
     </EPCData>
   </TagReportData>
   <TagReportData>
     <EPCData>
-      <EPC Count="9">6f4d</EPC>
+      <EPC Count='9'>6F4D</EPC>
     </EPCData>
   </TagReportData>
 </RO_ACCESS_REPORT>
-<RO_ACCESS_REPORT Version="1" MessageID="11">  <TagReportData>
+
+<RO_ACCESS_REPORT MessageID='11'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <TagReportData>
     <EPCData>
-      <EPC Count="9">ea23</EPC>
+      <EPC Count='9'>EA23</EPC>
     </EPCData>
     <ROSpecID>
       <ROSpecID>2737569792</ROSpecID>
@@ -932,10 +984,10 @@
       <AntennaID>54588</AntennaID>
     </AntennaID>
     <FirstSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </FirstSeenTimestampUTC>
     <LastSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </LastSeenTimestampUTC>
     <TagSeenCount>
       <TagCount>52554</TagCount>
@@ -949,7 +1001,7 @@
   </TagReportData>
   <TagReportData>
     <EPCData>
-      <EPC Count="9">f35e</EPC>
+      <EPC Count='9'>F35E</EPC>
     </EPCData>
     <ROSpecID>
       <ROSpecID>66322432</ROSpecID>
@@ -964,10 +1016,10 @@
       <AntennaID>10130</AntennaID>
     </AntennaID>
     <FirstSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </FirstSeenTimestampUTC>
     <LastSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </LastSeenTimestampUTC>
     <TagSeenCount>
       <TagCount>27274</TagCount>
@@ -981,7 +1033,7 @@
   </TagReportData>
   <TagReportData>
     <EPCData>
-      <EPC Count="9">ada9</EPC>
+      <EPC Count='9'>ADA9</EPC>
     </EPCData>
     <ROSpecID>
       <ROSpecID>2360475648</ROSpecID>
@@ -996,10 +1048,10 @@
       <AntennaID>28850</AntennaID>
     </AntennaID>
     <FirstSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </FirstSeenTimestampUTC>
     <LastSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </LastSeenTimestampUTC>
     <TagSeenCount>
       <TagCount>16080</TagCount>
@@ -1013,7 +1065,7 @@
   </TagReportData>
   <TagReportData>
     <EPCData>
-      <EPC Count="9">d684</EPC>
+      <EPC Count='9'>D684</EPC>
     </EPCData>
     <ROSpecID>
       <ROSpecID>2923298816</ROSpecID>
@@ -1028,10 +1080,10 @@
       <AntennaID>14996</AntennaID>
     </AntennaID>
     <FirstSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </FirstSeenTimestampUTC>
     <LastSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </LastSeenTimestampUTC>
     <TagSeenCount>
       <TagCount>14170</TagCount>
@@ -1045,7 +1097,7 @@
   </TagReportData>
   <TagReportData>
     <EPCData>
-      <EPC Count="9">a4ca</EPC>
+      <EPC Count='9'>A4CA</EPC>
     </EPCData>
     <ROSpecID>
       <ROSpecID>3093561344</ROSpecID>
@@ -1060,10 +1112,10 @@
       <AntennaID>59456</AntennaID>
     </AntennaID>
     <FirstSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </FirstSeenTimestampUTC>
     <LastSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </LastSeenTimestampUTC>
     <TagSeenCount>
       <TagCount>59716</TagCount>
@@ -1077,7 +1129,7 @@
   </TagReportData>
   <TagReportData>
     <EPCData>
-      <EPC Count="9">e3e0</EPC>
+      <EPC Count='9'>E3E0</EPC>
     </EPCData>
     <ROSpecID>
       <ROSpecID>3131965440</ROSpecID>
@@ -1092,10 +1144,10 @@
       <AntennaID>17982</AntennaID>
     </AntennaID>
     <FirstSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </FirstSeenTimestampUTC>
     <LastSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </LastSeenTimestampUTC>
     <TagSeenCount>
       <TagCount>23376</TagCount>
@@ -1109,7 +1161,7 @@
   </TagReportData>
   <TagReportData>
     <EPCData>
-      <EPC Count="9">fb0f</EPC>
+      <EPC Count='9'>FB0F</EPC>
     </EPCData>
     <ROSpecID>
       <ROSpecID>1873805312</ROSpecID>
@@ -1124,10 +1176,10 @@
       <AntennaID>24164</AntennaID>
     </AntennaID>
     <FirstSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </FirstSeenTimestampUTC>
     <LastSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </LastSeenTimestampUTC>
     <TagSeenCount>
       <TagCount>42028</TagCount>
@@ -1141,7 +1193,7 @@
   </TagReportData>
   <TagReportData>
     <EPCData>
-      <EPC Count="9">56ee</EPC>
+      <EPC Count='9'>56EE</EPC>
     </EPCData>
     <ROSpecID>
       <ROSpecID>6422528</ROSpecID>
@@ -1156,10 +1208,10 @@
       <AntennaID>11536</AntennaID>
     </AntennaID>
     <FirstSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </FirstSeenTimestampUTC>
     <LastSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </LastSeenTimestampUTC>
     <TagSeenCount>
       <TagCount>15506</TagCount>
@@ -1173,7 +1225,7 @@
   </TagReportData>
   <TagReportData>
     <EPCData>
-      <EPC Count="9">fa2d</EPC>
+      <EPC Count='9'>FA2D</EPC>
     </EPCData>
     <ROSpecID>
       <ROSpecID>1853751296</ROSpecID>
@@ -1188,10 +1240,10 @@
       <AntennaID>55872</AntennaID>
     </AntennaID>
     <FirstSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </FirstSeenTimestampUTC>
     <LastSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </LastSeenTimestampUTC>
     <TagSeenCount>
       <TagCount>41386</TagCount>
@@ -1205,7 +1257,7 @@
   </TagReportData>
   <TagReportData>
     <EPCData>
-      <EPC Count="9">1fc5</EPC>
+      <EPC Count='9'>1FC5</EPC>
     </EPCData>
     <ROSpecID>
       <ROSpecID>3729915904</ROSpecID>
@@ -1220,10 +1272,10 @@
       <AntennaID>8922</AntennaID>
     </AntennaID>
     <FirstSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </FirstSeenTimestampUTC>
     <LastSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </LastSeenTimestampUTC>
     <TagSeenCount>
       <TagCount>42872</TagCount>
@@ -1236,15 +1288,23 @@
     </C1G2_CRC>
   </TagReportData>
 </RO_ACCESS_REPORT>
-<RO_ACCESS_REPORT Version="1" MessageID="12">  <TagReportData>
+
+<RO_ACCESS_REPORT MessageID='12'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <TagReportData>
     <EPCData>
-      <EPC Count="64">a042339051c501ce</EPC>
+      <EPC Count='64'>A042339051C501CE</EPC>
     </EPCData>
   </TagReportData>
 </RO_ACCESS_REPORT>
-<RO_ACCESS_REPORT Version="1" MessageID="13">  <TagReportData>
+
+<RO_ACCESS_REPORT MessageID='13'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <TagReportData>
     <EPCData>
-      <EPC Count="64">914fea5897ee25de</EPC>
+      <EPC Count='64'>914FEA5897EE25DE</EPC>
     </EPCData>
     <ROSpecID>
       <ROSpecID>3779592192</ROSpecID>
@@ -1259,10 +1319,10 @@
       <AntennaID>2962</AntennaID>
     </AntennaID>
     <FirstSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </FirstSeenTimestampUTC>
     <LastSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </LastSeenTimestampUTC>
     <TagSeenCount>
       <TagCount>26850</TagCount>
@@ -1275,60 +1335,68 @@
     </C1G2_CRC>
   </TagReportData>
 </RO_ACCESS_REPORT>
-<RO_ACCESS_REPORT Version="1" MessageID="14">  <TagReportData>
+
+<RO_ACCESS_REPORT MessageID='14'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <TagReportData>
     <EPCData>
-      <EPC Count="64">19fff28db8c4fea9</EPC>
+      <EPC Count='64'>19FFF28DB8C4FEA9</EPC>
     </EPCData>
   </TagReportData>
   <TagReportData>
     <EPCData>
-      <EPC Count="64">c710db63ecccad35</EPC>
+      <EPC Count='64'>C710DB63ECCCAD35</EPC>
     </EPCData>
   </TagReportData>
   <TagReportData>
     <EPCData>
-      <EPC Count="64">989465807287e750</EPC>
+      <EPC Count='64'>989465807287E750</EPC>
     </EPCData>
   </TagReportData>
   <TagReportData>
     <EPCData>
-      <EPC Count="64">bb3cd415b6b9448d</EPC>
+      <EPC Count='64'>BB3CD415B6B9448D</EPC>
     </EPCData>
   </TagReportData>
   <TagReportData>
     <EPCData>
-      <EPC Count="64">8bd3417cc5e5415c</EPC>
+      <EPC Count='64'>8BD3417CC5E5415C</EPC>
     </EPCData>
   </TagReportData>
   <TagReportData>
     <EPCData>
-      <EPC Count="64">df486daeef66f315</EPC>
+      <EPC Count='64'>DF486DAEEF66F315</EPC>
     </EPCData>
   </TagReportData>
   <TagReportData>
     <EPCData>
-      <EPC Count="64">fee23fdb06ae4a1a</EPC>
+      <EPC Count='64'>FEE23FDB06AE4A1A</EPC>
     </EPCData>
   </TagReportData>
   <TagReportData>
     <EPCData>
-      <EPC Count="64">2f84db1a41a1f91d</EPC>
+      <EPC Count='64'>2F84DB1A41A1F91D</EPC>
     </EPCData>
   </TagReportData>
   <TagReportData>
     <EPCData>
-      <EPC Count="64">e8255840bb160586</EPC>
+      <EPC Count='64'>E8255840BB160586</EPC>
     </EPCData>
   </TagReportData>
   <TagReportData>
     <EPCData>
-      <EPC Count="64">a25220d69570e9f4</EPC>
+      <EPC Count='64'>A25220D69570E9F4</EPC>
     </EPCData>
   </TagReportData>
 </RO_ACCESS_REPORT>
-<RO_ACCESS_REPORT Version="1" MessageID="15">  <TagReportData>
+
+<RO_ACCESS_REPORT MessageID='15'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <TagReportData>
     <EPCData>
-      <EPC Count="64">48e3e22eba5d5fe7</EPC>
+      <EPC Count='64'>48E3E22EBA5D5FE7</EPC>
     </EPCData>
     <ROSpecID>
       <ROSpecID>1245315072</ROSpecID>
@@ -1343,10 +1411,10 @@
       <AntennaID>38786</AntennaID>
     </AntennaID>
     <FirstSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </FirstSeenTimestampUTC>
     <LastSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </LastSeenTimestampUTC>
     <TagSeenCount>
       <TagCount>15122</TagCount>
@@ -1360,7 +1428,7 @@
   </TagReportData>
   <TagReportData>
     <EPCData>
-      <EPC Count="64">824ae2b2b1506b47</EPC>
+      <EPC Count='64'>824AE2B2B1506B47</EPC>
     </EPCData>
     <ROSpecID>
       <ROSpecID>1893597184</ROSpecID>
@@ -1375,10 +1443,10 @@
       <AntennaID>2108</AntennaID>
     </AntennaID>
     <FirstSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </FirstSeenTimestampUTC>
     <LastSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </LastSeenTimestampUTC>
     <TagSeenCount>
       <TagCount>58606</TagCount>
@@ -1392,7 +1460,7 @@
   </TagReportData>
   <TagReportData>
     <EPCData>
-      <EPC Count="64">44ed650a3af65a6f</EPC>
+      <EPC Count='64'>44ED650A3AF65A6F</EPC>
     </EPCData>
     <ROSpecID>
       <ROSpecID>3619028992</ROSpecID>
@@ -1407,10 +1475,10 @@
       <AntennaID>3704</AntennaID>
     </AntennaID>
     <FirstSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </FirstSeenTimestampUTC>
     <LastSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </LastSeenTimestampUTC>
     <TagSeenCount>
       <TagCount>55432</TagCount>
@@ -1424,7 +1492,7 @@
   </TagReportData>
   <TagReportData>
     <EPCData>
-      <EPC Count="64">0ba7387701adef67</EPC>
+      <EPC Count='64'>0BA7387701ADEF67</EPC>
     </EPCData>
     <ROSpecID>
       <ROSpecID>2201747456</ROSpecID>
@@ -1439,10 +1507,10 @@
       <AntennaID>25328</AntennaID>
     </AntennaID>
     <FirstSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </FirstSeenTimestampUTC>
     <LastSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </LastSeenTimestampUTC>
     <TagSeenCount>
       <TagCount>7644</TagCount>
@@ -1456,7 +1524,7 @@
   </TagReportData>
   <TagReportData>
     <EPCData>
-      <EPC Count="64">7bba23e2eccf1bf5</EPC>
+      <EPC Count='64'>7BBA23E2ECCF1BF5</EPC>
     </EPCData>
     <ROSpecID>
       <ROSpecID>3670802432</ROSpecID>
@@ -1471,10 +1539,10 @@
       <AntennaID>1220</AntennaID>
     </AntennaID>
     <FirstSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </FirstSeenTimestampUTC>
     <LastSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </LastSeenTimestampUTC>
     <TagSeenCount>
       <TagCount>1396</TagCount>
@@ -1488,7 +1556,7 @@
   </TagReportData>
   <TagReportData>
     <EPCData>
-      <EPC Count="64">fb7c4fdd87d97d92</EPC>
+      <EPC Count='64'>FB7C4FDD87D97D92</EPC>
     </EPCData>
     <ROSpecID>
       <ROSpecID>1667891200</ROSpecID>
@@ -1503,10 +1571,10 @@
       <AntennaID>17020</AntennaID>
     </AntennaID>
     <FirstSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </FirstSeenTimestampUTC>
     <LastSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </LastSeenTimestampUTC>
     <TagSeenCount>
       <TagCount>37428</TagCount>
@@ -1520,7 +1588,7 @@
   </TagReportData>
   <TagReportData>
     <EPCData>
-      <EPC Count="64">434477430e7f1eb4</EPC>
+      <EPC Count='64'>434477430E7F1EB4</EPC>
     </EPCData>
     <ROSpecID>
       <ROSpecID>1094189056</ROSpecID>
@@ -1535,10 +1603,10 @@
       <AntennaID>52802</AntennaID>
     </AntennaID>
     <FirstSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </FirstSeenTimestampUTC>
     <LastSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </LastSeenTimestampUTC>
     <TagSeenCount>
       <TagCount>49094</TagCount>
@@ -1552,7 +1620,7 @@
   </TagReportData>
   <TagReportData>
     <EPCData>
-      <EPC Count="64">38c615a9aa297f84</EPC>
+      <EPC Count='64'>38C615A9AA297F84</EPC>
     </EPCData>
     <ROSpecID>
       <ROSpecID>1576271872</ROSpecID>
@@ -1567,10 +1635,10 @@
       <AntennaID>25406</AntennaID>
     </AntennaID>
     <FirstSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </FirstSeenTimestampUTC>
     <LastSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </LastSeenTimestampUTC>
     <TagSeenCount>
       <TagCount>7702</TagCount>
@@ -1584,7 +1652,7 @@
   </TagReportData>
   <TagReportData>
     <EPCData>
-      <EPC Count="64">164c431191cdf436</EPC>
+      <EPC Count='64'>164C431191CDF436</EPC>
     </EPCData>
     <ROSpecID>
       <ROSpecID>3790471168</ROSpecID>
@@ -1599,10 +1667,10 @@
       <AntennaID>5146</AntennaID>
     </AntennaID>
     <FirstSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </FirstSeenTimestampUTC>
     <LastSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </LastSeenTimestampUTC>
     <TagSeenCount>
       <TagCount>5790</TagCount>
@@ -1616,7 +1684,7 @@
   </TagReportData>
   <TagReportData>
     <EPCData>
-      <EPC Count="64">6f9a679f0f0fd1ae</EPC>
+      <EPC Count='64'>6F9A679F0F0FD1AE</EPC>
     </EPCData>
     <ROSpecID>
       <ROSpecID>4110024704</ROSpecID>
@@ -1631,10 +1699,10 @@
       <AntennaID>49964</AntennaID>
     </AntennaID>
     <FirstSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </FirstSeenTimestampUTC>
     <LastSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </LastSeenTimestampUTC>
     <TagSeenCount>
       <TagCount>61530</TagCount>
@@ -1647,15 +1715,23 @@
     </C1G2_CRC>
   </TagReportData>
 </RO_ACCESS_REPORT>
-<RO_ACCESS_REPORT Version="1" MessageID="16">  <TagReportData>
+
+<RO_ACCESS_REPORT MessageID='16'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <TagReportData>
     <EPC_96>
-      <EPC>3aa63defcfbb89502c43c60c</EPC>
+      <EPC>3AA63DEFCFBB89502C43C60C</EPC>
     </EPC_96>
   </TagReportData>
 </RO_ACCESS_REPORT>
-<RO_ACCESS_REPORT Version="1" MessageID="17">  <TagReportData>
+
+<RO_ACCESS_REPORT MessageID='17'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <TagReportData>
     <EPC_96>
-      <EPC>d322833caa8bfa3df43605ff</EPC>
+      <EPC>D322833CAA8BFA3DF43605FF</EPC>
     </EPC_96>
     <ROSpecID>
       <ROSpecID>4169531392</ROSpecID>
@@ -1670,10 +1746,10 @@
       <AntennaID>34314</AntennaID>
     </AntennaID>
     <FirstSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </FirstSeenTimestampUTC>
     <LastSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </LastSeenTimestampUTC>
     <TagSeenCount>
       <TagCount>9808</TagCount>
@@ -1686,60 +1762,68 @@
     </C1G2_CRC>
   </TagReportData>
 </RO_ACCESS_REPORT>
-<RO_ACCESS_REPORT Version="1" MessageID="18">  <TagReportData>
+
+<RO_ACCESS_REPORT MessageID='18'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <TagReportData>
     <EPC_96>
-      <EPC>79feef473881b54b4c74a704</EPC>
+      <EPC>79FEEF473881B54B4C74A704</EPC>
     </EPC_96>
   </TagReportData>
   <TagReportData>
     <EPC_96>
-      <EPC>a8404832a0ad6e34f7542208</EPC>
+      <EPC>A8404832A0AD6E34F7542208</EPC>
     </EPC_96>
   </TagReportData>
   <TagReportData>
     <EPC_96>
-      <EPC>fbf99fd700a3360e3fb7148b</EPC>
+      <EPC>FBF99FD700A3360E3FB7148B</EPC>
     </EPC_96>
   </TagReportData>
   <TagReportData>
     <EPC_96>
-      <EPC>64dcb9eacaf52e7abaf1b1e1</EPC>
+      <EPC>64DCB9EACAF52E7ABAF1B1E1</EPC>
     </EPC_96>
   </TagReportData>
   <TagReportData>
     <EPC_96>
-      <EPC>adc1f7f0d834aec00f0d6a8a</EPC>
+      <EPC>ADC1F7F0D834AEC00F0D6A8A</EPC>
     </EPC_96>
   </TagReportData>
   <TagReportData>
     <EPC_96>
-      <EPC>430aa058a739d805bc49c89f</EPC>
+      <EPC>430AA058A739D805BC49C89F</EPC>
     </EPC_96>
   </TagReportData>
   <TagReportData>
     <EPC_96>
-      <EPC>593d6ab0ea2cd073f470c881</EPC>
+      <EPC>593D6AB0EA2CD073F470C881</EPC>
     </EPC_96>
   </TagReportData>
   <TagReportData>
     <EPC_96>
-      <EPC>2bf301fb10f6dfc07d1495a6</EPC>
+      <EPC>2BF301FB10F6DFC07D1495A6</EPC>
     </EPC_96>
   </TagReportData>
   <TagReportData>
     <EPC_96>
-      <EPC>05c2c35a8f1b2bce1242b7d6</EPC>
+      <EPC>05C2C35A8F1B2BCE1242B7D6</EPC>
     </EPC_96>
   </TagReportData>
   <TagReportData>
     <EPC_96>
-      <EPC>ea1d63f692ac50df43d68ab0</EPC>
+      <EPC>EA1D63F692AC50DF43D68AB0</EPC>
     </EPC_96>
   </TagReportData>
 </RO_ACCESS_REPORT>
-<RO_ACCESS_REPORT Version="1" MessageID="19">  <TagReportData>
+
+<RO_ACCESS_REPORT MessageID='19'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <TagReportData>
     <EPC_96>
-      <EPC>5ae0bc7ce260751a3af625da</EPC>
+      <EPC>5AE0BC7CE260751A3AF625DA</EPC>
     </EPC_96>
     <ROSpecID>
       <ROSpecID>866779136</ROSpecID>
@@ -1754,10 +1838,10 @@
       <AntennaID>260</AntennaID>
     </AntennaID>
     <FirstSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </FirstSeenTimestampUTC>
     <LastSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </LastSeenTimestampUTC>
     <TagSeenCount>
       <TagCount>38622</TagCount>
@@ -1771,7 +1855,7 @@
   </TagReportData>
   <TagReportData>
     <EPC_96>
-      <EPC>c373d66c9e27ccc3ad7c0cfd</EPC>
+      <EPC>C373D66C9E27CCC3AD7C0CFD</EPC>
     </EPC_96>
     <ROSpecID>
       <ROSpecID>4264296448</ROSpecID>
@@ -1786,10 +1870,10 @@
       <AntennaID>35176</AntennaID>
     </AntennaID>
     <FirstSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </FirstSeenTimestampUTC>
     <LastSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </LastSeenTimestampUTC>
     <TagSeenCount>
       <TagCount>27090</TagCount>
@@ -1803,7 +1887,7 @@
   </TagReportData>
   <TagReportData>
     <EPC_96>
-      <EPC>eafdaae3187809bc81ea0d6c</EPC>
+      <EPC>EAFDAAE3187809BC81EA0D6C</EPC>
     </EPC_96>
     <ROSpecID>
       <ROSpecID>3564503040</ROSpecID>
@@ -1818,10 +1902,10 @@
       <AntennaID>21962</AntennaID>
     </AntennaID>
     <FirstSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </FirstSeenTimestampUTC>
     <LastSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </LastSeenTimestampUTC>
     <TagSeenCount>
       <TagCount>14254</TagCount>
@@ -1835,7 +1919,7 @@
   </TagReportData>
   <TagReportData>
     <EPC_96>
-      <EPC>931e3338aa592ae36a94dd2b</EPC>
+      <EPC>931E3338AA592AE36A94DD2B</EPC>
     </EPC_96>
     <ROSpecID>
       <ROSpecID>3347185664</ROSpecID>
@@ -1850,10 +1934,10 @@
       <AntennaID>17714</AntennaID>
     </AntennaID>
     <FirstSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </FirstSeenTimestampUTC>
     <LastSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </LastSeenTimestampUTC>
     <TagSeenCount>
       <TagCount>65080</TagCount>
@@ -1867,7 +1951,7 @@
   </TagReportData>
   <TagReportData>
     <EPC_96>
-      <EPC>77b76f64278642982e7e59f6</EPC>
+      <EPC>77B76F64278642982E7E59F6</EPC>
     </EPC_96>
     <ROSpecID>
       <ROSpecID>1778253824</ROSpecID>
@@ -1882,10 +1966,10 @@
       <AntennaID>25752</AntennaID>
     </AntennaID>
     <FirstSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </FirstSeenTimestampUTC>
     <LastSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </LastSeenTimestampUTC>
     <TagSeenCount>
       <TagCount>58544</TagCount>
@@ -1899,7 +1983,7 @@
   </TagReportData>
   <TagReportData>
     <EPC_96>
-      <EPC>a38368f4d1a2aa94f68023fa</EPC>
+      <EPC>A38368F4D1A2AA94F68023FA</EPC>
     </EPC_96>
     <ROSpecID>
       <ROSpecID>810942464</ROSpecID>
@@ -1914,10 +1998,10 @@
       <AntennaID>43324</AntennaID>
     </AntennaID>
     <FirstSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </FirstSeenTimestampUTC>
     <LastSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </LastSeenTimestampUTC>
     <TagSeenCount>
       <TagCount>29490</TagCount>
@@ -1931,7 +2015,7 @@
   </TagReportData>
   <TagReportData>
     <EPC_96>
-      <EPC>fc78fa1cacd8042066d9f301</EPC>
+      <EPC>FC78FA1CACD8042066D9F301</EPC>
     </EPC_96>
     <ROSpecID>
       <ROSpecID>697040896</ROSpecID>
@@ -1946,10 +2030,10 @@
       <AntennaID>8916</AntennaID>
     </AntennaID>
     <FirstSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </FirstSeenTimestampUTC>
     <LastSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </LastSeenTimestampUTC>
     <TagSeenCount>
       <TagCount>35122</TagCount>
@@ -1963,7 +2047,7 @@
   </TagReportData>
   <TagReportData>
     <EPC_96>
-      <EPC>6081675a99037de3bee13fad</EPC>
+      <EPC>6081675A99037DE3BEE13FAD</EPC>
     </EPC_96>
     <ROSpecID>
       <ROSpecID>3102867456</ROSpecID>
@@ -1978,10 +2062,10 @@
       <AntennaID>34014</AntennaID>
     </AntennaID>
     <FirstSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </FirstSeenTimestampUTC>
     <LastSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </LastSeenTimestampUTC>
     <TagSeenCount>
       <TagCount>58284</TagCount>
@@ -1995,7 +2079,7 @@
   </TagReportData>
   <TagReportData>
     <EPC_96>
-      <EPC>6f6f35d3df6e0101e7cdf873</EPC>
+      <EPC>6F6F35D3DF6E0101E7CDF873</EPC>
     </EPC_96>
     <ROSpecID>
       <ROSpecID>3750232064</ROSpecID>
@@ -2010,10 +2094,10 @@
       <AntennaID>63418</AntennaID>
     </AntennaID>
     <FirstSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </FirstSeenTimestampUTC>
     <LastSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </LastSeenTimestampUTC>
     <TagSeenCount>
       <TagCount>22942</TagCount>
@@ -2027,7 +2111,7 @@
   </TagReportData>
   <TagReportData>
     <EPC_96>
-      <EPC>4fd766111d22372677ae70c0</EPC>
+      <EPC>4FD766111D22372677AE70C0</EPC>
     </EPC_96>
     <ROSpecID>
       <ROSpecID>769261568</ROSpecID>
@@ -2042,10 +2126,10 @@
       <AntennaID>45124</AntennaID>
     </AntennaID>
     <FirstSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </FirstSeenTimestampUTC>
     <LastSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </LastSeenTimestampUTC>
     <TagSeenCount>
       <TagCount>15656</TagCount>
@@ -2058,15 +2142,23 @@
     </C1G2_CRC>
   </TagReportData>
 </RO_ACCESS_REPORT>
-<RO_ACCESS_REPORT Version="1" MessageID="20">  <TagReportData>
+
+<RO_ACCESS_REPORT MessageID='20'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <TagReportData>
     <EPCData>
-      <EPC Count="512">898a3c03b06068cb74b98c8f61e451117a854b95747e6147a0c26a07baa7675827ab40c6e94c7189e1e488a37f21e051a71c8109c8918fd4f24c274a014b21fa</EPC>
+      <EPC Count='512'>898A3C03B06068CB74B98C8F61E451117A854B95747E6147A0C26A07BAA7675827AB40C6E94C7189E1E488A37F21E051A71C8109C8918FD4F24C274A014B21FA</EPC>
     </EPCData>
   </TagReportData>
 </RO_ACCESS_REPORT>
-<RO_ACCESS_REPORT Version="1" MessageID="21">  <TagReportData>
+
+<RO_ACCESS_REPORT MessageID='21'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <TagReportData>
     <EPCData>
-      <EPC Count="512">889a9083a27b712958da6d2abc951ca06aaba43386c72f6af83f0ddafa0bf6ffa2b6500ca0d9e375c022e0737074a360db251c1ad8e04547403888b8e17189bc</EPC>
+      <EPC Count='512'>889A9083A27B712958DA6D2ABC951CA06AABA43386C72F6AF83F0DDAFA0BF6FFA2B6500CA0D9E375C022E0737074A360DB251C1AD8E04547403888B8E17189BC</EPC>
     </EPCData>
     <ROSpecID>
       <ROSpecID>3021733888</ROSpecID>
@@ -2081,10 +2173,10 @@
       <AntennaID>40184</AntennaID>
     </AntennaID>
     <FirstSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </FirstSeenTimestampUTC>
     <LastSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </LastSeenTimestampUTC>
     <TagSeenCount>
       <TagCount>29596</TagCount>
@@ -2097,60 +2189,68 @@
     </C1G2_CRC>
   </TagReportData>
 </RO_ACCESS_REPORT>
-<RO_ACCESS_REPORT Version="1" MessageID="22">  <TagReportData>
+
+<RO_ACCESS_REPORT MessageID='22'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <TagReportData>
     <EPCData>
-      <EPC Count="512">1b4b6d1032bc9c1edb5ea5da2cb245d98d9cfc8a4fbbad867142b759d772153fb46f94b38488933a449b6d5641cd03fc4928778e6e569aa1441b2093c7bb134b</EPC>
+      <EPC Count='512'>1B4B6D1032BC9C1EDB5EA5DA2CB245D98D9CFC8A4FBBAD867142B759D772153FB46F94B38488933A449B6D5641CD03FC4928778E6E569AA1441B2093C7BB134B</EPC>
     </EPCData>
   </TagReportData>
   <TagReportData>
     <EPCData>
-      <EPC Count="512">c1ed9807ef8586b1b385e89099aed4c86f49bd954f45b9944254c11fdf367e10a8cca0d35f2d4b412c55a810d99e165fdcaa0c2993e53322614cbfc8fb908932</EPC>
+      <EPC Count='512'>C1ED9807EF8586B1B385E89099AED4C86F49BD954F45B9944254C11FDF367E10A8CCA0D35F2D4B412C55A810D99E165FDCAA0C2993E53322614CBFC8FB908932</EPC>
     </EPCData>
   </TagReportData>
   <TagReportData>
     <EPCData>
-      <EPC Count="512">bb5cfe6529c060b1998e69e711b1d1e8533fc75e435ddb177fa76ae45d42105f30342a940b47e9d0cbf80badb8c1b5977f437cced19729476355374db189964d</EPC>
+      <EPC Count='512'>BB5CFE6529C060B1998E69E711B1D1E8533FC75E435DDB177FA76AE45D42105F30342A940B47E9D0CBF80BADB8C1B5977F437CCED19729476355374DB189964D</EPC>
     </EPCData>
   </TagReportData>
   <TagReportData>
     <EPCData>
-      <EPC Count="512">2a36c5bd2a92b5777da79b83ad7118a3f73bde9a144a408dbb8bc569096d48b9ae8796c7123b398450f34a11382cfc4f34f2cc6d4ff1e8cb1cc6dc24e2bcf767</EPC>
+      <EPC Count='512'>2A36C5BD2A92B5777DA79B83AD7118A3F73BDE9A144A408DBB8BC569096D48B9AE8796C7123B398450F34A11382CFC4F34F2CC6D4FF1E8CB1CC6DC24E2BCF767</EPC>
     </EPCData>
   </TagReportData>
   <TagReportData>
     <EPCData>
-      <EPC Count="512">ae999020b9a292dfcf7e7386062507e49c7d487a29d294ee05cc69f31d0d21260123cabe7cf087766b33999c305688b27b367f7ab6fa5de8dcab82d005bfe8cb</EPC>
+      <EPC Count='512'>AE999020B9A292DFCF7E7386062507E49C7D487A29D294EE05CC69F31D0D21260123CABE7CF087766B33999C305688B27B367F7AB6FA5DE8DCAB82D005BFE8CB</EPC>
     </EPCData>
   </TagReportData>
   <TagReportData>
     <EPCData>
-      <EPC Count="512">6825842120178442804366933583781404c3c7b16c3d05b5efba68424ff919328be7294ed2cea0414e27ad33fb36766a540d9ce72e38f45873957f5415aa2642</EPC>
+      <EPC Count='512'>6825842120178442804366933583781404C3C7B16C3D05B5EFBA68424FF919328BE7294ED2CEA0414E27AD33FB36766A540D9CE72E38F45873957F5415AA2642</EPC>
     </EPCData>
   </TagReportData>
   <TagReportData>
     <EPCData>
-      <EPC Count="512">f9f847d32696987b01a369ccd1c2c91f6f4ba27145503ddd8823579ada872ce72b3098c71bb9d100a9bebb376f4162a240f6a62761b19a563291a7328912ed18</EPC>
+      <EPC Count='512'>F9F847D32696987B01A369CCD1C2C91F6F4BA27145503DDD8823579ADA872CE72B3098C71BB9D100A9BEBB376F4162A240F6A62761B19A563291A7328912ED18</EPC>
     </EPCData>
   </TagReportData>
   <TagReportData>
     <EPCData>
-      <EPC Count="512">80b0fbc9154759e541cdefd4f498d76f9cd49c6d9c526be061564cbe758fd6d042de7bfde119e64cac67778be66f69053fefa12c76edbb9dea2e4d6c590efa16</EPC>
+      <EPC Count='512'>80B0FBC9154759E541CDEFD4F498D76F9CD49C6D9C526BE061564CBE758FD6D042DE7BFDE119E64CAC67778BE66F69053FEFA12C76EDBB9DEA2E4D6C590EFA16</EPC>
     </EPCData>
   </TagReportData>
   <TagReportData>
     <EPCData>
-      <EPC Count="512">9f6b4714b4cfd55ab26feecc353bfeeecd9cf9d7d9093ab98b21daef586514f7b14fb7422bd42b41070f1591383626bcd277126916f24367ea7b4885fe358888</EPC>
+      <EPC Count='512'>9F6B4714B4CFD55AB26FEECC353BFEEECD9CF9D7D9093AB98B21DAEF586514F7B14FB7422BD42B41070F1591383626BCD277126916F24367EA7B4885FE358888</EPC>
     </EPCData>
   </TagReportData>
   <TagReportData>
     <EPCData>
-      <EPC Count="512">76c94d474c56973544b9d958ad631a07c2627f63e6bdd7e395d315f13de263e6d862b16984506e78ec264b2bbd8db772f98bfecf6a46a06f0306ea7f719c5638</EPC>
+      <EPC Count='512'>76C94D474C56973544B9D958AD631A07C2627F63E6BDD7E395D315F13DE263E6D862B16984506E78EC264B2BBD8DB772F98BFECF6A46A06F0306EA7F719C5638</EPC>
     </EPCData>
   </TagReportData>
 </RO_ACCESS_REPORT>
-<RO_ACCESS_REPORT Version="1" MessageID="23">  <TagReportData>
+
+<RO_ACCESS_REPORT MessageID='23'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <TagReportData>
     <EPCData>
-      <EPC Count="512">a5e8b475a682ad506858a69af64687a5bb6572412b33ee57923a94055c5bbea997744dc3f275f90d0a994cbe4ee9b95235abe9d31af0bdef87dc09dd2adc9f70</EPC>
+      <EPC Count='512'>A5E8B475A682AD506858A69AF64687A5BB6572412B33EE57923A94055C5BBEA997744DC3F275F90D0A994CBE4EE9B95235ABE9D31AF0BDEF87DC09DD2ADC9F70</EPC>
     </EPCData>
     <ROSpecID>
       <ROSpecID>1310851072</ROSpecID>
@@ -2165,10 +2265,10 @@
       <AntennaID>12598</AntennaID>
     </AntennaID>
     <FirstSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </FirstSeenTimestampUTC>
     <LastSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </LastSeenTimestampUTC>
     <TagSeenCount>
       <TagCount>2864</TagCount>
@@ -2182,7 +2282,7 @@
   </TagReportData>
   <TagReportData>
     <EPCData>
-      <EPC Count="512">060d7cc835269a23327a62972690b2ad9111a469ee6ea6a3c95065ef24fea99b9a93d8cd2a4442470686d6d8654f7707a1458efaa222091ffb0f61b28c42e383</EPC>
+      <EPC Count='512'>060D7CC835269A23327A62972690B2AD9111A469EE6EA6A3C95065EF24FEA99B9A93D8CD2A4442470686D6D8654F7707A1458EFAA222091FFB0F61B28C42E383</EPC>
     </EPCData>
     <ROSpecID>
       <ROSpecID>832569344</ROSpecID>
@@ -2197,10 +2297,10 @@
       <AntennaID>13732</AntennaID>
     </AntennaID>
     <FirstSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </FirstSeenTimestampUTC>
     <LastSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </LastSeenTimestampUTC>
     <TagSeenCount>
       <TagCount>19332</TagCount>
@@ -2214,7 +2314,7 @@
   </TagReportData>
   <TagReportData>
     <EPCData>
-      <EPC Count="512">4a983e9931437e01be8a22e12aefaa1b0e52e3937ddeb2d1a03a36d103d2770efeb96d894ff9b0df6bc08d2a9050d1bc14230b79121994e5de2c2088617e22ef</EPC>
+      <EPC Count='512'>4A983E9931437E01BE8A22E12AEFAA1B0E52E3937DDEB2D1A03A36D103D2770EFEB96D894FF9B0DF6BC08D2A9050D1BC14230B79121994E5DE2C2088617E22EF</EPC>
     </EPCData>
     <ROSpecID>
       <ROSpecID>3640786944</ROSpecID>
@@ -2229,10 +2329,10 @@
       <AntennaID>51328</AntennaID>
     </AntennaID>
     <FirstSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </FirstSeenTimestampUTC>
     <LastSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </LastSeenTimestampUTC>
     <TagSeenCount>
       <TagCount>1534</TagCount>
@@ -2246,7 +2346,7 @@
   </TagReportData>
   <TagReportData>
     <EPCData>
-      <EPC Count="512">6650be563eeacaca907cccafdc5ac49556d38625f2a2993f43fa16eac3528267b25507313d20e930093ab3e1cc64ecca25bed0ef4f40f29ede2b1b592d597017</EPC>
+      <EPC Count='512'>6650BE563EEACACA907CCCAFDC5AC49556D38625F2A2993F43FA16EAC3528267B25507313D20E930093AB3E1CC64ECCA25BED0EF4F40F29EDE2B1B592D597017</EPC>
     </EPCData>
     <ROSpecID>
       <ROSpecID>2816344064</ROSpecID>
@@ -2261,10 +2361,10 @@
       <AntennaID>48728</AntennaID>
     </AntennaID>
     <FirstSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </FirstSeenTimestampUTC>
     <LastSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </LastSeenTimestampUTC>
     <TagSeenCount>
       <TagCount>35750</TagCount>
@@ -2278,7 +2378,7 @@
   </TagReportData>
   <TagReportData>
     <EPCData>
-      <EPC Count="512">055ce84597a06b27b01c829a0f2adee27659d9467f0367711df4b2af81d77ff1b688ccf6b2f8cd952ccbaf7a0154474865171d8db087f066120c253eea163d99</EPC>
+      <EPC Count='512'>055CE84597A06B27B01C829A0F2ADEE27659D9467F0367711DF4B2AF81D77FF1B688CCF6B2F8CD952CCBAF7A0154474865171D8DB087F066120C253EEA163D99</EPC>
     </EPCData>
     <ROSpecID>
       <ROSpecID>367919104</ROSpecID>
@@ -2293,10 +2393,10 @@
       <AntennaID>17582</AntennaID>
     </AntennaID>
     <FirstSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </FirstSeenTimestampUTC>
     <LastSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </LastSeenTimestampUTC>
     <TagSeenCount>
       <TagCount>63966</TagCount>
@@ -2310,7 +2410,7 @@
   </TagReportData>
   <TagReportData>
     <EPCData>
-      <EPC Count="512">db8b8b791026e76c8e7344b6f42a4691b9f82cee754e8501685e4f89b51e1cf028837dbf03c8456aa30ed30c8210140e5d385a41ffeaac789232cf30d6b88f3a</EPC>
+      <EPC Count='512'>DB8B8B791026E76C8E7344B6F42A4691B9F82CEE754E8501685E4F89B51E1CF028837DBF03C8456AA30ED30C8210140E5D385A41FFEAAC789232CF30D6B88F3A</EPC>
     </EPCData>
     <ROSpecID>
       <ROSpecID>855769088</ROSpecID>
@@ -2325,10 +2425,10 @@
       <AntennaID>1360</AntennaID>
     </AntennaID>
     <FirstSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </FirstSeenTimestampUTC>
     <LastSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </LastSeenTimestampUTC>
     <TagSeenCount>
       <TagCount>590</TagCount>
@@ -2342,7 +2442,7 @@
   </TagReportData>
   <TagReportData>
     <EPCData>
-      <EPC Count="512">81010f7d2f4b6d0d55cda361f691e7577ad39ef4ab3c46d6f338176179c534511da6b3c7d5663794790a72d88fe5509d066f15a4858432f742ff257df10b1a2b</EPC>
+      <EPC Count='512'>81010F7D2F4B6D0D55CDA361F691E7577AD39EF4AB3C46D6F338176179C534511DA6B3C7D5663794790A72D88FE5509D066F15A4858432F742FF257DF10B1A2B</EPC>
     </EPCData>
     <ROSpecID>
       <ROSpecID>3516399616</ROSpecID>
@@ -2357,10 +2457,10 @@
       <AntennaID>63996</AntennaID>
     </AntennaID>
     <FirstSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </FirstSeenTimestampUTC>
     <LastSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </LastSeenTimestampUTC>
     <TagSeenCount>
       <TagCount>24332</TagCount>
@@ -2374,7 +2474,7 @@
   </TagReportData>
   <TagReportData>
     <EPCData>
-      <EPC Count="512">55b89f461a36bf1ddc4033708ff055cb4479d6b01feb9bb5275773eb29d3216743759e274cbbea2bb87973f52aca5a49541094754e8b45d80f91430530e31d3d</EPC>
+      <EPC Count='512'>55B89F461A36BF1DDC4033708FF055CB4479D6B01FEB9BB5275773EB29D3216743759E274CBBEA2BB87973F52ACA5A49541094754E8B45D80F91430530E31D3D</EPC>
     </EPCData>
     <ROSpecID>
       <ROSpecID>2623012864</ROSpecID>
@@ -2389,10 +2489,10 @@
       <AntennaID>34994</AntennaID>
     </AntennaID>
     <FirstSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </FirstSeenTimestampUTC>
     <LastSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </LastSeenTimestampUTC>
     <TagSeenCount>
       <TagCount>23606</TagCount>
@@ -2406,7 +2506,7 @@
   </TagReportData>
   <TagReportData>
     <EPCData>
-      <EPC Count="512">4120270b4db59549cc06a89698dba0e03cf58aacd0b1e42060e2c7cb41fdf3880d4ae8608b367de15d8308c3a760a04c843274579116d76d4be1ecc793ae90ba</EPC>
+      <EPC Count='512'>4120270B4DB59549CC06A89698DBA0E03CF58AACD0B1E42060E2C7CB41FDF3880D4AE8608B367DE15D8308C3A760A04C843274579116D76D4BE1ECC793AE90BA</EPC>
     </EPCData>
     <ROSpecID>
       <ROSpecID>611188736</ROSpecID>
@@ -2421,10 +2521,10 @@
       <AntennaID>24066</AntennaID>
     </AntennaID>
     <FirstSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </FirstSeenTimestampUTC>
     <LastSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </LastSeenTimestampUTC>
     <TagSeenCount>
       <TagCount>11240</TagCount>
@@ -2438,7 +2538,7 @@
   </TagReportData>
   <TagReportData>
     <EPCData>
-      <EPC Count="512">e5eb3a2389973ea66f3a69ab75f994644c62aeb2c628b3e2ba0522e67810209a244fe310dfc49c7a39d083b0bc1e24d910f2a345820f17037b15a428ad857e6e</EPC>
+      <EPC Count='512'>E5EB3A2389973EA66F3A69AB75F994644C62AEB2C628B3E2BA0522E67810209A244FE310DFC49C7A39D083B0BC1E24D910F2A345820F17037B15A428AD857E6E</EPC>
     </EPCData>
     <ROSpecID>
       <ROSpecID>1929641984</ROSpecID>
@@ -2453,10 +2553,10 @@
       <AntennaID>4038</AntennaID>
     </AntennaID>
     <FirstSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </FirstSeenTimestampUTC>
     <LastSeenTimestampUTC>
-      <Microseconds>2007-10-02T13:54:58</Microseconds>
+      <Microseconds>2007-10-02T13:54:58.000000</Microseconds>
     </LastSeenTimestampUTC>
     <TagSeenCount>
       <TagCount>17238</TagCount>
@@ -2469,4 +2569,6 @@
     </C1G2_CRC>
   </TagReportData>
 </RO_ACCESS_REPORT>
+
 </ps:packetSequence>
+

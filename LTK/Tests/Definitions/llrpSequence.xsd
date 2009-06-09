@@ -3,7 +3,7 @@
 <!--
  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  -
- -  Copyright 2007 Impinj Inc.
+ -  Copyright 2007,2009 Impinj Inc.
  -
  -  Licensed under the Apache License, Version 2.0 (the "License");
  -  you may not use this file except in compliance with the License.
@@ -20,20 +20,28 @@
  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  -->
 
-<xs:schema
-  targetNamespace="http://www.llrp.org/ltk/schema/testing/encoding/xml/0.5"
-  xmlns:rp="http://www.llrp.org/ltk/schema/core/encoding/xml/0.9"
-  xmlns:xs="http://www.w3.org/2001/XMLSchema"
-  xmlns:ps="http://www.llrp.org/ltk/schema/testing/encoding/xml/0.5"
-  elementFormDefault="qualified"
-  version="0.5">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:ps="http://www.llrp.org/ltk/schema/testing/encoding/xml/0.6"
+           xmlns="http://www.llrp.org/ltk/schema/testing/encoding/xml/0.6"
+           targetNamespace="http://www.llrp.org/ltk/schema/testing/encoding/xml/0.6"
+           elementFormDefault="qualified">
 
-<xs:element name="packetSequence" type="ps:packetSequence"/>
+  <xs:import namespace="http://www.llrp.org/ltk/schema/core/encoding/xml/1.0"
+             schemaLocation="http://www.llrp.org/ltk/schema/core/encoding/xml/1.0/llrp.xsd"/>
 
-<xs:complexType name="packetSequence">
-  <xs:sequence>
-    <xs:any namespace="http://www.llrp.org/ltk/schema/core/encoding/xml/0.9" processContents="strict" minOccurs="0" maxOccurs="unbounded"/>
-  </xs:sequence>
-</xs:complexType>  
+  <xs:import namespace="http://developer.impinj.com/ltk/schema/encoding/xml/1.6"
+             schemaLocation="http://developer.impinj.com/ltk/schema/encoding/xml/1.6/impinj.xsd"/>
+
+  <xs:import namespace="http://internal.impinj.com/RFID/Engineering/LLRP/ltk/schema/encoding/xml/1.6"
+             schemaLocation="http://internal.impinj.com/RFID/Engineering/LLRP/ltk/schema/encoding/xml/1.6/impinjInternal.xsd"/>
+
+  <xs:element name="packetSequence" type="ps:packetSequence"/>
+
+  <xs:complexType name="packetSequence">
+    <xs:sequence>
+      <xs:any processContents="strict" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
 
 </xs:schema>
+

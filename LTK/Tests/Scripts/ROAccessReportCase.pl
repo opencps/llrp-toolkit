@@ -50,11 +50,17 @@ my @combos = (
             EnableSpecIndex                 => 'FALSE',
             EnableInventoryParameterSpecID  => 'FALSE',
             EnableAntennaID                 => 'FALSE',
+            EnablePeakRSSI                  => 'FALSE',
+            EnableChannelIndex              => 'FALSE',
             EnableFirstSeenTimestampUTC     => 'FALSE',
+            EnableFirstSeenTimestampUptime  => 'FALSE',
             EnableLastSeenTimestampUTC      => 'FALSE',
+            EnableLastSeenTimestampUptime   => 'FALSE',
             EnableTagSeenCount              => 'FALSE',
             EnablePC                        => 'FALSE',
-            EnableCRC                       => 'FALSE'
+            EnableCRC                       => 'FALSE',
+            EnableAccessSpecID              => 'FALSE',
+            AccessCommandOpSpecResult       => 0,
         },
     },
     {
@@ -67,11 +73,17 @@ my @combos = (
             EnableSpecIndex                 => 'FALSE',
             EnableInventoryParameterSpecID  => 'FALSE',
             EnableAntennaID                 => 'FALSE',
+            EnablePeakRSSI                  => 'FALSE',
+            EnableChannelIndex              => 'FALSE',
             EnableFirstSeenTimestampUTC     => 'FALSE',
+            EnableFirstSeenTimestampUptime  => 'FALSE',
             EnableLastSeenTimestampUTC      => 'FALSE',
+            EnableLastSeenTimestampUptime   => 'FALSE',
             EnableTagSeenCount              => 'FALSE',
             EnablePC                        => 'FALSE',
-            EnableCRC                       => 'FALSE'
+            EnableCRC                       => 'FALSE',
+            EnableAccessSpecID              => 'FALSE',
+            AccessCommandOpSpecResult       => 0,
         },
     },
     {
@@ -84,11 +96,17 @@ my @combos = (
             EnableSpecIndex                 => 'FALSE',
             EnableInventoryParameterSpecID  => 'FALSE',
             EnableAntennaID                 => 'FALSE',
+            EnablePeakRSSI                  => 'FALSE',
+            EnableChannelIndex              => 'FALSE',
             EnableFirstSeenTimestampUTC     => 'FALSE',
+            EnableFirstSeenTimestampUptime  => 'FALSE',
             EnableLastSeenTimestampUTC      => 'FALSE',
+            EnableLastSeenTimestampUptime   => 'FALSE',
             EnableTagSeenCount              => 'FALSE',
             EnablePC                        => 'FALSE',
-            EnableCRC                       => 'FALSE'
+            EnableCRC                       => 'FALSE',
+            EnableAccessSpecID              => 'FALSE',
+            AccessCommandOpSpecResult       => 0,
         },
     },
     {
@@ -101,11 +119,17 @@ my @combos = (
             EnableSpecIndex                 => 'FALSE',
             EnableInventoryParameterSpecID  => 'FALSE',
             EnableAntennaID                 => 'FALSE',
+            EnablePeakRSSI                  => 'FALSE',
+            EnableChannelIndex              => 'FALSE',
             EnableFirstSeenTimestampUTC     => 'FALSE',
+            EnableFirstSeenTimestampUptime  => 'FALSE',
             EnableLastSeenTimestampUTC      => 'FALSE',
+            EnableLastSeenTimestampUptime   => 'FALSE',
             EnableTagSeenCount              => 'FALSE',
             EnablePC                        => 'FALSE',
-            EnableCRC                       => 'FALSE'
+            EnableCRC                       => 'FALSE',
+            EnableAccessSpecID              => 'FALSE',
+            AccessCommandOpSpecResult       => 0,
         },
     },
     {
@@ -118,11 +142,17 @@ my @combos = (
             EnableSpecIndex                 => 'FALSE',
             EnableInventoryParameterSpecID  => 'FALSE',
             EnableAntennaID                 => 'FALSE',
+            EnablePeakRSSI                  => 'FALSE',
+            EnableChannelIndex              => 'FALSE',
             EnableFirstSeenTimestampUTC     => 'FALSE',
+            EnableFirstSeenTimestampUptime  => 'FALSE',
             EnableLastSeenTimestampUTC      => 'FALSE',
+            EnableLastSeenTimestampUptime   => 'FALSE',
             EnableTagSeenCount              => 'FALSE',
             EnablePC                        => 'FALSE',
-            EnableCRC                       => 'FALSE'
+            EnableCRC                       => 'FALSE',
+            EnableAccessSpecID              => 'FALSE',
+            AccessCommandOpSpecResult       => 0,
         },
     },
     {
@@ -135,11 +165,17 @@ my @combos = (
             EnableSpecIndex                 => 'FALSE',
             EnableInventoryParameterSpecID  => 'FALSE',
             EnableAntennaID                 => 'FALSE',
+            EnablePeakRSSI                  => 'FALSE',
+            EnableChannelIndex              => 'FALSE',
             EnableFirstSeenTimestampUTC     => 'FALSE',
+            EnableFirstSeenTimestampUptime  => 'FALSE',
             EnableLastSeenTimestampUTC      => 'FALSE',
+            EnableLastSeenTimestampUptime   => 'FALSE',
             EnableTagSeenCount              => 'FALSE',
             EnablePC                        => 'FALSE',
-            EnableCRC                       => 'FALSE'
+            EnableCRC                       => 'FALSE',
+            EnableAccessSpecID              => 'FALSE',
+            AccessCommandOpSpecResult       => 0,
         },
     },
     {
@@ -152,11 +188,17 @@ my @combos = (
             EnableSpecIndex                 => 'TRUE',
             EnableInventoryParameterSpecID  => 'TRUE',
             EnableAntennaID                 => 'TRUE',
+            EnablePeakRSSI                  => 'TRUE',
+            EnableChannelIndex              => 'TRUE',
             EnableFirstSeenTimestampUTC     => 'TRUE',
+            EnableFirstSeenTimestampUptime  => 'TRUE',
             EnableLastSeenTimestampUTC      => 'TRUE',
+            EnableLastSeenTimestampUptime   => 'TRUE',
             EnableTagSeenCount              => 'TRUE',
             EnablePC                        => 'TRUE',
-            EnableCRC                       => 'TRUE'
+            EnableCRC                       => 'TRUE',
+            EnableAccessSpecID              => 'TRUE',
+            AccessCommandOpSpecResult       => 8,
         },
     },
     {
@@ -169,15 +211,21 @@ my @combos = (
             EnableSpecIndex                 => 'FALSE',
             EnableInventoryParameterSpecID  => 'FALSE',
             EnableAntennaID                 => 'FALSE',
+            EnablePeakRSSI                  => 'FALSE',
+            EnableChannelIndex              => 'FALSE',
             EnableFirstSeenTimestampUTC     => 'FALSE',
+            EnableFirstSeenTimestampUptime  => 'FALSE',
             EnableLastSeenTimestampUTC      => 'FALSE',
+            EnableLastSeenTimestampUptime   => 'FALSE',
             EnableTagSeenCount              => 'FALSE',
             EnablePC                        => 'FALSE',
-            EnableCRC                       => 'FALSE'
+            EnableCRC                       => 'FALSE',
+            EnableAccessSpecID              => 'FALSE',
+            AccessCommandOpSpecResult       => 0,
         },
     },
     {
-        epcSize     => 240,
+        epcSize     => 512,
         reportSize  => 100,
         reportContent =>
         {
@@ -186,11 +234,17 @@ my @combos = (
             EnableSpecIndex                 => 'FALSE',
             EnableInventoryParameterSpecID  => 'FALSE',
             EnableAntennaID                 => 'FALSE',
+            EnablePeakRSSI                  => 'FALSE',
+            EnableChannelIndex              => 'FALSE',
             EnableFirstSeenTimestampUTC     => 'FALSE',
+            EnableFirstSeenTimestampUptime  => 'FALSE',
             EnableLastSeenTimestampUTC      => 'FALSE',
+            EnableLastSeenTimestampUptime   => 'FALSE',
             EnableTagSeenCount              => 'FALSE',
             EnablePC                        => 'FALSE',
-            EnableCRC                       => 'FALSE'
+            EnableCRC                       => 'FALSE',
+            EnableAccessSpecID              => 'FALSE',
+            AccessCommandOpSpecResult       => 0,
         },
     },
     {
@@ -203,11 +257,40 @@ my @combos = (
             EnableSpecIndex                 => 'TRUE',
             EnableInventoryParameterSpecID  => 'TRUE',
             EnableAntennaID                 => 'TRUE',
+            EnablePeakRSSI                  => 'TRUE',
+            EnableChannelIndex              => 'TRUE',
             EnableFirstSeenTimestampUTC     => 'TRUE',
+            EnableFirstSeenTimestampUptime  => 'TRUE',
             EnableLastSeenTimestampUTC      => 'TRUE',
+            EnableLastSeenTimestampUptime   => 'TRUE',
             EnableTagSeenCount              => 'TRUE',
             EnablePC                        => 'TRUE',
-            EnableCRC                       => 'TRUE'
+            EnableCRC                       => 'TRUE',
+            EnableAccessSpecID              => 'TRUE',
+            AccessCommandOpSpecResult       => 4,
+        },
+    },
+    {
+        epcSize     => 512,
+        reportSize  => 2500,
+        reportContent =>
+        {
+            Caption                         => 'Everything',
+            EnableROSpecID                  => 'TRUE',
+            EnableSpecIndex                 => 'TRUE',
+            EnableInventoryParameterSpecID  => 'TRUE',
+            EnableAntennaID                 => 'TRUE',
+            EnablePeakRSSI                  => 'TRUE',
+            EnableChannelIndex              => 'TRUE',
+            EnableFirstSeenTimestampUTC     => 'TRUE',
+            EnableFirstSeenTimestampUptime  => 'TRUE',
+            EnableLastSeenTimestampUTC      => 'TRUE',
+            EnableLastSeenTimestampUptime   => 'TRUE',
+            EnableTagSeenCount              => 'TRUE',
+            EnablePC                        => 'TRUE',
+            EnableCRC                       => 'TRUE',
+            EnableAccessSpecID              => 'TRUE',
+            AccessCommandOpSpecResult       => 16,
         },
     },
 );
@@ -220,13 +303,12 @@ open (BIN, ">$binFile") or die("Could not open file $binFile for test generation
 
 my $testXMLHdr = <<OUTXMLHDR;
 <ps:packetSequence
-  xmlns="http://www.llrp.org/ltk/schema/core/encoding/xml/1.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xmlns:ps="http://www.llrp.org/ltk/schema/testing/encoding/xml/0.5"
-  xsi:schemaLocation="http://www.llrp.org/ltk/schema/core/encoding/xml/0.9
-     http://www.llrp.org/ltk/schema/core/encoding/xml/0.9/LLRP.xsd
-     http://www.llrp.org/ltk/schema/testing/encoding/xml/0.5
-     ../../Tests/Definitions/llrpSequence.xsd">
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+  xmlns:ps='http://www.llrp.org/ltk/schema/testing/encoding/xml/0.6'
+  xsi:schemaLocation='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0
+                      http://www.llrp.org/ltk/schema/core/encoding/xml/1.0/llrp.xsd'>
+
 OUTXMLHDR
 
 print XML $testXMLHdr;
@@ -282,6 +364,18 @@ foreach my $combo (@combos) {
             $testXML .="      <AntennaID>$id</AntennaID>\n";
             $testXML .="    </AntennaID>\n";
         }
+        if($$reportContent{"EnablePeakRSSI"} eq 'TRUE') {
+            my $rssi = int(rand(256)) - 128;
+            $testXML .="    <PeakRSSI>\n";
+            $testXML .="      <PeakRSSI>$rssi</PeakRSSI>\n";
+            $testXML .="    </PeakRSSI>\n";
+        }
+        if($$reportContent{"EnableChannelIndex"} eq 'TRUE') {
+            my $id = int(rand(65536));
+            $testXML .="    <ChannelIndex>\n";
+            $testXML .="      <ChannelIndex>$id</ChannelIndex>\n";
+            $testXML .="    </ChannelIndex>\n";
+        }
         if($$reportContent{"EnableFirstSeenTimestampUTC"} eq 'TRUE') {
             my $dd = localtime;
             my $time = $dd->datetime;
@@ -289,12 +383,26 @@ foreach my $combo (@combos) {
             $testXML .="      <Microseconds>$time</Microseconds>\n";
             $testXML .="    </FirstSeenTimestampUTC>\n"
         }
+        if($$reportContent{"EnableFirstSeenTimestampUptime"} eq 'TRUE') {
+            my $time = "";
+            for my $i (0 .. (int(rand(17)) + 1)) { $time .= int(rand(10)); }
+            $testXML .="    <FirstSeenTimestampUptime>\n";
+            $testXML .="      <Microseconds>$time</Microseconds>\n";
+            $testXML .="    </FirstSeenTimestampUptime>\n";
+        }
         if($$reportContent{"EnableLastSeenTimestampUTC"} eq 'TRUE') {
             my $dd = localtime;
             my $time = $dd->datetime;
             $testXML .="    <LastSeenTimestampUTC>\n";
             $testXML .="      <Microseconds>$time</Microseconds>\n";
             $testXML .="    </LastSeenTimestampUTC>\n"
+        }
+        if($$reportContent{"EnableLastSeenTimestampUptime"} eq 'TRUE') {
+            my $time = "";
+            for my $i (0 .. (int(rand(17)) + 1)) { $time .= int(rand(10)); }
+            $testXML .="    <LastSeenTimestampUptime>\n";
+            $testXML .="      <Microseconds>$time</Microseconds>\n";
+            $testXML .="    </LastSeenTimestampUptime>\n";
         }
         if($$reportContent{"EnableTagSeenCount"} eq 'TRUE') {
             my $id = int(rand(65536));
@@ -314,6 +422,97 @@ foreach my $combo (@combos) {
             $testXML .="      <CRC>$id</CRC>\n";
             $testXML .="    </C1G2_CRC>\n";
         }
+        if($$reportContent{"EnableAccessSpecID"} eq 'TRUE') {
+            my $id = int(rand(4294967295)) + 1; #zero is illegal
+            $testXML .="    <AccessSpecID>\n";
+            $testXML .="      <AccessSpecID>$id</AccessSpecID>\n";
+            $testXML .="    </AccessSpecID>\n";
+        }
+        if($$reportContent{"AccessCommandOpSpecResult"} > 0) {
+            my $ops = int(rand($$reportContent{"AccessCommandOpSpecResult"})) + 1;
+            for my $op (0 .. $ops) {
+                my $oper = int(rand(6));
+                if (0 == $oper) {
+                    my @results = ( 'Success', 'Nonspecific_Tag_Error',
+                                    'No_Response_From_Tag', 'Nonspecific_Reader_Error' );
+                    my $result = $results[int(rand(scalar @results))];
+                    my $id = int(rand(65536));
+                    $testXML .="    <C1G2ReadOpSpecResult>\n";
+                    $testXML .="      <Result>$result</Result>\n";
+                    $testXML .="      <OpSpecID>$id</OpSpecID>\n";
+                    $testXML .="      <ReadData>";
+                    if ('Success' eq $result) {
+                        for my $word (0 .. int(rand(32)) + 1) {
+                            $testXML .= sprintf("%04X ", int(rand(65535)));
+                        }
+                    }
+                    $testXML .="</ReadData>\n";
+                    $testXML .="    </C1G2ReadOpSpecResult>\n";
+                }
+                elsif (1 == $oper) {
+                    my @results = ( 'Success', 'Tag_Memory_Overrun_Error',
+                                    'Tag_Memory_Locked_Error', 'Insufficient_Power',
+                                    'Nonspecific_Tag_Error', 'No_Response_From_Tag',
+                                    'Nonspecific_Reader_Error' );
+                    my $result = $results[int(rand(scalar @results))];
+                    my $id = int(rand(65536));
+                    my $words = int(rand(65535));
+                    $testXML .="    <C1G2WriteOpSpecResult>\n";
+                    $testXML .="      <Result>$result</Result>\n";
+                    $testXML .="      <OpSpecID>$id</OpSpecID>\n";
+                    $testXML .="      <NumWordsWritten>$words</NumWordsWritten>\n";
+                    $testXML .="    </C1G2WriteOpSpecResult>\n";
+                }
+                elsif (2 == $oper) {
+                    my @results = ( 'Success', 'Zero_Kill_Password_Error',
+                                    'Insufficient_Power', 'Nonspecific_Tag_Error',
+                                    'No_Response_From_Tag', 'Nonspecific_Reader_Error' );
+                    my $result = $results[int(rand(scalar @results))];
+                    my $id = int(rand(65536));
+                    $testXML .="    <C1G2KillOpSpecResult>\n";
+                    $testXML .="      <Result>$result</Result>\n";
+                    $testXML .="      <OpSpecID>$id</OpSpecID>\n";
+                    $testXML .="    </C1G2KillOpSpecResult>\n";
+                }
+                elsif (3 == $oper) {
+                    my @results = ( 'Success', 'Insufficient_Power',
+                                    'Nonspecific_Tag_Error', 'No_Response_From_Tag',
+                                    'Nonspecific_Reader_Error' );
+                    my $result = $results[int(rand(scalar @results))];
+                    my $id = int(rand(65536));
+                    $testXML .="    <C1G2LockOpSpecResult>\n";
+                    $testXML .="      <Result>$result</Result>\n";
+                    $testXML .="      <OpSpecID>$id</OpSpecID>\n";
+                    $testXML .="    </C1G2LockOpSpecResult>\n";
+                }
+                elsif (4 == $oper) {
+                    my @results = ( 'Success', 'Tag_Memory_Overrun_Error',
+                                    'Tag_Memory_Locked_Error', 'Insufficient_Power',
+                                    'Nonspecific_Tag_Error', 'No_Response_From_Tag',
+                                    'Nonspecific_Reader_Error' );
+                    my $result = $results[int(rand(scalar @results))];
+                    my $id = int(rand(65536));
+                    $testXML .="    <C1G2BlockEraseOpSpecResult>\n";
+                    $testXML .="      <Result>$result</Result>\n";
+                    $testXML .="      <OpSpecID>$id</OpSpecID>\n";
+                    $testXML .="    </C1G2BlockEraseOpSpecResult>\n";
+                }
+                elsif (5 == $oper) {
+                    my @results = ( 'Success', 'Tag_Memory_Overrun_Error',
+                                    'Tag_Memory_Locked_Error', 'Insufficient_Power',
+                                    'Nonspecific_Tag_Error', 'No_Response_From_Tag',
+                                    'Nonspecific_Reader_Error' );
+                    my $result = $results[int(rand(scalar @results))];
+                    my $id = int(rand(65536));
+                    my $words = int(rand(65535));
+                    $testXML .="    <C1G2BlockWriteOpSpecResult>\n";
+                    $testXML .="      <Result>$result</Result>\n";
+                    $testXML .="      <OpSpecID>$id</OpSpecID>\n";
+                    $testXML .="      <NumWordsWritten>$words</NumWordsWritten>\n";
+                    $testXML .="    </C1G2BlockWriteOpSpecResult>\n";
+                }
+            }
+        }
         $testXML .= "  </TagReportData>\n";
     }
 
@@ -322,12 +521,12 @@ foreach my $combo (@combos) {
     my $bin = encode_message($testXML);
     my $msgSize = length($bin);
     print "Encoded Message is $msgSize bytes\n";
-#   if($msgSize == 44) {print $testXML; }
     print XML $testXML;
     print BIN $bin;
 }
 
-print XML "</ps:packetSequence>\n";
-# my $decoded = decode_message ($bmsg);
+print XML "\n</ps:packetSequence>\n";
+
 close(BIN);
 close(XML);
+
