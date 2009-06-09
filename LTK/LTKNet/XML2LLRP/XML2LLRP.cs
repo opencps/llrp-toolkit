@@ -112,7 +112,15 @@ namespace LTK
                 }
 
                 byte[] packet = LTKD.Util.ConvertBitArrayToByteArray(msg.ToBitArray());
-                outp.Write(packet, 0, packet.Length);
+
+                try
+                {
+                    outp.Write(packet, 0, packet.Length);
+                }
+                catch (Exception e)
+                {
+                    String desc = "ParseXMLToLLRPMessage failure on Packet #" + msg_no + ", " + e.Message;
+                }
 
                 /* next XML subdocument */
                 result = nextElement(ref xr);

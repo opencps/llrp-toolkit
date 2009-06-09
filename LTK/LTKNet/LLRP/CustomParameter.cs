@@ -257,8 +257,8 @@ namespace Org.LLRP.LTK.LLRPV1
     /// </summary>
     public class CustomParamDecodeFactory
     {
-        public static Hashtable vendorExtensionIDTypeHash;
-        public static Hashtable vendorExtensionNameTypeHash;
+        public static Hashtable vendorExtensionIDTypeHash = null;
+        public static Hashtable vendorExtensionNameTypeHash = null;
 
         /// <summary>
         /// Register vendor extension assembly
@@ -266,11 +266,20 @@ namespace Org.LLRP.LTK.LLRPV1
         /// <param name="asm"></param>
         public static void LoadVendorExtensionAssembly(Assembly asm)
         {
+            if (null == vendorExtensionIDTypeHash)
+            {
+                vendorExtensionIDTypeHash = new Hashtable();
+            }
+
+            if (null == vendorExtensionNameTypeHash)
+            {
+                vendorExtensionNameTypeHash = new Hashtable();
+            }
+
+//          Console.WriteLine("enter LVEA {0}", asm);
             try
             {
                 Type[] types = asm.GetTypes();
-                vendorExtensionIDTypeHash = new Hashtable();
-                vendorExtensionNameTypeHash = new Hashtable();
 
                 foreach (Type tp in types)
                 {
@@ -281,11 +290,31 @@ namespace Org.LLRP.LTK.LLRPV1
                     object obj = asm.CreateInstance(type_full_name);
                     PARAM_Custom temp_param = (PARAM_Custom)obj;
                     string key = temp_param.VendorID + "-" + temp_param.SubType;
-                    if (!vendorExtensionIDTypeHash.ContainsKey(key)) vendorExtensionIDTypeHash.Add(key, tp);
-                    if (!vendorExtensionNameTypeHash.ContainsKey(tp.Name)) vendorExtensionNameTypeHash.Add(tp.Name, tp);
+                    if (!vendorExtensionIDTypeHash.ContainsKey(key))
+                    {
+                        vendorExtensionIDTypeHash.Add(key, tp);
+//                      Console.WriteLine("addext {0}", key);
+                    }
+                    else
+                    {
+//                      Console.WriteLine("dupext {0}", key);
+                    }
+                    if (!vendorExtensionNameTypeHash.ContainsKey(tp.Name))
+                    {
+                        vendorExtensionNameTypeHash.Add(tp.Name, tp);
+//                      Console.WriteLine("addext {0}", tp.Name);
+                    }
+                    else
+                    {
+//                      Console.WriteLine("dupext {0}", tp.Name);
+                    }
                 }
             }
-            catch { }
+            catch
+            {
+//              Console.WriteLine("LVEA barffed", asm);
+            }
+//          Console.WriteLine("ext LVEA {0}", asm);
         }
 
         /// <summary>

@@ -31,7 +31,7 @@ namespace LTK
         {
 
             /* read remaining bytes */
-            if (env.msg_len < LLRPBinaryDecoder.MIN_HDR || env.msg_len > 1000000)
+            if (env.msg_len < LLRPBinaryDecoder.MIN_HDR || env.msg_len > 4000000)
             {
                 throw new MalformedPacket("Message length (" + env.msg_len + ") out-of-range");
             }

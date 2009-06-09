@@ -64,6 +64,15 @@
     namespace Org.LLRP.LTK.LLRPV1.<xsl:copy-of select="$vendor_name"/>
     {
 
+    public class <xsl:copy-of select="$vendor_name"/>_Installer
+    {
+      public static void Install()
+      {
+        Assembly asm = Assembly.GetExecutingAssembly();
+        CustomParamDecodeFactory.LoadVendorExtensionAssembly(asm);
+      }
+    }
+
     #region Custom Parameter Interface
     <xsl:for-each select ="llrp:customParameterDefinition">
       <xsl:variable name="custom_param_name">
@@ -174,10 +183,13 @@
       public UInt32 VENDOR_ID{get{return vendor_id;}}
       public Byte SUB_TYPE{get{return sub_type;}}
 
+
+
+
     <xsl:if test="contains(@name, 'ENABLE_EXTENSION') and not(contains(@name, 'RESPONSE'))">
       static MSG_<xsl:value-of select="@name"/>()
       {
-      Assembly asm = Assembly.GetCallingAssembly();
+      Assembly asm = Assembly.GetExecutingAssembly();
       CustomParamDecodeFactory.LoadVendorExtensionAssembly(asm);
       }
     </xsl:if>
