@@ -920,6 +920,15 @@ $utility.clearNumberOfReserved()
 							}
 							element.removeChildren("$custom",ns$custom);
 						#end
+						tempList = element.getChildren("Custom",ns);
+				        for (Element e : tempList){
+				        	$curName$list$add(new Custom(e));
+				        	atLeastOnce = true;
+				        	LOGGER.debug("adding custom parameter");
+				        }
+				        
+				        element.removeChildren("Custom",ns);
+				        
 						//end custom
 					#end				
 				#else
@@ -938,6 +947,11 @@ $utility.clearNumberOfReserved()
 							element.removeChild("$custom",ns$custom);
 						#end
 						}
+						temp = element.getChild("Custom",ns);
+						if (temp != null){
+							$curName =  new Custom (custom);
+						}
+						element.removeChild("Custom",ns);
 						// end custom
                     #end
                     if (temp != null){
@@ -966,7 +980,6 @@ $utility.clearNumberOfReserved()
 							#if ($utility.isCustom($subtype))
 								## custom parameter need separate treatment
 								// check for all custom parameters  for this parameter 
-								#set($has = "false")
 								#foreach ($custom in $utility.allowedCustom($parameter.getName()))
 									#set($hasAllowed = "true")
 									// $utility.getPrefixForParameter($custom)
@@ -979,15 +992,14 @@ $utility.clearNumberOfReserved()
 									}
 									element.removeChildren("$custom",ns$custom);
 								#end
-								#if ($hasAllowed == "false")
-									tempList = element.getChildren("Custom",ns);
-									for (Element e: tempList){
-										$curName$list$add (new Custom(e));
-										LOGGER.debug("adding $field.getType() to $curName$list ");
-									}
-									element.removeChildren("Custom",ns);
+								// check for regular custom parameter
+								tempList = element.getChildren("Custom",ns);
+								for (Element e: tempList){
+									$curName$list$add (new Custom(e));
+									LOGGER.debug("adding $field.getType() to $curName$list ");
+								}
+								element.removeChildren("Custom",ns);
 									
-								#end
 								//end allowed parameters
 							#else
 								tempList = element.getChildren("$subtype",ns);
