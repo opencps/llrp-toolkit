@@ -24,6 +24,11 @@
         <llrp:ProtocolID>EPCGlobalClass1Gen2</llrp:ProtocolID>
       </llrp:InventoryParameterSpec>
     </llrp:AISpec>
+	<llrp:Custom>
+	<llrp:VendorIdentifier>1111</llrp:VendorIdentifier>
+	<llrp:ParameterSubtype>1111</llrp:ParameterSubtype>
+	<llrp:Data>FF</llrp:Data>
+	</llrp:Custom>
   </llrp:ROSpec>
 </llrp:ADD_ROSPEC>
 
