@@ -1,3 +1,13 @@
+Changes in LTKJava 1.0.0.7 (over previous LTKJava 1.0.0.6) 
+
+* fixed potential buffer overflow problem in encodeXML method of UnsignedLong_DATETIME.java - bug report and patch by Samuel Wieland
+[Christian Floerkemeier]
+
+* fixed bug that prevented xml decoding of Custom parameter in choice definition [tracker: 2824818] -  bug reported by Rob Buck
+[Basil Gasser]
+
+
+
 Changes in LTKJava 1.0.0.6 (over previous LTKJava 1.0.0.5) 
 
 
