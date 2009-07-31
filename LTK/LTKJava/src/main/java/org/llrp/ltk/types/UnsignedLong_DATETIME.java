@@ -106,7 +106,7 @@ public class UnsignedLong_DATETIME extends UnsignedLong {
 		
 		// initialize calendar after removing the last 
 		// three digits that represent microseconds 
-		long milliseconds = value.longValue()/1000;
+		final long milliseconds = value.divide(new BigInteger("1000")).longValue();
 		cal.setTimeInMillis(milliseconds);
 		
 		StringBuffer sb = new StringBuffer();
