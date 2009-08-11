@@ -43,7 +43,7 @@ package org.llrp.ltk.generated.custom.parameters;
 #set($resName = "reserved")
 #set($resType = "BitList")
 #set($typeNum = ".TYPENUM")
-#set($subtypeNr = ".parameterSubtype")
+#set($subtypeNr = ".PARAMETER_SUBTYPE")
 #set($add = ".add")
 #set($emptyBrack = "()")
 #set($getClassName = ".getClass().getSimpleName()")
@@ -241,6 +241,8 @@ import org.llrp.ltk.exceptions.InvalidLLRPMessageException;
 ## beginning of class
 public class $custom.getName() extends Custom $interfaces{
 
+
+	public static final int PARAMETER_SUBTYPE = $custom.getSubtype();
 
 
 ##need always a logging
@@ -618,8 +620,8 @@ $utility.clearNumberOfReserved()
 							custom = new Custom(binary.subList(position,tempLength)); 
 							//allowed custom parameters for this parameter	
 							#foreach ($custom in $utility.allowedCustom($custom.getName()))
-								if (custom.getParameterSubtype == $custom$subtypeNr){ 
-									$curName$list$add (new $custom (custom));
+								if (custom.getParameterSubtype().intValue() == $custom$subtypeNr){ 
+									custom = new $custom (custom);
 								}
 							#end
 							//end allowed parameters
@@ -643,9 +645,10 @@ $utility.clearNumberOfReserved()
 					## custom parameter need separate treatment
 					// custom
 					custom = new $field.getType() (binary.subList(position,tempLength)); 	
+					// replace custom with actual type
 					#foreach ($custom in $utility.allowedCustom($custom.getName()))
-						if (custom.getParameterSubtype == $custom$subtypeNr){ 
-							$curName$list$add (new $custom (custom));
+						if (custom.getParameterSubtype().intValue() == $custom$subtypeNr){ 
+							custom = new $custom (custom);
 						}
 					#end
 				#elseif ($utility.hasType($field,$parameterReference))
@@ -693,8 +696,8 @@ $utility.clearNumberOfReserved()
 								// custom
 								custom = new $field.getType() (binary.subList(position,tempLength)); 	
 								#foreach ($custom in $utility.allowedCustom($field.getType()))
-									if (custom.getParameterSubtype == $custom$subtypeNr){ 
-										$curName$list$add (new $custom (custom));
+									if (custom.getParameterSubtype().intValue() == $custom$subtypeNr){ 
+										custom = new $custom (custom);
 									}
 								#end
 							#else						
@@ -715,10 +718,11 @@ $utility.clearNumberOfReserved()
 					#elseif ($utility.isCustom($field.getType()))
 						## custom parameter need separate treatment
 						// custom
-						custom = new $field.getType() (binary.subList(position,tempLength)); 	
+						custom = new $field.getType() (binary.subList(position,tempLength));
+						// replace custom with actual type 	
 						#foreach ($custom in $utility.allowedCustom($field.getType()))
-							if (custom.getParameterSubtype == $custom$subtypeNr){ 
-								$curName$list$add (new $custom (custom));
+							if (custom.getParameterSubtype().intValue() == $custom$subtypeNr){ 
+								custom = new $custom (custom);
 							}
 						#end
 					#elseif ($utility.hasType($field,$parameterReference))

@@ -242,30 +242,28 @@ public class Utility {
 
 	public List<String> getSubTypes(String type) {
 		List<String> result = new LinkedList<String>();
-		if (result.isEmpty()) {
-			for (ChoiceDefinition cd : choices) {
-				if (cd.getName().equalsIgnoreCase(type)) {
-					for (ChoiceParameterReference ref : cd.getParameter()) {
-						result.add(ref.getType());
-					}
+		for (ChoiceDefinition cd : choices) {
+			if (cd.getName().equalsIgnoreCase(type)) {
+				for (ChoiceParameterReference ref : cd.getParameter()) {
+					result.add(ref.getType());
 				}
 			}
-
-			for (CustomChoiceDefinition cd : customChoices) {
-				if (cd.getName().equalsIgnoreCase(type)) {
-					for (ChoiceParameterReference ref : cd.getParameter()) {
-						result.add(ref.getType());
-					}
-				}
-			}
-			String subs = "";
-
-			for (String s : result) {
-				subs = subs + s + ", ";
-			}
-
-			logger.debug(type + " has following subtypes: " + subs);
 		}
+
+		for (CustomChoiceDefinition cd : customChoices) {
+			if (cd.getName().equalsIgnoreCase(type)) {
+				for (ChoiceParameterReference ref : cd.getParameter()) {
+					result.add(ref.getType());
+				}
+			}
+		}
+		String subs = "";
+		for (String s : result) {
+			subs = subs + s + ", ";
+		}
+
+		logger.debug(type + " has following subtypes: " + subs);
+		
 		return result;
 	}
 
@@ -386,15 +384,31 @@ public class Utility {
 		return c.isEmpty();
 	}
 
+	/**
+	 * store in which parameter custom is allowed in.
+	 * Relates to a <allowedIn type="<Parameter>" element in Custom definition
+	 * @param parameter
+	 * @param custom
+	 */
 	public void addAllowedIn(String parameter, String custom) {
-		List<String> result = allowedIn.get(parameter);
-
-		if (result == null) {
-			result = new LinkedList<String>();
-			allowedIn.put(parameter, result);
+		// a parameter may be a choice definition or a actual parameter. If it is a choice definition
+		// add it to all parameters implementing this choice
+		List<String> subTypes = getSubTypes(parameter);
+		if (subTypes == null || subTypes.isEmpty()){
+			// not a choice, add simply the given parameter
+			subTypes = new LinkedList<String>();
+			subTypes.add(parameter);
 		}
-
-		result.add(custom);
+		// add custom now to all types found in subTypes list
+		for(String p : subTypes){
+			// check if we previously found allwed in constructs for this parameter
+			List<String> result = allowedIn.get(p);		
+			if (result == null) {
+				result = new LinkedList<String>();
+				allowedIn.put(p, result);
+			}
+			result.add(custom);
+		}
 	}
 
 	public List<ChoiceDefinition> getChoices() {
