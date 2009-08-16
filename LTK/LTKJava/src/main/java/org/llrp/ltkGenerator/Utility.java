@@ -11,16 +11,17 @@ import java.util.Set;
 
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.log4j.Logger;
+import org.apache.xerces.dom.ElementNSImpl;
 import org.llrp.ltkGenerator.generated.Annotation;
 import org.llrp.ltkGenerator.generated.ChoiceDefinition;
 import org.llrp.ltkGenerator.generated.ChoiceParameterReference;
 import org.llrp.ltkGenerator.generated.CustomChoiceDefinition;
+import org.llrp.ltkGenerator.generated.CustomMessageDefinition;
+import org.llrp.ltkGenerator.generated.CustomParameterDefinition;
 import org.llrp.ltkGenerator.generated.Description;
 import org.llrp.ltkGenerator.generated.Documentation;
 import org.llrp.ltkGenerator.generated.MessageDefinition;
 import org.llrp.ltkGenerator.generated.ParameterDefinition;
-
-import org.apache.xerces.dom.ElementNSImpl;
 
 public class Utility {
 	private Map<String, String> superTypes;
@@ -457,7 +458,19 @@ public class Utility {
 			List<Object> list = a.getDocumentationOrDescription();
 			doc = extractAnnotation(list);
 		}
+		if (o instanceof CustomMessageDefinition) {
+			CustomMessageDefinition m = (CustomMessageDefinition) o;
+			Annotation a = m.getAnnotation().get(0);
+			List<Object> list = a.getDocumentationOrDescription();
+			doc = extractAnnotation(list);
+		}
 
+		if (o instanceof CustomParameterDefinition) {
+			CustomParameterDefinition m = (CustomParameterDefinition) o;
+			Annotation a = m.getAnnotation().get(0);
+			List<Object> list = a.getDocumentationOrDescription();
+			doc = extractAnnotation(list);
+		}
 		if (doc.equals("")) {
 			return "no documentation found";
 		} else {
@@ -485,23 +498,27 @@ public class Utility {
 			}
 			if (ob instanceof Documentation) {
 				Documentation descOb = (Documentation) ob;
-				documentation += REFERENCE_TEXT;
+				String temp_doc = "";
 				boolean first = true;
 				for (Object ox : descOb.getContent()) {
 					// allowed are only Element or String
 					if (ox instanceof ElementNSImpl) {
 						if (!first){
-							documentation += " and ";
+							temp_doc += " and ";
 						} else {
 							first = false;
 						}
 						ElementNSImpl el = (ElementNSImpl) ox;
 						String uri = el.getAttribute(HREF);
 						String linkText = el.getChildNodes().item(0).getTextContent().replace('\n', ' ');
-						documentation += "{"+REFERENCE_LINK +"<a href=\""+uri+"\">"+linkText+"</a>}"+'\n';
+						temp_doc += "{"+REFERENCE_LINK +"<a href=\""+uri+"\">"+linkText+"</a>}"+'\n';
 					} else {
-						documentation += ox.toString();
+						temp_doc += ox.toString();
 					}
+				}
+				if (!temp_doc.equals("")){
+					documentation += REFERENCE_TEXT;
+					documentation += temp_doc;
 				}
 			}
 		}
