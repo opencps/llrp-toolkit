@@ -1,5 +1,8 @@
 Changes in LTKJava 1.0.0.7 (over previous LTKJava 1.0.0.6) 
 
+* Parameter Annotations contained in custom parameter definitions now correctly added to generated Java files 
+[Basil Gasser]
+
 * made allowedIn references type aware, i.e. if a parameter is defined to be allowedIn in a certain type it is also allowed in any sub type defined using the choice definition
 [Basil Gasser]
 
