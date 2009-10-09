@@ -1,5 +1,8 @@
 Changes in LTKJava 1.0.0.7 (over previous LTKJava 1.0.0.6) 
 
+* Annotations in message and parameter definitions are now optional (previously mandatory)
+[Christian Floerkemeier]
+
 * Parameter Annotations contained in custom parameter definitions now correctly added to generated Java files 
 [Basil Gasser]
 
