@@ -447,29 +447,36 @@ public class Utility {
 
 		if (o instanceof MessageDefinition) {
 			MessageDefinition m = (MessageDefinition) o;
-			Annotation a = m.getAnnotation().get(0);
-			List<Object> list = a.getDocumentationOrDescription();
-			doc = extractAnnotation(list);
+			if (!m.getAnnotation().isEmpty()) {
+				Annotation a = m.getAnnotation().get(0);
+				List<Object> list = a.getDocumentationOrDescription();
+				doc = extractAnnotation(list);
+			}
 		}
-
 		if (o instanceof ParameterDefinition) {
 			ParameterDefinition m = (ParameterDefinition) o;
-			Annotation a = m.getAnnotation().get(0);
-			List<Object> list = a.getDocumentationOrDescription();
-			doc = extractAnnotation(list);
+			if (!m.getAnnotation().isEmpty()) {
+				Annotation a = m.getAnnotation().get(0);
+				List<Object> list = a.getDocumentationOrDescription();
+				doc = extractAnnotation(list);
+			}
 		}
 		if (o instanceof CustomMessageDefinition) {
 			CustomMessageDefinition m = (CustomMessageDefinition) o;
-			Annotation a = m.getAnnotation().get(0);
-			List<Object> list = a.getDocumentationOrDescription();
-			doc = extractAnnotation(list);
+			if (!m.getAnnotation().isEmpty()) {
+				Annotation a = m.getAnnotation().get(0);
+				List<Object> list = a.getDocumentationOrDescription();
+				doc = extractAnnotation(list);
+			}
 		}
 
 		if (o instanceof CustomParameterDefinition) {
 			CustomParameterDefinition m = (CustomParameterDefinition) o;
-			Annotation a = m.getAnnotation().get(0);
-			List<Object> list = a.getDocumentationOrDescription();
-			doc = extractAnnotation(list);
+			if (!m.getAnnotation().isEmpty()) {
+				Annotation a = m.getAnnotation().get(0);
+				List<Object> list = a.getDocumentationOrDescription();
+				doc = extractAnnotation(list);
+			}	
 		}
 		if (doc.equals("")) {
 			return "no documentation found";
