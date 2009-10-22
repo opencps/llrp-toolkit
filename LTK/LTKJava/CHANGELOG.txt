@@ -1,5 +1,17 @@
 Changes in LTKJava 1.0.0.7 (over previous LTKJava 1.0.0.6) 
 
+* revert changes from 8/11/09 - Revision 1.17 from Utility.java and make LTKJava compliant to C and C++ implementations where allowedIn references to choice definitions are treated as extension of them.
+Example: 
+	<customParameterDefinition    name="MyCustom">
+		...
+   		<allowedIn repeat="0-1" type="AccessCommandOpSpecResult"/>
+ 	</customParameterDefinition>
+ interpreted as if one added MyCustom to choiceDefinition:
+ 	<choiceDefinition name="AccessCommandOpSpecResult">
+   		...
+   		<parameter type="*MyCustom*"/>
+ 	</choiceDefinition>
+[Basil Gasser]
 * Annotations in message and parameter definitions are now optional (previously mandatory)
 [Christian Floerkemeier]
 

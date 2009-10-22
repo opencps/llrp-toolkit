@@ -37,6 +37,8 @@ public class Utility {
 	private Map<String, String> customParameterMap;
 	private Map<String, String> customMessageMap;
 	private Map<String, String> prefixForParameterMap;
+	private Map<String, List<String>> choicesToImplementMap;
+	private Map<String, List<String>> additionalSubTypesMap;
 	private static final String NOTYPE = "NoType";
 	private static final String HREF = "href";
 	private static final String REFERENCE_LINK = "@link ";
@@ -53,6 +55,8 @@ public class Utility {
 		customChoicesMap = new HashMap<String, String>();
 		customParameterMap = new HashMap<String, String>();
 		customMessageMap = new HashMap<String, String>();
+		choicesToImplementMap = new HashMap<String, List<String>>();
+		additionalSubTypesMap = new HashMap<String, List<String>>();
 	}
 
 	/**
@@ -258,13 +262,16 @@ public class Utility {
 				}
 			}
 		}
+		List<String> additionalSubTypes = additionalSubTypesMap.get(type);
+		if (additionalSubTypes != null){
+			result.addAll(additionalSubTypes);
+		}
 		String subs = "";
 		for (String s : result) {
 			subs = subs + s + ", ";
 		}
 
 		logger.debug(type + " has following subtypes: " + subs);
-		
 		return result;
 	}
 
@@ -284,6 +291,10 @@ public class Utility {
 					result.add(cd.getName());
 				}
 			}
+		}
+		List<String> allowedInChoices = choicesToImplementMap.get(type);
+		if (allowedInChoices != null){
+			result.addAll(allowedInChoices);
 		}
 		return result;
 	}
@@ -392,24 +403,30 @@ public class Utility {
 	 * @param custom
 	 */
 	public void addAllowedIn(String parameter, String custom) {
-		// a parameter may be a choice definition or a actual parameter. If it is a choice definition
-		// add it to all parameters implementing this choice
-		List<String> subTypes = getSubTypes(parameter);
-		if (subTypes == null || subTypes.isEmpty()){
-			// not a choice, add simply the given parameter
-			subTypes = new LinkedList<String>();
-			subTypes.add(parameter);
-		}
-		// add custom now to all types found in subTypes list
-		for(String p : subTypes){
-			// check if we previously found allwed in constructs for this parameter
-			List<String> result = allowedIn.get(p);		
-			if (result == null) {
-				result = new LinkedList<String>();
-				allowedIn.put(p, result);
+		if (isChoice(parameter) || isCustomChoice(parameter)){
+			// parameter is actually a choice so we have to remember so custom can implement parameter
+			List<String> list = choicesToImplementMap.get(custom);
+			if (list == null){
+				list = new LinkedList<String>();
+				choicesToImplementMap.put(custom,list);
 			}
-			result.add(custom);
+			list.add(parameter);
+			// remember reverse mapping so when retrieving subTypes this can also easily be done
+			List<String> subTypesList = additionalSubTypesMap.get(parameter);
+			if (subTypesList == null){
+				subTypesList = new LinkedList<String>();
+				additionalSubTypesMap.put(parameter,subTypesList);
+			}			
+			subTypesList.add(custom);
+
 		}
+		// add custom to allowed in parameter
+		List<String> result = allowedIn.get(parameter);		
+		if (result == null) {
+			result = new LinkedList<String>();
+			allowedIn.put(parameter, result);
+		}
+		result.add(custom);		
 	}
 
 	public List<ChoiceDefinition> getChoices() {
@@ -568,6 +585,16 @@ public class Utility {
 		return customChoicesMap.containsKey(name.toLowerCase());
 	}
 
+	public boolean isChoice(String name) {
+		if (name == null) {
+			return false;
+		}
+		for(ChoiceDefinition c : choices){
+			if (c.getName().equalsIgnoreCase(name)) return true;
+		}
+		return choices.contains(name);
+	}
+	
 	public void addCustomMessage(String name) {
 		customMessageMap.put(name.toLowerCase(), name.toLowerCase());
 	}

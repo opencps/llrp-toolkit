@@ -183,7 +183,11 @@ import org.llrp.ltk.generated.LLRPConstants;
 		#if ($utility.hasType($field,$choiceReference))
 			##check all subtypes
 			#foreach ($subtype in $utility.getSubTypes($field.getType()))
-				import org.llrp.ltk.generated.parameters.$subtype;
+				#if ($utility.isCustomParameter($subtype))
+					import org.llrp.ltk.generated.custom.parameters.$subtype;
+				#else
+					import org.llrp.ltk.generated.parameters.$subtype;
+				#end				
 				$utility.addImport($subtype)
 			#end
 			#if ($utility.isCustomChoice($field.getType()))
@@ -195,7 +199,11 @@ import org.llrp.ltk.generated.LLRPConstants;
 			#end
 		#else
 			#if (!$utility.hasImport($field.getType()))
-				import org.llrp.ltk.generated.parameters.$field.getType();
+				#if ($utility.isCustomParameter($field.getType()))
+					import org.llrp.ltk.generated.custom.parameters.$field.getType();
+				#else
+					import org.llrp.ltk.generated.parameters.$field.getType();
+				#end
 				$utility.addImport($field.getType())
 			#end
 		#end
