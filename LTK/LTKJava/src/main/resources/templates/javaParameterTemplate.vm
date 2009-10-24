@@ -988,7 +988,7 @@ $utility.clearNumberOfReserved()
 							#if ($utility.isCustom($subtype))
 								## custom parameter need separate treatment
 								// check for all custom parameters  for this parameter 
-								#foreach ($custom in $utility.allowedCustom($parameter.getName()))
+								#foreach ($custom in $utility.allowedCustom($curName.getName()))
 									#set($hasAllowed = "true")
 									// $utility.getPrefixForParameter($custom)
 									Namespace ns$custom = Namespace.getNamespace("$utility.getPrefixForParameter($custom)",LLRPConstants.$utility.getPrefixForParameter($custom).toUpperCase()$ns);		
