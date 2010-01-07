@@ -1,5 +1,8 @@
 Changes in LTKJava 1.0.0.7 (over previous LTKJava 1.0.0.6) 
 
+* changed BitOrder in TwoBitField from LSB to MSB first. Fixes bug 2927680.
+[Basil Gasser]
+
 * fixed bug that caused a compiler error when a parameter and one of its choice definition had a custom element and a custom extension parameter was "allowedIn" in the parameter
 [Christian Floerkemeier]
 

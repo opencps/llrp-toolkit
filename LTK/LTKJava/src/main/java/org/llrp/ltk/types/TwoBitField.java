@@ -32,7 +32,7 @@ public class TwoBitField extends LLRPType {
 	private Bit[] bits;
 
 	/**
-	 * Creates a TwoBitField. LSB at position 0, MSB at position 1
+	 * Creates a TwoBitField. MSB at position 0, LSB at position 1
 	 * 
 	 * @param bits
 	 *            to be decoded
@@ -49,7 +49,7 @@ public class TwoBitField extends LLRPType {
 	}
 
 	/**
-	 * Creates a TwoBitField. LSB at position 0, MSB at position 1
+	 * Creates a TwoBitField. LSB at position 1, MSB at position 0
 	 * 
 	 * @param list
 	 *            to be decoded
@@ -109,7 +109,7 @@ public class TwoBitField extends LLRPType {
 
 	/**
 	 * just like BitArray but does not encode length before values
-	 * MSB at highest position
+	 * MSB first
 	 * 
 	 * @return LLRPBitList
 	 */
@@ -137,7 +137,7 @@ public class TwoBitField extends LLRPType {
 	}
 
 	/**
-	 * decode bits from BitList. Length must not be provided, MSB at highest position
+	 * decode bits from BitList. Length must not be provided, MSB first
 	 * 
 	 * @param list
 	 *            to be decoded
@@ -169,7 +169,7 @@ public class TwoBitField extends LLRPType {
 	 * @return int
 	 */
 	public int intValue() {
-		String s = bits[1].toString() + "" + bits[0].toString();
+		String s = bits[0].toString() + "" + bits[1].toString();
 		return new BigInteger(s, 2).intValue();
 	}
 
@@ -205,17 +205,17 @@ public class TwoBitField extends LLRPType {
 		if (!element.getText().equals("")) {
 			int i = Integer.parseInt(element.getText());
 			if (i == 0) {
-				this.bits[0] = new Bit(0);
 				this.bits[1] = new Bit(0);
+				this.bits[0] = new Bit(0);
 			} else if (i == 1) {
-				this.bits[0] = new Bit(1);
-				this.bits[1] = new Bit(0);
-			} else if (i == 2) {
+				this.bits[1] = new Bit(1);
 				this.bits[0] = new Bit(0);
-				this.bits[1] = new Bit(1);
-			} else if (i == 3) {
+			} else if (i == 2) {
+				this.bits[1] = new Bit(0);
 				this.bits[0] = new Bit(1);
+			} else if (i == 3) {
 				this.bits[1] = new Bit(1);
+				this.bits[0] = new Bit(1);
 			} else {
 				throw new IllegalArgumentException(element.getText()+" not in range");
 			}
@@ -227,20 +227,20 @@ public class TwoBitField extends LLRPType {
 
 	}
 	/**
-	 * encodes TwoBitField to a string where the string represents the value in decimal format and bits are interpreted LSB first
+	 * encodes TwoBitField to a string where the string represents the value in decimal format and bits are interpreted MSB first
 	 */
 	public String toString() {
-		Integer s = bits[0].toInteger() + (bits[1].toInteger() * 2);
+		Integer s = bits[1].toInteger() + (bits[0].toInteger() * 2);
 		return s.toString();
 
 	}
 
 	/**
-	 * encodes the TwoBitField to a string where the String represents the value in the given radix. If the radix is two, the string is in LSB first format
+	 * encodes the TwoBitField to a string where the String represents the value in the given radix. If the radix is two, the string is in MSB first format
 	 */
 	public String toString(int radix) {
 		if (radix == 2){
-			return bits[0].toString() + "" + bits[1].toString();
+			return bits[1].toString() + "" + bits[0].toString();
 		} else {
 			return Integer.toString(intValue(), radix);
 		}
