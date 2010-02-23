@@ -50,7 +50,9 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <UsingTask TaskName="LLRPCodeGenerator" AssemblyFile="CodeGenerator.dll" />
+
+  <UsingTask TaskName="CodeGenerator.LLRPCodeGenerator" AssemblyFile="$(MSBuildProjectDirectory)\..\CodeGenerator\bin\$(Configuration)\CodeGenerator.dll" />
+ 
   <Target Name="BeforeBuild" Inputs="@(Generate); VendorExt.xml" Outputs="@(Generate -> '%(filename).cs')">
     <CodeGenerator.LLRPCodeGenerator LLRP_XML_FILE="VendorExt.xml" XSLT_FILE="@(Generate)" OUTPUT_CS_FILE="@(Generate -> '%(filename).cs')" Condition="!Exists('@(Generate -&gt; \'%(filename).cs\')')" />
   </Target>

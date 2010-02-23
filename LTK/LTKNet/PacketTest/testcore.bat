@@ -114,7 +114,7 @@ echo.
 echo.
 echo ================================================================
 echo == Run dx101 on standard 'f' input to verify function.
-echo == Includes Custom parameters at each extension point.
+echo == XML with extra whitespace etc
 echo ================================================================
 copy ..\..\Tests\dx101\dx101_f.bin reff.bin > NUL
 copy ..\..\Tests\dx101\dx101_f.xml reff.xml > NUL
@@ -126,7 +126,7 @@ fc /b reff.bin tmpf-1.bin > NUL
 if %errorlevel% neq 0 goto :dx101_f_fail
 fc /b reff.bin tmpf-2.bin > NUL
 if %errorlevel% neq 0 goto :dx101_f_fail
-fc /b refe.bin tmpf-3.bin > NUL
+fc /b reff.bin tmpf-3.bin > NUL
 if %errorlevel% neq 0 goto :dx101_f_fail
 echo DX101 F -- PASSED
 goto :eof

@@ -1,4 +1,4 @@
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -79,18 +79,15 @@
   <Target Name="BeforeBuild" Inputs="@(Generate); templates.xslt" Outputs="@(Generate -> '%(filename).cs')">
     <CodeGenerator.LLRPCodeGenerator LLRP_XML_FILE="..\..\Definitions\core\llrp-1x0-def.xml" XSLT_FILE="@(Generate)" OUTPUT_CS_FILE="@(Generate -> '%(filename).cs')" Condition="!Exists('@(Generate -&gt; \'%(filename).cs\')')" />
   </Target>
-
   <PropertyGroup>
     <CleanDependsOn>
         $(CleanDependsOn);
         CleanGeneratedCode;
     </CleanDependsOn>
   </PropertyGroup>
-
   <Target Name="CleanGeneratedCode">
     <Delete Files="@(Generate -> '%(filename).cs')" />
   </Target>
-
   <Target Name="AfterBuild">
   </Target>
   <ItemGroup>

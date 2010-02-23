@@ -832,8 +832,9 @@ namespace Org.LLRP.LTK.LLRPV1.DataType
         /// <param name="type">data type (string), defined in LLRP protocol</param>
         /// <param name="format">format (string), defined in LLRP protocol</param>
         /// <returns></returns>
-        public static object ParseValueTypeFromString(string val, string type, string format)
+        public static object ParseValueTypeFromString(string rawval, string type, string format)
         {
+            string val = rawval.Trim();
             try
             {
                 switch (type)
@@ -1136,8 +1137,9 @@ namespace Org.LLRP.LTK.LLRPV1.DataType
         /// <param name="type">array type (string), defined in LLRP protocol</param>
         /// <param name="format">format (string), defined in LLRP protocol</param>
         /// <returns></returns>
-        public static object ParseArrayTypeFromString(string val, string type, string format)
+        public static object ParseArrayTypeFromString(string rawval, string type, string format)
         {
+            string val = rawval.Trim();
             try
             {
                 switch (type)
@@ -1283,8 +1285,8 @@ namespace Org.LLRP.LTK.LLRPV1.DataType
 
             dt =  new DateTime(ticks_utc, DateTimeKind.Utc);
             return String.Format("{00}.{1:000000}", dt.ToString("s"), ((UInt64)microseconds) % 1000000);
-
         }
+
         private static UInt64 ConvertUTCTimeToMicroseconds(string utcTime)
         {
             try

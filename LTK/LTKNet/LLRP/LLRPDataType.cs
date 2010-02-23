@@ -380,7 +380,7 @@ namespace Org.LLRP.LTK.LLRPV1.DataType
             ByteArray bA = new ByteArray();
             str = str.Trim();
 
-            string[] s = Util.SplitString(str, new char[] { ',', ' '}, 2);
+            string[] s = Util.SplitString(str, new char[] { ',', ' ', '\t', '\n', '\r' }, 2);
 
             byte[] bD = new byte[s.Length];
 
@@ -403,7 +403,7 @@ namespace Org.LLRP.LTK.LLRPV1.DataType
             ByteArray bA = new ByteArray();
             str = str.Trim();
 
-            string[] s = str.Split(new char[] { ',', ' ' });
+            string[] s = str.Split(new char[] { ',', ' ', '\t', '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
 
             byte[] bD = new byte[s.Length];
 
@@ -426,7 +426,7 @@ namespace Org.LLRP.LTK.LLRPV1.DataType
             ByteArray bA = new ByteArray();
             str = str.Trim();
 
-            string[] s = str.Split(new char[] { ',', ' ' });
+            string[] s = str.Split(new char[] { ',', ' ', '\t', '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
 
             byte[] bD = new byte[s.Length];
 
@@ -537,7 +537,7 @@ namespace Org.LLRP.LTK.LLRPV1.DataType
             SignedByteArray bA = new SignedByteArray();
             str = str.Trim();
 
-            string[] s = Util.SplitString(str, new char[] { ',', ' ' }, 2);
+            string[] s = Util.SplitString(str, new char[] { ',', ' ', '\t', '\n', '\r' }, 2);
 
             sbyte[] bD = new sbyte[s.Length];
 
@@ -560,7 +560,7 @@ namespace Org.LLRP.LTK.LLRPV1.DataType
             SignedByteArray bA = new SignedByteArray();
             str = str.Trim();
 
-            string[] s = str.Split(new char[] { ',', ' ' });
+            string[] s = str.Split(new char[] { ',', ' ', '\t', '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
 
             sbyte[] bD = new sbyte[s.Length];
 
@@ -583,7 +583,7 @@ namespace Org.LLRP.LTK.LLRPV1.DataType
             SignedByteArray bA = new SignedByteArray();
             str = str.Trim();
 
-            string[] s = str.Split(new char[] { ',', ' ' });
+            string[] s = str.Split(new char[] { ',', ' ', '\t', '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
 
             sbyte[] bD = new sbyte[s.Length];
 
@@ -750,7 +750,7 @@ namespace Org.LLRP.LTK.LLRPV1.DataType
 
             if (str != string.Empty)
             {
-                string[] s = Util.SplitString(str, new char[] { ',', ' ' }, 4);
+                string[] s = Util.SplitString(str, new char[] { ',', ' ', '\t', '\n', '\r' }, 4);
                 for (int i = 0; i < s.Length; i++)
                 {
                     try
@@ -778,7 +778,7 @@ namespace Org.LLRP.LTK.LLRPV1.DataType
 
             if (str != string.Empty)
             {
-                string[] s = str.Split(new char[] { ',', ' ' });
+                string[] s = str.Split(new char[] { ',', ' ', '\t', '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
                 for (int i = 0; i < s.Length; i++)
                 {
                     try
@@ -905,7 +905,7 @@ namespace Org.LLRP.LTK.LLRPV1.DataType
 
             if (str != string.Empty)
             {
-                string[] s = Util.SplitString(str, new char[] { ',', ' ' }, 4);
+                string[] s = Util.SplitString(str, new char[] { ',', ' ', '\t', '\n', '\r' }, 4);
                 for (int i = 0; i < s.Length; i++)
                 {
                     try
@@ -933,7 +933,7 @@ namespace Org.LLRP.LTK.LLRPV1.DataType
 
             if (str != string.Empty)
             {
-                string[] s = str.Split(new char[] { ',', ' ' });
+                string[] s = str.Split(new char[] { ',', ' ', '\t', '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
                 for (int i = 0; i < s.Length; i++)
                 {
                     try
@@ -1036,7 +1036,7 @@ namespace Org.LLRP.LTK.LLRPV1.DataType
         {
             str = str.Trim();
             UInt32Array Arr = new UInt32Array();
-            string[] s = Util.SplitString(str, new char[] { ',', ' ' }, 8);
+            string[] s = Util.SplitString(str, new char[] { ',', ' ', '\t', '\n', '\r' }, 8);
 
             for (int i = 0; i < s.Length; i++)
             {
@@ -1061,7 +1061,7 @@ namespace Org.LLRP.LTK.LLRPV1.DataType
         {
             str = str.Trim();
             UInt32Array Arr = new UInt32Array();
-            string[] s = str.Split(new char[] { ',', ' ' });
+            string[] s = str.Split(new char[] { ',', ' ', '\t', '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
 
             for (int i = 0; i < s.Length; i++)
             {
@@ -1188,7 +1188,7 @@ namespace Org.LLRP.LTK.LLRPV1.DataType
         {
             str = str.Trim();
             Int32Array Arr = new Int32Array();
-            string[] s = str.Split(new char[] { ',', ' ' });
+            string[] s = str.Split(new char[] { ',', ' ', '\t', '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
 
             for (int i = 0; i < s.Length; i++)
             {

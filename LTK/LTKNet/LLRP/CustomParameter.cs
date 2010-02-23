@@ -259,8 +259,8 @@ namespace Org.LLRP.LTK.LLRPV1
                     if (tp.BaseType != typeof(PARAM_Custom)) continue;
 
                     string type_full_name = tp.Namespace + "." + tp.Name;
-
                     object obj = asm.CreateInstance(type_full_name);
+
                     PARAM_Custom temp_param = (PARAM_Custom)obj;
                     string key = temp_param.VendorID + "-" + temp_param.SubType;
                     if (!vendorExtensionIDTypeHash.ContainsKey(key))
@@ -333,12 +333,16 @@ namespace Org.LLRP.LTK.LLRPV1
         /// <returns>Custom Parameter</returns>
         public static ICustom_Parameter DecodeXmlNodeToCustomParameter(XmlNode node)
         {
-            if (null != vendorExtensionNameTypeHash)
-            {
-                // Our hash is not namespace aware.
-                string[] temp = node.Name.Split(new char[] {':'});
-                string type_name = "PARAM_" + temp[temp.Length - 1];
+            // Our hash is not namespace aware.
+            string[] temp = node.Name.Split(new char[] {':'});
+            string type_name = "PARAM_" + temp[temp.Length - 1];
 
+            if (type_name == "PARAM_Custom")
+            {
+                return (ICustom_Parameter)PARAM_Custom.FromXmlNode(node);
+            }
+            else if (null != vendorExtensionNameTypeHash)
+            {
                 try
                 {
                     Type tp = (Type)vendorExtensionNameTypeHash[type_name];
@@ -351,10 +355,6 @@ namespace Org.LLRP.LTK.LLRPV1
                         object obj = mis.Invoke(null, parameters);
 
                         return (ICustom_Parameter)obj;
-                    }
-                    else if (type_name == "PARAM_Custom")
-                    {
-                        return (ICustom_Parameter)PARAM_Custom.FromXmlNode(node);
                     }
                 }
                 catch { }
