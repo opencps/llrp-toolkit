@@ -20,6 +20,7 @@
     <WarningLevel>1</WarningLevel>
     <DocumentationFile>
     </DocumentationFile>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -35,7 +36,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BlockingQueue.cs" />
     <Compile Include="CommunicationInterface.cs" />
+    <Compile Include="CustomMessage.cs" />
     <Compile Include="CustomParameter.cs" />
     <Compile Include="LLRPDataType.cs" />
     <Compile Include="LLRPEndPoint.cs" />
@@ -59,6 +62,10 @@
     <Compile Include="Transaction.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="keyAccessSpecs.cd" />
+    <None Include="KeyClientClasses.cd" />
+    <None Include="keyMessages.cd" />
+    <None Include="keyRoSpecParameters.cd" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -68,9 +75,9 @@
     <Content Include="templates.xslt" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <UsingTask TaskName="CodeGenerator.LLRPCodeGenerator" AssemblyFile="CodeGenerator.dll" />
+  <UsingTask TaskName="CodeGenerator.LLRPCodeGenerator" AssemblyFile="$(MSBuildProjectDirectory)\..\CodeGenerator\bin\$(Configuration)\CodeGenerator.dll" />
   <Target Name="BeforeBuild" Inputs="@(Generate); templates.xslt" Outputs="@(Generate -> '%(filename).cs')">
-    <CodeGenerator.LLRPCodeGenerator LLRP_XML_FILE="llrp-1x0-def.xml" XSLT_FILE="@(Generate)" OUTPUT_CS_FILE="@(Generate -> '%(filename).cs')" Condition="!Exists('@(Generate -&gt; \'%(filename).cs\')')" />
+    <CodeGenerator.LLRPCodeGenerator LLRP_XML_FILE="..\..\Definitions\core\llrp-1x0-def.xml" XSLT_FILE="@(Generate)" OUTPUT_CS_FILE="@(Generate -> '%(filename).cs')" Condition="!Exists('@(Generate -&gt; \'%(filename).cs\')')" />
   </Target>
 
   <PropertyGroup>
@@ -81,7 +88,7 @@
   </PropertyGroup>
 
   <Target Name="CleanGeneratedCode">
-    <Delete Files="@(Generate -> '%(filename).cs')"/>
+    <Delete Files="@(Generate -> '%(filename).cs')" />
   </Target>
 
   <Target Name="AfterBuild">

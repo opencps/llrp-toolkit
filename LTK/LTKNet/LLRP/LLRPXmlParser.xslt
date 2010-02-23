@@ -81,18 +81,22 @@
     switch(node.Name)
     {
     <xsl:for-each select="llrp:messageDefinition">
-        case "<xsl:value-of select="@name"/>":
+    case "<xsl:value-of select="@name"/>":
         msg = (Message)MSG_<xsl:value-of select="@name"/>.FromString(xmlstr);
         type = ENUM_LLRP_MSG_TYPE.<xsl:value-of select="@name"/>;
         return;
-      </xsl:for-each>
-        default:
-        msg = null;
+    </xsl:for-each>
+    default:
         type = 0;
+        msg = (Message)CustomMsgDecodeFactory.DecodeXmlNodeToCustomMessage(node, xmlstr);
+        if (null != msg)
+        {
+            type = ENUM_LLRP_MSG_TYPE.CUSTOM_MESSAGE;
+        }
         return;      
-      }
-      }
     }
     }
+  }
+  }
   </xsl:template>
 </xsl:stylesheet>

@@ -963,6 +963,10 @@ extern void
 LLRP_<xsl:value-of select='$StructName'/>_clear<xsl:value-of select='$Name'/> (
   LLRP_tS<xsl:value-of select='$StructName'/> *pThis);
 
+extern int
+LLRP_<xsl:value-of select='$StructName'/>_count<xsl:value-of select='$Name'/> (
+  LLRP_tS<xsl:value-of select='$StructName'/> *pThis);
+
 extern LLRP_tResultCode
 LLRP_<xsl:value-of select='$StructName'/>_add<xsl:value-of select='$Name'/> (
   LLRP_tS<xsl:value-of select='$StructName'/> *pThis,

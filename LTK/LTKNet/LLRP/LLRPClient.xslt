@@ -74,18 +74,6 @@
     public delegate void delegateEncapKeepAlive(ENCAPED_KEEP_ALIVE msg);
 
     [Serializable]
-    public class ClientManualResetEvent
-    {
-    public ManualResetEvent evt;
-    public byte[] data;
-    public UInt32 msg_id;
-
-    public ClientManualResetEvent(bool status)
-    {
-    evt = new ManualResetEvent(status);
-    }
-    }
-
     /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>summary<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
   /// Device proxy for host application to connect with LLRP reader
   /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>/summary<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
@@ -95,6 +83,11 @@
     private CommunicationInterface cI;
     private int LLRP_TCP_PORT = 5084;
     private int MSG_TIME_OUT = 10000;
+    #endregion
+
+    #region Private Thread Objects
+    private Thread notificationThread;
+    private BlockingQueue notificationQueue;
     #endregion
 
     #region Private Members
@@ -115,49 +108,50 @@
 
     protected void TriggerReaderEventNotification(MSG_READER_EVENT_NOTIFICATION msg)
     {
-    try {
-    if (OnReaderEventNotification != null) OnReaderEventNotification(msg);
-    if (OnEncapedReaderEventNotification != null)
-    {
-    ENCAPED_READER_EVENT_NOTIFICATION ntf = new ENCAPED_READER_EVENT_NOTIFICATION();
-    ntf.reader = reader_name;
-    ntf.ntf = msg;
-    }
-    }
-    catch { }
+        try {
+            if (OnReaderEventNotification != null) OnReaderEventNotification(msg);
+            if (OnEncapedReaderEventNotification != null)
+            {
+            ENCAPED_READER_EVENT_NOTIFICATION ntf = new ENCAPED_READER_EVENT_NOTIFICATION();
+            ntf.reader = reader_name;
+            ntf.ntf = msg;
+            }
+        }
+        catch { }
     }
 
     protected void TriggerRoAccessReport(MSG_RO_ACCESS_REPORT msg)
     {
-    try
-    {
-    if (OnRoAccessReportReceived != null) OnRoAccessReportReceived(msg);
-    if (OnEncapedRoAccessReportReceived != null)
-    {
-    ENCAPED_RO_ACCESS_REPORT report = new ENCAPED_RO_ACCESS_REPORT();
-    report.reader = reader_name;
-    report.report = msg;
+        try
+        {
+            if (OnRoAccessReportReceived != null) OnRoAccessReportReceived(msg);
+            if (OnEncapedRoAccessReportReceived != null)
+            {
+                ENCAPED_RO_ACCESS_REPORT report = new ENCAPED_RO_ACCESS_REPORT();
+                report.reader = reader_name;
+                report.report = msg;
 
-    OnEncapedRoAccessReportReceived(report);
-    }
-    }
-    catch { }
+                OnEncapedRoAccessReportReceived(report);
+            }
+        }
+        catch { }
     }
 
     protected void TriggerKeepAlive(MSG_KEEPALIVE msg)
     {
-    try {
-    if (OnKeepAlive != null) OnKeepAlive(msg);
-    if (OnEncapedKeepAlive != null)
-    {
-    ENCAPED_KEEP_ALIVE keepalive = new ENCAPED_KEEP_ALIVE();
-    keepalive.reader = reader_name;
-    keepalive.keep_alive = msg;
+        try 
+        {
+            if (OnKeepAlive != null) OnKeepAlive(msg);
+            if (OnEncapedKeepAlive != null)
+            {
+                ENCAPED_KEEP_ALIVE keepalive = new ENCAPED_KEEP_ALIVE();
+                keepalive.reader = reader_name;
+                keepalive.keep_alive = msg;
 
-    OnEncapedKeepAlive(keepalive);
-    }
-    }
-    catch { }
+                OnEncapedKeepAlive(keepalive);
+            }
+        }
+        catch { }
     }
 
     #region Properties
@@ -166,12 +160,12 @@
   /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>/summary<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
     public string ReaderName
     {
-    get{return reader_name;}
+        get{return reader_name;}
     }
     
     public bool IsConnected
     {
-     get{return connected;}
+        get{return connected;}
     }
 
 
@@ -185,7 +179,7 @@
     /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>/summary<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
     public void SetMessageTimeOut(int time_out)
     {
-    this.MSG_TIME_OUT = time_out;
+        this.MSG_TIME_OUT = time_out;
     }
 
     /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>summary<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
@@ -193,14 +187,8 @@
   /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>/summary<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
     public int GetMessageTimeOut()
     {
-    return MSG_TIME_OUT;
+        return MSG_TIME_OUT;
     }
-
-    #endregion
-
-    #region Private Events
-    <xsl:for-each select="llrp:messageDefinition">ClientManualResetEvent _event_<xsl:value-of select="@name"/>;
-    </xsl:for-each>
 
     #endregion
 
@@ -211,7 +199,11 @@
     /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>/summary<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
     public LLRPClient()
     {
-    cI = new TCPIPClient();
+        cI = new TCPIPClient();
+        notificationQueue = new BlockingQueue();
+        notificationThread = new Thread(this.ProcessNotificationQueue);
+        notificationThread.IsBackground = true;
+        notificationThread.Start();
     }
 
     /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>summary<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
@@ -220,8 +212,38 @@
     /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>param name="port"<xsl:text disable-output-escaping="yes">&gt;</xsl:text>TCP communication port. int<xsl:text disable-output-escaping="yes">&lt;</xsl:text>/param<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
     public LLRPClient(int port)
     {
-    this.LLRP_TCP_PORT = port;
-    cI = new TCPIPClient();
+        this.LLRP_TCP_PORT = port;
+        cI = new TCPIPClient();
+    }
+
+    /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>summary<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
+    /// This thread runs as the sole LTKNET thread.  It's job is to
+    /// dispatch asyncrhonous notifications to the client in a way
+    /// that doesn't cause mis-ordering (beginInvoke) of events
+    /// but also allows the client thread to call syncrhonous
+    /// LTKNET APIs from their event handlers */
+    /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>/summary<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
+    private void ProcessNotificationQueue()
+    {
+        if (notificationQueue != null)
+        {
+            while (true)
+            {
+                Message msg = (Message) notificationQueue.Dequeue();
+                switch ((ENUM_LLRP_MSG_TYPE) msg.MSG_TYPE)
+                {
+                    case ENUM_LLRP_MSG_TYPE.RO_ACCESS_REPORT:
+                    TriggerRoAccessReport((MSG_RO_ACCESS_REPORT) msg);
+                    break;
+                    case ENUM_LLRP_MSG_TYPE.KEEPALIVE:
+                    TriggerKeepAlive((MSG_KEEPALIVE) msg);
+                    break;
+                    case ENUM_LLRP_MSG_TYPE.READER_EVENT_NOTIFICATION:
+                    TriggerReaderEventNotification((MSG_READER_EVENT_NOTIFICATION)msg);
+                    break;
+                }
+            }
+        }
     }
 
     /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>summary<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
@@ -234,42 +256,42 @@
     /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>exception cref="LLRPNetworkException"<xsl:text disable-output-escaping="yes">&gt;</xsl:text>Throw LLRPNetworkException when the network is unreable<xsl:text disable-output-escaping="yes">&lt;</xsl:text>/exception<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
     public bool Open(string llrp_reader_name, int timeout, out ENUM_ConnectionAttemptStatusType status)
     {
-    reader_name = llrp_reader_name;
+        reader_name = llrp_reader_name;
 
-    status = (ENUM_ConnectionAttemptStatusType)(-1);
-    cI.OnMessageReceived += new delegateMessageReceived(ProcesssMessage);
+        status = (ENUM_ConnectionAttemptStatusType)(-1);
+        cI.OnFrameReceived += new delegateMessageReceived(ProcessFrame);
 
-    try{ cI.Open(llrp_reader_name, LLRP_TCP_PORT, timeout);}
-    catch (Exception e)
-    {
-    cI.OnMessageReceived -= new delegateMessageReceived(ProcesssMessage);
-    throw e;
-    }
+        try{ cI.Open(llrp_reader_name, LLRP_TCP_PORT, timeout);}
+        catch (Exception e)
+        {
+            cI.OnFrameReceived -= new delegateMessageReceived(ProcessFrame);
+            throw e;
+        }
 
-    conn_evt = new ManualResetEvent(false);
-    if (conn_evt.WaitOne(timeout, false))
-    {
-    status = conn_status_type;
-    if(status== ENUM_ConnectionAttemptStatusType.Success)
-    {
-    connected = true;
-    return connected;
-    }
-    }
+        conn_evt = new ManualResetEvent(false);
+        if (conn_evt.WaitOne(timeout, false))
+        {
+            status = conn_status_type;
+            if(status== ENUM_ConnectionAttemptStatusType.Success)
+            {
+                connected = true;
+                return connected;
+            }
+        }
 
-    reader_name = llrp_reader_name;
+        reader_name = llrp_reader_name;
 
-    try
-    {
-    cI.Close();
-    cI.OnMessageReceived -= new delegateMessageReceived(ProcesssMessage);
-    }
-    catch
-    {
-    }
+        try
+        {
+            cI.Close();
+            cI.OnFrameReceived -= new delegateMessageReceived(ProcessFrame);
+        }
+        catch
+        {
+        }
 
-    connected  = false;
-    return connected;
+        connected  = false;
+        return connected;
     }
 
     /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>summary<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
@@ -278,23 +300,28 @@
     /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>returns<xsl:text disable-output-escaping="yes">&gt;</xsl:text>True if the connection is closed successfully.<xsl:text disable-output-escaping="yes">&lt;</xsl:text>/returns<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
     public bool Close()
     {
-    try
-    {
-    MSG_CLOSE_CONNECTION msg = new MSG_CLOSE_CONNECTION();
-    MSG_ERROR_MESSAGE msg_err;
-    MSG_CLOSE_CONNECTION_RESPONSE rsp = this.CLOSE_CONNECTION(msg, out msg_err, MSG_TIME_OUT);
+        try
+        {
+            MSG_CLOSE_CONNECTION msg = new MSG_CLOSE_CONNECTION();
+            MSG_ERROR_MESSAGE msg_err;
+            MSG_CLOSE_CONNECTION_RESPONSE rsp = this.CLOSE_CONNECTION(msg, out msg_err, MSG_TIME_OUT);
+            bool ret = true;
 
-    if (rsp == null || rsp.LLRPStatus.StatusCode != ENUM_StatusCode.M_Success) return false;
+            if (rsp == null || rsp.LLRPStatus.StatusCode != ENUM_StatusCode.M_Success) ret = false;
 
-    cI.Close();
-    cI.OnMessageReceived -= new delegateMessageReceived(ProcesssMessage);
-    connected = false;
-    return true;
-    }
-    catch
-    {
-    return false;
-    }
+            try
+            {
+                cI.Close();
+            }
+            catch { }
+            cI.OnFrameReceived -= new delegateMessageReceived(ProcessFrame);
+            connected = false;
+            return ret;
+        }
+        catch
+        {
+            return false;
+        }
     }
 
     /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>summary<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
@@ -305,25 +332,24 @@
     this.Close();
     }
 
-    private void ProcesssMessage(Int16 ver, Int16 msg_type, Int32 msg_id, byte[] data)
+    private void ProcessFrame(Int16 ver, Int16 msg_type, Int32 msg_id, byte[] data)
     {
-    BitArray bArr;
-    int cursor = 0;
-    int length;
+        BitArray bArr;
+        int cursor = 0;
+        int length;
 
-    switch((ENUM_LLRP_MSG_TYPE)msg_type)
-    {
+        switch((ENUM_LLRP_MSG_TYPE)msg_type)
+        {
     <xsl:for-each select="llrp:messageDefinition">
       <xsl:choose>
         <xsl:when test="@name ='KEEPALIVE'">
           case ENUM_LLRP_MSG_TYPE.KEEPALIVE:
           try
           {
-          bArr = Util.ConvertByteArrayToBitArray(data);
-          length = bArr.Count;
-          MSG_KEEPALIVE msg = MSG_KEEPALIVE.FromBitArray(ref bArr, ref cursor, length);
-          delegateKeepAlive rMsg = new delegateKeepAlive(TriggerKeepAlive);
-          rMsg.BeginInvoke(msg, null, null);
+              bArr = Util.ConvertByteArrayToBitArray(data);
+              length = bArr.Count;
+              MSG_KEEPALIVE msg = MSG_KEEPALIVE.FromBitArray(ref bArr, ref cursor, length);
+              notificationQueue.Enqueue(msg);
           }
           catch
           {
@@ -332,49 +358,40 @@
         </xsl:when>
         <xsl:when test="@name = 'READER_EVENT_NOTIFICATION'">
           case ENUM_LLRP_MSG_TYPE.READER_EVENT_NOTIFICATION:
-          try
-          {
-          bArr = Util.ConvertByteArrayToBitArray(data);
-          length = bArr.Count;
-          MSG_READER_EVENT_NOTIFICATION ntf = MSG_READER_EVENT_NOTIFICATION.FromBitArray(ref bArr, ref cursor, length);
-          if (conn_evt != null <xsl:text disable-output-escaping="yes">&amp;&amp;</xsl:text> ntf.ReaderEventNotificationData.ConnectionAttemptEvent != null)
-          {
-          conn_status_type = ntf.ReaderEventNotificationData.ConnectionAttemptEvent.Status;
-          conn_evt.Set();
-          }
-          else
-          {
-          delegateReaderEventNotification rEvent = new delegateReaderEventNotification(TriggerReaderEventNotification);
-          rEvent.BeginInvoke(ntf, null, null);
-          }
-          }
-          catch
-          {
-          }
-          break;
+              try
+              {
+                  bArr = Util.ConvertByteArrayToBitArray(data);
+                  length = bArr.Count;
+                  MSG_READER_EVENT_NOTIFICATION ntf = MSG_READER_EVENT_NOTIFICATION.FromBitArray(ref bArr, ref cursor, length);
+                  if (conn_evt != null <xsl:text disable-output-escaping="yes">&amp;&amp;</xsl:text> ntf.ReaderEventNotificationData.ConnectionAttemptEvent != null)
+                  {
+                      conn_status_type = ntf.ReaderEventNotificationData.ConnectionAttemptEvent.Status;
+                      conn_evt.Set();
+                  }
+                  else
+                  {
+                      notificationQueue.Enqueue(ntf);
+                  }
+              }
+              catch
+              {
+              }
+              break;
         </xsl:when>
         <xsl:when test="@name = 'RO_ACCESS_REPORT'">
           case ENUM_LLRP_MSG_TYPE.RO_ACCESS_REPORT:
-          try
-          {
-          bArr = Util.ConvertByteArrayToBitArray(data);
-          length = bArr.Count;
-          MSG_RO_ACCESS_REPORT rpt = MSG_RO_ACCESS_REPORT.FromBitArray(ref bArr, ref cursor, length);
-          delegateRoAccessReport roaccess = new delegateRoAccessReport(TriggerRoAccessReport);
-          roaccess.BeginInvoke(rpt, null, null);
-          }
-          catch
-          {
-          }
+              try
+              {
+                  bArr = Util.ConvertByteArrayToBitArray(data);
+                  length = bArr.Count;
+                  MSG_RO_ACCESS_REPORT rpt = MSG_RO_ACCESS_REPORT.FromBitArray(ref bArr, ref cursor, length);
+                  notificationQueue.Enqueue(rpt);
+              }
+              catch
+              {
+              }
           break;
         </xsl:when>        
-        <xsl:otherwise>
-       case ENUM_LLRP_MSG_TYPE.<xsl:value-of select="@name"/>:
-      _event_<xsl:value-of select="@name"/>.data = new byte[data.Length];
-      if(data.Length<xsl:text disable-output-escaping="yes">&gt;</xsl:text>0)Array.Copy(data, _event_<xsl:value-of select="@name"/>.data, data.Length);
-      _event_<xsl:value-of select="@name"/>.evt.Set();
-      break;         
-        </xsl:otherwise>
       </xsl:choose>
 
     </xsl:for-each>
@@ -408,49 +425,9 @@
         /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>returns<xsl:text disable-output-escaping="yes">&gt;</xsl:text>If the function is called successfully, return MSG_<xsl:value-of select="@name"/>. Otherwise, null is returned.<xsl:text disable-output-escaping="yes">&lt;</xsl:text>/returns<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
         public MSG_<xsl:value-of select="@name"/><xsl:text> </xsl:text> <xsl:value-of select="$shorten_msgName"/>(MSG_<xsl:value-of select="$shorten_msgName"/> msg, out MSG_ERROR_MESSAGE msg_err, int time_out)
         {
-         msg_err = null;
-        //Add your code here
-        _event_<xsl:value-of select="@name"/> = new ClientManualResetEvent(false);
-        _event_<xsl:value-of select="@name"/>.msg_id = msg.MSG_ID;
-        _event_ERROR_MESSAGE = new ClientManualResetEvent(false);
-
-        WaitHandle[] waitHandles = new WaitHandle[] {_event_<xsl:value-of select="@name"/>.evt, _event_ERROR_MESSAGE.evt};
-
-        bool[] bit_array = msg.ToBitArray();
-        byte[] data = Util.ConvertBitArrayToByteArray(bit_array);
-
-        cI.Send(data);
-
-        int wait_result = WaitHandle.WaitAny(waitHandles, time_out, false);
-
-        int cursor = 0;
-        int length;
-        BitArray bArr;
-
-        try
-        {
-        switch(wait_result)
-        {
-        case 0:
-        bArr = Util.ConvertByteArrayToBitArray(_event_<xsl:value-of select="@name"/>.data);
-        length = bArr.Count;
-        MSG_<xsl:value-of select="@name"/> msg_rsp = MSG_<xsl:value-of select="@name"/>.FromBitArray(ref bArr, ref cursor, length);
-        if (msg_rsp.MSG_ID != msg.MSG_ID) return null;
-        else
-          return msg_rsp;
-        case 1:
-        bArr = Util.ConvertByteArrayToBitArray(_event_ERROR_MESSAGE.data);
-        length = bArr.Count;
-        msg_err = MSG_ERROR_MESSAGE.FromBitArray(ref bArr, ref cursor, length);
-        return null;
-        default:
-        return null;
-        }
-        }
-        catch
-        {
-        return null;
-        }
+            Transaction trans = new Transaction(cI, msg.MSG_ID, ENUM_LLRP_MSG_TYPE.<xsl:value-of select="@name"/>);
+            Message rsp = trans.Transact(msg, out msg_err, time_out);
+            return (MSG_<xsl:value-of select="@name"/>) rsp;
         }
       </xsl:if>
       <xsl:if test="contains($msgName, 'ENABLE_EVENTS_AND_REPORTS')">
@@ -463,23 +440,9 @@
         /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>param name="time_out"<xsl:text disable-output-escaping="yes">&gt;</xsl:text>Command time out in millisecond.<xsl:text disable-output-escaping="yes">&lt;</xsl:text>/param<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
         public void <xsl:value-of select="$msgName"/>(MSG_<xsl:value-of select="$msgName"/> msg, out MSG_ERROR_MESSAGE msg_err, int time_out)
         {
-        msg_err = null;
-        _event_ERROR_MESSAGE = new ClientManualResetEvent(false);
-
-        bool[] bit_array = msg.ToBitArray();
-        byte[] data = Util.ConvertBitArrayToByteArray(bit_array);
-
-        cI.Send(data);
-
-        bool wait_result = _event_ERROR_MESSAGE.evt.WaitOne(time_out, false);
-        if(wait_result)
-        {
-        BitArray bArr = Util.ConvertByteArrayToBitArray(_event_ENABLE_EVENTS_AND_REPORTS.data);
-        int cursor = 0;
-        int length = bArr.Count;
-        msg_err = MSG_ERROR_MESSAGE.FromBitArray(ref bArr, ref cursor, length);
-        return;
-        }
+            msg_err = null;
+            Transaction trans = new Transaction(cI, msg.MSG_ID, ENUM_LLRP_MSG_TYPE.<xsl:value-of select="$msgName"/>);
+            trans.Send(msg);
         }
       </xsl:if>
       <xsl:if test="contains($msgName, 'KEEPALIVE_ACK')">
@@ -491,23 +454,9 @@
         /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>param name="time_out"<xsl:text disable-output-escaping="yes">&gt;</xsl:text>Command timeout in millisecond.<xsl:text disable-output-escaping="yes">&lt;</xsl:text>/param<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
         public void <xsl:value-of select="$msgName"/>(MSG_<xsl:value-of select="$msgName"/> msg, out MSG_ERROR_MESSAGE msg_err, int time_out)
         {
-        msg_err = null;
-        _event_ERROR_MESSAGE = new ClientManualResetEvent(false);
-
-        bool[] bit_array = msg.ToBitArray();
-        byte[] data = Util.ConvertBitArrayToByteArray(bit_array);
-
-        cI.Send(data);
-
-        bool wait_result = _event_ERROR_MESSAGE.evt.WaitOne(time_out, false);
-        if(wait_result)
-        {
-        BitArray bArr = Util.ConvertByteArrayToBitArray(_event_ENABLE_EVENTS_AND_REPORTS.data);
-        int cursor = 0;
-        int length = bArr.Count;
-        msg_err = MSG_ERROR_MESSAGE.FromBitArray(ref bArr, ref cursor, length);
-        return;
-        }
+            msg_err = null;
+            Transaction trans = new Transaction(cI, msg.MSG_ID, ENUM_LLRP_MSG_TYPE.<xsl:value-of select="$msgName"/>);
+            trans.Send(msg);
         }
       </xsl:if>
       <xsl:if test="@name='GET_REPORT'">
@@ -519,25 +468,11 @@
         /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>param name="time_out"<xsl:text disable-output-escaping="yes">&gt;</xsl:text>Timeout in millisecond.<xsl:text disable-output-escaping="yes">&lt;</xsl:text>/param<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
         public void <xsl:value-of select="$msgName"/>(MSG_<xsl:value-of select="$msgName"/> msg, out MSG_ERROR_MESSAGE msg_err, int time_out)
         {
-        msg_err = null;
-        _event_ERROR_MESSAGE = new ClientManualResetEvent(false);
-
-        bool[] bit_array = msg.ToBitArray();
-        byte[] data = Util.ConvertBitArrayToByteArray(bit_array);
-
-        cI.Send(data);
-
-        bool wait_result = _event_ERROR_MESSAGE.evt.WaitOne(time_out, false);
-        if(wait_result)
-        {
-        BitArray bArr = Util.ConvertByteArrayToBitArray(_event_ENABLE_EVENTS_AND_REPORTS.data);
-        int cursor = 0;
-        int length = bArr.Count;
-        msg_err = MSG_ERROR_MESSAGE.FromBitArray(ref bArr, ref cursor, length);
-        return;
+            msg_err = null;
+            Transaction trans = new Transaction(cI, msg.MSG_ID, ENUM_LLRP_MSG_TYPE.<xsl:value-of select="$msgName"/>);
+            trans.Send(msg);
         }
-        }
-      </xsl:if>
+      </xsl:if>      
       <xsl:if test="contains($msgName, 'CUSTOM_MESSAGE')">
         /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>summary<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
         /// Send Customized Message to Reader
@@ -548,49 +483,10 @@
         /// <xsl:text disable-output-escaping="yes">&lt;</xsl:text>returns<xsl:text disable-output-escaping="yes">&gt;</xsl:text>Custom Message<xsl:text disable-output-escaping="yes">&lt;</xsl:text>/returns<xsl:text disable-output-escaping="yes">&gt;</xsl:text>
         public MSG_CUSTOM_MESSAGE<xsl:text>  </xsl:text><xsl:value-of select="$msgName"/>(MSG_<xsl:value-of select="$msgName"/> msg, out MSG_ERROR_MESSAGE msg_err, int time_out)
         {
-        msg_err = null;
-        //Add your code here
-        _event_<xsl:value-of select="@name"/> = new ClientManualResetEvent(false);
-        _event_<xsl:value-of select="@name"/>.msg_id = msg.MSG_ID;
-        _event_ERROR_MESSAGE = new ClientManualResetEvent(false);
-
-        WaitHandle[] waitHandles = new WaitHandle[] {_event_<xsl:value-of select="@name"/>.evt, _event_ERROR_MESSAGE.evt};
-
-        bool[] bit_array = msg.ToBitArray();
-        byte[] data = Util.ConvertBitArrayToByteArray(bit_array);
-
-        cI.Send(data);
-
-        int wait_result = WaitHandle.WaitAny(waitHandles, time_out, false);
-
-        int cursor = 0;
-        int length;
-        BitArray bArr;
-
-        try
-        {
-        switch(wait_result)
-        {
-        case 0:
-        bArr = Util.ConvertByteArrayToBitArray(_event_<xsl:value-of select="@name"/>.data);
-        length = bArr.Count;
-        MSG_<xsl:value-of select="@name"/> msg_rsp = MSG_<xsl:value-of select="@name"/>.FromBitArray(ref bArr, ref cursor, length);
-        return msg_rsp;
-        case 1:
-        bArr = Util.ConvertByteArrayToBitArray(_event_ERROR_MESSAGE.data);
-        length = bArr.Count;
-        msg_err = MSG_ERROR_MESSAGE.FromBitArray(ref bArr, ref cursor, length);
-        return null;
-        default:
-        return null;
+            Transaction trans = new Transaction(cI, msg.MSG_ID, ENUM_LLRP_MSG_TYPE.<xsl:value-of select="$msgName"/>);
+            Message rsp = trans.Transact(msg, out msg_err, time_out);
+            return (MSG_<xsl:value-of select="$msgName"/>) rsp;
         }
-        }
-        catch
-        {
-        return null;
-        }
-        }
-
       </xsl:if>
 
     </xsl:for-each>

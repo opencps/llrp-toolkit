@@ -16,95 +16,114 @@
 #
 ############################################################################
 
-STD_TESTS_DX101=../../Tests/dx101/
 
-rm -f *.tmp
+STD_TESTS_DX101=../../Tests/dx101
+VERSION=`cat ../Library/ltkc_base.h | grep '^#define LTKC_VERSION_STR' | cut -d\" -f2 | sed -e s/\\\./\_/g`
+URL="file://`hostname`/`pwd`/$0"
 
-echo "================================================================"
-echo "== Run dx101 on standard 'a' input to verify function."
-echo "================================================================"
-dos2unix $STD_TESTS_DX101/dx101_a.xml
-./dx101 $STD_TESTS_DX101/dx101_a.bin > dx101_a.tmp
-if cmp -s dx101_a.tmp $STD_TESTS_DX101/dx101_a.xml
-then
-    echo DX101 A -- PASSED
-else
-    echo DX101 A -- FAILED
-    exit
+VALGRIND=/opt/ltk/bin/valgrind
+if [ ! -x $VALGRIND ]; then
+    VALGRIND=valgrind
 fi
-echo ""
-echo ""
-echo ""
 
 
-echo "================================================================"
-echo "== Run dx101 on standard 'b' input to verify function."
-echo "================================================================"
-dos2unix $STD_TESTS_DX101/dx101_b.xml
-./dx101 $STD_TESTS_DX101/dx101_b.bin > dx101_b.tmp
-if cmp -s dx101_b.tmp $STD_TESTS_DX101/dx101_b.xml
-then
-    echo DX101 B -- PASSED
-else
-    echo DX101 B -- FAILED
-    exit
-fi
-echo ""
-echo ""
-echo ""
+rm -f *.tmp *.bin *.val
 
 
-echo "================================================================"
-echo "== Run dx101 on standard 'c' input to verify function."
-echo "== Includes tag report variations including a very large report"
-echo "================================================================"
-dos2unix $STD_TESTS_DX101/dx101_c.xml
-./dx101 $STD_TESTS_DX101/dx101_c.bin > dx101_c.tmp
-if cmp -s dx101_c.tmp $STD_TESTS_DX101/dx101_c.xml
-then
-    echo DX101 C -- PASSED
-else
-    echo DX101 C -- FAILED
-    exit
-fi
-echo ""
-echo ""
-echo ""
+# put your test vector name and description below to run the tests
+testVectors=(
+              "$STD_TESTS_DX101/dx101_a" \
+              "$STD_TESTS_DX101/dx101_b" \
+              "$STD_TESTS_DX101/dx101_c" \
+	      "$STD_TESTS_DX101/dx101_d" \
+	      "$STD_TESTS_DX101/dx101_e" \
+	      "$STD_TESTS_DX101/dx101_f" \
+	      )
 
-echo "===================================================="
-echo "== Run dx101 on standard 'a' input with valgrind."
-echo "== This verifies no memory leak."
-echo "== Please inspect the output."
-echo "== The line that says 'malloc/free: in use at exit:'"
-echo "== should say ' 0 bytes in 0 blocks.'"
-echo "===================================================="
-valgrind ./dx101 $STD_TESTS_DX101/dx101_a.bin > /dev/null
-echo ""
-echo ""
-echo ""
+testVectorDesc=(      
+                  "Set of standard LLRP message" \
+		  "Includes tests with different EPC sizes in reports" \
+                  "Includes tag report variations including a very large report" \
+                  "Includes AccessSpecs of varying shapes and sizes." \
+                  "Includes Custom parameters at each extension point." \
+                  "Same as dx101_a with XML whitespace variations" \
+               )
+
+runDx101Standard ()
+{
+    testPath=$1;    
+    testDesc=$2;
+    testName=${testPath##*/}; 
+
+    echo "================================================================"
+    echo "== Run dx101 standard on $testName. "
+    echo "==      $testDesc"
+    echo "================================================================"
+    # convert the reference binary to XML
+    ./llrp2xml $testPath.bin > ${testName}_ltkc_refbin.xml
+    # convert the reference XML to binary
+    ./xml2llrp $testPath.xml > ${testName}_ltkc_refxml.bin
+    # convert the binary from the reference XML back to binary
+    ./xml2llrp ${testName}_ltkc_refbin.xml > ${testName}_ltkc_refbin.bin
+
+    if  ! cmp -s ${testName}_ltkc_refxml.bin $testPath.bin 
+    then
+        echo "$testName -- FAILED -- XML -> LLRP conversion"
+    elif ! cmp -s ${testName}_ltkc_refbin.bin $testPath.bin 
+    then
+        echo "$testName -- FAILED -- LLRP -> XML conversion"
+    else
+        echo $testName -- PASSED
+	# delete the files if things worked 
+	rm -f ${testName}_ltkc_refbin.bin
+	rm -f ${testName}_ltkc_refxml.bin
+	rm -f ${testName}_ltkc_refbin.xml
+    fi
+    echo ""
+    echo ""
+    echo ""
+}
+
+runDx101Valgrind ()
+{
+    testPath=$1;
+    testDesc=$2;
+    testName=${testPath##*/};    
+
+    echo "================================================================"
+    echo "== Run dx101 valgrind on $testName. "
+    echo "==      $testDesc"
+    echo "================================================================"
+
+    $VALGRIND --max-stackframe=4194376 ./llrp2xml $testPath.bin > /dev/null 2>${testName}_ltkc_llrp2xml.val
+    if ! grep -q 'All heap blocks were freed -- no leaks are possible' ${testName}_ltkc_llrp2xml.val    
+    then
+        echo "$testName -- FAILED -- LLRP -> XML conversion"
+    else
+        $VALGRIND --max-stackframe=4194376 ./xml2llrp $testPath.xml > /dev/null 2>${testName}_ltkc_xml2llrp.val
+        if ! grep -q 'All heap blocks were freed -- no leaks are possible' ${testName}_ltkc_xml2llrp.val 
+	then
+            echo "$testName -- FAILED -- XML -> LLRP conversion"
+	else
+            echo $testName -- PASSED
+	    # delete the files if things worked 
+	    rm -f ${testName}_ltkc_llrp2xml.val
+	    rm -f ${testName}_ltkc_xml2llrp.val 
+	fi
+    fi
+   
+    echo ""
+    echo ""
+    echo ""
+}
+
+# run the actual tests 
+testCnt=${#testVectors[@]}
+
+for ((a=0; a < $testCnt ; a++))
+do
+    runDx101Standard "${testVectors[$a]}" "${testVectorDesc[$a]}"  
+    runDx101Valgrind "${testVectors[$a]}" "${testVectorDesc[$a]}"  
+done
 
 
-
-echo "===================================================="
-echo "== Run dx101 on standard 'c' input with valgrind."
-echo "== This verifies no memory leak."
-echo "== Please inspect the output."
-echo "== The line that says 'malloc/free: in use at exit:'"
-echo "== should say ' 0 bytes in 0 blocks.'"
-echo "===================================================="
-valgrind ./dx101 $STD_TESTS_DX101/dx101_c.bin > /dev/null
-echo ""
-echo ""
-echo ""
-
-
-
-echo ""
-echo ""
-echo ""
-
-
-
-echo "===================================================="
-echo "== Done with dx101 test series"
-echo "===================================================="

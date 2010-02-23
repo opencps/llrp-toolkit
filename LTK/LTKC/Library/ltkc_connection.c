@@ -386,6 +386,8 @@ LLRP_Conn_closeConnectionToReader (
         return -1;
     }
 
+    shutdown(pConn->fd, SHUT_RDWR);
+
     close(pConn->fd);
 
     pConn->fd = -1;

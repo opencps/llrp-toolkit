@@ -153,6 +153,71 @@ CTypeRegistry::lookupCustomParameter (
     return NULL;
 }
 
+/* look up the type descriptor*/
+const CTypeDescriptor *
+CTypeRegistry::lookupByName (
+  char *                    pName) const
+{
+    unsigned int                i;
+    const CTypeDescriptor *     pTypeDescriptor;
+
+    for(i = 0; i < 1024u; i++)
+    {
+        pTypeDescriptor = m_apStdMessageTypeDescriptors[i];
+        if(NULL == pTypeDescriptor)
+        {
+            continue;
+        }
+
+        if(0 == strcmp(pTypeDescriptor->m_pName, pName))
+        {
+            return pTypeDescriptor;
+        }
+    }
+
+    for(i = 0; i < 1024u; i++)
+    {
+        pTypeDescriptor = m_apStdParameterTypeDescriptors[i];
+        if(NULL == pTypeDescriptor)
+        {
+            continue;
+        }
+
+        if(0 == strcmp(pTypeDescriptor->m_pName, pName))
+        {
+            return pTypeDescriptor;
+        }
+    }
+
+    for (
+        std::list<const CTypeDescriptor *>::const_iterator elem = 
+                            m_listCustomParameterTypeDescriptors.begin();
+        elem != m_listCustomParameterTypeDescriptors.end();
+        elem++)
+    {
+        const CTypeDescriptor * pTypeDescriptor;
+        pTypeDescriptor = *elem;
+        if(0 == strcmp(pTypeDescriptor->m_pName, pName))
+        {
+            return pTypeDescriptor;
+        }
+    }
+
+    for (
+        std::list<const CTypeDescriptor *>::const_iterator elem =
+                            m_listCustomMessageTypeDescriptors.begin();
+        elem != m_listCustomMessageTypeDescriptors.end();
+        elem++)
+    {
+        const CTypeDescriptor * pTypeDescriptor;
+        pTypeDescriptor = *elem;
+        if(0 == strcmp(pTypeDescriptor->m_pName, pName))
+        {
+            return pTypeDescriptor;
+        }
+    }
+    return NULL;
+}
 
 }; /* namespace LLRP */
 

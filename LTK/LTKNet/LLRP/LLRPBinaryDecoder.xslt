@@ -108,7 +108,14 @@
           {
           <xsl:for-each select="llrp:messageDefinition">
              case ENUM_LLRP_MSG_TYPE.<xsl:value-of select="@name"/>:
-                msg = MSG_<xsl:value-of select="@name"/>.FromBitArray(ref ba, ref cursor, (int) (env.msg_len * 8));
+            <xsl:choose>
+              <xsl:when test="@name='CUSTOM_MESSAGE'">
+                msg = CustomMsgDecodeFactory.DecodeCustomMessage(ref ba, ref cursor, (int)(env.msg_len * 8));
+              </xsl:when>
+              <xsl:otherwise>
+                msg = MSG_<xsl:value-of select="@name"/>.FromBitArray(ref ba, ref cursor, (int)(env.msg_len * 8));
+              </xsl:otherwise>
+            </xsl:choose>
                 return;
           </xsl:for-each>
              default:

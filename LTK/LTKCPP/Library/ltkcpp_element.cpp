@@ -116,6 +116,12 @@ CElement::walk (
     return 0;
 }
 
+CMessage::CMessage(void)
+{
+    m_MessageID = 0;
+}
+
+
 llrp_bool_t
 CParameter::isAllowedIn (
   const CTypeDescriptor *       pEnclosingTypeDescriptor) const
@@ -132,14 +138,6 @@ CParameter::isAllowedExtension (
      */
     if(!m_pType->m_bIsMessage && NULL == m_pType->m_pVendorDescriptor &&
        1023u == m_pType->m_TypeNum)
-    {
-        return TRUE;
-    }
-
-    /*
-     * If it is some kind of custom parameter allow it.
-     */
-    if(!m_pType->m_bIsMessage && NULL != m_pType->m_pVendorDescriptor)
     {
         return TRUE;
     }

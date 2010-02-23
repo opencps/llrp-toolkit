@@ -18,7 +18,7 @@
 #CPPFLAGS = -O -Wall
 AR              = ar
 CXX             = g++
-CPPFLAGS        = -g -Wall
+CPPFLAGS        = -g -Wall -I../../opensource/include/libxml2
 
 LLRPDEF         = ../../Definitions/Core/llrp-1x0-def.xml
 
@@ -46,6 +46,7 @@ LTKCPP_OBJS = \
 	ltkcpp_frameextract.o	\
 	ltkcpp_hdrfd.o		\
 	ltkcpp_xmltextencode.o	\
+	ltkcpp_xmltextdecode.o	\
 	ltkcpp_typeregistry.o	\
 	ltkcpp_genout.o
 

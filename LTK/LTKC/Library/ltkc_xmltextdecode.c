@@ -1,4 +1,3 @@
-
 /*
  ***************************************************************************
  *  Copyright 2007,2008 Impinj, Inc.
@@ -15,28 +14,72 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  *
- ***************************************************************************
- */
+ ****************************************************************************/
 
 
 #include <assert.h>
 #include <ctype.h>
 #include <string.h>
+#include <time.h>
+#include <stdio.h>
 
 #include "ltkc_platform.h"
 #include "ltkc_base.h"
-#include "ltkc_xmltext.h"
 
+#include "libxml/parser.h"
+#include "libxml/tree.h"
+
+#include "ltkc_xmltext.h"
 
 /*
  * BEGIN forward decls
  */
 
-LLRP_tSXMLTextDecoder *
-LLRP_XMLTextDecoder_construct (
+//#define XML_NODE_DEBUG(ptr) print_element_names(__LINE__, ptr);
+#define XML_NODE_DEBUG(ptr) 
+   
+extern char *strptime(const char *s,const char *fmt, struct tm *tp);
+
+/* don't declare static as it creates a warning when
+ * debug is off */
+void
+print_element_names(int line, xmlNode * pnode)
+{
+    printf("XMLDUMP (Line %d) node type: %d, name: %s line %d", 
+            line, pnode->type, pnode->name, pnode->line);
+    if(pnode->type == XML_TEXT_NODE) 
+    {
+        if(!xmlIsBlankNode(pnode))
+        {
+        printf(" -- %s\n", pnode->content);
+        }
+        else
+        {
+        printf(" EMPTY \n");
+        }
+    }
+    else
+    {
+        printf("\n");
+    }
+}
+
+
+LLRP_tSLibXMLTextDecoder *
+LLRP_LibXMLTextDecoder_construct (
   const LLRP_tSTypeRegistry *   pTypeRegistry,
   unsigned char *               pBuffer,
   unsigned int                  nBuffer);
+
+LLRP_tSLibXMLTextDecoder *
+LLRP_LibXMLTextDecoder_construct_file (
+  const LLRP_tSTypeRegistry *   pTypeRegistry,
+  char *                        fname);
+
+LLRP_tSLibXMLTextDecoder *
+LLRP_LibXMLTextDecoder_construct_nodetree (
+  const LLRP_tSTypeRegistry *   pTypeRegistry,
+  struct _xmlNode *             pNodeTree);
 
 static void
 decoderDestruct (
@@ -46,29 +89,24 @@ static LLRP_tSMessage *
 topDecodeMessage (
   LLRP_tSDecoder *              pBaseDecoder);
 
-static int
-getTag (
-  LLRP_tSXMLTextDecoder *       pDecoder);
-
-static int
-getTextChar (
-  LLRP_tSXMLTextDecoder *       pDecoder);
-
-static int
-getText (
-  LLRP_tSXMLTextDecoder *       pDecoder);
-
-static int
-skipInsignificantText (
-  LLRP_tSXMLTextDecoder *       pDecoder);
+static void
+streamConstruct_outermost (
+  LLRP_tSLibXMLTextDecoderStream *   pDecoderStream,
+  LLRP_tSLibXMLTextDecoder *         pDecoder);
 
 static void
-skipXMLComment (
-  LLRP_tSXMLTextDecoder *       pDecoder);
+streamConstruct_nested (
+  LLRP_tSLibXMLTextDecoderStream *   pDecoderStream,
+  LLRP_tSLibXMLTextDecoderStream *   pEnclosingDecoderStream);
 
-static void
-skipXMLProcessingInstruction (
-  LLRP_tSXMLTextDecoder *       pDecoder);
+static LLRP_tSElement *
+decodeElement (
+  LLRP_tSLibXMLTextDecoderStream * pDecoderStream,
+  int                           bAllowMessage,
+  int                           bSkipBlanks);
+
+
+/* the decoder field interface */
 
 static llrp_u8_t
 get_u8 (
@@ -177,6 +215,11 @@ get_utf8v (
 
 static llrp_bytesToEnd_t
 get_bytesToEnd (
+  LLRP_tSDecoderStream *        pBaseDecoderStream,
+  const LLRP_tSFieldDescriptor *pFieldDescriptor);
+
+static llrp_u8v_t
+get_e8v (
   LLRP_tSDecoderStream *        pBaseDecoderStream,
   const LLRP_tSFieldDescriptor *pFieldDescriptor);
 
@@ -210,56 +253,100 @@ get_reserved (
   LLRP_tSDecoderStream *        pBaseDecoderStream,
   unsigned int                  nBit);
 
-static void
-streamConstruct_outermost (
-  LLRP_tSXMLTextDecoderStream *   pDecoderStream,
-  LLRP_tSXMLTextDecoder *         pDecoder);
-
-static void
-streamConstruct_nested (
-  LLRP_tSXMLTextDecoderStream *   pDecoderStream,
-  LLRP_tSXMLTextDecoderStream *   pEnclosingDecoderStream);
-
-static LLRP_tSElement *
-decodeElement (
-  LLRP_tSXMLTextDecoderStream * pDecoderStream,
-  int                           bAllowMessage);
-
-static llrp_bool_t
-getFieldText (
-  LLRP_tSXMLTextDecoderStream * pDecoderStream,
-  const LLRP_tSFieldDescriptor *pFieldDescriptor);
-
-static llrp_s64_t
-getFieldIntg (
-  LLRP_tSXMLTextDecoderStream * pDecoderStream,
-  const LLRP_tSFieldDescriptor *pFieldDescriptor,
-  llrp_s64_t                    minValue,
-  llrp_s64_t                    maxValue);
-
-static llrp_bool_t
-getFieldIntgVec (
-  LLRP_tSXMLTextDecoderStream * pDecoderStream,
-  const LLRP_tSFieldDescriptor *pFieldDescriptor,
-  unsigned int                  nValueMax,
-  llrp_s64_t                    minValue,
-  llrp_s64_t                    maxValue);
-
-static llrp_bool_t
-getFieldHexBinary (
-  LLRP_tSXMLTextDecoderStream * pDecoderStream,
-  const LLRP_tSFieldDescriptor *pFieldDescriptor);
-
-static int
-getFieldEnum (
-  LLRP_tSXMLTextDecoderStream * pDecoderStream,
-  const LLRP_tSFieldDescriptor *pFieldDescriptor);
+/* some static misc helpers */
 
 static llrp_bool_t
 verifyVectorAllocation (
-  LLRP_tSXMLTextDecoderStream *   pDecoderStream,
+  LLRP_tSLibXMLTextDecoderStream *   pDecoderStream,
   const void *                  pValue,
   const LLRP_tSFieldDescriptor *pFieldDescriptor);
+
+static int
+isInsignificantNode (
+  xmlNodePtr                    pnode);
+
+/* some class member field helpers */
+
+static int 
+getFieldStringPtr(
+  LLRP_tSLibXMLTextDecoderStream * pDecoderStream,
+  const LLRP_tSFieldDescriptor *pFieldDescriptor,
+  const llrp_u8_t **            pbuf,
+  const llrp_u8_t **            pend);
+
+static llrp_s64v_t
+getSpacedVectorField (
+  LLRP_tSLibXMLTextDecoderStream * pDecoderStream,
+  const LLRP_tSFieldDescriptor *pFieldDescriptor,
+  llrp_s64_t                    minValue,
+  llrp_s64_t                    maxValue);
+
+static llrp_s64v_t
+getFixedVectorField (
+  LLRP_tSLibXMLTextDecoderStream * pDecoderStream,
+  const LLRP_tSFieldDescriptor *pFieldDescriptor,
+  unsigned int                  vectorSize,
+  llrp_s64_t                    minValue,
+  llrp_s64_t                    maxValue);
+
+static llrp_s64_t
+getIntegerField (
+  LLRP_tSLibXMLTextDecoderStream * pDecoderStream,
+  const LLRP_tSFieldDescriptor *pFieldDescriptor,
+  llrp_s64_t                    minValue,
+  llrp_s64_t                    maxValue);
+
+static llrp_s64_t getInteger(
+  LLRP_tSLibXMLTextDecoderStream * pDecoderStream,
+  const LLRP_tSFieldDescriptor* pFieldDescriptor, 
+  const llrp_u8_t *             pbuf,
+  const llrp_u8_t *             pend,
+  LLRP_tSErrorDetails          *pError,
+  llrp_s64_t                    minValue,
+  llrp_s64_t                    maxValue);
+
+/* static string helpers */
+
+static const llrp_u8_t *
+getSingleU1(
+  const llrp_u8_t *             pbuf,
+  const llrp_u8_t *             pend,
+  llrp_s64_t *                  pValue);
+
+static const llrp_u8_t *
+getSingleEnum(
+  const LLRP_tSFieldDescriptor* pFieldDescriptor, 
+  const llrp_u8_t *             pbuf,
+  const llrp_u8_t *             pend,
+  llrp_s64_t *                  pValue);
+
+static const llrp_u8_t *
+getSingleDecimal(
+  const llrp_u8_t *             pbuf,
+  const llrp_u8_t *             pend,
+  llrp_s64_t *                  pValue);
+
+static const llrp_u8_t *
+getSingleHexidecimal(
+  const llrp_u8_t *             pbuf,
+  const llrp_u8_t *             pend,
+  llrp_s64_t *                  pValue);
+
+static int
+cleanString(
+  const llrp_u8_t **            ppbuf,
+  const llrp_u8_t **            ppend);
+
+static const llrp_u8_t *
+getSingleTimestamp(
+  const llrp_u8_t *             pbuf,
+  const llrp_u8_t *             pend,
+  llrp_s64_t *                  pValue);
+
+static llrp_u16_t 
+countElements(
+  const char *                  pval, 
+  int                           nval);
 
 /*
  * END forward decls
@@ -286,22 +373,15 @@ verifyVectorAllocation (
 #define MAX_S64     ((1ull << 63u) - 1u)
 #define MIN_S64     (-1ull - MAX_S64)
 
-
-#define ARRAY_COUNT(X)  (sizeof(X) / sizeof(X[0]))
-
-#define ISQUOTE(C)      ((C) == '"' || (C) == '\'')
-
-
-
 static LLRP_tSDecoderOps
-s_XMLTextDecoderOps =
+s_LibXMLTextDecoderOps =
 {
     .pfDestruct             = decoderDestruct,
     .pfDecodeMessage        = topDecodeMessage,
 };
 
 static LLRP_tSDecoderStreamOps
-s_XMLTextDecoderStreamOps =
+s_LibXMLTextDecoderStreamOps =
 {
     .pfGet_u8               = get_u8,
     .pfGet_s8               = get_s8,
@@ -335,17 +415,18 @@ s_XMLTextDecoderStreamOps =
     .pfGet_e8               = get_e8,
     .pfGet_e16              = get_e16,
     .pfGet_e32              = get_e32,
+    .pfGet_e8v              = get_e8v,
 
     .pfGet_reserved         = get_reserved,
 };
 
-LLRP_tSXMLTextDecoder *
-LLRP_XMLTextDecoder_construct (
+LLRP_tSLibXMLTextDecoder *
+LLRP_LibXMLTextDecoder_construct (
   const LLRP_tSTypeRegistry *   pTypeRegistry,
   unsigned char *               pInput,
   unsigned int                  nInput)
 {
-    LLRP_tSXMLTextDecoder *     pDecoder;
+    LLRP_tSLibXMLTextDecoder *     pDecoder;
 
     pDecoder = malloc(sizeof *pDecoder);
     if(NULL == pDecoder)
@@ -355,13 +436,99 @@ LLRP_XMLTextDecoder_construct (
 
     memset(pDecoder, 0, sizeof *pDecoder);
 
-    pDecoder->decoderHdr.pDecoderOps = &s_XMLTextDecoderOps;
+    /* set the line numbers for error reporting */
+    xmlLineNumbersDefault(1);
+
+    /* Read in the XML from the buffer into the XML Reader */
+    pDecoder->doc = xmlReadMemory((char*) pInput, nInput, "noName.xml", NULL, 
+                                  XML_PARSE_COMPACT | XML_PARSE_NONET);
+
+    if(NULL == pDecoder->doc)
+    {
+        fprintf(stderr, "could not parse XML memory buffer");
+    /* TODO proper error extraction from library ??? */
+        free(pDecoder);
+        return NULL;
+    }
+
+    /* Initialize the other decoder state variables */
+    pDecoder->pxmlNodeTree = xmlDocGetRootElement(pDecoder->doc);
+
+    pDecoder->decoderHdr.pDecoderOps = &s_LibXMLTextDecoderOps;
     pDecoder->decoderHdr.pRegistry = pTypeRegistry;
 
-    pDecoder->pInput    = pInput;
-    pDecoder->nInput    = nInput;
+    return pDecoder;
+}
 
-    pDecoder->iNext     = 0;
+LLRP_tSLibXMLTextDecoder *
+LLRP_LibXMLTextDecoder_construct_file (
+  const LLRP_tSTypeRegistry *   pTypeRegistry,
+  char *                        fname)
+{
+    LLRP_tSLibXMLTextDecoder *  pDecoder;
+
+    pDecoder = malloc(sizeof *pDecoder);
+    if(NULL == pDecoder)
+    {
+        return pDecoder;
+    }
+
+    memset(pDecoder, 0, sizeof *pDecoder);
+
+    /* set the line numbers for error reporting */
+    xmlLineNumbersDefault(1);
+
+    /* Read in the XML from the buffer into the XML Reader */
+    pDecoder->doc = xmlReadFile(fname, 
+                                NULL, 
+                                XML_PARSE_COMPACT | XML_PARSE_NONET);
+
+    if(NULL == pDecoder->doc)
+    {
+        fprintf(stderr, "could not parse XML file ");
+    /* TODO proper error extraction from library ??? */
+        free(pDecoder);
+        return NULL;
+    }
+
+    /* Initialize the other decoder state variables */
+    pDecoder->pxmlNodeTree = xmlDocGetRootElement(pDecoder->doc);
+
+    pDecoder->decoderHdr.pDecoderOps = &s_LibXMLTextDecoderOps;
+    pDecoder->decoderHdr.pRegistry = pTypeRegistry;
+
+    return pDecoder;
+}
+
+LLRP_tSLibXMLTextDecoder *
+LLRP_LibXMLTextDecoder_construct_nodetree (
+  const LLRP_tSTypeRegistry *   pTypeRegistry,
+  struct _xmlNode *             pNodeTree)
+{
+    LLRP_tSLibXMLTextDecoder *  pDecoder;
+
+    if(NULL == pNodeTree)
+    {
+        return NULL;
+    }
+
+    pDecoder = malloc(sizeof *pDecoder);
+    if(NULL == pDecoder)
+    {
+        return pDecoder;
+    }
+
+    memset(pDecoder, 0, sizeof *pDecoder);
+
+    /* set the line numbers for error reporting */
+    xmlLineNumbersDefault(1);
+
+
+    /* Initialize the other decoder state variables */
+    pDecoder->pxmlNodeTree = pNodeTree;
+
+    pDecoder->decoderHdr.pDecoderOps = &s_LibXMLTextDecoderOps;
+    pDecoder->decoderHdr.pRegistry = pTypeRegistry;
 
     return pDecoder;
 }
@@ -370,8 +537,17 @@ static void
 decoderDestruct (
   LLRP_tSDecoder *              pBaseDecoder)
 {
-    LLRP_tSXMLTextDecoder *     pDecoder =
-                                    (LLRP_tSXMLTextDecoder*)pBaseDecoder;
+    LLRP_tSLibXMLTextDecoder *  pDecoder =
+                                    (LLRP_tSLibXMLTextDecoder*)pBaseDecoder;
+
+    if(NULL != pDecoder->doc)
+    {
+        if(NULL != pDecoder->doc)
+        {
+            xmlFreeDoc(pDecoder->doc);    
+        }
+        pDecoder->pxmlNodeTree = NULL;
+    }
 
     free(pDecoder);
 }
@@ -380,1244 +556,62 @@ static LLRP_tSMessage *
 topDecodeMessage (
   LLRP_tSDecoder *              pBaseDecoder)
 {
-    LLRP_tSXMLTextDecoder *     pDecoder;
-    LLRP_tSXMLTextDecoderStream DecoderStream;
-    LLRP_tSMessage *            pMessage;
+    LLRP_tSLibXMLTextDecoder *     pDecoder;
+    LLRP_tSLibXMLTextDecoderStream DecoderStream;
+    LLRP_tSMessage *               pMessage;
 
-    pDecoder = (LLRP_tSXMLTextDecoder *) pBaseDecoder;
+    pDecoder = (LLRP_tSLibXMLTextDecoder *) pBaseDecoder;
 
     streamConstruct_outermost(&DecoderStream, pDecoder);
 
-    pMessage = (LLRP_tSMessage *) decodeElement(&DecoderStream, TRUE);
+    pMessage = (LLRP_tSMessage *) decodeElement(&DecoderStream, TRUE, TRUE);
 
     return pMessage;
 }
 
-static int
-getTag (
-  LLRP_tSXMLTextDecoder *       pDecoder)
-{
-    LLRP_tSErrorDetails *       pError = &pDecoder->decoderHdr.ErrorDetails;
-    unsigned char *             pText = pDecoder->aTagBuf;
-    unsigned                    iTextEnd = ARRAY_COUNT(pDecoder->aTagBuf);
-    unsigned char *             pTextEnd = &pText[iTextEnd - 1];
-    unsigned int                iSave;
-    unsigned char *             pScan;
-    unsigned char *             pInEnd = &pDecoder->pInput[pDecoder->nInput];
-    int                         bInWord = FALSE;
-    int                         bInQuote = FALSE;
-    int                         quoteChar = 0;
-    int                         bEndTag = FALSE;
-    int                         bEmptyTag = FALSE;
-
-    pDecoder->nTagArg = 0;
-
-    if(LLRP_RC_OK != pError->eResultCode)
-    {
-        return -1;
-    }
-
-    skipInsignificantText(pDecoder);
-
-    if(LLRP_RC_OK != pError->eResultCode)
-    {
-        return -1;
-    }
-
-    iSave = pDecoder->iNext;
-
-    pScan = &pDecoder->pInput[pDecoder->iNext];
-
-    if(pScan < pInEnd && '<' != *pScan)
-    {
-        pDecoder->iNext = iSave;
-
-        // TODO good error
-        pError->eResultCode = LLRP_RC_MiscError;
-        pError->pWhatStr    = "missing tag";
-        pError->pRefType    = NULL;
-        pError->pRefField   = NULL;
-        pError->OtherDetail = pDecoder->iNext;
-
-        return -1;
-    }
-    pScan++;
-
-    if(pScan < pInEnd && '/' == *pScan)
-    {
-        pScan++;
-        bEndTag = TRUE;
-    }
-
-    for(; pScan < pInEnd; )
-    {
-        int                     c = *pScan++;
-
-        if(c == '>')
-        {
-            break;
-        }
-
-        if(c == '/' && pScan < pInEnd && '>' == *pScan)
-        {
-            /* empty tag */
-            pScan++;
-            bEmptyTag = TRUE;
-            break;
-        }
-
-        if(pText >= pTextEnd)
-        {
-            /* text buffer overflow */
-            break;
-        }
-
-        if(bInWord)
-        {
-            if(bInQuote)
-            {
-                if(c == quoteChar)
-                {
-                    bInQuote = FALSE;
-                }
-                else
-                {
-                    *pText++ = c;
-                }
-            }
-            else if(isspace(c))
-            {
-                *pText++ = 0;
-                bInWord = FALSE;
-            }
-            else if(ISQUOTE(c))
-            {
-                bInQuote = TRUE;
-                quoteChar = c;
-            }
-            else
-            {
-                *pText++ = c;
-            }
-        }
-        else if(!isspace(c))
-        {
-            /* start word */
-            pDecoder->apTagArg[pDecoder->nTagArg++] = pText;
-            bInWord = TRUE;
-            if(ISQUOTE(c))
-            {
-                bInQuote = TRUE;
-                quoteChar = c;
-            }
-            else
-            {
-                *pText++ = c;
-            }
-        }
-        else
-        {
-            /* isspace() and not in word, just skip over it */
-        }
-    }
-
-    if(bInWord)
-    {
-        *pText++ = 0;
-        bInWord = FALSE;
-    }
-
-    if(bEndTag)
-    {
-        pDecoder->eTagType = XMLTEXT_END_TAG;
-    }
-    else if(bEmptyTag)
-    {
-        pDecoder->eTagType = XMLTEXT_EMPTY_TAG;
-    }
-    else
-    {
-        pDecoder->eTagType = XMLTEXT_START_TAG;
-    }
-
-    if(0 == pDecoder->nTagArg)
-    {
-        pDecoder->iNext = iSave;
-
-        // TODO good error
-        pError->eResultCode = LLRP_RC_MiscError;
-        pError->pWhatStr    = "malformed tag";
-        pError->pRefType    = NULL;
-        pError->pRefField   = NULL;
-        pError->OtherDetail = pDecoder->iNext;
-
-        return -1;
-    }
-
-    pDecoder->iNext = pScan - pDecoder->pInput;
-
-    return TRUE;
-}
-
-static int
-getTextChar (
-  LLRP_tSXMLTextDecoder *       pDecoder)
-{
-    LLRP_tSErrorDetails *       pError = &pDecoder->decoderHdr.ErrorDetails;
-    int                         c;
-
-    if(LLRP_RC_OK != pError->eResultCode)
-    {
-        return -1;
-    }
-
-    if(pDecoder->iNext >= pDecoder->nInput)
-    {
-        return -1;
-    }
-
-    pDecoder->iLastGetTextChar = pDecoder->iNext;
-
-    c = 0xFF & pDecoder->pInput[pDecoder->iNext];
-
-    if('<' == c)
-    {
-        unsigned char *     pScan = &pDecoder->pInput[pDecoder->iNext];
-        unsigned char *     pInEnd = &pDecoder->pInput[pDecoder->nInput];
-
-        if(pScan+4 <= pInEnd && 0 == memcmp(pScan, "<!--", 4))
-        {
-            pDecoder->iNext += 4;
-            skipXMLComment(pDecoder);
-            if(LLRP_RC_OK != pError->eResultCode)
-            {
-                return -1;
-            }
-            else
-            {
-                return ' ';
-            }
-        }
-
-        if(pScan+2 <= pInEnd && 0 == memcmp(pScan, "<?", 2))
-        {
-            pDecoder->iNext += 2;
-            skipXMLProcessingInstruction(pDecoder);
-            if(LLRP_RC_OK != pError->eResultCode)
-            {
-                return -1;
-            }
-            else
-            {
-                return ' ';
-            }
-        }
-
-        return -1;
-    }
-
-    if('&' == c)
-    {
-        /* TODO: entity call-out */
-        // TODO good error
-        LLRP_Error_resultCodeAndWhatStr(pError, LLRP_RC_MiscError,
-            "unsupported entity reference");
-        return -1;
-    }
-    else
-    {
-        pDecoder->iNext++;
-    }
-
-    return c;
-}
-
-
-static int
-getText (
-  LLRP_tSXMLTextDecoder *       pDecoder)
-{
-    LLRP_tSErrorDetails *       pError = &pDecoder->decoderHdr.ErrorDetails;
-    unsigned char *             pText = pDecoder->aTextBuf;
-    unsigned                    iTextEnd = ARRAY_COUNT(pDecoder->aTagBuf);
-    unsigned char *             pTextEnd = &pText[iTextEnd - 1];
-
-    pDecoder->iLastText = pDecoder->iNext;
-
-    for(;;)
-    {
-        int                     c;
-
-        if(LLRP_RC_OK != pError->eResultCode)
-        {
-            break;
-        }
-
-        c = getTextChar(pDecoder);
-        if(0 > c)
-        {
-            break;
-        }
-
-        if(pText >= pTextEnd)
-        {
-            LLRP_Error_resultCodeAndWhatStr(pError, LLRP_RC_MiscError,
-                "text overrun");
-            continue;
-        }
-
-        if(pText == pDecoder->aTextBuf)
-        {
-            if(isspace(c))
-            {
-                /* trim leading space */
-                continue;
-            }
-            pDecoder->iLastText = pDecoder->iNext;
-        }
-
-        *pText++ = c;
-    }
-
-    *pText = 0;
-    pDecoder->nTextBuf = pText - pDecoder->aTextBuf;
-
-    if(LLRP_RC_OK != pError->eResultCode)
-    {
-        return FALSE;
-    }
-    else
-    {
-        return TRUE;
-    }
-}
-
-static int
-skipInsignificantText (
-  LLRP_tSXMLTextDecoder *       pDecoder)
-{
-    LLRP_tSErrorDetails *       pError = &pDecoder->decoderHdr.ErrorDetails;
-
-    for(;;)
-    {
-        int                     c;
-
-        if(LLRP_RC_OK != pError->eResultCode)
-        {
-            break;
-        }
-
-        c = getTextChar(pDecoder);
-        if(0 > c)
-        {
-            break;
-        }
-
-        if(!isspace(c))
-        {
-            pDecoder->iNext = pDecoder->iLastGetTextChar;
-
-            // TODO good error
-            pError->eResultCode = LLRP_RC_MiscError;
-            pError->pWhatStr    = "unexpected text";
-            pError->pRefType    = NULL;
-            pError->pRefField   = NULL;
-            pError->OtherDetail = pDecoder->iNext;
-            break;
-        }
-    }
-
-    if(LLRP_RC_OK != pError->eResultCode)
-    {
-        return -1;
-    }
-    else
-    {
-        return 1;
-    }
-}
-
-static void
-skipXMLComment (
-  LLRP_tSXMLTextDecoder *       pDecoder)
-{
-    LLRP_tSErrorDetails *       pError = &pDecoder->decoderHdr.ErrorDetails;
-    unsigned char *             pScan = &pDecoder->pInput[pDecoder->iNext];
-    unsigned char *             pInEnd = &pDecoder->pInput[pDecoder->nInput];
-    int                         bFound = 0;
-
-    if(LLRP_RC_OK != pError->eResultCode)
-    {
-        return;
-    }
-
-    for(; pScan+3 < pInEnd; pScan++)
-    {
-        if(0 == memcmp(pScan, "-->", 3))
-        {
-            pScan += 3;
-            bFound = 1;
-            break;
-        }
-
-        if(0 == memcmp(pScan, "--", 2))
-        {
-            pDecoder->iNext = pScan - pDecoder->pInput;
-
-            // TODO good error
-            LLRP_Error_resultCodeAndWhatStr(pError, LLRP_RC_MiscError,
-                "illegal in comment");
-            pError->OtherDetail = pDecoder->iNext;
-            return;
-        }
-    }
-
-    if(!bFound)
-    {
-        /* unterminated comment */
-
-        // TODO good error
-        LLRP_Error_resultCodeAndWhatStr(pError, LLRP_RC_MiscError,
-            "unterminated comment");
-
-        return;
-    }
-
-    pDecoder->iNext = pScan - pDecoder->pInput;
-}
-
-static void
-skipXMLProcessingInstruction (
-  LLRP_tSXMLTextDecoder *       pDecoder)
-{
-    LLRP_tSErrorDetails *       pError = &pDecoder->decoderHdr.ErrorDetails;
-    unsigned char *             pScan = &pDecoder->pInput[pDecoder->iNext];
-    unsigned char *             pInEnd = &pDecoder->pInput[pDecoder->nInput];
-    int                         bFound = 0;
-
-    if(LLRP_RC_OK != pError->eResultCode)
-    {
-        return;
-    }
-
-    for(; pScan+2 < pInEnd; pScan++)
-    {
-        if(0 == memcmp(pScan, "?>", 2))
-        {
-            pScan += 2;
-            bFound = 1;
-            break;
-        }
-    }
-
-    if(!bFound)
-    {
-        /* unterminated processing instruction */
-
-        // TODO good error
-        LLRP_Error_resultCodeAndWhatStr(pError, LLRP_RC_MiscError,
-            "unterminated processing instruction");
-
-        return;
-    }
-
-    pDecoder->iNext = pScan - pDecoder->pInput;
-}
-
-static llrp_bool_t
-matchStartTag (
-  LLRP_tSXMLTextDecoder *       pDecoder,
-  const char *                  pPattern)
-{
-    LLRP_tSErrorDetails *       pError = &pDecoder->decoderHdr.ErrorDetails;
-    unsigned int                iSave;
-
-    if(LLRP_RC_OK != pError->eResultCode)
-    {
-        return FALSE;
-    }
-
-    skipInsignificantText(pDecoder);
-
-    if(LLRP_RC_OK != pError->eResultCode)
-    {
-        return FALSE;
-    }
-
-    iSave = pDecoder->iNext;
-
-    getTag(pDecoder);
-
-    if(XMLTEXT_START_TAG == pDecoder->eTagType &&
-       0 == strcmp(pPattern, pDecoder->apTagArg[0]))
-    {
-        return TRUE;
-    }
-
-    pDecoder->iNext = iSave;
-
-    return FALSE;
-}
-
-static llrp_bool_t
-matchEndTag (
-  LLRP_tSXMLTextDecoder *       pDecoder,
-  const char *                  pPattern)
-{
-    LLRP_tSErrorDetails *       pError = &pDecoder->decoderHdr.ErrorDetails;
-    unsigned int                iSave;
-
-    if(LLRP_RC_OK != pError->eResultCode)
-    {
-        return FALSE;
-    }
-
-    skipInsignificantText(pDecoder);
-
-    if(LLRP_RC_OK != pError->eResultCode)
-    {
-        return FALSE;
-    }
-
-    iSave = pDecoder->iNext;
-
-    if(pDecoder->iNext+2 > pDecoder->nInput ||
-       '<' != pDecoder->pInput[pDecoder->iNext+0] ||
-       '/' != pDecoder->pInput[pDecoder->iNext+1])
-    {
-        return FALSE;
-    }
-
-    getTag(pDecoder);
-
-    if(XMLTEXT_END_TAG == pDecoder->eTagType &&
-       0 == strcmp(pPattern, pDecoder->apTagArg[0]))
-    {
-        return TRUE;
-    }
-
-    pDecoder->iNext = iSave;
-
-    return FALSE;
-}
-
-static llrp_u8_t
-get_u8 (
-  LLRP_tSDecoderStream *        pBaseDecoderStream,
-  const LLRP_tSFieldDescriptor *pFieldDescriptor)
-{
-    LLRP_tSXMLTextDecoderStream *pDecoderStream;
-    llrp_u8_t                   Value;
-
-    pDecoderStream = (LLRP_tSXMLTextDecoderStream *) pBaseDecoderStream;
-
-    Value = (llrp_u8_t) getFieldIntg(pDecoderStream, pFieldDescriptor,
-                            MIN_U8, MAX_U8);
-
-    return Value;
-}
-
-static llrp_s8_t
-get_s8 (
-  LLRP_tSDecoderStream *        pBaseDecoderStream,
-  const LLRP_tSFieldDescriptor *pFieldDescriptor)
-{
-    LLRP_tSXMLTextDecoderStream *pDecoderStream;
-    llrp_s8_t                   Value;
-
-    pDecoderStream = (LLRP_tSXMLTextDecoderStream *) pBaseDecoderStream;
-
-    Value = (llrp_s8_t) getFieldIntg(pDecoderStream, pFieldDescriptor,
-                            MIN_S8, MAX_S8);
-
-    return Value;
-}
-
-static llrp_u8v_t
-get_u8v (
-  LLRP_tSDecoderStream *        pBaseDecoderStream,
-  const LLRP_tSFieldDescriptor *pFieldDescriptor)
-{
-    LLRP_tSXMLTextDecoderStream *pDecoderStream;
-    llrp_u8v_t                  Value;
-
-    pDecoderStream = (LLRP_tSXMLTextDecoderStream *) pBaseDecoderStream;
-    memset(&Value, 0, sizeof Value);
-
-    if(getFieldIntgVec(pDecoderStream, pFieldDescriptor,
-                            0, MIN_U8, MAX_U8))
-    {
-        LLRP_tSXMLTextDecoder * pDecoder = pDecoderStream->pDecoder;
-        llrp_u16_t              nValue;
-
-        nValue = pDecoder->nIntgValue;
-        Value = LLRP_u8v_construct(nValue);
-        if(verifyVectorAllocation(pDecoderStream, Value.pValue,
-                            pFieldDescriptor))
-        {
-            unsigned int    Ix;
-
-            for(Ix = 0; Ix < nValue; Ix++)
-            {
-                Value.pValue[Ix] = (llrp_u8_t) pDecoder->aIntgValue[Ix];
-            }
-        }
-    }
-
-    return Value;
-}
-
-static llrp_s8v_t
-get_s8v (
-  LLRP_tSDecoderStream *        pBaseDecoderStream,
-  const LLRP_tSFieldDescriptor *pFieldDescriptor)
-{
-    LLRP_tSXMLTextDecoderStream *pDecoderStream;
-    llrp_s8v_t                  Value;
-
-    pDecoderStream = (LLRP_tSXMLTextDecoderStream *) pBaseDecoderStream;
-    memset(&Value, 0, sizeof Value);
-
-    if(getFieldIntgVec(pDecoderStream, pFieldDescriptor,
-                            0, MIN_S8, MAX_S8))
-    {
-        LLRP_tSXMLTextDecoder * pDecoder = pDecoderStream->pDecoder;
-        llrp_u16_t              nValue;
-
-        nValue = pDecoder->nIntgValue;
-        Value = LLRP_s8v_construct(nValue);
-        if(verifyVectorAllocation(pDecoderStream, Value.pValue,
-                            pFieldDescriptor))
-        {
-            unsigned int    Ix;
-
-            for(Ix = 0; Ix < nValue; Ix++)
-            {
-                Value.pValue[Ix] = (llrp_s8_t) pDecoder->aIntgValue[Ix];
-            }
-        }
-    }
-
-    return Value;
-}
-
-static llrp_u16_t
-get_u16 (
-  LLRP_tSDecoderStream *        pBaseDecoderStream,
-  const LLRP_tSFieldDescriptor *pFieldDescriptor)
-{
-    LLRP_tSXMLTextDecoderStream *pDecoderStream;
-    llrp_u16_t                  Value;
-
-    pDecoderStream = (LLRP_tSXMLTextDecoderStream *) pBaseDecoderStream;
-
-    Value = (llrp_u16_t) getFieldIntg(pDecoderStream, pFieldDescriptor,
-                            MIN_U16, MAX_U16);
-
-    return Value;
-}
-
-static llrp_s16_t
-get_s16 (
-  LLRP_tSDecoderStream *        pBaseDecoderStream,
-  const LLRP_tSFieldDescriptor *pFieldDescriptor)
-{
-    LLRP_tSXMLTextDecoderStream *pDecoderStream;
-    llrp_s16_t                  Value;
-
-    pDecoderStream = (LLRP_tSXMLTextDecoderStream *) pBaseDecoderStream;
-
-    Value = (llrp_s16_t) getFieldIntg(pDecoderStream, pFieldDescriptor,
-                            MIN_S16, MAX_S16);
-
-    return Value;
-}
-
-static llrp_u16v_t
-get_u16v (
-  LLRP_tSDecoderStream *        pBaseDecoderStream,
-  const LLRP_tSFieldDescriptor *pFieldDescriptor)
-{
-    LLRP_tSXMLTextDecoderStream *pDecoderStream;
-    llrp_u16v_t                 Value;
-
-    pDecoderStream = (LLRP_tSXMLTextDecoderStream *) pBaseDecoderStream;
-    memset(&Value, 0, sizeof Value);
-
-    if(getFieldIntgVec(pDecoderStream, pFieldDescriptor,
-                            0, MIN_U16, MAX_U16))
-    {
-        LLRP_tSXMLTextDecoder * pDecoder = pDecoderStream->pDecoder;
-        llrp_u16_t              nValue;
-
-        nValue = pDecoder->nIntgValue;
-        Value = LLRP_u16v_construct(nValue);
-        if(verifyVectorAllocation(pDecoderStream, Value.pValue,
-                            pFieldDescriptor))
-        {
-            unsigned int    Ix;
-
-            for(Ix = 0; Ix < nValue; Ix++)
-            {
-                Value.pValue[Ix] = (llrp_u16_t) pDecoder->aIntgValue[Ix];
-            }
-        }
-    }
-
-    return Value;
-}
-
-static llrp_s16v_t
-get_s16v (
-  LLRP_tSDecoderStream *        pBaseDecoderStream,
-  const LLRP_tSFieldDescriptor *pFieldDescriptor)
-{
-    LLRP_tSXMLTextDecoderStream *pDecoderStream;
-    llrp_s16v_t                 Value;
-
-    pDecoderStream = (LLRP_tSXMLTextDecoderStream *) pBaseDecoderStream;
-    memset(&Value, 0, sizeof Value);
-
-    if(getFieldIntgVec(pDecoderStream, pFieldDescriptor,
-                            0, MIN_S16, MAX_S16))
-    {
-        LLRP_tSXMLTextDecoder * pDecoder = pDecoderStream->pDecoder;
-        llrp_u16_t              nValue;
-
-        nValue = pDecoder->nIntgValue;
-        Value = LLRP_s16v_construct(nValue);
-        if(verifyVectorAllocation(pDecoderStream, Value.pValue,
-                            pFieldDescriptor))
-        {
-            unsigned int    Ix;
-
-            for(Ix = 0; Ix < nValue; Ix++)
-            {
-                Value.pValue[Ix] = (llrp_u16_t) pDecoder->aIntgValue[Ix];
-            }
-        }
-    }
-
-    return Value;
-}
-
-static llrp_u32_t
-get_u32 (
-  LLRP_tSDecoderStream *        pBaseDecoderStream,
-  const LLRP_tSFieldDescriptor *pFieldDescriptor)
-{
-    LLRP_tSXMLTextDecoderStream *pDecoderStream;
-    llrp_u32_t                  Value;
-
-    pDecoderStream = (LLRP_tSXMLTextDecoderStream *) pBaseDecoderStream;
-
-    Value = (llrp_u32_t) getFieldIntg(pDecoderStream, pFieldDescriptor,
-                            MIN_U32, MAX_U32);
-
-    return Value;
-}
-
-static llrp_s32_t
-get_s32 (
-  LLRP_tSDecoderStream *        pBaseDecoderStream,
-  const LLRP_tSFieldDescriptor *pFieldDescriptor)
-{
-    LLRP_tSXMLTextDecoderStream *pDecoderStream;
-    llrp_s32_t                  Value;
-
-    pDecoderStream = (LLRP_tSXMLTextDecoderStream *) pBaseDecoderStream;
-
-    Value = (llrp_s32_t) getFieldIntg(pDecoderStream, pFieldDescriptor,
-                            MIN_S32, MAX_S32);
-
-    return Value;
-}
-
-static llrp_u32v_t
-get_u32v (
-  LLRP_tSDecoderStream *        pBaseDecoderStream,
-  const LLRP_tSFieldDescriptor *pFieldDescriptor)
-{
-    LLRP_tSXMLTextDecoderStream *pDecoderStream;
-    llrp_u32v_t                 Value;
-
-    pDecoderStream = (LLRP_tSXMLTextDecoderStream *) pBaseDecoderStream;
-    memset(&Value, 0, sizeof Value);
-
-    if(getFieldIntgVec(pDecoderStream, pFieldDescriptor,
-                            0, MIN_U32, MAX_U32))
-    {
-        LLRP_tSXMLTextDecoder * pDecoder = pDecoderStream->pDecoder;
-        llrp_u16_t              nValue;
-
-        nValue = pDecoder->nIntgValue;
-        Value = LLRP_u32v_construct(nValue);
-        if(verifyVectorAllocation(pDecoderStream, Value.pValue,
-                            pFieldDescriptor))
-        {
-            unsigned int    Ix;
-
-            for(Ix = 0; Ix < nValue; Ix++)
-            {
-                Value.pValue[Ix] = (llrp_u32_t) pDecoder->aIntgValue[Ix];
-            }
-        }
-    }
-
-    return Value;
-}
-
-static llrp_s32v_t
-get_s32v (
-  LLRP_tSDecoderStream *        pBaseDecoderStream,
-  const LLRP_tSFieldDescriptor *pFieldDescriptor)
-{
-    LLRP_tSXMLTextDecoderStream *pDecoderStream;
-    llrp_s32v_t                 Value;
-
-    pDecoderStream = (LLRP_tSXMLTextDecoderStream *) pBaseDecoderStream;
-    memset(&Value, 0, sizeof Value);
-
-    if(getFieldIntgVec(pDecoderStream, pFieldDescriptor,
-                            0, MIN_S32, MAX_S32))
-    {
-        LLRP_tSXMLTextDecoder * pDecoder = pDecoderStream->pDecoder;
-        llrp_u16_t              nValue;
-
-        nValue = pDecoder->nIntgValue;
-        Value = LLRP_s32v_construct(nValue);
-        if(verifyVectorAllocation(pDecoderStream, Value.pValue,
-                            pFieldDescriptor))
-        {
-            unsigned int    Ix;
-
-            for(Ix = 0; Ix < nValue; Ix++)
-            {
-                Value.pValue[Ix] = (llrp_s32_t) pDecoder->aIntgValue[Ix];
-            }
-        }
-    }
-
-    return Value;
-}
-
-static llrp_u64_t
-get_u64 (
-  LLRP_tSDecoderStream *        pBaseDecoderStream,
-  const LLRP_tSFieldDescriptor *pFieldDescriptor)
-{
-    LLRP_tSXMLTextDecoderStream *pDecoderStream;
-    llrp_u64_t                  Value;
-
-    pDecoderStream = (LLRP_tSXMLTextDecoderStream *) pBaseDecoderStream;
-
-    Value = (llrp_u64_t) getFieldIntg(pDecoderStream, pFieldDescriptor,
-                            MIN_U64, MAX_U64);
-
-    return Value;
-}
-
-static llrp_s64_t
-get_s64 (
-  LLRP_tSDecoderStream *        pBaseDecoderStream,
-  const LLRP_tSFieldDescriptor *pFieldDescriptor)
-{
-    LLRP_tSXMLTextDecoderStream *pDecoderStream;
-    llrp_s64_t                  Value;
-
-    pDecoderStream = (LLRP_tSXMLTextDecoderStream *) pBaseDecoderStream;
-
-    Value = (llrp_s64_t) getFieldIntg(pDecoderStream, pFieldDescriptor,
-                            MIN_S64, MAX_S64);
-
-    return Value;
-}
-
-static llrp_u64v_t
-get_u64v (
-  LLRP_tSDecoderStream *        pBaseDecoderStream,
-  const LLRP_tSFieldDescriptor *pFieldDescriptor)
-{
-    LLRP_tSXMLTextDecoderStream *pDecoderStream;
-    llrp_u64v_t                 Value;
-
-    pDecoderStream = (LLRP_tSXMLTextDecoderStream *) pBaseDecoderStream;
-    memset(&Value, 0, sizeof Value);
-
-    if(getFieldIntgVec(pDecoderStream, pFieldDescriptor,
-                            0, MIN_U64, MAX_U64))
-    {
-        LLRP_tSXMLTextDecoder * pDecoder = pDecoderStream->pDecoder;
-        llrp_u16_t              nValue;
-
-        nValue = pDecoder->nIntgValue;
-        Value = LLRP_u64v_construct(nValue);
-        if(verifyVectorAllocation(pDecoderStream, Value.pValue,
-                            pFieldDescriptor))
-        {
-            unsigned int    Ix;
-
-            for(Ix = 0; Ix < nValue; Ix++)
-            {
-                Value.pValue[Ix] = (llrp_u64_t) pDecoder->aIntgValue[Ix];
-            }
-        }
-    }
-
-    return Value;
-}
-
-static llrp_s64v_t
-get_s64v (
-  LLRP_tSDecoderStream *        pBaseDecoderStream,
-  const LLRP_tSFieldDescriptor *pFieldDescriptor)
-{
-    LLRP_tSXMLTextDecoderStream *pDecoderStream;
-    llrp_s64v_t                 Value;
-
-    pDecoderStream = (LLRP_tSXMLTextDecoderStream *) pBaseDecoderStream;
-    memset(&Value, 0, sizeof Value);
-
-    if(getFieldIntgVec(pDecoderStream, pFieldDescriptor,
-                            0, MIN_S64, MAX_S64))
-    {
-        LLRP_tSXMLTextDecoder * pDecoder = pDecoderStream->pDecoder;
-        llrp_u16_t              nValue;
-
-        nValue = pDecoder->nIntgValue;
-        Value = LLRP_s64v_construct(nValue);
-        if(verifyVectorAllocation(pDecoderStream, Value.pValue,
-                            pFieldDescriptor))
-        {
-            unsigned int    Ix;
-
-            for(Ix = 0; Ix < nValue; Ix++)
-            {
-                Value.pValue[Ix] = (llrp_s64_t) pDecoder->aIntgValue[Ix];
-            }
-        }
-    }
-
-    return Value;
-}
-
-static llrp_u1_t
-get_u1 (
-  LLRP_tSDecoderStream *        pBaseDecoderStream,
-  const LLRP_tSFieldDescriptor *pFieldDescriptor)
-{
-    LLRP_tSXMLTextDecoderStream *pDecoderStream;
-    llrp_u1_t                   Value;
-
-    pDecoderStream = (LLRP_tSXMLTextDecoderStream *) pBaseDecoderStream;
-
-    Value = (llrp_u1_t) getFieldIntg(pDecoderStream, pFieldDescriptor,
-                            0, 1);
-
-    return Value;
-}
-
-static llrp_u1v_t
-get_u1v (
-  LLRP_tSDecoderStream *        pBaseDecoderStream,
-  const LLRP_tSFieldDescriptor *pFieldDescriptor)
-{
-    LLRP_tSXMLTextDecoderStream *pDecoderStream;
-    llrp_u1v_t                  Value;
-
-    pDecoderStream = (LLRP_tSXMLTextDecoderStream *) pBaseDecoderStream;
-    memset(&Value, 0, sizeof Value);
-
-    if(getFieldHexBinary(pDecoderStream, pFieldDescriptor))
-    {
-        LLRP_tSXMLTextDecoder * pDecoder = pDecoderStream->pDecoder;
-        llrp_u16_t              nByte;
-        llrp_u16_t              nBit;
-        unsigned int            Ix;
-
-        nByte = pDecoder->nTextBuf;
-        nBit = nByte * 8u;
-
-        for(Ix = 1; Ix < pDecoder->nTagArg; Ix++)
-        {
-            if(0 == strncmp(pDecoder->apTagArg[Ix], "Count=", 6))
-            {
-                nBit = atoi(pDecoder->apTagArg[Ix]+6);
-            }
-        }
-
-        nByte = (nBit + 7u) / 8u;
-
-        if(nByte != pDecoder->nTextBuf)
-        {
-            LLRP_tSErrorDetails *pError = &pDecoder->decoderHdr.ErrorDetails;
-
-            pDecoder->iNext = pDecoder->iLastText;
-
-            pError->eResultCode = LLRP_RC_MiscError;
-            pError->pWhatStr    = "incorrect number of bytes";
-            pError->pRefType    = pDecoderStream->pRefType;
-            pError->pRefField   = pFieldDescriptor;
-            pError->OtherDetail = pDecoder->iNext;
-        }
-        else
-        {
-            Value = LLRP_u1v_construct(nBit);
-            if(verifyVectorAllocation(pDecoderStream, Value.pValue,
-                            pFieldDescriptor))
-            {
-                for(Ix = 0; Ix < nByte; Ix++)
-                {
-                    Value.pValue[Ix] = pDecoder->aTextBuf[Ix];
-                }
-                Value.pValue[Ix] = 0;
-            }
-        }
-    }
-
-    return Value;
-}
-
-static llrp_u2_t
-get_u2 (
-  LLRP_tSDecoderStream *        pBaseDecoderStream,
-  const LLRP_tSFieldDescriptor *pFieldDescriptor)
-{
-    LLRP_tSXMLTextDecoderStream *pDecoderStream;
-    llrp_u2_t                   Value;
-
-    pDecoderStream = (LLRP_tSXMLTextDecoderStream *) pBaseDecoderStream;
-
-    Value = (llrp_u2_t) getFieldIntg(pDecoderStream, pFieldDescriptor,
-                            0, 3);
-
-    return Value;
-}
-
-static llrp_u96_t
-get_u96 (
-  LLRP_tSDecoderStream *        pBaseDecoderStream,
-  const LLRP_tSFieldDescriptor *pFieldDescriptor)
-{
-    LLRP_tSXMLTextDecoderStream *pDecoderStream;
-    llrp_u96_t                  Value;
-
-    pDecoderStream = (LLRP_tSXMLTextDecoderStream *) pBaseDecoderStream;
-    memset(&Value, 0, sizeof Value);
-
-    if(getFieldHexBinary(pDecoderStream, pFieldDescriptor))
-    {
-        LLRP_tSXMLTextDecoder * pDecoder = pDecoderStream->pDecoder;
-        llrp_u16_t              nValue = pDecoder->nTextBuf;
-        unsigned int            Ix;
-
-        if(12 > nValue)
-        {
-            nValue = 12;
-        }
-
-        for(Ix = 0; Ix < nValue; Ix++)
-        {
-            Value.aValue[Ix] = pDecoder->aTextBuf[Ix];
-        }
-
-        /* TODO: check it */
-        if(12 != pDecoder->nTextBuf)
-        {
-            LLRP_tSErrorDetails *pError = &pDecoder->decoderHdr.ErrorDetails;
-
-            pDecoder->iNext = pDecoder->iLastText;
-
-            pError->eResultCode = LLRP_RC_MiscError;
-            pError->pWhatStr    = "incorrect number of bytes";
-            pError->pRefType    = pDecoderStream->pRefType;
-            pError->pRefField   = pFieldDescriptor;
-            pError->OtherDetail = pDecoder->iNext;
-        }
-    }
-
-    return Value;
-}
-
-static llrp_utf8v_t
-get_utf8v (
-  LLRP_tSDecoderStream *        pBaseDecoderStream,
-  const LLRP_tSFieldDescriptor *pFieldDescriptor)
-{
-    LLRP_tSXMLTextDecoderStream *pDecoderStream;
-    llrp_utf8v_t                Value;
-
-    pDecoderStream = (LLRP_tSXMLTextDecoderStream *) pBaseDecoderStream;
-    memset(&Value, 0, sizeof Value);
-
-    if(getFieldText(pDecoderStream, pFieldDescriptor))
-    {
-        LLRP_tSXMLTextDecoder * pDecoder = pDecoderStream->pDecoder;
-        llrp_u16_t              nValue;
-
-        nValue = pDecoder->nTextBuf;
-        Value = LLRP_utf8v_construct(nValue + 1);
-        if(verifyVectorAllocation(pDecoderStream, Value.pValue,
-                            pFieldDescriptor))
-        {
-            unsigned int    Ix;
-
-            for(Ix = 0; Ix < nValue; Ix++)
-            {
-                Value.pValue[Ix] = pDecoder->aTextBuf[Ix];
-            }
-            Value.pValue[Ix] = 0;
-        }
-    }
-
-    return Value;
-}
-
-static llrp_bytesToEnd_t
-get_bytesToEnd (
-  LLRP_tSDecoderStream *        pBaseDecoderStream,
-  const LLRP_tSFieldDescriptor *pFieldDescriptor)
-{
-    LLRP_tSXMLTextDecoderStream *pDecoderStream;
-    llrp_bytesToEnd_t           Value;
-
-    pDecoderStream = (LLRP_tSXMLTextDecoderStream *) pBaseDecoderStream;
-    memset(&Value, 0, sizeof Value);
-
-    if(getFieldText(pDecoderStream, pFieldDescriptor))
-    {
-        LLRP_tSXMLTextDecoder * pDecoder = pDecoderStream->pDecoder;
-        llrp_u16_t              nValue;
-
-        nValue = pDecoder->nTextBuf;
-        Value = LLRP_bytesToEnd_construct(nValue);
-        if(verifyVectorAllocation(pDecoderStream, Value.pValue,
-                            pFieldDescriptor))
-        {
-            unsigned int    Ix;
-
-            for(Ix = 0; Ix < nValue; Ix++)
-            {
-                Value.pValue[Ix] = pDecoder->aTextBuf[Ix];
-            }
-            Value.pValue[Ix] = 0;
-        }
-    }
-
-    return Value;
-}
-
-static int
-get_e1 (
-  LLRP_tSDecoderStream *        pBaseDecoderStream,
-  const LLRP_tSFieldDescriptor *pFieldDescriptor)
-{
-    LLRP_tSXMLTextDecoderStream *pDecoderStream;
-    int                         Value;
-
-    pDecoderStream = (LLRP_tSXMLTextDecoderStream *) pBaseDecoderStream;
-    Value = getFieldEnum(pDecoderStream, pFieldDescriptor);
-    return Value;
-}
-
-static int
-get_e2 (
-  LLRP_tSDecoderStream *        pBaseDecoderStream,
-  const LLRP_tSFieldDescriptor *pFieldDescriptor)
-{
-    LLRP_tSXMLTextDecoderStream *pDecoderStream;
-    int                         Value;
-
-    pDecoderStream = (LLRP_tSXMLTextDecoderStream *) pBaseDecoderStream;
-    Value = getFieldEnum(pDecoderStream, pFieldDescriptor);
-    return Value;
-}
-
-static int
-get_e8 (
-  LLRP_tSDecoderStream *        pBaseDecoderStream,
-  const LLRP_tSFieldDescriptor *pFieldDescriptor)
-{
-    LLRP_tSXMLTextDecoderStream *pDecoderStream;
-    int                         Value;
-
-    pDecoderStream = (LLRP_tSXMLTextDecoderStream *) pBaseDecoderStream;
-    Value = getFieldEnum(pDecoderStream, pFieldDescriptor);
-    return Value;
-}
-
-static int
-get_e16 (
-  LLRP_tSDecoderStream *        pBaseDecoderStream,
-  const LLRP_tSFieldDescriptor *pFieldDescriptor)
-{
-    LLRP_tSXMLTextDecoderStream *pDecoderStream;
-    int                         Value;
-
-    pDecoderStream = (LLRP_tSXMLTextDecoderStream *) pBaseDecoderStream;
-    Value = getFieldEnum(pDecoderStream, pFieldDescriptor);
-    return Value;
-}
-
-static int
-get_e32 (
-  LLRP_tSDecoderStream *        pBaseDecoderStream,
-  const LLRP_tSFieldDescriptor *pFieldDescriptor)
-{
-    LLRP_tSXMLTextDecoderStream *pDecoderStream;
-    int                         Value;
-
-    pDecoderStream = (LLRP_tSXMLTextDecoderStream *) pBaseDecoderStream;
-    Value = getFieldEnum(pDecoderStream, pFieldDescriptor);
-    return Value;
-}
-
-static void
-get_reserved (
-  LLRP_tSDecoderStream *        pBaseDecoderStream,
-  unsigned int                  nBit)
-{
-    return;
-}
-
 static void
 streamConstruct_outermost (
-  LLRP_tSXMLTextDecoderStream * pDecoderStream,
-  LLRP_tSXMLTextDecoder *       pDecoder)
+  LLRP_tSLibXMLTextDecoderStream * pDecoderStream,
+  LLRP_tSLibXMLTextDecoder *       pDecoder)
 {
     memset(pDecoderStream, 0, sizeof *pDecoderStream);
     pDecoderStream->decoderStreamHdr.pDecoderStreamOps =
-                                &s_XMLTextDecoderStreamOps;
+                                          &s_LibXMLTextDecoderStreamOps;
 
     pDecoderStream->pDecoder                = pDecoder;
     pDecoderStream->pEnclosingDecoderStream = NULL;
     pDecoderStream->pRefType                = NULL;
+    pDecoderStream->pTargetNode             = pDecoder->pxmlNodeTree;
+    pDecoderStream->pCurrentChildNode       = NULL;
 }
 
 static void
 streamConstruct_nested (
-  LLRP_tSXMLTextDecoderStream * pDecoderStream,
-  LLRP_tSXMLTextDecoderStream * pEnclosingDecoderStream)
+  LLRP_tSLibXMLTextDecoderStream * pDecoderStream,
+  LLRP_tSLibXMLTextDecoderStream * pEnclosingDecoderStream)
 {
-    LLRP_tSXMLTextDecoder *     pDecoder;
+    LLRP_tSLibXMLTextDecoder *  pDecoder;
 
     pDecoder = pEnclosingDecoderStream->pDecoder;
 
     memset(pDecoderStream, 0, sizeof *pDecoderStream);
     pDecoderStream->decoderStreamHdr.pDecoderStreamOps =
-                                &s_XMLTextDecoderStreamOps;
+                                          &s_LibXMLTextDecoderStreamOps;
 
     pDecoderStream->pDecoder                = pDecoder;
     pDecoderStream->pEnclosingDecoderStream = pEnclosingDecoderStream;
-    pDecoderStream->pRefType                = NULL;
+    pDecoderStream->pRefType                = pEnclosingDecoderStream->pRefType;
+    pDecoderStream->pTargetNode             = pEnclosingDecoderStream->pCurrentChildNode;    
+    pDecoderStream->pCurrentChildNode       = NULL;
 }
 
 static LLRP_tSElement *
 decodeElement (
-  LLRP_tSXMLTextDecoderStream * pDecoderStream,
-  int                           bAllowMessage)
+  LLRP_tSLibXMLTextDecoderStream * pDecoderStream,
+  int                           bAllowMessage,
+  int                           bSkipBlanks)
 {
-    LLRP_tSXMLTextDecoder *     pDecoder  = pDecoderStream->pDecoder;
+    LLRP_tSLibXMLTextDecoder *  pDecoder  = pDecoderStream->pDecoder;
     LLRP_tSErrorDetails *       pError    = &pDecoder->decoderHdr.ErrorDetails;
     const LLRP_tSTypeRegistry * pRegistry = pDecoder->decoderHdr.pRegistry;
     LLRP_tSDecoderStream *      pBaseDecoderStream =
@@ -1625,118 +619,124 @@ decodeElement (
     const LLRP_tSTypeDescriptor *pTypeDescriptor;
     llrp_u32_t                  MessageID = 0;
     LLRP_tSElement *            pElement;
-    unsigned int                iSave;
 
     if(LLRP_RC_OK != pError->eResultCode)
     {
         return NULL;
     }
 
-    skipInsignificantText(pDecoder);
+    /* get the first interesting node as the target node */
+    if(bSkipBlanks)
+    {
+        while ((NULL != pDecoderStream->pTargetNode) &&
+               ( isInsignificantNode(pDecoderStream->pTargetNode) || 
+                 xmlIsBlankNode(pDecoderStream->pTargetNode)))
+        {
+            pDecoderStream->pTargetNode = pDecoderStream->pTargetNode->next;
+        }
+    }
 
-    if(LLRP_RC_OK != pError->eResultCode)
+    /* no interestig target node found. THis is OK as its an empty decode */
+    if(NULL == pDecoderStream->pTargetNode)
     {
         return NULL;
     }
 
-    iSave = pDecoder->iNext;
-
-    getTag(pDecoder);
-
-    if(LLRP_RC_OK != pError->eResultCode)
+    /* first interesting node had better be an element */
+    if(pDecoderStream->pTargetNode->type != XML_ELEMENT_NODE)
     {
-        return NULL;
-    }
-
-    if(XMLTEXT_START_TAG != pDecoder->eTagType)
-    {
-        pDecoder->iNext = iSave;
-
-        // TODO good error
-        pError->eResultCode = LLRP_RC_MiscError;
-        pError->pWhatStr    = "missing start tag";
-        pError->pRefType    = NULL;
+        /* TODO proper error here. We were expecting an element and got something else */
+        pError->eResultCode = LLRP_RC_XMLInvalidNodeType;
+        pError->pWhatStr    = "unexpected XML node type";
+        pError->pRefType    = pDecoderStream->pRefType;
         pError->pRefField   = NULL;
-        pError->OtherDetail = pDecoder->iNext;
+        pError->OtherDetail = (int) pDecoderStream->pTargetNode->line;
         return NULL;
     }
 
+    XML_NODE_DEBUG(pDecoderStream->pTargetNode);
+
+    /* look up the type descriptor*/
     pTypeDescriptor = LLRP_TypeRegistry_lookupByName(pRegistry,
-                        pDecoder->apTagArg[0]);
+                                        (char*) pDecoderStream->pTargetNode->name);
 
     if(NULL == pTypeDescriptor)
     {
-        pDecoder->iNext = iSave;
-
         // TODO good error
         pError->eResultCode = LLRP_RC_UnknownParameterType;
-        pError->pWhatStr    = "unknown element type";
-        pError->pRefType    = NULL;
+        pError->pWhatStr    = "unknown message or parameter type";
+        pError->pRefType    = pDecoderStream->pRefType;
         pError->pRefField   = NULL;
-        pError->OtherDetail = pDecoder->iNext;
+        pError->OtherDetail = (int) pDecoderStream->pTargetNode->line;
         return NULL;
     }
 
     pDecoderStream->pRefType = pTypeDescriptor;
 
+    /* process messages a bit specially */
     if(pTypeDescriptor->bIsMessage)
     {
-        int                     iTagArg;
+        xmlChar *               pMessageIDStr;
 
         if(!bAllowMessage)
         {
-            pDecoder->iNext = iSave;
-
             pError->eResultCode = LLRP_RC_MiscError;
             pError->pWhatStr    = "message as subparameter";
-            pError->pRefType    = pTypeDescriptor;
+            pError->pRefType    = pDecoderStream->pRefType;
             pError->pRefField   = NULL;
-            pError->OtherDetail = pDecoder->iNext;
+            pError->OtherDetail = (int) pDecoderStream->pTargetNode->line;
             return NULL;
         }
 
-        for(iTagArg = 1; iTagArg < pDecoder->nTagArg; iTagArg++)
+        /* get the messageID Attribute */
+        pMessageIDStr = xmlGetProp(pDecoderStream->pTargetNode, 
+                                   (xmlChar*) "MessageID");
+        if(NULL != pMessageIDStr)
         {
-            char *              pArg = pDecoder->apTagArg[iTagArg];
+            char *                  pArg = (char *) pMessageIDStr;
+            char *                  pTail = pArg + strlen((char*) pMessageIDStr);
+            char *                  pTmp;
+	        cleanString((const llrp_u8_t **) &pArg, (const llrp_u8_t **) &pTail);
+            MessageID = strtoul(pArg, &pTmp, 10);
+            xmlFree(pMessageIDStr);
 
-            if(0 == strncmp("MessageID=", pArg, 10))
+            if(pTail != pTmp)
             {
-                char *          pTail;
-
-                MessageID = strtoul(pArg+10, &pTail, 0);
-                if(*pTail != 0)
-                {
-                    /* malformed */
-                    pDecoder->iNext = iSave;
-
-                    pError->eResultCode = LLRP_RC_MiscError;
-                    pError->pWhatStr    = "malformed MessageID";
-                    pError->pRefType    = pTypeDescriptor;
-                    pError->pRefField   = NULL;
-                    pError->OtherDetail = pDecoder->iNext;
-                    return NULL;
-                }
-                break;
+                /* malformed */
+                pError->eResultCode = LLRP_RC_MiscError;
+                pError->pWhatStr    = "malformed MessageID";
+                pError->pRefType    = pDecoderStream->pRefType;
+                pError->pRefField   = NULL;
+                pError->OtherDetail = (int) pDecoderStream->pTargetNode->line;
+                return NULL;
             }
         }
     }
 
+    /* create our element to hold the information */
     pElement = LLRP_Element_construct(pTypeDescriptor);
 
     if(NULL == pElement)
     {
-        pDecoder->iNext = iSave;
-
         pError->eResultCode = LLRP_RC_MessageAllocationFailed;
         pError->pWhatStr    = "element allocation failed";
-        pError->pRefType    = pTypeDescriptor;
+        pError->pRefType    = pDecoderStream->pRefType;
         pError->pRefField   = NULL;
-        pError->OtherDetail = pDecoder->iNext;
+        pError->OtherDetail = (int) pDecoderStream->pTargetNode->line;
         return NULL;
     }
 
-    ((LLRP_tSMessage *) pElement)->MessageID = MessageID;
+    /* write the message ID into our message (only if its a message)*/
+    if(pTypeDescriptor->bIsMessage)
+    {
+        ((LLRP_tSMessage *) pElement)->MessageID = MessageID;
+    }
 
+    /* now switch to decode the children which are the
+     * fields and sub-parameters of this element */
+    pDecoderStream->pCurrentChildNode = pDecoderStream->pTargetNode->children;
+
+    /* decode the fields first */
     pTypeDescriptor->pfDecodeFields(pElement, pBaseDecoderStream);
 
     if(LLRP_RC_OK != pError->eResultCode)
@@ -1746,64 +746,35 @@ decodeElement (
     }
 
     /*
-     * Subparameters
+     * Subparameters.
+     *
+     * loop through all the remaining children of the target node and try to find sub-parameters.
+     * We are done when we don't have any more or error
      */
-    for(;;)
+    for(; pDecoderStream->pCurrentChildNode != NULL; 
+            pDecoderStream->pCurrentChildNode = pDecoderStream->pCurrentChildNode->next)
     {
-        LLRP_tSXMLTextDecoderStream     NestStream;
+        LLRP_tSLibXMLTextDecoderStream  NestStream;
         LLRP_tSElement *                pSubElement;
         LLRP_tSParameter *              pParameter;
 
-        skipInsignificantText(pDecoder);
-
-        if(LLRP_RC_OK != pError->eResultCode)
+        if(isInsignificantNode(pDecoderStream->pCurrentChildNode))
         {
-            break;
+                continue;
         }
 
-        iSave = pDecoder->iNext;
-
-        getTag(pDecoder);
-
-        if(LLRP_RC_OK != pError->eResultCode)
+        if(xmlIsBlankNode(pDecoderStream->pCurrentChildNode))
         {
-            break;
+                continue;
         }
-
-        if(XMLTEXT_END_TAG == pDecoder->eTagType)
-        {
-            if(0 != strcmp(pDecoder->apTagArg[0], pTypeDescriptor->pName))
-            {
-                pDecoder->iNext = iSave;
-
-                // TODO good error
-                pError->eResultCode = LLRP_RC_MiscError;
-                pError->pWhatStr    = "missing end tag";
-                pError->pRefType    = pTypeDescriptor;
-                pError->pRefField   = NULL;
-                pError->OtherDetail = pDecoder->iNext;
-            }
-            break;
-        }
-
-        pDecoder->iNext = iSave;
 
         streamConstruct_nested(&NestStream, pDecoderStream);
 
-        pSubElement = decodeElement(&NestStream, FALSE);
+        pSubElement = decodeElement(&NestStream, FALSE, FALSE);
 
+        /* nothing more to decode as a sub-element or failure */
         if(NULL == pSubElement)
         {
-            if(LLRP_RC_OK == pError->eResultCode)
-            {
-                pDecoder->iNext = iSave;
-
-                pError->eResultCode = LLRP_RC_Botch;
-                pError->pWhatStr    = "botch -- no param and no error";
-                pError->pRefType    = pTypeDescriptor;
-                pError->pRefField   = NULL;
-                pError->OtherDetail = pDecoder->iNext;
-            }
             break;
         }
 
@@ -1830,424 +801,1131 @@ decodeElement (
     return pElement;
 }
 
-static llrp_bool_t
-getFieldText (
-  LLRP_tSXMLTextDecoderStream * pDecoderStream,
+/* determine whether we can ingore node always */
+static int
+isInsignificantNode (
+  xmlNodePtr                    pnode)
+{
+    switch(pnode->type)
+    {
+        /* don't process comments or notations */
+        case XML_COMMENT_NODE:
+        case XML_NOTATION_NODE:
+        /* ignore includes */
+        case XML_XINCLUDE_START:
+       case XML_XINCLUDE_END:		
+       /* don't read processing instructions */
+        case XML_PI_NODE:
+        return 1;
+
+        /* hopefully we only see these type of nodes */
+        case XML_ELEMENT_NODE:
+        case XML_ATTRIBUTE_NODE:
+        case XML_TEXT_NODE:
+
+        /* we should error if we see a cdata  */
+        case XML_CDATA_SECTION_NODE:
+
+        /* we don't understand entities, so we should error */
+        case XML_ENTITY_REF_NODE:
+        case XML_ENTITY_NODE:
+        case XML_ENTITY_DECL:
+
+        /* we should have already gotten the doc node , but should error out on these*/
+        case XML_DOCUMENT_NODE:
+        case XML_DOCUMENT_TYPE_NODE:
+        case XML_DOCUMENT_FRAG_NODE:
+        case XML_HTML_DOCUMENT_NODE:
+        case XML_DTD_NODE:
+
+        /* not sure yet about these TODO */
+        case XML_ELEMENT_DECL:
+        case XML_ATTRIBUTE_DECL:
+        case XML_NAMESPACE_DECL:
+
+        /* anything new we should error */
+        default:
+            return 0;
+    }
+}
+
+static llrp_u8_t
+get_u8 (
+  LLRP_tSDecoderStream *        pBaseDecoderStream,
   const LLRP_tSFieldDescriptor *pFieldDescriptor)
 {
-    LLRP_tSXMLTextDecoder *     pDecoder = pDecoderStream->pDecoder;
-    LLRP_tSErrorDetails *       pError = &pDecoder->decoderHdr.ErrorDetails;
-    const char *                pFieldName = pFieldDescriptor->pName;
+    LLRP_tSLibXMLTextDecoderStream *pDecoderStream;
+    llrp_u8_t                   Value;
 
-    if(LLRP_RC_OK != pError->eResultCode)
+    pDecoderStream = (LLRP_tSLibXMLTextDecoderStream *) pBaseDecoderStream;
+
+    Value = (llrp_u8_t) getIntegerField(pDecoderStream, pFieldDescriptor,
+                            MIN_U8, MAX_U8);
+
+    return Value;
+}
+
+static llrp_s8_t
+get_s8 (
+  LLRP_tSDecoderStream *        pBaseDecoderStream,
+  const LLRP_tSFieldDescriptor *pFieldDescriptor)
+{
+    LLRP_tSLibXMLTextDecoderStream *pDecoderStream;
+    llrp_s8_t                   Value;
+
+    pDecoderStream = (LLRP_tSLibXMLTextDecoderStream *) pBaseDecoderStream;
+
+    Value = (llrp_s8_t) getIntegerField(pDecoderStream, pFieldDescriptor,
+                            MIN_S8, MAX_S8);
+
+    return Value;
+}
+
+static llrp_u8v_t
+get_u8v (
+  LLRP_tSDecoderStream *        pBaseDecoderStream,
+  const LLRP_tSFieldDescriptor *pFieldDescriptor)
+{
+    LLRP_tSLibXMLTextDecoderStream *pDecoderStream;
+    LLRP_tSErrorDetails *       pError;
+    llrp_u8v_t                  Value;
+    llrp_s64v_t                 Tmp;
+
+    pDecoderStream = (LLRP_tSLibXMLTextDecoderStream *) pBaseDecoderStream;
+    pError = &pDecoderStream->pDecoder->decoderHdr.ErrorDetails;
+
+    memset(&Value, 0, sizeof Value);
+
+    switch(pFieldDescriptor->eFieldFormat)
     {
-        return FALSE;
-    }
+        /* assume normal format here is decimal */
+        case LLRP_FMT_NORMAL:
+        case LLRP_FMT_DEC:
+        Tmp = getSpacedVectorField(pDecoderStream, pFieldDescriptor,
+                                       MIN_U8, MAX_U8);
+        break;
+        case LLRP_FMT_HEX:
+        Tmp = getFixedVectorField(pDecoderStream, pFieldDescriptor,
+                                      2, MIN_U8, MAX_U8);	    
+        break;
+        default:
+        case LLRP_FMT_UTF8:
+        case LLRP_FMT_DATETIME:
+            if(NULL != pError)
+            {
+                pError->eResultCode = LLRP_RC_MiscError;
+                pError->pWhatStr    = "Format type not support for field";
+                pError->pRefType    = pDecoderStream->pRefType;
+                pError->pRefField   = pFieldDescriptor;
+                pError->OtherDetail = (int) pDecoderStream->pCurrentChildNode->line;
+            }	    
+        break;
+    }    
 
-    skipInsignificantText(pDecoder);
-
-    if(LLRP_RC_OK != pError->eResultCode)
+    if(Tmp.nValue)
     {
-        return FALSE;
-    }
+        llrp_u16_t              nValue;
 
-    if(!matchStartTag(pDecoder, pFieldName))
-    {
-        if(LLRP_RC_OK == pError->eResultCode)
+        nValue = Tmp.nValue;
+        Value = LLRP_u8v_construct(nValue);
+        if(verifyVectorAllocation(pDecoderStream, Value.pValue,
+                                  pFieldDescriptor))
         {
-            pError->eResultCode = LLRP_RC_MiscError;
-            pError->pWhatStr    = "missing field start tag";
-            pError->pRefType    = pDecoderStream->pRefType;
-            pError->pRefField   = pFieldDescriptor;
-            pError->OtherDetail = pDecoder->iNext;
+            unsigned int    Ix;
+
+            for(Ix = 0; Ix < nValue; Ix++)
+            {
+                Value.pValue[Ix] = (llrp_u8_t) Tmp.pValue[Ix];
+            }
         }
-
-        return FALSE;
+        LLRP_s64v_clear(&Tmp);
     }
 
-    getText(pDecoder);
+    return Value;
+}
 
-    if(LLRP_RC_OK != pError->eResultCode)
-    {
-        return FALSE;
-    }
+static llrp_s8v_t
+get_s8v (
+  LLRP_tSDecoderStream *        pBaseDecoderStream,
+  const LLRP_tSFieldDescriptor *pFieldDescriptor)
+{
+   LLRP_tSLibXMLTextDecoderStream *pDecoderStream;
+    LLRP_tSErrorDetails *       pError;
+    llrp_s8v_t                  Value;
+    llrp_s64v_t                 Tmp;
 
-    if(!matchEndTag(pDecoder, pFieldName))
+    pDecoderStream = (LLRP_tSLibXMLTextDecoderStream *) pBaseDecoderStream;
+    pError = &pDecoderStream->pDecoder->decoderHdr.ErrorDetails;
+
+    memset(&Value, 0, sizeof Value);
+     switch(pFieldDescriptor->eFieldFormat)
     {
-        if(LLRP_RC_OK == pError->eResultCode)
+        /* assume normal format here is decimal */
+        case LLRP_FMT_NORMAL:
+        case LLRP_FMT_DEC:
+        Tmp = getSpacedVectorField(pDecoderStream, pFieldDescriptor,
+                                   MIN_S8, MAX_S8);
+        break;
+        case LLRP_FMT_HEX:
+        Tmp = getFixedVectorField(pDecoderStream, pFieldDescriptor,
+                                  2, MIN_S8, MAX_S8);	    
+        break;
+        default:
+        case LLRP_FMT_UTF8:
+        case LLRP_FMT_DATETIME:
+            if(NULL != pError)
+            {
+                pError->eResultCode = LLRP_RC_MiscError;
+                pError->pWhatStr    = "Format type not support for field";
+                pError->pRefType    = pDecoderStream->pRefType;
+                pError->pRefField   = pFieldDescriptor;
+                pError->OtherDetail = (int) pDecoderStream->pCurrentChildNode->line;
+            }	    
+        break;
+    }    
+    if(Tmp.nValue)
+    {
+        llrp_u16_t              nValue;
+
+        nValue = Tmp.nValue;
+        Value = LLRP_s8v_construct(nValue);
+        if(verifyVectorAllocation(pDecoderStream, Value.pValue,
+                                  pFieldDescriptor))
         {
-            pError->eResultCode = LLRP_RC_MiscError;
-            pError->pWhatStr    = "missing field end tag";
-            pError->pRefType    = pDecoderStream->pRefType;
-            pError->pRefField   = pFieldDescriptor;
-            pError->OtherDetail = pDecoder->iNext;
-        }
+            unsigned int    Ix;
 
-        return FALSE;
+            for(Ix = 0; Ix < nValue; Ix++)
+            {
+                Value.pValue[Ix] = (llrp_s8_t) Tmp.pValue[Ix];
+            }
+        }
+        LLRP_s64v_clear(&Tmp);
     }
 
-    return TRUE;
+    return Value;
+}
+
+static llrp_u16_t
+get_u16 (
+  LLRP_tSDecoderStream *        pBaseDecoderStream,
+  const LLRP_tSFieldDescriptor *pFieldDescriptor)
+{
+    LLRP_tSLibXMLTextDecoderStream *pDecoderStream;
+    llrp_u16_t                  Value;
+
+    pDecoderStream = (LLRP_tSLibXMLTextDecoderStream *) pBaseDecoderStream;
+
+    Value = (llrp_u16_t) getIntegerField(pDecoderStream, pFieldDescriptor,
+                                         MIN_U16, MAX_U16);
+
+    return Value;
+}
+
+static llrp_s16_t
+get_s16 (
+  LLRP_tSDecoderStream *        pBaseDecoderStream,
+  const LLRP_tSFieldDescriptor *pFieldDescriptor)
+{
+    LLRP_tSLibXMLTextDecoderStream *pDecoderStream;
+    llrp_s16_t                  Value;
+
+    pDecoderStream = (LLRP_tSLibXMLTextDecoderStream *) pBaseDecoderStream;
+
+    Value = (llrp_s16_t) getIntegerField(pDecoderStream, pFieldDescriptor,
+                                         MIN_S16, MAX_S16);
+
+    return Value;
+}
+
+static llrp_u16v_t
+get_u16v (
+  LLRP_tSDecoderStream *        pBaseDecoderStream,
+  const LLRP_tSFieldDescriptor *pFieldDescriptor)
+{
+    LLRP_tSLibXMLTextDecoderStream *pDecoderStream;
+    llrp_u16v_t                  Value;
+    pDecoderStream = (LLRP_tSLibXMLTextDecoderStream *) pBaseDecoderStream;
+    llrp_s64v_t                 Tmp;
+
+    memset(&Value, 0, sizeof Value);
+
+    Tmp = getSpacedVectorField(pDecoderStream, pFieldDescriptor,
+                               MIN_U16, MAX_U16);
+    if(Tmp.nValue)
+    {
+        llrp_u16_t              nValue;
+
+        nValue = Tmp.nValue;
+        Value = LLRP_u16v_construct(nValue);
+        if(verifyVectorAllocation(pDecoderStream, Value.pValue,
+                                  pFieldDescriptor))
+        {
+            unsigned int    Ix;
+
+            for(Ix = 0; Ix < nValue; Ix++)
+            {
+                Value.pValue[Ix] = (llrp_u16_t) Tmp.pValue[Ix];
+            }
+        }
+        LLRP_s64v_clear(&Tmp);
+    }
+
+    return Value;
+}
+
+static llrp_s16v_t
+get_s16v (
+  LLRP_tSDecoderStream *        pBaseDecoderStream,
+  const LLRP_tSFieldDescriptor *pFieldDescriptor)
+{
+    LLRP_tSLibXMLTextDecoderStream *pDecoderStream;
+    llrp_s16v_t                  Value;
+    pDecoderStream = (LLRP_tSLibXMLTextDecoderStream *) pBaseDecoderStream;
+    llrp_s64v_t                 Tmp;
+
+    memset(&Value, 0, sizeof Value);
+
+    Tmp = getSpacedVectorField(pDecoderStream, pFieldDescriptor,
+                               MIN_S16, MAX_S16);
+    if(Tmp.nValue)
+    {
+        llrp_u16_t              nValue;
+
+        nValue = Tmp.nValue;
+        Value = LLRP_s16v_construct(nValue);
+        if(verifyVectorAllocation(pDecoderStream, Value.pValue,
+                                  pFieldDescriptor))
+        {
+            unsigned int    Ix;
+
+            for(Ix = 0; Ix < nValue; Ix++)
+            {
+                Value.pValue[Ix] = (llrp_s16_t) Tmp.pValue[Ix];
+            }
+        }
+        LLRP_s64v_clear(&Tmp);
+    }
+
+    return Value;
+}
+
+static llrp_u32_t
+get_u32 (
+  LLRP_tSDecoderStream *        pBaseDecoderStream,
+  const LLRP_tSFieldDescriptor *pFieldDescriptor)
+{
+    LLRP_tSLibXMLTextDecoderStream *pDecoderStream;
+    llrp_u32_t                  Value;
+
+    pDecoderStream = (LLRP_tSLibXMLTextDecoderStream *) pBaseDecoderStream;
+
+    Value = (llrp_u32_t) getIntegerField(pDecoderStream, pFieldDescriptor,
+                                         MIN_U32, MAX_U32);
+
+    return Value;
+}
+
+static llrp_s32_t
+get_s32 (
+  LLRP_tSDecoderStream *        pBaseDecoderStream,
+  const LLRP_tSFieldDescriptor *pFieldDescriptor)
+{
+    LLRP_tSLibXMLTextDecoderStream *pDecoderStream;
+    llrp_s32_t                  Value;
+
+    pDecoderStream = (LLRP_tSLibXMLTextDecoderStream *) pBaseDecoderStream;
+
+    Value = (llrp_s32_t) getIntegerField(pDecoderStream, pFieldDescriptor,
+                                         MIN_S32, MAX_S32);
+
+    return Value;
+}
+
+static llrp_u32v_t
+get_u32v (
+  LLRP_tSDecoderStream *        pBaseDecoderStream,
+  const LLRP_tSFieldDescriptor *pFieldDescriptor)
+{
+    LLRP_tSLibXMLTextDecoderStream *pDecoderStream;
+    llrp_u32v_t                 Value;
+    pDecoderStream = (LLRP_tSLibXMLTextDecoderStream *) pBaseDecoderStream;
+    llrp_s64v_t                 Tmp;
+
+    memset(&Value, 0, sizeof Value);
+
+    Tmp = getSpacedVectorField(pDecoderStream, pFieldDescriptor,
+                               MIN_U32, MAX_U32);
+    if(Tmp.nValue)
+    {
+        llrp_u16_t              nValue;
+
+        nValue = Tmp.nValue;
+        Value = LLRP_u32v_construct(nValue);
+        if(verifyVectorAllocation(pDecoderStream, Value.pValue,
+                                  pFieldDescriptor))
+        {
+            unsigned int    Ix;
+
+            for(Ix = 0; Ix < nValue; Ix++)
+            {
+                Value.pValue[Ix] = (llrp_u32_t) Tmp.pValue[Ix];
+            }
+        }
+        LLRP_s64v_clear(&Tmp);
+    }
+
+    return Value;
+}
+
+static llrp_s32v_t
+get_s32v (
+  LLRP_tSDecoderStream *        pBaseDecoderStream,
+  const LLRP_tSFieldDescriptor *pFieldDescriptor)
+{
+    LLRP_tSLibXMLTextDecoderStream *pDecoderStream;
+    llrp_s32v_t                 Value;
+    pDecoderStream = (LLRP_tSLibXMLTextDecoderStream *) pBaseDecoderStream;
+    llrp_s64v_t                 Tmp;
+
+    memset(&Value, 0, sizeof Value);
+
+    Tmp = getSpacedVectorField(pDecoderStream, pFieldDescriptor,
+                               MIN_S32, MAX_S32);
+    if(Tmp.nValue)
+    {
+        llrp_u16_t              nValue;
+
+        nValue = Tmp.nValue;
+        Value = LLRP_s32v_construct(nValue);
+        if(verifyVectorAllocation(pDecoderStream, Value.pValue,
+                                  pFieldDescriptor))
+        {
+            unsigned int    Ix;
+
+            for(Ix = 0; Ix < nValue; Ix++)
+            {
+                Value.pValue[Ix] = (llrp_s32_t) Tmp.pValue[Ix];
+            }
+        }
+        LLRP_s64v_clear(&Tmp);
+    }
+
+    return Value;
+}
+
+static llrp_u64_t
+get_u64 (
+  LLRP_tSDecoderStream *        pBaseDecoderStream,
+  const LLRP_tSFieldDescriptor *pFieldDescriptor)
+{
+    LLRP_tSLibXMLTextDecoderStream *pDecoderStream;
+    llrp_u64_t                  Value;
+
+    pDecoderStream = (LLRP_tSLibXMLTextDecoderStream *) pBaseDecoderStream;
+
+    Value = (llrp_u64_t) getIntegerField(pDecoderStream, pFieldDescriptor,
+                                         MIN_U64, MAX_U64);
+
+    return Value;
 }
 
 static llrp_s64_t
-getFieldIntg (
-  LLRP_tSXMLTextDecoderStream * pDecoderStream,
-  const LLRP_tSFieldDescriptor *pFieldDescriptor,
-  llrp_s64_t                    minValue,
-  llrp_s64_t                    maxValue)
+get_s64 (
+  LLRP_tSDecoderStream *        pBaseDecoderStream,
+  const LLRP_tSFieldDescriptor *pFieldDescriptor)
 {
-    LLRP_tSXMLTextDecoder *     pDecoder = pDecoderStream->pDecoder;
+    LLRP_tSLibXMLTextDecoderStream *pDecoderStream;
+    llrp_s64_t                  Value;
 
-    if(getFieldIntgVec(pDecoderStream, pFieldDescriptor,
-                                    1, minValue, maxValue))
+    pDecoderStream = (LLRP_tSLibXMLTextDecoderStream *) pBaseDecoderStream;
+
+    Value = (llrp_s64_t) getIntegerField(pDecoderStream, pFieldDescriptor,
+                                         MIN_S64, MAX_S64);
+
+    return Value;
+}
+
+static llrp_u64v_t
+get_u64v (
+  LLRP_tSDecoderStream *        pBaseDecoderStream,
+  const LLRP_tSFieldDescriptor *pFieldDescriptor)
+{
+    LLRP_tSLibXMLTextDecoderStream *pDecoderStream;
+    llrp_u64v_t                 Value;
+    pDecoderStream = (LLRP_tSLibXMLTextDecoderStream *) pBaseDecoderStream;
+    llrp_s64v_t                 Tmp;
+
+
+    memset(&Value, 0, sizeof Value);
+
+    Tmp = getSpacedVectorField(pDecoderStream, pFieldDescriptor,
+                               MIN_U64, MAX_U64);
+    if(Tmp.nValue)
     {
-        if(1 != pDecoder->nIntgValue)
+        llrp_u16_t              nValue;
+
+        nValue = Tmp.nValue;
+        Value = LLRP_u64v_construct(nValue);
+        if(verifyVectorAllocation(pDecoderStream, Value.pValue,
+                            pFieldDescriptor))
         {
-            LLRP_tSErrorDetails *pError = &pDecoder->decoderHdr.ErrorDetails;
+            unsigned int    Ix;
 
-            pDecoder->iNext = pDecoder->iLastText;
+            for(Ix = 0; Ix < nValue; Ix++)
+            {
+                Value.pValue[Ix] = (llrp_u64_t) Tmp.pValue[Ix];
+            }
+        }
+        LLRP_s64v_clear(&Tmp);
+    }
 
+    return Value;
+}
+
+static llrp_s64v_t
+get_s64v (
+  LLRP_tSDecoderStream *        pBaseDecoderStream,
+  const LLRP_tSFieldDescriptor *pFieldDescriptor)
+{
+    LLRP_tSLibXMLTextDecoderStream *pDecoderStream;
+    llrp_s64v_t                  Value;
+    pDecoderStream = (LLRP_tSLibXMLTextDecoderStream *) pBaseDecoderStream;
+
+
+    memset(&Value, 0, sizeof Value);
+
+    Value = getSpacedVectorField(pDecoderStream, pFieldDescriptor,
+                                 MIN_S64, MAX_S64);
+ 
+    return Value;
+}
+
+static llrp_u1_t
+get_u1 (
+  LLRP_tSDecoderStream *        pBaseDecoderStream,
+  const LLRP_tSFieldDescriptor *pFieldDescriptor)
+{
+    LLRP_tSLibXMLTextDecoderStream *pDecoderStream;
+    llrp_u1_t                   Value;
+
+    pDecoderStream = (LLRP_tSLibXMLTextDecoderStream *) pBaseDecoderStream;
+
+    Value = (llrp_u1_t) getIntegerField(pDecoderStream, pFieldDescriptor,
+                                        0, 1);
+
+    return Value;
+}
+
+static llrp_u1v_t
+get_u1v (
+  LLRP_tSDecoderStream *        pBaseDecoderStream,
+  const LLRP_tSFieldDescriptor *pFieldDescriptor)
+{
+    LLRP_tSLibXMLTextDecoderStream *pDecoderStream;
+    LLRP_tSErrorDetails *       pError;
+    llrp_u1v_t                  Value;
+    llrp_s64v_t                 Tmp;
+
+    memset(&Value, 0, sizeof Value);
+
+    pDecoderStream = (LLRP_tSLibXMLTextDecoderStream *) pBaseDecoderStream;
+    pError = &pDecoderStream->pDecoder->decoderHdr.ErrorDetails;
+    Tmp = getFixedVectorField(pDecoderStream, pFieldDescriptor, 2, 0, 255);
+
+    if(Tmp.nValue)
+    {
+        llrp_u16_t              nValue;
+
+        nValue = Tmp.nValue;
+        Value = LLRP_u1v_construct(nValue*8);
+        if(verifyVectorAllocation(pDecoderStream, Value.pValue,
+                                  pFieldDescriptor))
+        {
+            unsigned int        Ix;
+            xmlChar *           pCountStr;
+
+            for(Ix = 0; Ix < nValue; Ix++)
+            {
+                Value.pValue[Ix] = (llrp_u1_t) Tmp.pValue[Ix];
+            }
+            /* bit length could be shorter than this. Use this if there
+             * is no attribute */
+            Value.nBit = Tmp.nValue * 8;
+
+            /* find the XML attribute for Count and fix the array */
+            if(NULL != pDecoderStream->pLastFieldNode)
+            {
+                pCountStr = xmlGetProp(pDecoderStream->pLastFieldNode, 
+                                       (xmlChar*) "Count");
+                if(NULL != pCountStr)
+                {
+                    char *      pArg = (char *) pCountStr;
+                    char *      pTail = pArg + strlen((char*) pCountStr);
+                    llrp_u16_t  nBits;
+
+                    nBits = strtoul(pArg, &pTail, 10);
+                    if( (*pTail != 0) ||
+                        (nBits > (Tmp.nValue * 8)))
+                    {
+                        /* malformed */
+                        pError->eResultCode = LLRP_RC_MiscError;
+                        pError->pWhatStr    = "malformed Count Attribute";
+                        pError->pRefType    = pDecoderStream->pRefType;
+                        pError->pRefField   = pFieldDescriptor;
+                        pError->OtherDetail =
+                        (int) pDecoderStream->pLastFieldNode->line;
+                    }                
+                    else
+                    {
+                        llrp_u16_t lastByteBits;
+                        llrp_u8_t  lastByteMask;
+                                    
+                        Value.nBit = nBits;			
+
+                        /* zero off the last bits if they were non-zero */
+                        lastByteBits = nBits % 8;			
+                        if(lastByteBits)
+                        {
+                            /* convert the bit position to a mask */
+                            lastByteBits = 8 - lastByteBits;
+                            lastByteMask = (1 << lastByteBits) - 1;
+                            /* invert mask */
+                            lastByteMask = ~lastByteMask;
+                            /* clear bits */
+                            Value.pValue[Ix] &= lastByteMask;
+                        }
+                    }
+                    xmlFree(pCountStr);
+                }
+            }
+        }
+        LLRP_s64v_clear(&Tmp);
+    }
+
+    return Value;
+}
+
+static llrp_u2_t
+get_u2 (
+  LLRP_tSDecoderStream *        pBaseDecoderStream,
+  const LLRP_tSFieldDescriptor *pFieldDescriptor)
+{
+    LLRP_tSLibXMLTextDecoderStream *pDecoderStream;
+    llrp_u2_t                   Value;
+
+    pDecoderStream = (LLRP_tSLibXMLTextDecoderStream *) pBaseDecoderStream;
+
+    Value = (llrp_u2_t) getIntegerField(pDecoderStream, pFieldDescriptor,
+                                        0, 3);
+    return Value;
+}
+
+static llrp_u96_t
+get_u96 (
+  LLRP_tSDecoderStream *        pBaseDecoderStream,
+  const LLRP_tSFieldDescriptor *pFieldDescriptor)
+{
+    LLRP_tSLibXMLTextDecoderStream *pDecoderStream;
+    LLRP_tSErrorDetails *       pError; 
+    llrp_u96_t                  Value;
+    llrp_s64v_t                 Tmp;
+    unsigned int    Ix;
+
+    pDecoderStream = (LLRP_tSLibXMLTextDecoderStream *) pBaseDecoderStream;
+    pError = &pDecoderStream->pDecoder->decoderHdr.ErrorDetails;
+
+    memset(&Value, 0, sizeof Value);
+
+    Tmp = getFixedVectorField(pDecoderStream, pFieldDescriptor,
+                              2, 0, 255);
+
+    if((LLRP_RC_OK != pError->eResultCode) && (Tmp.nValue != 12))
+    {
+        if(NULL != pError)
+        {
             pError->eResultCode = LLRP_RC_MiscError;
-            pError->pWhatStr    = "missing value";
+            pError->pWhatStr    = "Illegal length u96 field";
             pError->pRefType    = pDecoderStream->pRefType;
             pError->pRefField   = pFieldDescriptor;
-            pError->OtherDetail = pDecoder->iNext;
-        }
+            pError->OtherDetail = (int) pDecoderStream->pCurrentChildNode->line;
 
-        return pDecoder->aIntgValue[0];
+            LLRP_s64v_clear(&Tmp);
+            return Value;
+        }
+    }
+
+    /* convert to this type */
+    for(Ix = 0; Ix < Tmp.nValue; Ix++)
+    {
+        Value.aValue[Ix] = Tmp.pValue[Ix];
+    }
+  
+    LLRP_s64v_clear(&Tmp);
+    return Value;
+}
+
+/* gets a utf8 string from the decoder stream.
+ * NOTE: there is only one format for utf8 strings 
+ */
+static llrp_utf8v_t
+get_utf8v (
+  LLRP_tSDecoderStream *        pBaseDecoderStream,
+  const LLRP_tSFieldDescriptor *pFieldDescriptor)
+{
+    LLRP_tSLibXMLTextDecoderStream *pDecoderStream;
+    llrp_utf8v_t                Value;
+    llrp_u16_t                  nValue;
+    const llrp_u8_t *           pbuf;
+    const llrp_u8_t *           pend;
+
+    pDecoderStream = (LLRP_tSLibXMLTextDecoderStream *) pBaseDecoderStream;
+    if(getFieldStringPtr(pDecoderStream, pFieldDescriptor, &pbuf, &pend))
+    {
+        nValue = strlen((char*) pbuf);
+        Value = LLRP_utf8v_construct(nValue);
+
+        if(verifyVectorAllocation(pDecoderStream, Value.pValue,
+                                  pFieldDescriptor))
+        {
+            unsigned int    Ix;
+
+            for(Ix = 0; Ix < nValue; Ix++)
+            {
+                Value.pValue[Ix] = pbuf[Ix];
+            }
+        }    
     }
     else
     {
-        return 0;
+        /* its valid for UTF8 strings to be empty */
+        Value.nValue=0;
+        Value.pValue=NULL;
     }
+
+    return Value;
 }
 
-static llrp_bool_t
-getFieldIntgVec (
-  LLRP_tSXMLTextDecoderStream * pDecoderStream,
-  const LLRP_tSFieldDescriptor *pFieldDescriptor,
-  unsigned int                  nValueMax,
-  llrp_s64_t                    minValue,
-  llrp_s64_t                    maxValue)
-{
-    LLRP_tSXMLTextDecoder *     pDecoder = pDecoderStream->pDecoder;
-    LLRP_tSErrorDetails *       pError = &pDecoder->decoderHdr.ErrorDetails;
-    const char *                pFieldName = pFieldDescriptor->pName;
-    unsigned int                iSave;
-
-    pDecoder->nIntgValue = 0;
-
-    if(0 == nValueMax)
-    {
-        nValueMax = 200;
-    }
-
-    if(LLRP_RC_OK != pError->eResultCode)
-    {
-        return FALSE;
-    }
-
-    skipInsignificantText(pDecoder);
-
-    if(LLRP_RC_OK != pError->eResultCode)
-    {
-        return FALSE;
-    }
-
-    if(!matchStartTag(pDecoder, pFieldName))
-    {
-        if(LLRP_RC_OK == pError->eResultCode)
-        {
-            pError->eResultCode = LLRP_RC_MiscError;
-            pError->pWhatStr    = "missing field start tag";
-            pError->pRefType    = pDecoderStream->pRefType;
-            pError->pRefField   = pFieldDescriptor;
-            pError->OtherDetail = pDecoder->iNext;
-        }
-
-        return FALSE;
-    }
-
-    pDecoder->iLastText = pDecoder->iNext;
-
-    for(;;)
-    {
-        int                     c = getTextChar(pDecoder);
-        int                     bNeg = FALSE;
-        unsigned int            nDigit = 0;
-        llrp_s64_t              intgValue = 0;
-
-        if(LLRP_RC_OK != pError->eResultCode)
-        {
-            return FALSE;
-        }
-
-        if(0 > c)
-        {
-            break;
-        }
-
-        if(isspace(c))
-        {
-            continue;
-        }
-
-        iSave = pDecoder->iLastGetTextChar;
-
-        if('-' == c)
-        {
-            bNeg = TRUE;
-            c = getTextChar(pDecoder);
-        }
-
-        while(0 <= c && isdigit(c))
-        {
-            intgValue *= 10u;
-            intgValue += c - '0';
-            nDigit++;
-            c = getTextChar(pDecoder);
-        }
-
-        if(LLRP_RC_OK != pError->eResultCode)
-        {
-            return FALSE;
-        }
-
-        if(0 == nDigit)
-        {
-            pDecoder->iNext = iSave;
-
-            pError->eResultCode = LLRP_RC_MiscError;
-            pError->pWhatStr    = "conversion error";
-            pError->pRefType    = pDecoderStream->pRefType;
-            pError->pRefField   = pFieldDescriptor;
-            pError->OtherDetail = pDecoder->iNext;
-
-            return FALSE;
-        }
-
-        if(bNeg)
-        {
-            intgValue = -intgValue;
-        }
-
-        if(intgValue < minValue || maxValue < intgValue)
-        {
-            pDecoder->iNext = iSave;
-
-            pError->eResultCode = LLRP_RC_MiscError;
-            pError->pWhatStr    = "out of range";
-            pError->pRefType    = pDecoderStream->pRefType;
-            pError->pRefField   = pFieldDescriptor;
-            pError->OtherDetail = pDecoder->iNext;
-
-            return FALSE;
-        }
-
-        if(256u <= pDecoder->nIntgValue || nValueMax <= pDecoder->nIntgValue)
-        {
-            pDecoder->iNext = iSave;
-
-            pError->eResultCode = LLRP_RC_MiscError;
-            pError->pWhatStr    = "too many values";
-            pError->pRefType    = pDecoderStream->pRefType;
-            pError->pRefField   = pFieldDescriptor;
-            pError->OtherDetail = pDecoder->iNext;
-
-            return FALSE;
-        }
-
-        pDecoder->aIntgValue[pDecoder->nIntgValue++] = intgValue;
-    }
-
-#if 0
-    if(0 == pDecoder->nIntgValue)
-    {
-        pError->eResultCode = LLRP_RC_MiscError;
-        pError->pWhatStr    = "missing value(s)";
-        pError->pRefType    = pDecoderStream->pRefType;
-        pError->pRefField   = pFieldDescriptor;
-        pError->OtherDetail = pDecoder->iNext;
-
-        return FALSE;
-    }
-#endif
-
-    if(!matchEndTag(pDecoder, pFieldName))
-    {
-        pError->eResultCode = LLRP_RC_FieldUnderrun;
-        pError->pWhatStr    = "missing field end tag";
-        pError->pRefType    = pDecoderStream->pRefType;
-        pError->pRefField   = pFieldDescriptor;
-        pError->OtherDetail = pDecoder->iNext;
-
-        return FALSE;
-    }
-
-    return TRUE;
-}
-
-static llrp_bool_t
-getFieldHexBinary (
-  LLRP_tSXMLTextDecoderStream * pDecoderStream,
+static llrp_bytesToEnd_t
+get_bytesToEnd (
+  LLRP_tSDecoderStream *        pBaseDecoderStream,
   const LLRP_tSFieldDescriptor *pFieldDescriptor)
 {
-    LLRP_tSXMLTextDecoder *     pDecoder = pDecoderStream->pDecoder;
-    LLRP_tSErrorDetails *       pError = &pDecoder->decoderHdr.ErrorDetails;
-    const char *                pFieldName = pFieldDescriptor->pName;
-    unsigned int                iSave;
-    unsigned int                nDigit = 0;
-    llrp_u8_t                   intgValue = 0;
+    LLRP_tSLibXMLTextDecoderStream *pDecoderStream;
+    llrp_bytesToEnd_t           Value;
+    llrp_s64v_t                 Tmp;
+    unsigned int                Ix;
 
-    pDecoder->nTextBuf = 0;
+    memset(&Value, 0, sizeof Value);
 
-    if(LLRP_RC_OK != pError->eResultCode)
+    pDecoderStream = (LLRP_tSLibXMLTextDecoderStream *) pBaseDecoderStream;
+    Tmp = getFixedVectorField(pDecoderStream, pFieldDescriptor,
+                              2, 0, 255);
+
+    if(verifyVectorAllocation(pDecoderStream, Tmp.pValue,
+                              pFieldDescriptor))
     {
-        return FALSE;
-    }
-
-    skipInsignificantText(pDecoder);
-
-    if(LLRP_RC_OK != pError->eResultCode)
-    {
-        return FALSE;
-    }
-
-    if(!matchStartTag(pDecoder, pFieldName))
-    {
-        if(LLRP_RC_OK == pError->eResultCode)
+        /* build and convert */
+        Value = LLRP_bytesToEnd_construct(Tmp.nValue);
+        if(verifyVectorAllocation(pDecoderStream, Tmp.pValue,
+                                  pFieldDescriptor))
         {
-            pError->eResultCode = LLRP_RC_MiscError;
-            pError->pWhatStr    = "missing field start tag";
-            pError->pRefType    = pDecoderStream->pRefType;
-            pError->pRefField   = pFieldDescriptor;
-            pError->OtherDetail = pDecoder->iNext;
-        }
-
-        return FALSE;
-    }
-
-    pDecoder->iLastText = pDecoder->iNext;
-
-    for(;;)
-    {
-        int                     c = getTextChar(pDecoder);
-
-        if(LLRP_RC_OK != pError->eResultCode)
-        {
-            return FALSE;
-        }
-
-        if(0 > c)
-        {
-            break;
-        }
-
-        if(isspace(c))
-        {
-            continue;
-        }
-
-        iSave = pDecoder->iLastGetTextChar;
-
-        if('0' <= c && c <= '9')
-        {
-            c -= '0';
-        }
-        else if('A' <= c && c <= 'F')
-        {
-            c -= 'A';
-            c += 10;
-        }
-        else if('a' <= c && c <= 'f')
-        {
-            c -= 'a';
-            c += 10;
-        }
-        else
-        {
-            pDecoder->iNext = iSave;
-
-            pError->eResultCode = LLRP_RC_MiscError;
-            pError->pWhatStr    = "conversion error";
-            pError->pRefType    = pDecoderStream->pRefType;
-            pError->pRefField   = pFieldDescriptor;
-            pError->OtherDetail = pDecoder->iNext;
-
-            return FALSE;
-        }
-
-        intgValue <<= 4u;
-        intgValue += c;
-        nDigit++;
-
-        if(2 == nDigit)
-        {
-            pDecoder->aTextBuf[pDecoder->nTextBuf++] = intgValue;
-            intgValue = 0;
-            nDigit = 0;
+            /* convert to this type */
+            for(Ix = 0; Ix < Tmp.nValue; Ix++)
+            {
+                Value.pValue[Ix] = Tmp.pValue[Ix];
+            }
+            Value.nValue = Tmp.nValue;
         }
     }
-
-    if(nDigit != 0)
-    {
-        intgValue <<= 4u;
-        pDecoder->aTextBuf[pDecoder->nTextBuf++] = intgValue;
-    }
-
-    if(!matchEndTag(pDecoder, pFieldName))
-    {
-        pError->eResultCode = LLRP_RC_FieldUnderrun;
-        pError->pWhatStr    = "missing field end tag";
-        pError->pRefType    = pDecoderStream->pRefType;
-        pError->pRefField   = pFieldDescriptor;
-        pError->OtherDetail = pDecoder->iNext;
-
-        return FALSE;
-    }
-
-    return TRUE;
+  
+    LLRP_s64v_clear(&Tmp);
+    return Value;
 }
 
 static int
-getFieldEnum (
-  LLRP_tSXMLTextDecoderStream * pDecoderStream,
+get_e1 (
+  LLRP_tSDecoderStream *        pBaseDecoderStream,
   const LLRP_tSFieldDescriptor *pFieldDescriptor)
 {
-    LLRP_tSXMLTextDecoder *     pDecoder = pDecoderStream->pDecoder;
-    LLRP_tSErrorDetails *       pError = &pDecoder->decoderHdr.ErrorDetails;
-    const LLRP_tSEnumTableEntry *pEntry;
-    unsigned char *             pScan;
+    LLRP_tSLibXMLTextDecoderStream *pDecoderStream;
+    int                         Value;
 
-    if(!getFieldText(pDecoderStream, pFieldDescriptor))
+    pDecoderStream = (LLRP_tSLibXMLTextDecoderStream *) pBaseDecoderStream;
+
+    Value = (int) getIntegerField(pDecoderStream, pFieldDescriptor,
+                                  0, 1);
+
+    return Value;
+}
+
+static int
+get_e2 (
+  LLRP_tSDecoderStream *        pBaseDecoderStream,
+  const LLRP_tSFieldDescriptor *pFieldDescriptor)
+{
+    LLRP_tSLibXMLTextDecoderStream *pDecoderStream;
+    int                         Value;
+
+    pDecoderStream = (LLRP_tSLibXMLTextDecoderStream *) pBaseDecoderStream;
+
+    Value = (int) getIntegerField(pDecoderStream, pFieldDescriptor,
+                                  0, 3);
+
+    return Value;
+}
+
+static int
+get_e8 (
+  LLRP_tSDecoderStream *        pBaseDecoderStream,
+  const LLRP_tSFieldDescriptor *pFieldDescriptor)
+{
+    LLRP_tSLibXMLTextDecoderStream *pDecoderStream;
+    int                         Value;
+
+    pDecoderStream = (LLRP_tSLibXMLTextDecoderStream *) pBaseDecoderStream;
+
+    Value = (int) getIntegerField(pDecoderStream, pFieldDescriptor,
+                                  MIN_U8, MAX_U8);
+
+    return Value;
+}
+
+static int
+get_e16 (
+  LLRP_tSDecoderStream *        pBaseDecoderStream,
+  const LLRP_tSFieldDescriptor *pFieldDescriptor)
+{
+    LLRP_tSLibXMLTextDecoderStream *pDecoderStream;
+    int                         Value;
+
+    pDecoderStream = (LLRP_tSLibXMLTextDecoderStream *) pBaseDecoderStream;
+
+    Value = (int) getIntegerField(pDecoderStream, pFieldDescriptor,
+                                  MIN_U16, MAX_U16);
+
+    return Value;
+}
+
+static int
+get_e32 (
+  LLRP_tSDecoderStream *        pBaseDecoderStream,
+  const LLRP_tSFieldDescriptor *pFieldDescriptor)
+{
+    LLRP_tSLibXMLTextDecoderStream *pDecoderStream;
+    int                         Value;
+
+    pDecoderStream = (LLRP_tSLibXMLTextDecoderStream *) pBaseDecoderStream;
+
+    Value = (int) getIntegerField(pDecoderStream, pFieldDescriptor,
+                                  MIN_U32, MAX_U32);
+
+    return Value;
+}
+
+
+static llrp_u8v_t
+get_e8v (
+  LLRP_tSDecoderStream *        pBaseDecoderStream,
+  const LLRP_tSFieldDescriptor *pFieldDescriptor)
+{
+    LLRP_tSLibXMLTextDecoderStream *pDecoderStream;
+    llrp_u8v_t                  Value;
+    pDecoderStream = (LLRP_tSLibXMLTextDecoderStream *) pBaseDecoderStream;
+    llrp_s64v_t                 Tmp;
+
+    memset(&Value, 0, sizeof Value);
+
+    Tmp = getSpacedVectorField(pDecoderStream, pFieldDescriptor,
+                               MIN_U8, MAX_U8);
+    if(Tmp.nValue)
+    {
+        llrp_u16_t              nValue;
+
+        nValue = Tmp.nValue;
+        Value = LLRP_u8v_construct(nValue);
+        if(verifyVectorAllocation(pDecoderStream, Value.pValue,
+                                  pFieldDescriptor))
+        {
+            unsigned int    Ix;
+
+            for(Ix = 0; Ix < nValue; Ix++)
+            {
+                Value.pValue[Ix] = (llrp_u8_t) Tmp.pValue[Ix];
+            }
+        }
+        LLRP_s64v_clear(&Tmp);
+    }
+
+    return Value;
+}
+
+
+static void
+get_reserved (
+  LLRP_tSDecoderStream *        pBaseDecoderStream,
+  unsigned int                  nBit)
+{
+    return;
+}
+
+static int 
+getFieldStringPtr(
+  LLRP_tSLibXMLTextDecoderStream * pDecoderStream,
+  const LLRP_tSFieldDescriptor *pFieldDescriptor,
+  const llrp_u8_t **            pbuf,
+  const llrp_u8_t **            pend)
+{
+    LLRP_tSErrorDetails *       pError = &pDecoderStream->pDecoder->decoderHdr.ErrorDetails;
+    xmlNode *pSave;
+
+    *pbuf = NULL;
+    *pend = NULL;
+
+    /* clear this out as its not valid anymore */
+    pDecoderStream->pLastFieldNode = NULL;
+
+    if(LLRP_RC_OK != pError->eResultCode)
     {
         return 0;
     }
 
-    /*
-     * Trim trailing whitespace
-     */
-    pScan = strchr(pDecoder->aTextBuf, 0);
-    while(pScan > pDecoder->aTextBuf && isspace(pScan[-1]))
+   /* get the first interesting node */
+    while ((NULL != pDecoderStream->pCurrentChildNode) &&
+           (isInsignificantNode(pDecoderStream->pCurrentChildNode) || 
+            xmlIsBlankNode(pDecoderStream->pCurrentChildNode)))
     {
-        *--pScan = 0;
+        pDecoderStream->pCurrentChildNode = pDecoderStream->pCurrentChildNode->next;
+    }    
+
+    if(NULL == pDecoderStream->pCurrentChildNode)
+    {
+        pError->eResultCode = LLRP_RC_FieldUnderrun;
+        pError->pWhatStr    = "underrun at field";
+        pError->pRefType    = pDecoderStream->pRefType;
+        pError->pRefField   = pFieldDescriptor;
+        pError->OtherDetail = (int) pDecoderStream->pCurrentChildNode->line;
+        return 0;
     }
 
-    /*
-     * Skip over leading white space
-     */
-    pScan = pDecoder->aTextBuf;
-    while(isspace(*pScan))
+    XML_NODE_DEBUG(pDecoderStream->pCurrentChildNode);
+
+    /* first interesting node had better be an element */
+    if(pDecoderStream->pCurrentChildNode->type != XML_ELEMENT_NODE)
     {
-        pScan++;
+        /* TODO propeo error here. We were expecting an element and got something else */
+        pError->eResultCode = LLRP_RC_XMLInvalidNodeType;
+        pError->pWhatStr    = "unexpected field value";
+        pError->pRefType    = pDecoderStream->pRefType;
+        pError->pRefField   = pFieldDescriptor;
+        pError->OtherDetail = (int) pDecoderStream->pCurrentChildNode->line;	    
+        return 0;
     }
+
+    /* better match our field value */
+    if(0 != strcmp((char*) pDecoderStream->pCurrentChildNode->name,  
+                    pFieldDescriptor->pName))
+    {
+        /* TODO propeo error here. We were expecting an element and got something else */
+        pError->eResultCode = LLRP_RC_XMLMissingField;
+        pError->pWhatStr    = "missing field value";
+        pError->pRefType    = pDecoderStream->pRefType;
+        pError->pRefField   = pFieldDescriptor;
+        pError->OtherDetail = (int) pDecoderStream->pCurrentChildNode->line;	    
+        return 0;
+    }
+
+    /* save this in case someone wants to explore attributes */
+    pDecoderStream->pLastFieldNode = pDecoderStream->pCurrentChildNode;
+
+    /* use this to decode the field values */
+    pSave = pDecoderStream->pCurrentChildNode->children;
+
+    /* advance to the next one for the next field */
+    pDecoderStream->pCurrentChildNode = pDecoderStream->pCurrentChildNode->next;
+
+   /* get the first interesting node */
+    while ((NULL !=pSave) &&
+           (isInsignificantNode(pSave) ||
+         xmlIsBlankNode(pSave)))
+    {
+        pSave = pSave->next;
+    }    
+
+    if(NULL == pSave)
+    {
+        /* its possible that this is an empty field value, which is
+         * allowed in many cases in LLRP-XML. Let the condition
+         * percolate and error out specifically where it is not
+         * allowed */
+        return 0;	
+    }
+
+    if(XML_TEXT_NODE != pSave->type)
+    {
+        pError->eResultCode = LLRP_RC_XMLInvalidNodeType;
+        pError->pWhatStr    = "invalid XML Node found during field decode";
+        pError->pRefType    = pDecoderStream->pRefType;
+        pError->pRefField   = pFieldDescriptor;
+        pError->OtherDetail = (int) pSave->line;
+        return 0;	 	    
+    }
+
+    *pbuf = pSave->content;
+
+    /* make sure there are no more interesting nodes */
+    pSave = pSave->next;
+    while ((NULL !=pSave) &&
+           (isInsignificantNode(pSave) ||
+            xmlIsBlankNode(pSave)))
+    {
+        pSave = pSave->next;
+    }   
+
+    if(pSave != NULL)
+    {
+        pError->eResultCode = LLRP_RC_XMLExtraNode;
+        pError->pWhatStr    = "extra XML node found";
+        pError->pRefType    = pDecoderStream->pRefType;
+        pError->pRefField   = pFieldDescriptor;
+        pError->OtherDetail = (int) pSave->line;
+        return 0;	 
+    }
+
+    *pend = *pbuf + strlen((char*) *pbuf);
+    return 1;
+}
+
+static llrp_s64_t
+getIntegerField (
+  LLRP_tSLibXMLTextDecoderStream * pDecoderStream,
+  const LLRP_tSFieldDescriptor *pFieldDescriptor,
+  llrp_s64_t                    minValue,
+  llrp_s64_t                    maxValue)
+{
+    LLRP_tSErrorDetails *       pError = &pDecoderStream->pDecoder->decoderHdr.ErrorDetails;
+    const llrp_u8_t *           pbuf;
+    const llrp_u8_t *           pend;
+    llrp_s64_t                  Value;
+
+    memset(&Value, 0x00, sizeof(Value));
+
+    if(LLRP_RC_OK != pError->eResultCode)
+    {
+        /* already errd */
+        return Value;
+    }
+
+    if(getFieldStringPtr(pDecoderStream, pFieldDescriptor, &pbuf, &pend))
+    {
+        cleanString(&pbuf, &pend);
+        Value = getInteger(pDecoderStream,
+                           pFieldDescriptor, 
+                           pbuf, 
+                           pend, 
+                           pError, 
+                           minValue, 
+                           maxValue);
+    }
+    else
+    {
+        pError->eResultCode = LLRP_RC_FieldUnderrun;
+        pError->pWhatStr    = "underrun at field no characters";
+        pError->pRefType    = pDecoderStream->pRefType;
+        pError->pRefField   = pFieldDescriptor;
+        pError->OtherDetail = (int) pDecoderStream->pCurrentChildNode->line; 
+        return 0;	
+    }
+
+
+    
+    return Value;
+}
+
+static llrp_u16_t 
+countElements(
+  const char *                  pval, 
+  int                           nval)
+{
+    const llrp_u8_t *           pTok;
+    const llrp_u8_t *           pEnd;
+    llrp_u8_t                   lastChar;
+    llrp_u16_t                  elements = 0;
+
+    /* find out how many possible tokens there are.
+     * This should limit our size of array we need */
+
+    pTok = (llrp_u8_t*) &pval[0];
+    pEnd = pTok + nval;
+
+    /* skip leading spaces */
+    for(lastChar = ' '; pTok < pEnd; pTok++)
+    {
+        if((!isspace(*pTok)) && (isspace(lastChar)))
+        {
+            elements++;
+        }
+        lastChar = *pTok;
+    } 
+
+    return elements;
+}
+
+/* gets a single U1 value from a non-NULL terminated buffer buffer.
+ * If it fails to get one, reutrn value should == pbuf, other
+ * wise EndPtr should point to one past amount consumed */
+static const llrp_u8_t *
+getSingleU1(
+  const llrp_u8_t *             pbuf,
+  const llrp_u8_t *             pend,
+  llrp_s64_t *                  pValue)
+{
+    const llrp_u8_t *           endPtr = pbuf;
+    const int                   len = pend - pbuf;
+
+    if((len >= 4) && (0 == strncasecmp("true", (char*) pbuf, 4)))
+    {
+        *pValue = 1;
+        endPtr = pbuf + 4; 
+    }
+    else if ((len >= 5) && (0 == strncasecmp("false", (char*) pbuf, 5)))
+    {
+        *pValue = 0;
+        endPtr = pbuf + 5; 
+    } 
+    else if ((len >= 1) && (*pbuf == '0'))
+    {
+        *pValue = 0;
+        endPtr = pbuf + 1;
+    }
+    else if ((len >= 1) && (*pbuf == '1'))
+    {
+        *pValue = 0;
+        endPtr = pbuf + 1;
+    }
+    return endPtr; 	
+}
+
+static const llrp_u8_t *
+getSingleEnum(
+  const LLRP_tSFieldDescriptor* pFieldDescriptor, 
+  const llrp_u8_t *             pbuf,
+  const llrp_u8_t *             pend,
+  llrp_s64_t *                  pValue)
+{
+    const llrp_u8_t *           endPtr = pbuf;
+    const int                   length = pend - pbuf;
+    const LLRP_tSEnumTableEntry *pEntry;    
+
+    *pValue = 0;
 
     for(
         pEntry = pFieldDescriptor->pEnumTable;
         NULL != pEntry->pName;
         pEntry++)
     {
-        if(0 == strcmp(pEntry->pName, pScan))
+        int len = strlen(pEntry->pName);
+        if((len == length) && 
+           (memcmp(pbuf, pEntry->pName, len) == 0))
         {
             break;
         }
@@ -2255,43 +1933,429 @@ getFieldEnum (
 
     if(NULL == pEntry->pName)
     {
-        /*
-         * TODO: check for intg value
-         */
+        return pbuf;
+    }
+   
+    *pValue = pEntry->Value;
+    endPtr = pbuf + length;		
+    return endPtr;
+}
 
-        if(LLRP_RC_OK == pError->eResultCode)
+static const llrp_u8_t *
+getSingleDecimal(
+  const llrp_u8_t *             pbuf,
+  const llrp_u8_t *             pend,
+  llrp_s64_t *                  pValue)
+{
+    int bNeg = 0;
+    const llrp_u8_t *           endPtr;
+
+    *pValue = 0;
+
+    for(endPtr = pbuf; endPtr < pend; endPtr++)
+    {
+        if(*endPtr == '-')
         {
-            pDecoder->iNext = pDecoder->iLastText;
-
-            pError->eResultCode = LLRP_RC_MiscError;
-            pError->pWhatStr    = "invalid value";
-            pError->pRefType    = pDecoderStream->pRefType;
-            pError->pRefField   = pFieldDescriptor;
-            pError->OtherDetail = pDecoder->iNext;
+           bNeg = 1;
+        } else if (isdigit(*endPtr))
+        {
+           *pValue = 10 * *pValue + (*endPtr - '0');
         }
-
-        return 0;
+        else
+        {
+           /* a character not allowed in a decimal integer */
+           break;        
+        }
+    }
+    if(bNeg)
+    {
+        *pValue *= -1;
     }
 
-    return pEntry->Value;
+    return endPtr;
+}
+
+static const llrp_u8_t *
+getSingleHexidecimal(
+  const llrp_u8_t *             pbuf,
+  const llrp_u8_t *             pend,
+  llrp_s64_t *                  pValue)
+{
+    const llrp_u8_t *           endPtr;
+
+    *pValue = 0;
+    for(endPtr = pbuf; endPtr < pend; endPtr++)
+    {
+        if(isdigit(*endPtr))
+        {
+           *pValue = 16 * *pValue + (*endPtr - '0');
+        }
+        else if (*endPtr >= 'A' && *endPtr <= 'F')
+        {
+            *pValue = 16 * *pValue + (*endPtr - 'A' + 10);
+        }
+        else if (*endPtr >= 'a' && *endPtr <= 'f')
+        {
+            *pValue = 16 * *pValue + (*endPtr - 'a' + 10);
+        }
+        else 
+        {
+           /* a character not allowed in a decimal integer */
+           break;         
+        }
+    }
+    return endPtr;
+}    
+
+/* clean string and returns the length */
+static int
+cleanString(
+  const llrp_u8_t **            ppbuf,
+  const llrp_u8_t **            ppend)
+{
+    /* skip leading spaces */
+    while( isspace(**ppbuf) && (*ppbuf <= *ppend))
+    {
+      (*ppbuf)++;
+    }
+    /* skip trailing spaces except last separator */
+    /* last separator could be space or NULL. */
+    while((*ppend > *ppbuf) && (isspace(*(*ppend-1)) || (*(*ppend-1) == '\0')))
+    {
+       (*ppend)--;
+    }
+    return (int) (*ppend - *ppbuf);
+}
+
+static const llrp_u8_t *
+getSingleTimestamp(
+  const llrp_u8_t *             pbuf,
+  const llrp_u8_t *             pend,
+  llrp_s64_t *                  pValue)
+{
+    const llrp_u8_t *           endPtr;
+    struct tm importTime;
+    llrp_s64_t micros = 0;
+    const llrp_u8_t *pMicro;
+
+    memset(&importTime, 0x00, sizeof(importTime));
+
+    endPtr = (llrp_u8_t*) strptime((char*) pbuf, "%Y-%m-%dT%T", &importTime);
+    /* are there microseconds */
+    if(endPtr != NULL)
+    {
+        /* convert time time_t */
+        time_t tt;
+           
+        /* There may or may not be microseconds. Live with either */
+        if(*endPtr == '.')
+        {
+            int length;
+            pMicro = endPtr + 1;
+            length = pend - pMicro;
+            endPtr = getSingleDecimal(pMicro, pend, &micros);
+
+            /* may not contain 6 decimal places */
+            while(length < 6)
+            {
+                    micros *= 10;
+            length++;
+            }
+        }
+
+        /* make this into time since epoch at GMT (UTC) */
+        tt = timegm(&importTime);
+        if(tt != (time_t) -1)
+        {
+            /* LLRP format is 64-bit microseconds. Conver  */
+            *pValue = 1000000ll * (llrp_s64_t) tt + micros;
+        }
+        else
+        {
+            /* catch the error later. We cannot import time */
+            endPtr = pbuf;
+        }
+    }
+    else
+    {
+        endPtr = pbuf;
+    }
+    return endPtr;
+}
+
+/* gets a single value from a non-null teminated string. 
+ * NOTE: It may be NULL terminated or it may have a space. pEnd
+ * points to the character after the end of the string (i.e. next
+ * separator or null */
+static llrp_s64_t getInteger(
+  LLRP_tSLibXMLTextDecoderStream * pDecoderStream,
+  const LLRP_tSFieldDescriptor* pFieldDescriptor, 
+  const llrp_u8_t *             pbuf,
+  const llrp_u8_t *             pend,
+  LLRP_tSErrorDetails          *pError,
+  llrp_s64_t                    minValue,
+  llrp_s64_t                    maxValue)
+{
+    llrp_s64_t                  Value;
+    const llrp_u8_t           * endPtr = NULL;
+
+    memset(&Value, 0x00, sizeof(Value));
+
+    if(pFieldDescriptor->eFieldType == LLRP_FT_U1)
+    /* special case for U1 types as they can be
+     * 'true' and 'false' strings */
+    {
+        endPtr = getSingleU1(pbuf, pend, &Value);
+    }
+    else if((pFieldDescriptor->eFieldType == LLRP_FT_E1 ) || 
+            (pFieldDescriptor->eFieldType == LLRP_FT_E2 ) ||
+            (pFieldDescriptor->eFieldType == LLRP_FT_E8 ) || 
+            (pFieldDescriptor->eFieldType == LLRP_FT_E16 ) || 
+            (pFieldDescriptor->eFieldType == LLRP_FT_E32 ) ||
+            (pFieldDescriptor->eFieldType == LLRP_FT_E8V ) )
+    /* special case for enumerated fields as they are strings in XML*/
+    {
+        endPtr = getSingleEnum(pFieldDescriptor, pbuf, pend, &Value);  
+    }
+    else switch(pFieldDescriptor->eFieldFormat)
+    {
+        /* assume default is decimal for new formats */
+        default:
+        case LLRP_FMT_NORMAL:
+        case LLRP_FMT_DEC:
+            endPtr = getSingleDecimal(pbuf, pend, &Value);
+        break;
+        case LLRP_FMT_HEX:
+            endPtr = getSingleHexidecimal(pbuf, pend, &Value);
+        break;
+        case LLRP_FMT_UTF8:
+        {
+            const llrp_u8_t  *ptr;
+            /* not sure what to do for UTF 8 encoding as integer */
+            for(ptr = pbuf; ptr < pend; ptr++)
+            {
+                Value = 256*Value + *ptr;
+            } 
+        }
+        break;
+        case LLRP_FMT_DATETIME:
+            endPtr = getSingleTimestamp(pbuf, pend, &Value);
+        break;
+    }    
+
+    if(endPtr == pbuf)
+    /* if we didn't get any thing, it means there are illegal characters
+     * and we could not import a field value */
+    {
+        pError->eResultCode = LLRP_RC_XMLInvalidFieldCharacters;
+        pError->pWhatStr    = "Illegal field value";
+        pError->pRefType    = pDecoderStream->pRefType;
+        pError->pRefField   = pFieldDescriptor;
+        pError->OtherDetail = (int) pDecoderStream->pCurrentChildNode->line; 
+        Value = 0;		
+    }
+    else if (endPtr != pend)
+    /* if these don't match, there is still extra stuff
+     * at the end.  This is always an error */
+    {
+        pError->eResultCode = LLRP_RC_FieldOverrun;
+        pError->pWhatStr    = "overrun at field extra characters";
+        pError->pRefType    = pDecoderStream->pRefType;
+        pError->pRefField   = pFieldDescriptor;
+        pError->OtherDetail = (int) pDecoderStream->pCurrentChildNode->line;
+        Value = 0;		
+    }
+    /* make sure the value is in range */ 
+    else if((Value > maxValue) || (Value < minValue))
+    /* we have an out of range value. This is always an error */
+    {
+        pError->eResultCode = LLRP_RC_XMLOutOfRange;
+        pError->pWhatStr    = "out of range value";
+        pError->pRefType    = pDecoderStream->pRefType;
+        pError->pRefField   = pFieldDescriptor;
+        pError->OtherDetail = (int) pDecoderStream->pCurrentChildNode->line;
+        Value = 0;
+    }    
+    return Value;
+}
+
+/* some of the fields are encoded without spaces between
+ * the vectors, in this case, the fields are fixed length */
+static llrp_s64v_t
+getFixedVectorField (
+  LLRP_tSLibXMLTextDecoderStream * pDecoderStream,
+  const LLRP_tSFieldDescriptor *pFieldDescriptor,
+  unsigned int                  vectorSize,
+  llrp_s64_t                    minValue,
+  llrp_s64_t                    maxValue)
+{
+    LLRP_tSErrorDetails *       pError = &pDecoderStream->pDecoder->decoderHdr.ErrorDetails;
+    const llrp_u8_t *           pTok;
+    const llrp_u8_t *           pEnd;    
+    llrp_u16_t                  length;
+    llrp_u16_t                  elementCount;
+    llrp_s64v_t                 Value;
+    llrp_u16_t                  count;
+
+    memset(&Value, 0, sizeof Value);
+
+    if(LLRP_RC_OK != pError->eResultCode)
+    {
+    /* already errd */
+        return Value;
+    }
+
+    if(!getFieldStringPtr(pDecoderStream, pFieldDescriptor, &pTok, &pEnd))
+    {
+        /* these values are allowed to be empty */
+        Value.nValue = 0;
+        Value.pValue = NULL;
+        return Value;
+    }
+
+    length = cleanString(&pTok, &pEnd);
+
+    /* size should match exactly */
+    if (length % vectorSize)
+    {
+        pError->eResultCode = LLRP_RC_FieldAllocationFailed;
+        pError->pWhatStr    = "field size must be multiple of basic type";
+        pError->pRefType    = pDecoderStream->pRefType;
+        pError->pRefField   = pFieldDescriptor;
+        pError->OtherDetail = (int) pDecoderStream->pCurrentChildNode->line;
+        return Value;
+    }
+
+    /* round up for element count */
+    elementCount = (length +  vectorSize - 1)/vectorSize;
+
+    /* create the final storage entity */ 
+    Value = LLRP_s64v_construct(elementCount);
+
+    for(count = 0;count <elementCount ; count++, pTok += vectorSize)
+    {
+        pEnd = pTok + vectorSize;
+
+        /* get a single integer */
+        Value.pValue[count] = getInteger(pDecoderStream,
+                                         pFieldDescriptor, 
+                                         pTok, 
+                                         pEnd, 
+                                         pError, 
+                                         minValue, 
+                                         maxValue);
+        if(LLRP_RC_OK != pError->eResultCode)
+        {
+            break;
+        }
+    }
+
+    /* mark the length */
+    Value.nValue = count;
+
+    if((0 == Value.nValue) && (NULL != Value.pValue))
+    {
+        LLRP_s64v_clear(&Value);
+    }
+
+    return Value;
+}
+
+static llrp_s64v_t
+getSpacedVectorField (
+  LLRP_tSLibXMLTextDecoderStream * pDecoderStream,
+  const LLRP_tSFieldDescriptor *pFieldDescriptor,
+  llrp_s64_t                    minValue,
+  llrp_s64_t                    maxValue)
+{
+    LLRP_tSErrorDetails *       pError = &pDecoderStream->pDecoder->decoderHdr.ErrorDetails;
+    const llrp_u8_t *           pTok;
+    const llrp_u8_t *           pEnd;    
+    const llrp_u8_t *           pTokEnd;    
+    llrp_u16_t                  length;
+    llrp_u16_t                  elementCount;
+    llrp_s64v_t                 Value;
+    llrp_u16_t                  count;
+
+    memset(&Value, 0, sizeof Value);
+
+    if(LLRP_RC_OK != pError->eResultCode)
+    {
+    /* already errd */
+        return Value;
+    }
+
+    /* get the NULL terminates string from XML */
+    if(!getFieldStringPtr(pDecoderStream, pFieldDescriptor, &pTok, &pEnd))
+    {
+      /* many of these (e.g. ReadData) are allowed to be empty */
+       return Value;
+    }
+
+    length = cleanString(&pTok, &pEnd);
+    elementCount = countElements((char *) pTok, length);
+
+    /* create the final storage entity */ 
+    Value = LLRP_s64v_construct(elementCount);
+
+    for(count = 0;count <elementCount ; count++)
+    {
+    /* find the next starting token */
+        while(isspace(*pTok) && (pTok < pEnd))
+        {
+            pTok++;
+        }
+
+        /* find the next ending token */
+        for(pTokEnd = pTok; (!isspace(*pTokEnd)) && (*pTokEnd != '\0'); pTokEnd++)
+        {
+           /* nothing */
+        } 
+
+        /* get a single integer */
+        Value.pValue[count] = getInteger(pDecoderStream,
+                                         pFieldDescriptor, 
+                                         pTok, 
+                                         pTokEnd, 
+                                         pError, 
+                                         minValue, 
+                                         maxValue);
+        if(LLRP_RC_OK != pError->eResultCode)
+        {
+            break;
+        }
+        /* get the next value */
+        pTok = pTokEnd;
+    }
+
+    /* mark the length */
+    Value.nValue = count;
+
+    /* clear this now if we didn't get anything */
+    if((0 == Value.nValue) && (NULL != Value.pValue))
+    {
+        LLRP_s64v_clear(&Value);
+    }
+
+    return Value;
 }
 
 static llrp_bool_t
 verifyVectorAllocation (
-  LLRP_tSXMLTextDecoderStream * pDecoderStream,
+  LLRP_tSLibXMLTextDecoderStream * pDecoderStream,
   const void *                  pValue,
   const LLRP_tSFieldDescriptor *pFieldDescriptor)
 {
     if(NULL == pValue)
     {
-        LLRP_tSXMLTextDecoder * pDecoder = pDecoderStream->pDecoder;
+        LLRP_tSLibXMLTextDecoder * pDecoder = pDecoderStream->pDecoder;
         LLRP_tSErrorDetails *   pError = &pDecoder->decoderHdr.ErrorDetails;
 
         pError->eResultCode = LLRP_RC_FieldAllocationFailed;
         pError->pWhatStr    = "field allocation failed";
         pError->pRefType    = pDecoderStream->pRefType;
         pError->pRefField   = pFieldDescriptor;
-        pError->OtherDetail = pDecoder->iNext;
+        pError->OtherDetail = (int) pDecoderStream->pCurrentChildNode->line;
 
         return FALSE;
     }

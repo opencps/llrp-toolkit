@@ -218,7 +218,7 @@ g_est<xsl:value-of select='$enumBaseName'/>[] =
 ** Message <xsl:value-of select='@name'/>
 **
 *****************************************************************
-*/ 
+*/
   <xsl:call-template name='ClassDefinitionCommon'>
     <xsl:with-param name='ClassBase'>CMessage</xsl:with-param>
     <xsl:with-param name='ClassName'>C<xsl:value-of select='@name'/></xsl:with-param>
@@ -246,7 +246,7 @@ g_est<xsl:value-of select='$enumBaseName'/>[] =
 ** Custom message <xsl:value-of select='@name'/>
 **
 *****************************************************************
-*/ 
+*/
   <xsl:call-template name='ClassDefinitionCommon'>
     <xsl:with-param name='ClassBase'>CMessage</xsl:with-param>
     <xsl:with-param name='ClassName'>C<xsl:value-of select='@name'/></xsl:with-param>
@@ -298,7 +298,7 @@ g_est<xsl:value-of select='$enumBaseName'/>[] =
 ** Parameter <xsl:value-of select='@name'/>
 **
 *****************************************************************
-*/ 
+*/
   <xsl:call-template name='ClassDefinitionCommon'>
     <xsl:with-param name='ClassBase'>CParameter</xsl:with-param>
     <xsl:with-param name='ClassName'>C<xsl:value-of select='@name'/></xsl:with-param>
@@ -321,7 +321,7 @@ g_est<xsl:value-of select='$enumBaseName'/>[] =
 ** Custom parameter <xsl:value-of select='@name'/>
 **
 *****************************************************************
-*/ 
+*/
   <xsl:call-template name='ClassDefinitionCommon'>
     <xsl:with-param name='ClassBase'>CParameter</xsl:with-param>
     <xsl:with-param name='ClassName'>C<xsl:value-of select='@name'/></xsl:with-param>
@@ -481,7 +481,7 @@ C<xsl:value-of select='@name'/>::isAllowedIn (
 ** Choice <xsl:value-of select='@name'/>
 **
 *****************************************************************
-*/ 
+*/
   <xsl:call-template name='ClassDefinitionOneChoice'>
     <xsl:with-param name='LLRPName'><xsl:value-of select='@name'/></xsl:with-param>
     <xsl:with-param name='pVendorDescriptor'>NULL</xsl:with-param>
@@ -538,7 +538,7 @@ C<xsl:value-of select='$LLRPName'/>::isMember (
   <xsl:for-each select='LL:parameter'>
     <xsl:choose>
       <xsl:when test='@type = "Custom"'>
-    if(pParameter->isAllowedIn(&amp;s_typeDescriptor))
+    if(pParameter->isAllowedExtension(&amp;s_typeDescriptor))
     {
         return TRUE;
     }

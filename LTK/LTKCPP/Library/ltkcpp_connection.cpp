@@ -411,6 +411,7 @@ CConnection::closeConnectionToReader (void)
     }
 
 #ifdef linux
+    shutdown(m_pPlatformSocket->m_sock, SHUT_RDWR);
     close(m_pPlatformSocket->m_sock);
     m_pPlatformSocket->m_sock = -1;
 #endif

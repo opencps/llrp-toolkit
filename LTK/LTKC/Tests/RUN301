@@ -1,0 +1,104 @@
+#!/bin/sh
+############################################################################
+#   Copyright 2007,2010 Impinj, Inc.
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+#
+############################################################################
+
+
+STD_TESTS_DX301=../../Tests/dx301
+VERSION=`cat ../Library/ltkc_base.h | grep '^#define LTKC_VERSION_STR' | cut -d\" -f2 | sed -e s/\\\./\_/g`
+URL="file://`hostname`/`pwd`/$0"
+
+VALGRIND=/opt/ltk/bin/valgrind
+if [ ! -x $VALGRIND ]; then
+    VALGRIND=valgrind
+fi
+
+
+rm -f *.tmp *.bin *.val
+
+
+# put your test vector name and description below to run the tests
+testVectors=(
+              "$STD_TESTS_DX301/dx301_a" \
+	      )
+
+testVectorDesc=(      
+                  "Set of standard LLRP message with common LTK-XML errors" \
+               )
+
+runDx301Standard ()
+{
+    testPath=$1;    
+    testDesc=$2;
+    testName=${testPath##*/}; 
+
+    echo "================================================================"
+    echo "== Run dx301 standard on $testName. "
+    echo "==      $testDesc"
+    echo "================================================================"
+    # convert the reference XML to binary
+    ./xml2llrp $testPath.xml > ${testName}_ltkc_refxml.bin
+
+    if  ! cmp -s ${testName}_ltkc_refxml.bin $testPath.bin 
+    then
+        echo "$testName -- FAILED -- XML -> LLRP conversion"
+    else
+        echo $testName -- PASSED
+	# delete the files if things worked 
+	rm -f ${testName}_ltkc_refxml.bin
+    fi
+    echo ""
+    echo ""
+    echo ""
+}
+
+runDx301Valgrind ()
+{
+    testPath=$1;
+    testDesc=$2;
+    testName=${testPath##*/};    
+
+    echo "================================================================"
+    echo "== Run dx301 valgrind on $testName. "
+    echo "==      $testDesc"
+    echo "================================================================"
+
+    $VALGRIND ./xml2llrp $testPath.xml > /dev/null 2>${testName}_ltkc_xml2llrp.val
+    if ! grep -q 'All heap blocks were freed -- no leaks are possible' ${testName}_ltkc_xml2llrp.val 
+    then
+       echo "$testName -- FAILED -- XML -> LLRP conversion"
+    else
+        echo $testName -- PASSED
+        # delete the files if things worked 
+	rm -f ${testName}_ltkc_xml2llrp.val 
+    fi
+   
+    echo ""
+    echo ""
+    echo ""
+}
+
+# run the actual tests 
+testCnt=${#testVectors[@]}
+
+
+for ((a=0; a < $testCnt ; a++))
+do
+    runDx301Standard "${testVectors[$a]}" "${testVectorDesc[$a]}"  
+    runDx301Valgrind "${testVectors[$a]}" "${testVectorDesc[$a]}"  
+done
+
+

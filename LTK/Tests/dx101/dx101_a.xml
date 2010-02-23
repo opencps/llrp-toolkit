@@ -4,9 +4,7 @@
   xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
   xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
   xmlns:ps='http://www.llrp.org/ltk/schema/testing/encoding/xml/0.6'
-  xsi:schemaLocation='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0
-                      http://www.llrp.org/ltk/schema/core/encoding/xml/1.0/llrp.xsd>
-
+  xsi:schemaLocation='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0 http://www.llrp.org/ltk/schema/core/encoding/xml/1.0/llrp.xsd'>
 
 <READER_EVENT_NOTIFICATION MessageID='0'
   xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'

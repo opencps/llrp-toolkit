@@ -40,3 +40,8 @@
         LLRP_Element_clearSubParameterList(		\
             (LLRP_tSElement *)pThis,			\
             (LLRP_tSParameter**)&pThis->MEMBER)
+
+#define SUBPARAM_COUNT(MEMBER)				\
+        LLRP_Element_countSubParameterList(		\
+            (LLRP_tSElement *)pThis,			\
+            (LLRP_tSParameter**)&pThis->MEMBER)

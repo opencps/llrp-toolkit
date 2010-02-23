@@ -804,6 +804,13 @@ class <xsl:value-of select='$ClassName'/> : public <xsl:value-of select='$ClassB
         clearSubParameterList ((tListOfParameters *) &amp;m_list<xsl:value-of select='$Name'/>);
     }
 
+     /** @brief  Count of the LLRP <xsl:value-of select='$Name'/> sub-parameter list*/  
+    inline int
+    count<xsl:value-of select='$Name'/> (void)
+    {
+        return (int) (m_list<xsl:value-of select='$Name'/>.size());
+    }
+
     EResultCode
      /** @brief  Add a <xsl:value-of select='$Name'/> to the LLRP sub-parameter list*/  
     add<xsl:value-of select='$Name'/> (

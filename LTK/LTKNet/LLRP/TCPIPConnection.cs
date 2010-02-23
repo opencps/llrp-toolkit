@@ -20,11 +20,11 @@
 /*
 ***************************************************************************
  * File Name:       TCPIPConnection.cs
- * 
+ *
  * Author:          Impinj
  * Organization:    Impinj
  * Date:            18 June, 2008
- * 
+ *
  * Description:     This file contains implementation of TCPIP communication
  *                  classes including client and server
 ***************************************************************************
@@ -58,23 +58,23 @@ namespace Org.LLRP.LTK.LLRPV1
         // state variables to help during out message processing
         private const int LLRP_HEADER_SIZE = 10;
         private enum EMessageProcessingState { MESSAGE_UNKNOWN, MESSAGE_HEADER, MESSAGE_BODY };
-        private EMessageProcessingState message_state = EMessageProcessingState.MESSAGE_UNKNOWN; 
+        private EMessageProcessingState message_state = EMessageProcessingState.MESSAGE_UNKNOWN;
         private UInt32 msg_cursor = 0;            // how many bytes have we reconstructed for this msg
         private byte[] msg_header_storage = new byte[LLRP_HEADER_SIZE]; // temp storage for the header
         private byte[] msg_data;        // buffer containing the packet as we receive it
-        
+
         // state variables to help us manage the buffer
-        private const int BUFFER_SIZE = 2048; 
+        private const int BUFFER_SIZE = 2048;
         private Int32 buffer_cursor = 0;   // pointer into the current data buffer where we are receiving
         private Int32 buffer_bytes_available = 0;  // how many bytes are in buffer
         private byte[] buffer; // the buffer itself
-        
+
         // some internals to store the header details of the message
         private Int16 msg_ver;
-        private Int16 msg_type;        
+        private Int16 msg_type;
         private Int32 msg_len = 0;
         private Int32 msg_id;
-        
+
         private bool trying_to_close = false;
 
         private object syn_msg = new object();
@@ -115,7 +115,7 @@ namespace Org.LLRP.LTK.LLRPV1
                     this.Close();
                     throw ex;
                 }
-            } 
+            }
             else
             {
                 throw new LLRPNetworkException("Unable to connect to specified reader in specified time period.");
@@ -125,7 +125,7 @@ namespace Org.LLRP.LTK.LLRPV1
 
 
         /// <summary>
-        /// Open non-block network connection. 
+        /// Open non-block network connection.
         /// </summary>
         /// <param name="device_name">Device name or IP address</param>
         /// <param name="port">TCP port</param>
@@ -176,8 +176,8 @@ namespace Org.LLRP.LTK.LLRPV1
                     non_block_tcp_connection_evt.Set();
                 }
             }
-            catch 
-            { 
+            catch
+            {
             }
         }
 
@@ -223,7 +223,7 @@ namespace Org.LLRP.LTK.LLRPV1
         }
 
         /// <summary>
-        /// Imports and qualifies the LLRP header 
+        /// Imports and qualifies the LLRP header
         /// </summary>
         private void importAndQualifyHeader()
         {
@@ -232,9 +232,9 @@ namespace Org.LLRP.LTK.LLRPV1
             msg_ver = (Int16)((header >> 10) & 0x07);
             msg_len = (msg_header_storage[2] << 24) + (msg_header_storage[3] << 16) + (msg_header_storage[4] << 8) + msg_header_storage[5];
             msg_id = (msg_header_storage[6] << 24) + (msg_header_storage[7] << 16) + (msg_header_storage[8] << 8) + msg_header_storage[9];
-            //Debug.WriteLine("header: Type=" + msg_type.ToString() + " ver=" + msg_ver.ToString() + " id=" + msg_id.ToString() + " len=" + msg_len.ToString());                
+            //Debug.WriteLine("header: Type=" + msg_type.ToString() + " ver=" + msg_ver.ToString() + " id=" + msg_id.ToString() + " len=" + msg_len.ToString());
             Debug.Assert(msg_ver == 1, "Failure to Decode Valid LLRP message version");
-            Debug.Assert(msg_type < 100 || msg_type == 1023, "Failure to decode Valid LLRP Type");
+            Debug.Assert(msg_type <= 100 || msg_type == 1023, "Failure to decode Valid LLRP Type");
             Debug.Assert(msg_len >= 10 && msg_len <= 2000000, "Failure to Decode Valid Msg Length");
         }
 
@@ -245,10 +245,10 @@ namespace Org.LLRP.LTK.LLRPV1
         private void OnDataRead(IAsyncResult ar)
         {
             EMessageProcessingState state = (EMessageProcessingState)ar.AsyncState;
-            
+
             // Here we get a new buffer from the socket
             try
-            {                               
+            {
                 buffer_bytes_available += ns.EndRead(ar);
                 if (buffer_bytes_available == 0)
                 {
@@ -275,11 +275,10 @@ namespace Org.LLRP.LTK.LLRPV1
                             break;
 
                         case EMessageProcessingState.MESSAGE_HEADER:
-                            
                             // In this state we are waiting for enough header bytes to arrive
                             // we should never have enough bytes when we enter this
                             Debug.Assert(msg_cursor < LLRP_HEADER_SIZE);
-                            // copy as many as we can into the header storage 
+                            // copy as many as we can into the header storage
                             bytesToCopy = (Int32) Math.Min(LLRP_HEADER_SIZE - msg_cursor, buffer_bytes_available);
                             //Debug.WriteLine("Header Copy " + bytesToCopy.ToString());
                             Array.Copy(buffer, buffer_cursor, msg_header_storage, msg_cursor, bytesToCopy);
@@ -294,30 +293,41 @@ namespace Org.LLRP.LTK.LLRPV1
                                 importAndQualifyHeader();
                                 msg_data = new byte[msg_len];
                                 Array.Copy(msg_header_storage, msg_data, LLRP_HEADER_SIZE);
-                                message_state = EMessageProcessingState.MESSAGE_BODY;
+
+                                if(msg_cursor == msg_len)
+                                {
+                                    // The message body is empty.
+                                    TriggerMessageEvent(msg_ver, msg_type, msg_id, msg_data);
+
+                                    ReInitializeMessageProcessing();
+                                    message_state = EMessageProcessingState.MESSAGE_HEADER;
+                                }
+                                else
+                                {
+                                    // There is more data needed.
+                                    message_state = EMessageProcessingState.MESSAGE_BODY;
+                                }
                             }
                             break;
                         case EMessageProcessingState.MESSAGE_BODY:
                             // In this state, we are waiting for the body to arrive
 
-                            // copy as many as we can into the header storage 
+                            // copy as many as we can into the header storage
                             bytesToCopy = (Int32) Math.Min(msg_len - msg_cursor, buffer_bytes_available);
                             //Debug.WriteLine("Message Copy " + bytesToCopy.ToString());
                             Array.Copy(buffer, buffer_cursor, msg_data, msg_cursor, bytesToCopy);
                             msg_cursor += (UInt32) bytesToCopy;
                             buffer_cursor += bytesToCopy;
                             buffer_bytes_available -= bytesToCopy;
-        
+
                             Debug.Assert(msg_cursor <= msg_len);
 
                             if(msg_cursor == msg_len)
                             {
-                                delegateMessageReceived msgRecv = new delegateMessageReceived(TriggerMessageEvent);
-                                msgRecv.BeginInvoke(msg_ver, msg_type, msg_id, msg_data, null, null);
-
+                                TriggerMessageEvent(msg_ver, msg_type, msg_id, msg_data);
                                 ReInitializeMessageProcessing();
                                 message_state = EMessageProcessingState.MESSAGE_HEADER;
-                            }                        
+                            }
                             break;
                     }
                 }
@@ -330,17 +340,17 @@ namespace Org.LLRP.LTK.LLRPV1
             }
             catch
             {
-                // do nothing here 
+                // do nothing here
             }
         }
-        
+
         /// <summary>
         /// Release network resource
         /// </summary>
         public override void Close()
         {
-            trying_to_close = true; 
-            
+            trying_to_close = true;
+
             ManualResetEvent waitEvt = new ManualResetEvent(false);
             waitEvt.WaitOne(100, false);  //Wait for 100 milisecond for stopping read data from NetworkStream
 
@@ -359,8 +369,11 @@ namespace Org.LLRP.LTK.LLRPV1
 
             try
             {
-                ns.Flush();
-                ns.BeginWrite(data, 0, data.Length, null, null);
+                lock (ns)
+                {
+                    ns.Flush();
+                    ns.Write(data, 0, data.Length);
+                }
                 return data.Length;
             }
             catch
@@ -379,7 +392,7 @@ namespace Org.LLRP.LTK.LLRPV1
             try
             {
                 ns.ReadTimeout = 200;
-               
+
                 byte[] buf = new byte[8096];
                 int readSize = ns.Read(buf, 0, 8096);
 
@@ -408,7 +421,7 @@ namespace Org.LLRP.LTK.LLRPV1
     class TCPIPServer : CommunicationInterface
     {
         private const Int32 BUFFER_SIZE = 1024;
-        
+
         private TcpListener server;
         private NetworkStream ns;
         private bool new_message = true;
@@ -432,9 +445,9 @@ namespace Org.LLRP.LTK.LLRPV1
         {
             try
             {
-                TcpListener listener = (TcpListener)ar.AsyncState;     
+                TcpListener listener = (TcpListener)ar.AsyncState;
                 TcpClient client = listener.EndAcceptTcpClient(ar);
-    
+
                 ns = client.GetStream();
                 delegateClientConnected clientConn = new delegateClientConnected(TriggerOnClientConnect);
                 clientConn.BeginInvoke(null, null);
@@ -472,7 +485,7 @@ namespace Org.LLRP.LTK.LLRPV1
                 IPAddress ipAddr = new IPAddress(new byte[] { 127, 0, 0, 1 });
                 server = new TcpListener(ipAddr, port);
                 server.Start();
-                
+
                 server.BeginAcceptTcpClient(new AsyncCallback(DoAcceptTCPClientCallBack), server);
 
             }
@@ -493,7 +506,7 @@ namespace Org.LLRP.LTK.LLRPV1
              try
             {
                 ns.ReadTimeout = 200;
-               
+
                 byte[] buf = new byte[8096];
                 int readSize = ns.Read(buf, 0, 8096);
 
@@ -519,7 +532,10 @@ namespace Org.LLRP.LTK.LLRPV1
         {
             try
             {
-                ns.BeginWrite(data, 0, data.Length, null, null);
+                lock (ns)
+                {
+                    ns.Write(data, 0, data.Length);
+                }
                 return data.Length;
             }
             catch
@@ -534,9 +550,9 @@ namespace Org.LLRP.LTK.LLRPV1
         /// <param name="ar"></param>
         private void OnDataRead(IAsyncResult ar)
         {
-            int offset = 0;                     //used to keep the start position of a LLRP message in 
+            int offset = 0;                     //used to keep the start position of a LLRP message in
                                                 //byte array returned from the read
-            
+
             AsynReadState ss = (AsynReadState)ar.AsyncState;    //used to keep data
             int nReads = ns.EndRead(ar);
 
@@ -574,8 +590,8 @@ namespace Org.LLRP.LTK.LLRPV1
                                 msg_len = 0;
                             }
 
-                            //if data length larger than needed data for a complete message, 
-                            //copy data into existing message and triggered message event 
+                            //if data length larger than needed data for a complete message,
+                            //copy data into existing message and triggered message event
                             if (msg_len > 0 && msg_ver == 1)
                             {
 
@@ -585,8 +601,7 @@ namespace Org.LLRP.LTK.LLRPV1
                                 if (nReads >= (offset + msg_len))
                                 {
                                     Array.Copy(ss.data, offset, msg_data, 0, msg_len);
-                                    delegateMessageReceived msgRecv = new delegateMessageReceived(TriggerMessageEvent);
-                                    msgRecv.BeginInvoke(msg_ver, msg_type, msg_id, msg_data, null, null);
+                                    TriggerMessageEvent(msg_ver, msg_type, msg_id, msg_data);
 
                                     offset += msg_len;
 
@@ -594,7 +609,7 @@ namespace Org.LLRP.LTK.LLRPV1
 
                                     goto REPEAT;
                                 }
-                                else//If the received data is shorter than the message length, keep reading for the next data 
+                                else//If the received data is shorter than the message length, keep reading for the next data
                                 {
                                     new_message = false;
 
@@ -628,13 +643,12 @@ namespace Org.LLRP.LTK.LLRPV1
                     }
                     else
                     {
-                        //if data length larger than needed data for a complete message, 
-                        //copy data into existing message and triggered message event 
+                        //if data length larger than needed data for a complete message,
+                        //copy data into existing message and triggered message event
                         if (nReads >= msg_len - msg_cursor)
                         {
                             Array.Copy(ss.data, 0, msg_data, msg_cursor, msg_len - msg_cursor);
-                            delegateMessageReceived msgRecv = new delegateMessageReceived(TriggerMessageEvent);
-                            msgRecv.BeginInvoke(msg_ver, msg_type, msg_id, msg_data, null, null);
+                            TriggerMessageEvent(msg_ver, msg_type, msg_id, msg_data);
 
                             offset += msg_len - msg_cursor;
 

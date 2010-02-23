@@ -80,6 +80,14 @@
 		<xs:list itemType="xs:unsignedByte"/>
 	</xs:simpleType>
 
+	<xs:simpleType name="listOfSignedShort">
+		<xs:list itemType="xs:short"/>
+	</xs:simpleType>
+
+	<xs:simpleType name="listOfSignedInt">
+		<xs:list itemType="xs:Int"/>
+	</xs:simpleType>
+
 	<xs:simpleType name="listOfUnsignedInt">
 		<xs:list itemType="xs:unsignedInt"/>
 	</xs:simpleType>
@@ -667,8 +675,8 @@
 				<xs:element name="C1G2BlockErase" type="llrp:C1G2BlockErase"/>
 				<xs:element name="C1G2Kill" type="llrp:C1G2Kill"/>
 				<xs:element name="C1G2Read" type="llrp:C1G2Read"/>
-			</xs:choice>
-			<xs:group ref="llrp:extensionPoint" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:group ref="llrp:extensionPoint" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:choice>		    
 		</xs:sequence>
 		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>
@@ -1372,8 +1380,8 @@
 				<xs:element name="C1G2ReadOpSpecResult" type="llrp:C1G2ReadOpSpecResult"/>
 				<xs:element name="C1G2LockOpSpecResult" type="llrp:C1G2LockOpSpecResult"/>
 				<xs:element name="C1G2KillOpSpecResult" type="llrp:C1G2KillOpSpecResult"/>
+				<xs:group ref="llrp:extensionPoint" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:choice>
-			<xs:group ref="llrp:extensionPoint" minOccurs="0" maxOccurs="unbounded"/>
 		</xs:sequence>
 		<xs:attributeGroup ref="llrp:paramAttrs"/>
 	</xs:complexType>

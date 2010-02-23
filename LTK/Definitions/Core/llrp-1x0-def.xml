@@ -1103,6 +1103,7 @@
     <parameter type="C1G2Lock"/>
     <parameter type="C1G2BlockErase"/>
     <parameter type="C1G2BlockWrite"/>
+    <parameter type="Custom"/>
   </choiceDefinition>
 
   <messageDefinition name="GET_READER_CONFIG" typeNum="2" required="true" responseType="GET_READER_CONFIG_RESPONSE">
@@ -1651,6 +1652,7 @@
     <parameter type="C1G2LockOpSpecResult"/>
     <parameter type="C1G2BlockEraseOpSpecResult"/>
     <parameter type="C1G2BlockWriteOpSpecResult"/>
+    <parameter type="Custom"/>
   </choiceDefinition>
 
   <choiceDefinition name="EPCParameter">

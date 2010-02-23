@@ -115,7 +115,7 @@
       cI.Open(llrp_reader_name, LLRP1_TCP_PORT);
       }
 
-      cI.OnMessageReceived += new delegateMessageReceived(cI_OnMessageReceived);
+      cI.OnFrameReceived += new delegateMessageReceived(cI_OnMessageReceived);
       cI.OnClientConnected += new delegateClientConnected(cI_OnClientConnected);
 
       }

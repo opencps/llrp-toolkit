@@ -19,6 +19,7 @@
 AR              = ar
 CC              = gcc
 CFLAGS          = -g -Wall
+CINCLUDES	= -I ../../opensource/include/libxml2
 
 LLRPDEF         = ../../Definitions/Core/llrp-1x0-def.xml
 
@@ -46,6 +47,7 @@ LTKC_OBJS = \
 	ltkc_frameextract.o	\
 	ltkc_hdrfd.o		\
 	ltkc_xmltextencode.o	\
+	ltkc_xmltextdecode.o	\
 	ltkc_typeregistry.o	\
 	ltkc_genout.o
 
@@ -62,52 +64,56 @@ $(LTKC_LIB) : $(LTKC_OBJS)
 $(LTKC_OBJS) : $(LTKC_HDRS)
 
 ltkc_array.o       : ltkc_array.c
-	$(CC) -c $(CFLAGS) ltkc_array.c \
+	$(CC) -c $(CFLAGS) $(CINCLUDES) ltkc_array.c \
 		-o ltkc_array.o
 
 ltkc_connection.o  : ltkc_connection.c
-	$(CC) -c $(CFLAGS) ltkc_connection.c \
+	$(CC) -c $(CFLAGS) $(CINCLUDES) ltkc_connection.c \
 		-o ltkc_connection.o
 
 ltkc_element.o     : ltkc_element.c
-	$(CC) -c $(CFLAGS) ltkc_element.c \
+	$(CC) -c $(CFLAGS) $(CINCLUDES) ltkc_element.c \
 		-o ltkc_element.o
 
 ltkc_encdec.o      : ltkc_encdec.c
-	$(CC) -c $(CFLAGS) ltkc_encdec.c \
+	$(CC) -c $(CFLAGS) $(CINCLUDES) ltkc_encdec.c \
 		-o ltkc_encdec.o
 
 ltkc_error.o       : ltkc_error.c
-	$(CC) -c $(CFLAGS) ltkc_error.c \
+	$(CC) -c $(CFLAGS) $(CINCLUDES) ltkc_error.c \
 		-o ltkc_error.o
 
 ltkc_framedecode.o : ltkc_framedecode.c
-	$(CC) -c $(CFLAGS) ltkc_framedecode.c \
+	$(CC) -c $(CFLAGS) $(CINCLUDES) ltkc_framedecode.c \
 		-o ltkc_framedecode.o
 
 ltkc_frameencode.o : ltkc_frameencode.c
-	$(CC) -c $(CFLAGS) ltkc_frameencode.c \
+	$(CC) -c $(CFLAGS) $(CINCLUDES) ltkc_frameencode.c \
 		-o ltkc_frameencode.o
 
 ltkc_frameextract.o : ltkc_frameextract.c
-	$(CC) -c $(CFLAGS) ltkc_frameextract.c \
+	$(CC) -c $(CFLAGS) $(CINCLUDES) ltkc_frameextract.c \
 		-o ltkc_frameextract.o
 
 ltkc_hdrfd.o       : ltkc_hdrfd.c
-	$(CC) -c $(CFLAGS) ltkc_hdrfd.c \
+	$(CC) -c $(CFLAGS) $(CINCLUDES) ltkc_hdrfd.c \
 		-o ltkc_hdrfd.o
 
+ltkc_xmltextdecode.o : ltkc_xmltextdecode.c
+	$(CC) -c $(CFLAGS) $(CINCLUDES) ltkc_xmltextdecode.c \
+		-o ltkc_xmltextdecode.o
+
 ltkc_xmltextencode.o : ltkc_xmltextencode.c
-	$(CC) -c $(CFLAGS) ltkc_xmltextencode.c \
+	$(CC) -c $(CFLAGS) $(CINCLUDES) ltkc_xmltextencode.c \
 		-o ltkc_xmltextencode.o
 
 ltkc_typeregistry.o : ltkc_typeregistry.c
-	$(CC) -c $(CFLAGS) ltkc_typeregistry.c \
+	$(CC) -c $(CFLAGS) $(CINCLUDES) ltkc_typeregistry.c \
 		-o ltkc_typeregistry.o
 
 ltkc_genout.o      : out_ltkc.inc out_ltkc.h
 ltkc_genout.o      : ltkc_genout.c
-	$(CC) -c $(CFLAGS) -Wno-unused ltkc_genout.c \
+	$(CC) -c $(CFLAGS) $(CINCLUDES) -Wno-unused ltkc_genout.c \
 		-o ltkc_genout.o
 
 out_ltkc.h: ltkc_gen_h.xslt $(LLRPDEF)

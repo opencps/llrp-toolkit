@@ -16,6 +16,7 @@
 ############################################################################
 
 LIBDIR=../Library
+OPENSOURCEDIR    = ../../opensource/lib
 
 LTKC_HDRS = \
 	$(LIBDIR)/ltkc.h		\
@@ -27,8 +28,10 @@ LTKC_HDRS = \
 	$(LIBDIR)/out_ltkc.h
 
 LTKC_LIB_A          = $(LIBDIR)/libltkc.a
+LIBXML2_A           = $(OPENSOURCEDIR)/libxml2.a
 LTKC_LIBS           = $(LTKC_LIB_A)
 LTKC_FILES          = $(LTKC_HDRS) $(LTKC_LIBS)
+LIBXML2_LIBS     = $(LIBXML2_A)
 
 EXAMPLE_FILES       = ../Examples/example1.c ../Examples/Example-Makefile
 
@@ -41,6 +44,7 @@ std: $(LTKC_FILES) $(EXAMPLE_FILES)
 	mkdir std/libltkc
 	chmod 777 std/libltkc
 	cp $(LTKC_FILES) std/libltkc/.
+	cp -p $(LIBXML2_LIBS) std/libltkc/
 	chmod 444 std/libltkc/*
 	mkdir std/libltkc/example
 	cp ../Examples/example1.c std/libltkc/example/example1.c

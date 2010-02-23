@@ -20,12 +20,12 @@
 /*
 ***************************************************************************
  * File Name:       CustomParameter.cs
- * 
+ *
  * Author:          Impinj
  * Organization:    Impinj
  * Date:            September, 2007
- * 
- * Description:     This file contains interfaces, base classes and parser 
+ *
+ * Description:     This file contains interfaces, base classes and parser
  *                  for custom parameters
 ***************************************************************************
 */
@@ -78,18 +78,18 @@ namespace Org.LLRP.LTK.LLRPV1
         {
             get { return ParameterSubtype; }
         }
-        
+
         /// <summary>
         /// Convert to XML string
         /// </summary>
         /// <returns>XML string</returns>
         public override string ToString()
         {
-            string xml_str = "<Custom>";
-            xml_str += "<VendorIdentifier>" + VendorIdentifier.ToString() + "</VendorIdentifier>";
-            xml_str += "<ParameterSubtype>" + ParameterSubtype.ToString() + "</ParameterSubtype>";
-            xml_str += "<Data>" + Data.ToHexString() + "</Data>";
-            xml_str += "</Custom>";
+            string xml_str = "<Custom>\r\n";
+            xml_str += "  <VendorIdentifier>" + VendorIdentifier.ToString() + "</VendorIdentifier>\r\n";
+            xml_str += "  <ParameterSubtype>" + ParameterSubtype.ToString() + "</ParameterSubtype>\r\n";
+            xml_str += "  <Data>" + Data.ToHexString() + "</Data>\r\n";
+            xml_str += "</Custom>\r\n";
             return xml_str;
         }
 
@@ -103,26 +103,14 @@ namespace Org.LLRP.LTK.LLRPV1
             int cursor_old = cursor;
             BitArray bArr;
 
-            if (tvCoding)
-            {
-                bit_array[cursor] = true;
-                cursor++;
-                bArr = Util.ConvertIntToBitArray(typeID, 7);
-                bArr.CopyTo(bit_array, cursor);
-                cursor += 7;
-            }
-            else
-            {
-                cursor += 6;
-                bArr = Util.ConvertIntToBitArray(typeID, 10);
-                bArr.CopyTo(bit_array, cursor);
-                cursor += 10;
-                cursor += 16;
-            }
+            cursor += 6;
+            bArr = Util.ConvertIntToBitArray(typeID, 10);
+            bArr.CopyTo(bit_array, cursor);
+            cursor += 26;
 
             try
             {
-                BitArray tempBitArr = Util.ConvertObjToBitArray(VendorIdentifier, VendorIdentifier_len);
+                BitArray tempBitArr = Util.ConvertObjToBitArray(VendorIdentifier, 32);
                 tempBitArr.CopyTo(bit_array, cursor);
                 cursor += tempBitArr.Length;
             }
@@ -130,7 +118,7 @@ namespace Org.LLRP.LTK.LLRPV1
 
             try
             {
-                BitArray tempBitArr = Util.ConvertObjToBitArray(ParameterSubtype, ParameterSubtype_len);
+                BitArray tempBitArr = Util.ConvertObjToBitArray(ParameterSubtype, 32);
                 tempBitArr.CopyTo(bit_array, cursor);
                 cursor += tempBitArr.Length;
             }
@@ -138,22 +126,15 @@ namespace Org.LLRP.LTK.LLRPV1
 
             try
             {
-                int temp_cursor = cursor;
-                BitArray tempBitArr = Util.ConvertIntToBitArray((UInt32)(Data.Count), 16);
-                tempBitArr.CopyTo(bit_array, cursor);
-                cursor += 16;
-                tempBitArr = Util.ConvertObjToBitArray(Data, Data_len);
+                BitArray tempBitArr = Util.ConvertObjToBitArray(Data, Data.Count * 8);
                 tempBitArr.CopyTo(bit_array, cursor);
                 cursor += tempBitArr.Length;
             }
             catch { }
 
-            if (!tvCoding)
-            {
-                UInt32 param_len = (UInt32)(cursor - cursor_old) / 8;
-                bArr = Util.ConvertIntToBitArray(param_len, 16);
-                bArr.CopyTo(bit_array, cursor_old + 16);
-            }
+            UInt32 param_len = (UInt32)(cursor - cursor_old) / 8;
+            bArr = Util.ConvertIntToBitArray(param_len, 16);
+            bArr.CopyTo(bit_array, cursor_old + 16);
         }
 
         /// <summary>
@@ -167,58 +148,34 @@ namespace Org.LLRP.LTK.LLRPV1
         {
             if (cursor >= length) return null;
 
-            int field_len = 0;
-            object obj_val;
-            ArrayList param_list = new ArrayList();
-
             PARAM_Custom obj = new PARAM_Custom();
-
+            object obj_val;
+            int orig_cursor = cursor;
             int param_type = 0;
 
-            if (bit_array[cursor]) obj.tvCoding = true;
-            if (obj.tvCoding)
+            cursor += 6;
+            param_type = (int)(UInt64)Util.CalculateVal(ref bit_array, ref cursor, 10);
+            if (param_type != obj.TypeID)
             {
-                cursor++;
-                param_type = (int)(UInt64)Util.CalculateVal(ref bit_array, ref cursor, 7);
-
-                if (param_type != obj.TypeID)
-                {
-                    cursor -= 8;
-                    return null;
-                }
-            }
-            else
-            {
-                cursor += 6;
-                param_type = (int)(UInt64)Util.CalculateVal(ref bit_array, ref cursor, 10);
-
-                if (param_type != obj.TypeID)
-                {
-                    cursor -= 16;
-                    return null;
-                }
-                obj.length = (UInt16)(int)Util.DetermineFieldLength(ref bit_array, ref cursor);
+                cursor = orig_cursor;
+                return null;
             }
 
+            obj.length = (UInt16)(int)Util.DetermineFieldLength(ref bit_array, ref cursor);
 
             if (cursor > length) throw new Exception("Input data is not complete message");
 
-            field_len = 32;
-
-            Util.ConvertBitArrayToObj(ref bit_array, ref cursor, out obj_val, typeof(UInt32), field_len);
+            Util.ConvertBitArrayToObj(ref bit_array, ref cursor, out obj_val, typeof(UInt32), 32);
             obj.VendorIdentifier = (UInt32)obj_val;
 
             if (cursor > length) throw new Exception("Input data is not complete message");
 
-            field_len = 32;
-
-            Util.ConvertBitArrayToObj(ref bit_array, ref cursor, out obj_val, typeof(UInt32), field_len);
+            Util.ConvertBitArrayToObj(ref bit_array, ref cursor, out obj_val, typeof(UInt32), 32);
             obj.ParameterSubtype = (UInt32)obj_val;
 
             if (cursor > length) throw new Exception("Input data is not complete message");
 
-            field_len = (bit_array.Length - cursor)/8;
-
+            int field_len = (obj.length * 8 - (cursor - orig_cursor)) / 8;
             Util.ConvertBitArrayToObj(ref bit_array, ref cursor, out obj_val, typeof(ByteArray), field_len);
             obj.Data = (ByteArray)obj_val;
 
@@ -246,7 +203,7 @@ namespace Org.LLRP.LTK.LLRPV1
 
             val = XmlUtil.GetNodeValue(node, "Data");
 
-            param.Data = ByteArray.FromString(val);
+            param.Data = (ByteArray)(Util.ParseArrayTypeFromString(val, "bytesToEnd", "Hex"));
 
             return param;
         }
@@ -259,6 +216,7 @@ namespace Org.LLRP.LTK.LLRPV1
     {
         public static Hashtable vendorExtensionIDTypeHash = null;
         public static Hashtable vendorExtensionNameTypeHash = null;
+        public static Hashtable vendorExtensionAssemblyHash = null;
 
         /// <summary>
         /// Register vendor extension assembly
@@ -276,7 +234,22 @@ namespace Org.LLRP.LTK.LLRPV1
                 vendorExtensionNameTypeHash = new Hashtable();
             }
 
-//          Console.WriteLine("enter LVEA {0}", asm);
+            if (null == vendorExtensionAssemblyHash)
+            {
+                vendorExtensionAssemblyHash = new Hashtable();
+            }
+
+            // Prevent double registration, and recursion
+            string assembly_name = asm.GetName().Name;
+            if (!vendorExtensionAssemblyHash.ContainsKey(assembly_name))
+            {
+                vendorExtensionAssemblyHash.Add(assembly_name, asm);
+            }
+            else
+            {
+                return;
+            }
+
             try
             {
                 Type[] types = asm.GetTypes();
@@ -293,28 +266,17 @@ namespace Org.LLRP.LTK.LLRPV1
                     if (!vendorExtensionIDTypeHash.ContainsKey(key))
                     {
                         vendorExtensionIDTypeHash.Add(key, tp);
-//                      Console.WriteLine("addext {0}", key);
-                    }
-                    else
-                    {
-//                      Console.WriteLine("dupext {0}", key);
                     }
                     if (!vendorExtensionNameTypeHash.ContainsKey(tp.Name))
                     {
                         vendorExtensionNameTypeHash.Add(tp.Name, tp);
-//                      Console.WriteLine("addext {0}", tp.Name);
-                    }
-                    else
-                    {
-//                      Console.WriteLine("dupext {0}", tp.Name);
                     }
                 }
             }
             catch
             {
-//              Console.WriteLine("LVEA barffed", asm);
+                Console.WriteLine("LVEA failed", asm);
             }
-//          Console.WriteLine("ext LVEA {0}", asm);
         }
 
         /// <summary>
@@ -335,11 +297,13 @@ namespace Org.LLRP.LTK.LLRPV1
                 string key = param.VendorID + "-" + param.SubType;
                 if (vendorExtensionIDTypeHash != null )
                 {
+                    int new_cursor = cursor;
+
                     try
                     {
                         Type tp = (Type)vendorExtensionIDTypeHash[key];
-                        MethodInfo mis = tp.GetMethod("FromBitArray");
 
+                        MethodInfo mis = tp.GetMethod("FromBitArray");
                         if (mis == null) return null;
 
                         cursor = old_cursor;
@@ -352,14 +316,14 @@ namespace Org.LLRP.LTK.LLRPV1
                     }
                     catch
                     {
-                        return param;
+                        cursor = new_cursor;
                     }
                 }
-                else
-                    return param;
+
+                return param;
             }
-            else
-                return null;
+
+            return null;
         }
 
         /// <summary>
@@ -369,60 +333,34 @@ namespace Org.LLRP.LTK.LLRPV1
         /// <returns>Custom Parameter</returns>
         public static ICustom_Parameter DecodeXmlNodeToCustomParameter(XmlNode node)
         {
-            if (vendorExtensionIDTypeHash == null || vendorExtensionNameTypeHash == null)
+            if (null != vendorExtensionNameTypeHash)
             {
-                vendorExtensionIDTypeHash = new Hashtable();
-                vendorExtensionNameTypeHash = new Hashtable();
+                // Our hash is not namespace aware.
+                string[] temp = node.Name.Split(new char[] {':'});
+                string type_name = "PARAM_" + temp[temp.Length - 1];
 
-                Assembly asm = Assembly.GetCallingAssembly();
-
-                string fullName = asm.ManifestModule.FullyQualifiedName;
-                string path = fullName.Substring(0, fullName.LastIndexOf("\\"));
-
-                DirectoryInfo di = new DirectoryInfo(path);
-                FileInfo[] f_infos = di.GetFiles("LLRP.*.dll");
-
-                foreach (FileInfo fi in f_infos)
+                try
                 {
-                    asm = Assembly.LoadFile(fi.FullName);
-                    Type[] types = asm.GetTypes();
-                    foreach (Type tp in types)
+                    Type tp = (Type)vendorExtensionNameTypeHash[type_name];
+                    if (tp != null)
                     {
-                        if (tp.BaseType != typeof(PARAM_Custom)) continue;
+                        MethodInfo mis = tp.GetMethod("FromXmlNode");
+                        if (mis == null) return null;
 
-                        string type_full_name = tp.Namespace + "." + tp.Name;
+                        object[] parameters = new object[] { node };
+                        object obj = mis.Invoke(null, parameters);
 
-                        object obj = asm.CreateInstance(type_full_name);
-                        PARAM_Custom temp_param = (PARAM_Custom)obj;
-                        string key = temp_param.VendorID + "-" + temp_param.SubType;
-                        vendorExtensionIDTypeHash.Add(key, tp);
-                        vendorExtensionNameTypeHash.Add(tp.Name, tp);
+                        return (ICustom_Parameter)obj;
+                    }
+                    else if (type_name == "PARAM_Custom")
+                    {
+                        return (ICustom_Parameter)PARAM_Custom.FromXmlNode(node);
                     }
                 }
+                catch { }
             }
 
-            ///This part is arbitrary and lack of flexibility
-            string[] temp = node.Name.Split(new char[] {':'});
-            string typeName = string.Empty;
-            if (temp.Length == 2) typeName = temp[1];
-            else
-                typeName = temp[0];
-
-            //
-            string type_name = "PARAM_"+typeName;
-            Type custom_tp = (Type)vendorExtensionNameTypeHash[type_name];
-            if (custom_tp != null)
-            {
-                object[] parameters = new object[] { node };
-                MethodInfo mis = custom_tp.GetMethod("FromXmlNode");
-
-                if (mis == null) return null;
-                object obj = mis.Invoke(null, parameters);
-
-                return (ICustom_Parameter)obj;
-            }
-            else
-                return null;
+            return null;
         }
     }
 }

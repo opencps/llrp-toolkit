@@ -197,6 +197,22 @@ LLRP_Element_clearSubParameterList (
 }
 
 int
+LLRP_Element_countSubParameterList (
+  LLRP_tSElement *              pElement,
+  LLRP_tSParameter **           ppListHead)
+{
+    LLRP_tSParameter *          pValue = *ppListHead;
+    int                         n = 0;
+
+    for (; NULL != pValue; pValue = pValue->pNextSubParameter)
+    {
+        n++;
+    }
+
+    return n;
+}
+
+int
 LLRP_Element_walk (
   const LLRP_tSElement *          pElement,
   int                           (*pFunc)(
@@ -274,14 +290,6 @@ LLRP_Parameter_isAllowedExtension (
      */
     if(!pType->bIsMessage && NULL == pType->pVendorDescriptor &&
        1023u == pType->TypeNum)
-    {
-        return TRUE;
-    }
-
-    /*
-     * If it is some kind of custom parameter allow it.
-     */
-    if(!pType->bIsMessage && NULL != pType->pVendorDescriptor)
     {
         return TRUE;
     }

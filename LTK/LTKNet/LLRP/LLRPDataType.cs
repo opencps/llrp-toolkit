@@ -21,13 +21,13 @@
 /*
 ***************************************************************************
  * File Name:       LLRPDataType.cs
- * 
+ *
  * Author:          Impinj
  * Organization:    Impinj
  * Date:            18 June, 2008
- * 
+ *
  * Description:     This file contains supporting data types for encoding/
- *                  decoding LLRP messages/parameters          
+ *                  decoding LLRP messages/parameters
 ***************************************************************************
 */
 
@@ -37,6 +37,7 @@ using System.IO;
 using System.Text;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 
 using System.ComponentModel;
 using System.Xml;
@@ -77,10 +78,17 @@ namespace Org.LLRP.LTK.LLRPV1.DataType
     /// </summary>
     public class MessageID
     {
+        protected static object mutex = new object();
         protected static UInt32 sequence_num = 0;
         public static UInt32 getNewMessageID()
         {
-            return ++sequence_num;
+            UInt32 retval;
+            lock (mutex)
+            {
+                retval = sequence_num;
+                sequence_num++;
+            }
+            return retval;
         }
     }
 
@@ -94,7 +102,7 @@ namespace Org.LLRP.LTK.LLRPV1.DataType
         protected UInt16 msgType;
         protected UInt32 msgLen;
         protected UInt32 msgID;
-        protected static UInt32 sequence_num = 0; 
+        protected static UInt32 sequence_num = 0;
 
         public virtual bool[] ToBitArray() { return null; }
         public virtual Message FromBitArray(ref BitArray bit_array, ref int cursor, int length) { return null; }
@@ -133,6 +141,13 @@ namespace Org.LLRP.LTK.LLRPV1.DataType
         public int Count
         {
             get { return data.Count; }
+            set
+            {
+                if (data.Count > value)
+                {
+                    data.RemoveRange(value, data.Count - value);
+                }
+            }
         }
 
         /// <summary>
@@ -180,7 +195,14 @@ namespace Org.LLRP.LTK.LLRPV1.DataType
                 byte[] bD = Util.ConvertBitArrayToByteArray(data.ToArray());
 
                 string s = string.Empty;
-                for (int i = 0; i < bD.Length; i++) s += Convert.ToInt16(bD[i]).ToString() + " ";
+                for (int i = 0; i < bD.Length; i++)
+                {
+                    s += Convert.ToInt16(bD[i]).ToString();
+                    if (i + 1 < bD.Length)
+                    {
+                        s += " ";
+                    }
+                }
 
                 return s;
             }
@@ -200,7 +222,7 @@ namespace Org.LLRP.LTK.LLRPV1.DataType
             LLRPBitArray myBitArray = new LLRPBitArray();
 
             for (int i = 0; i < str.Length; i++)myBitArray.Add((str[i] == '1') ? true : false);
-            
+
             return myBitArray;
         }
 
@@ -306,7 +328,7 @@ namespace Org.LLRP.LTK.LLRPV1.DataType
 
 
     /// <summary>
-    /// Byte Array used to store "u8v" "endofbytes" 
+    /// Byte Array used to store "u8v" "endofbytes"
     /// </summary>
     [Serializable]
     public class ByteArray
@@ -463,6 +485,163 @@ namespace Org.LLRP.LTK.LLRPV1.DataType
     }
 
     /// <summary>
+    /// Byte Array used to store "s8v"
+    /// </summary>
+    [Serializable]
+    public class SignedByteArray
+    {
+        private List<sbyte> data = new List<sbyte>();
+
+        public void Add(sbyte val)
+        {
+            data.Add(val);
+        }
+
+
+        public sbyte this[int index]
+        {
+            get { return data[index]; }
+            set { data[index] = value; }
+        }
+
+        public int Count
+        {
+            get { return data.Count; }
+        }
+
+        /// <summary>
+        /// Convert to Hex string
+        /// </summary>
+        /// <returns></returns>
+        public string ToHexWordString()
+        {
+            return Util.ConvertSignedByteArrayToHexWordString(data.ToArray());
+        }
+
+        /// <summary>
+        /// Convert to Hex string
+        /// </summary>
+        /// <returns></returns>
+        public string ToHexString()
+        {
+            return Util.ConvertSignedByteArrayToHexString(data.ToArray());
+        }
+
+        /// <summary>
+        /// Convert a Hex string to byte array.
+        /// </summary>
+        /// <param name="str">Hex string. For example: "EE FF" or "EEFF" or "EE,FF"</param>
+        /// <returns></returns>
+        public static SignedByteArray FromHexString(string str)
+        {
+            SignedByteArray bA = new SignedByteArray();
+            str = str.Trim();
+
+            string[] s = Util.SplitString(str, new char[] { ',', ' ' }, 2);
+
+            sbyte[] bD = new sbyte[s.Length];
+
+            for (int i = 0; i < s.Length; i++)
+            {
+                try { bA.Add((sbyte)SByte.Parse(s[i], System.Globalization.NumberStyles.HexNumber)); }
+                catch { bA.Add(0); }
+            }
+
+            return bA;
+        }
+
+        /// <summary>
+        /// Convert a Dec string to byte array.
+        /// </summary>
+        /// <param name="str">Dec string. For example: "0 255" or "12,111"</param>
+        /// <returns></returns>
+        public static SignedByteArray FromString(string str)
+        {
+            SignedByteArray bA = new SignedByteArray();
+            str = str.Trim();
+
+            string[] s = str.Split(new char[] { ',', ' ' });
+
+            sbyte[] bD = new sbyte[s.Length];
+
+            for (int i = 0; i < s.Length; i++)
+            {
+                try { bA.Add((sbyte)SByte.Parse(s[i], System.Globalization.NumberStyles.Integer)); }
+                catch { bA.Add(0); }
+            }
+
+            return bA;
+        }
+
+        /// <summary>
+        /// Convert a enumeration string to byte array.
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
+        public static SignedByteArray FromString(string str, Type t)
+        {
+            SignedByteArray bA = new SignedByteArray();
+            str = str.Trim();
+
+            string[] s = str.Split(new char[] { ',', ' ' });
+
+            sbyte[] bD = new sbyte[s.Length];
+
+            for (int i = 0; i < s.Length; i++)
+            {
+                try { bA.Add((sbyte)((int)Enum.Parse(t, s[i], true))); }
+                catch { bA.Add(0); }
+            }
+
+            return bA;
+        }
+
+        /// <summary>
+        /// Convert to dec. based string. space is applied to each number
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            try
+            {
+                sbyte[] bD = data.ToArray();
+
+                string s = string.Empty;
+                for (int i = 0; i < bD.Length; i++) s += Convert.ToInt16(bD[i]).ToString() + " ";
+
+                return s;
+            }
+            catch
+            {
+                return "code error!";
+            }
+        }
+
+        /// <summary>
+        /// Convert to enumeration string
+        /// </summary>
+        /// <returns></returns>
+        public string ToString(Type t)
+        {
+            string str = string.Empty;
+            foreach (sbyte b in data)
+            {
+                str += Enum.GetName(t, 1) + " ";
+            }
+            return str;
+        }
+
+        /// <summary>
+        /// Convert to byte array
+        /// </summary>
+        /// <returns></returns>
+        public sbyte[] ToArray()
+        {
+            return data.ToArray();
+        }
+    }
+
+    /// <summary>
     /// used to store "u16v"
     /// </summary>
     [Serializable]
@@ -498,7 +677,11 @@ namespace Org.LLRP.LTK.LLRPV1.DataType
                 UInt16 hD = (UInt16)(data[i] >> 8);
                 UInt16 lD = (UInt16)(data[i] & 0x00FF);
 
-                s += hD.ToString("X2") + lD.ToString("X2") + " ";
+                s += hD.ToString("X2") + lD.ToString("X2");
+                if (i + 1 < data.Count)
+                {
+                    s += " ";
+                }
             }
 
             return s;
@@ -517,7 +700,11 @@ namespace Org.LLRP.LTK.LLRPV1.DataType
                 UInt16 hD = (UInt16)(data[i] >> 8);
                 UInt16 lD = (UInt16)(data[i] & 0x00FF);
 
-                s += hD.ToString("X2") + lD.ToString("X2")+" ";
+                s += hD.ToString("X2") + lD.ToString("X2");
+                if (i + 1 < data.Count)
+                {
+                    s += " ";
+                }
             }
 
             return s;
@@ -534,7 +721,14 @@ namespace Org.LLRP.LTK.LLRPV1.DataType
                 UInt16[] bD = data.ToArray();
 
                 string s = string.Empty;
-                for (int i = 0; i < bD.Length; i++) s += Convert.ToUInt16(bD[i]).ToString() + " ";
+                for (int i = 0; i < bD.Length; i++)
+                {
+                    s += Convert.ToUInt16(bD[i]).ToString();
+                    if (i + 1 < bD.Length)
+                    {
+                        s += " ";
+                    }
+                }
 
                 return s;
             }
@@ -590,7 +784,162 @@ namespace Org.LLRP.LTK.LLRPV1.DataType
                     try
                     {
                         if (s[i] != string.Empty)
-                            Arr.Add(Convert.ToUInt16(s[i], 16));
+                            Arr.Add(Convert.ToUInt16(s[i], 10));
+                    }
+                    catch
+                    {
+                    }
+                }
+            }
+
+            return Arr;
+        }
+    }
+
+    /// <summary>
+    /// used to store "s16v"
+    /// </summary>
+    [Serializable]
+    public class Int16Array
+    {
+        public List<Int16> data = new List<short>();
+
+        public void Add(Int16 val)
+        {
+            data.Add(val);
+        }
+        public Int16 this[int index]
+        {
+            get { return data[index]; }
+            set { data[index] = value; }
+        }
+
+        public int Count
+        {
+            get { return data.Count; }
+        }
+
+        /// <summary>
+        /// Convert to Hex string
+        /// </summary>
+        /// <returns></returns>
+        public string ToHexString()
+        {
+            string s = string.Empty;
+
+            for (int i = 0; i < data.Count; i++)
+            {
+                UInt16 hD = (UInt16)(data[i] >> 8);
+                UInt16 lD = (UInt16)(data[i] & 0x00FF);
+
+                s += hD.ToString("X2") + lD.ToString("X2");
+                if (i + 1 < data.Count)
+                {
+                    s += " ";
+                }
+            }
+
+            return s;
+        }
+
+        /// <summary>
+        /// Convert to Hex string in word order
+        /// </summary>
+        /// <returns></returns>
+        public string ToHexWordString()
+        {
+            string s = string.Empty;
+
+            for (int i = 0; i < data.Count; i++)
+            {
+                UInt16 hD = (UInt16)(data[i] >> 8);
+                UInt16 lD = (UInt16)(data[i] & 0x00FF);
+
+                s += hD.ToString("X2") + lD.ToString("X2");
+                if (i + 1 < data.Count)
+                {
+                    s += " ";
+                }
+            }
+
+            return s;
+        }
+
+        /// <summary>
+        /// Convert to dec. based string
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            try
+            {
+                Int16[] bD = data.ToArray();
+
+                string s = string.Empty;
+                for (int i = 0; i < bD.Length; i++)
+                {
+                    s += Convert.ToInt16(bD[i]).ToString();
+                    if (i + 1 < bD.Length)
+                    {
+                        s += " ";
+                    }
+                }
+
+                return s;
+            }
+            catch
+            {
+                return "code error!";
+            }
+        }
+
+        /// <summary>
+        /// Convert Hex string to Int16Array.
+        /// </summary>
+        /// <param name="str">Hex string. For example: "EEFFEEFF" or "EEFF EEFF" or "EEFF,EEFF"</param>
+        /// <returns></returns>
+        public static Int16Array FromHexString(string str)
+        {
+            str = str.Trim();
+            Int16Array Arr = new Int16Array();
+
+            if (str != string.Empty)
+            {
+                string[] s = Util.SplitString(str, new char[] { ',', ' ' }, 4);
+                for (int i = 0; i < s.Length; i++)
+                {
+                    try
+                    {
+                        if (s[i] != string.Empty)
+                            Arr.Add(Convert.ToInt16(s[i], 16));
+                    }
+                    catch
+                    {
+                    }
+                }
+            }
+
+            return Arr;
+        }
+        /// <summary>
+        /// Convert Dec string to Int16Array.
+        /// </summary>
+        /// <param name="str">dec string. For example: "12333 12334" or "23333,12331"</param>
+        /// <returns></returns>
+        public static Int16Array FromString(string str)
+        {
+            str = str.Trim();
+            Int16Array Arr = new Int16Array();
+
+            if (str != string.Empty)
+            {
+                string[] s = str.Split(new char[] { ',', ' ' });
+                for (int i = 0; i < s.Length; i++)
+                {
+                    try
+                    {
+                        if (s[i] != string.Empty)
+                            Arr.Add(Convert.ToInt16(s[i], 10));
                     }
                     catch
                     {
@@ -661,7 +1010,14 @@ namespace Org.LLRP.LTK.LLRPV1.DataType
                 UInt32[] bD = data.ToArray();
 
                 string s = string.Empty;
-                for (int i = 0; i < bD.Length; i++) s += Convert.ToUInt32(bD[i]).ToString()+ " ";
+                for (int i = 0; i < bD.Length; i++)
+                {
+                    s += Convert.ToUInt32(bD[i]).ToString();
+                    if (i + 1 < bD.Length)
+                    {
+                        s += " ";
+                    }
+                }
 
                 return s;
             }
@@ -712,6 +1068,133 @@ namespace Org.LLRP.LTK.LLRPV1.DataType
                 try
                 {
                     Arr.Add(Convert.ToUInt32(s[i], 10));
+                }
+                catch
+                {
+                }
+            }
+
+            return Arr;
+        }
+    }
+
+    /// <summary>
+    /// Used to store "u32v"
+    /// </summary>
+    [Serializable]
+    public class Int32Array
+    {
+        public List<Int32> data = new List<Int32>();
+
+        public void Add(Int32 val)
+        {
+            data.Add(val);
+        }
+
+        public Int32 this[int index]
+        {
+            get { return data[index]; }
+            set { data[index] = value; }
+        }
+
+        public int Count
+        {
+            get { return data.Count; }
+        }
+
+        /// <summary>
+        /// Convert to Hex string
+        /// </summary>
+        /// <returns></returns>
+        public string ToHexString()
+        {
+            string s = string.Empty;
+
+            for (int i = 0; i < data.Count; i++)
+            {
+                UInt16 hD = (UInt16)(data[i] >> 16);
+                UInt16 lD = (UInt16)(data[i] & 0x0000FFFF);
+
+                UInt16 d1 = (UInt16)(hD >> 8);
+                UInt16 d2 = (UInt16)(hD & 0x00FF);
+                UInt16 d3 = (UInt16)(lD >> 8);
+                UInt16 d4 = (UInt16)(lD & 0x00FF);
+
+                s += d1.ToString("X2") + d2.ToString("X2") + d3.ToString("X2") + d4.ToString("X2");
+            }
+
+            return s;
+        }
+
+        /// <summary>
+        /// Convert to string
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            try
+            {
+                Int32[] bD = data.ToArray();
+
+                string s = string.Empty;
+                for (int i = 0; i < bD.Length; i++)
+                {
+                    s += Convert.ToInt32(bD[i]).ToString();
+                    if (i + 1 < bD.Length)
+                    {
+                        s += " ";
+                    }
+                }
+
+                return s;
+            }
+            catch
+            {
+                return "code error!";
+            }
+        }
+
+        /// <summary>
+        /// Convert Hex string to UInt32Array
+        /// </summary>
+        /// <param name="str">Hex string. For example: "EEFFEEFFEEFFEEFF" or "EEFFEEFF EEFFEEFF" or "EEFFEEFF, EEFFEEFF"</param>
+        /// <returns></returns>
+        public static Int32Array FromHexString(string str)
+        {
+            str = str.Trim();
+            Int32Array Arr = new Int32Array();
+            string[] s = Util.SplitString(str, new char[] { ',', ' ' }, 8);
+
+            for (int i = 0; i < s.Length; i++)
+            {
+                try
+                {
+                    Arr.Add(Convert.ToInt32(s[i], 16));
+                }
+                catch
+                {
+                }
+            }
+
+            return Arr;
+        }
+
+        /// <summary>
+        /// Convert Dec string to UInt32Array
+        /// </summary>
+        /// <param name="str">Dec string. For example: "1233214234 1234234234" or "21342222, 1234234234"</param>
+        /// <returns></returns>
+        public static Int32Array FromString(string str)
+        {
+            str = str.Trim();
+            Int32Array Arr = new Int32Array();
+            string[] s = str.Split(new char[] { ',', ' ' });
+
+            for (int i = 0; i < s.Length; i++)
+            {
+                try
+                {
+                    Arr.Add(Convert.ToInt32(s[i], 10));
                 }
                 catch
                 {
@@ -892,7 +1375,7 @@ namespace Org.LLRP.LTK.LLRPV1.DataType
     }
 
     /// <summary>
-    /// LLRP parameter array. 
+    /// LLRP parameter array.
     /// </summary>
     public class ParamArrayList
     {

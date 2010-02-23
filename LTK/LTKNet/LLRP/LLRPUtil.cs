@@ -21,12 +21,12 @@
 /*
 ***************************************************************************
  * File Name:       LLRPUtil.cs
- * 
+ *
  * Author:          Impinj
  * Organization:    Impinj
  * Date:            June, 2008
- * 
- * Description:     This file contains data convertion and data operattion 
+ *
+ * Description:     This file contains data convertion and data operattion
  *                  methods
 ***************************************************************************
 */
@@ -101,11 +101,44 @@ namespace Org.LLRP.LTK.LLRPV1.DataType
         }
 
         /// <summary>
+        /// Convert byte array to Hex string
+        /// </summary>
+        /// <param name="byte_array"></param>
+        /// <returns></returns>
+        public static string ConvertSignedByteArrayToHexString(sbyte[] byte_array)
+        {
+            string s = string.Empty;
+
+            try
+            {
+                for (int i = 0; i < byte_array.Length; i++) s += string.Format("{0:X2}", byte_array[i]);
+            }
+            catch { }
+            return s;
+        }
+        /// <summary>
         /// Convert byte array to Hex string in word order.
         /// </summary>
         /// <param name="byte_array"></param>
         /// <returns></returns>
         public static string ConvertByteArrayToHexWordString(byte[] byte_array)
+        {
+            string s = string.Empty;
+
+            try
+            {
+                for (int i = 0; i < byte_array.Length; i += 2) s += string.Format("{0:X2}{0:X2} ", byte_array[i], byte_array[i + 1]);
+            }
+            catch { }
+            return s;
+        }
+
+        /// <summary>
+        /// Convert signed byte array to Hex string in word order.
+        /// </summary>
+        /// <param name="byte_array"></param>
+        /// <returns></returns>
+        public static string ConvertSignedByteArrayToHexWordString(sbyte[] byte_array)
         {
             string s = string.Empty;
 
@@ -132,7 +165,7 @@ namespace Org.LLRP.LTK.LLRPV1.DataType
             int byte_size = bit_size / 8;
 
             bool[] new_array = new bool[bit_size];
-            Array.Copy(bit_array, 0, new_array, (mod>0?(8-mod):0), bit_array.Length);
+            Array.Copy(bit_array, new_array, bit_array.Length);
 
             byte[] data = new byte[byte_size];
             for (int i = 0; i < byte_size; i++)
@@ -273,7 +306,7 @@ namespace Org.LLRP.LTK.LLRPV1.DataType
                     s = s.Substring(0, field_len - 1);
                     s += '.';
                 }
-                
+
                 obj = s;
             }
             else if (type.Equals(typeof(ByteArray)))
@@ -281,15 +314,30 @@ namespace Org.LLRP.LTK.LLRPV1.DataType
                 obj = new ByteArray();
                 for (int i = 0; i < field_len; i++) ((ByteArray)obj).Add((byte)(UInt64)CalculateVal(ref bit_array, ref cursor, 8));
             }
+            else if (type.Equals(typeof(SignedByteArray)))
+            {
+                obj = new SignedByteArray();
+                for (int i = 0; i < field_len; i++) ((SignedByteArray)obj).Add((sbyte)(UInt64)CalculateVal(ref bit_array, ref cursor, 8));
+            }
             else if (type.Equals(typeof(UInt16Array)))
             {
                 obj = new UInt16Array();
                 for (int i = 0; i < field_len; i++) ((UInt16Array)obj).Add((UInt16)(UInt64)CalculateVal(ref bit_array, ref cursor, 16));
             }
+            else if (type.Equals(typeof(Int16Array)))
+            {
+                obj = new Int16Array();
+                for (int i = 0; i < field_len; i++) ((Int16Array)obj).Add((Int16)(UInt64)CalculateVal(ref bit_array, ref cursor, 16));
+            }
             else if (type.Equals(typeof(UInt32Array)))
             {
                 obj = new UInt32Array();
                 for (int i = 0; i < field_len; i++) ((UInt32Array)obj).Add((UInt32)(UInt64)CalculateVal(ref bit_array, ref cursor, 32));
+            }
+            else if (type.Equals(typeof(Int32Array)))
+            {
+                obj = new Int32Array();
+                for (int i = 0; i < field_len; i++) ((Int32Array)obj).Add((Int32)(UInt64)CalculateVal(ref bit_array, ref cursor, 32));
             }
             else if (type.Equals(typeof(TwoBits)))
             {
@@ -471,6 +519,18 @@ namespace Org.LLRP.LTK.LLRPV1.DataType
                 }
                 return bit_arr;
             }
+            else if (type.Equals(typeof(SignedByteArray)))
+            {
+                int len = ((SignedByteArray)obj).Count * 8;
+                bit_arr = new BitArray(len);
+
+                for (int k = 0; k < ((SignedByteArray)obj).Count; k++)
+                {
+                    s = Convert.ToString((sbyte)(((SignedByteArray)obj)[k]), 2).PadLeft(8, '0');
+                    for (int i = 0; i < 8; i++) bit_arr[k * 8 + i] = (s[i] == '1');
+                }
+                return bit_arr;
+            }
             else if (type.Equals(typeof(UInt16Array)))
             {
                 int len = ((UInt16Array)obj).Count * 16;
@@ -483,6 +543,18 @@ namespace Org.LLRP.LTK.LLRPV1.DataType
                 }
                 return bit_arr;
             }
+            else if (type.Equals(typeof(Int16Array)))
+            {
+                int len = ((Int16Array)obj).Count * 16;
+                bit_arr = new BitArray(len);
+
+                for (int k = 0; k < ((Int16Array)obj).Count; k++)
+                {
+                    s = Convert.ToString((Int16)(((Int16Array)obj)[k]), 2).PadLeft(16, '0');
+                    for (int i = 0; i < 16; i++) bit_arr[k * 16 + i] = (s[i] == '1');
+                }
+                return bit_arr;
+            }
             else if (type.Equals(typeof(UInt32Array)))
             {
                 int len = ((UInt32Array)obj).Count * 32;
@@ -491,6 +563,18 @@ namespace Org.LLRP.LTK.LLRPV1.DataType
                 for (int k = 0; k < ((UInt32Array)obj).Count; k++)
                 {
                     s = Convert.ToString((UInt32)(((UInt32Array)obj)[k]), 2).PadLeft(32, '0');
+                    for (int i = 0; i < 32; i++) bit_arr[k * 32 + i] = (s[i] == '1');
+                }
+                return bit_arr;
+            }
+            else if (type.Equals(typeof(Int32Array)))
+            {
+                int len = ((Int32Array)obj).Count * 32;
+                bit_arr = new BitArray(len);
+
+                for (int k = 0; k < ((Int32Array)obj).Count; k++)
+                {
+                    s = Convert.ToString((Int32)(((Int32Array)obj)[k]), 2).PadLeft(32, '0');
                     for (int i = 0; i < 32; i++) bit_arr[k * 32 + i] = (s[i] == '1');
                 }
                 return bit_arr;
@@ -520,9 +604,9 @@ namespace Org.LLRP.LTK.LLRPV1.DataType
 
             int nLen = 8 - strTemp.Length;
 
-            if (nLen < 0) return null;				//prevent negtive length happened.
+            if (nLen < 0) return null;              //prevent negtive length happened.
 
-            for (int i = 0; i < nLen; i++)				//Fill enough '0' into the string
+            for (int i = 0; i < nLen; i++)              //Fill enough '0' into the string
             {
                 strHead += "0";
             }
@@ -602,7 +686,7 @@ namespace Org.LLRP.LTK.LLRPV1.DataType
         }
 
         /// <summary>
-        /// Convert string to Hex string	
+        /// Convert string to Hex string
         /// </summary>
         /// <param name="strString">string to be converted</param>
         /// <returns>string</returns>
@@ -981,6 +1065,16 @@ namespace Org.LLRP.LTK.LLRPV1.DataType
                                 return ((ByteArray)val).ToString();
                         }
                         break;
+                    case "s8v":
+                        switch (format)
+                        {
+                            case "Hex":
+                                return ((SignedByteArray)val).ToHexString();
+                            case "Dec":
+                            default:
+                                return ((SignedByteArray)val).ToString();
+                        }
+                        break;
                     case "u16v":
                         switch (format)
                         {
@@ -992,6 +1086,17 @@ namespace Org.LLRP.LTK.LLRPV1.DataType
 
                         }
                         break;
+                    case "s16v":
+                        switch (format)
+                        {
+                            case "Hex":
+                                return ((Int16Array)val).ToHexString();
+                            case "Dec":
+                            default:
+                                return ((Int16Array)val).ToString();
+
+                        }
+                        break;			
                     case "u32v":
                         switch (format)
                         {
@@ -1000,6 +1105,16 @@ namespace Org.LLRP.LTK.LLRPV1.DataType
                             case "Dec":
                             default:
                                 return ((UInt32Array)val).ToString();
+                        }
+                        break;
+                    case "s32v":
+                        switch (format)
+                        {
+                            case "Hex":
+                                return ((Int32Array)val).ToHexString();
+                            case "Dec":
+                            default:
+                                return ((Int32Array)val).ToString();
                         }
                         break;
                     case "utf8v":
@@ -1049,6 +1164,16 @@ namespace Org.LLRP.LTK.LLRPV1.DataType
                                 return ByteArray.FromString(val);
                         }
                         break;
+                    case "s8v":
+                        switch (format)
+                        {
+                            case "Hex":
+                                return SignedByteArray.FromHexString(val);
+                            case "Dec":
+                            default:
+                                return SignedByteArray.FromString(val);
+                        }
+                        break;
                     case "u16v":
                         switch (format)
                         {
@@ -1060,6 +1185,17 @@ namespace Org.LLRP.LTK.LLRPV1.DataType
 
                         }
                         break;
+                    case "s16v":
+                        switch (format)
+                        {
+                            case "Hex":
+                                return Int16Array.FromHexString(val);
+                            case "Dec":
+                            default:
+                                return Int16Array.FromString(val);
+
+                        }
+			            break;
                     case "u32v":
                         switch (format)
                         {
@@ -1068,6 +1204,16 @@ namespace Org.LLRP.LTK.LLRPV1.DataType
                             case "Dec":
                             default:
                                 return UInt32Array.FromString(val);
+                        }
+                        break;
+                    case "s32v":
+                        switch (format)
+                        {
+                            case "Hex":
+                                return Int32Array.FromHexString(val);
+                            case "Dec":
+                            default:
+                                return Int32Array.FromString(val);
                         }
                         break;
                     case "utf8v":
@@ -1184,6 +1330,31 @@ namespace Org.LLRP.LTK.LLRPV1.DataType
         /// </summary>
         /// <param name="node">Xml node to be evaluated</param>
         /// <param name="child_node_name">Name of the child node</param>
+        /// <param name="attribute_name">Attribute of the child node</param>
+        /// <returns></returns>
+        public static string GetNodeAttribute(XmlNode node, string child_node_name, string attribute_name)
+        {
+            foreach (XmlNode cn in node.ChildNodes)
+            {
+                if (cn.Name == child_node_name || cn.LocalName == child_node_name)
+                {
+                    XmlNode attr = cn.Attributes.GetNamedItem(attribute_name);
+                    if (attr != null)
+                    {
+                        return attr.InnerText;
+                    }
+                    break;
+                }
+            }
+
+            return string.Empty;
+        }
+
+        /// <summary>
+        /// Get the inner text of particular child node
+        /// </summary>
+        /// <param name="node">Xml node to be evaluated</param>
+        /// <param name="child_node_name">Name of the child node</param>
         /// <returns></returns>
         public static string GetNodeValue(XmlNode node, string child_node_name)
         {
@@ -1202,6 +1373,7 @@ namespace Org.LLRP.LTK.LLRPV1.DataType
         /// <param name="node">Xml node to be evaluated</param>
         /// <param name="child_node_name">Name of the child nodes</param>
         /// <returns></returns>
+        [Obsolete("Buggy, use GetXmlNodes that passes XmlNamespaceManager")]
         public static XmlNodeList GetXmlNodes(XmlNode node, string child_node_name)
         {
             if (node.NamespaceURI != null)
@@ -1215,6 +1387,36 @@ namespace Org.LLRP.LTK.LLRPV1.DataType
                 return node.SelectNodes(child_node_name);
             }
 
+        }
+
+        /// <summary>
+        /// Get all the child nodes has same name
+        /// </summary>
+        /// <param name="node">Xml node to be evaluated</param>
+        /// <param name="child_node_name">Name of the child nodes</param>
+        /// <param name="nsmgr">XML namespace manager to use</param>
+        /// <returns></returns>
+        public static XmlNodeList GetXmlNodes(XmlNode node, string child_node_name, XmlNamespaceManager nsmgr)
+        {
+            IEnumerator ienum = nsmgr.GetEnumerator();
+            XmlNodeList xnl = node.SelectNodes(child_node_name, nsmgr);
+
+            while (0 == xnl.Count && ienum.MoveNext())
+            {
+                string qualified_name = (string)ienum.Current;
+                if ("" != qualified_name)
+                {
+                    qualified_name += ":" + child_node_name;
+                }
+                else
+                {
+                    qualified_name = child_node_name;
+                }
+
+                xnl = node.SelectNodes(qualified_name, nsmgr);
+            }
+
+            return xnl;
         }
 
         /// <summary>
@@ -1239,11 +1441,89 @@ namespace Org.LLRP.LTK.LLRPV1.DataType
         /// </summary>
         /// <param name="node">Array of custom node list</param>
         /// <returns></returns>
+        [Obsolete("Buggy, use GetXmlNodeCustomChildren that passes XmlNamespaceManager")]
         public static ArrayList GetXmlNodeCustomChildren(XmlNode node)
         {
             ArrayList arr = new ArrayList();
             foreach (XmlNode cnode in node.ChildNodes)
-                if (cnode.Name.Contains(":")) arr.Add(cnode);
+            {
+                if (cnode.Name.Contains(":"))
+                {
+                    arr.Add(cnode);
+                }
+            }
+
+            return arr;
+        }
+
+        /// <summary>
+        /// Get child node's custom nodes.
+        /// </summary>
+        /// <param name="node">Array of custom node list</param>
+        /// <param name="nsmgr">XML namespace manager to use</param>
+        /// <returns></returns>
+        public static ArrayList GetXmlNodeCustomChildren(XmlNode node, XmlNamespaceManager nsmgr)
+        {
+            ArrayList arr = new ArrayList();
+            XmlNodeList xnl = node.SelectNodes("llrp:Custom", nsmgr);
+
+            foreach (XmlNode cnode in xnl)
+            {
+                arr.Add(cnode);
+            }
+
+            foreach (XmlNode cnode in node.ChildNodes)
+            {
+                if (cnode.Name.Contains(":") && !arr.Contains(cnode))
+                {
+                    arr.Add(cnode);
+                }
+            }
+
+            return arr;
+        }
+
+        /// <summary>
+        /// Get child node's custom nodes.
+        /// </summary>
+        /// <param name="node">Array of custom node list</param>
+        /// <param name="excl">Array of nodes to exclude</param>
+        /// <param name="nsmgr">XML namespace manager to use</param>
+        /// <returns></returns>
+        public static ArrayList GetXmlNodeCustomChildren(XmlNode node, string[] excl, XmlNamespaceManager nsmgr)
+        {
+            ArrayList arr = new ArrayList();
+            XmlNodeList xnl = node.SelectNodes("llrp:Custom", nsmgr);
+
+            foreach (XmlNode cnode in xnl)
+            {
+                arr.Add(cnode);
+            }
+
+            foreach (XmlNode cnode in node.ChildNodes)
+            {
+                // The exclusion array is not namespace aware
+                string[] temp = cnode.Name.Split(new char[] {':'});
+                if (1 < temp.Length)
+                {
+                    string type_name = temp[temp.Length - 1];
+                    bool found = false;
+
+                    foreach (string excl_name in excl)
+                    {
+                        if (type_name == excl_name)
+                        {
+                            found = true;
+                            break;
+                        }
+                    }
+
+                    if (!found)
+                    {
+                        arr.Add(cnode);
+                    }
+                }
+            }
 
             return arr;
         }

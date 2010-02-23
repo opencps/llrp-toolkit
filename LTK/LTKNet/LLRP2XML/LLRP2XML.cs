@@ -10,7 +10,6 @@ using Org.LLRP.LTK.LLRPV1.DataType;
 
 namespace LTK
 {
-  
     class LLRP2XML
     {
 
@@ -104,7 +103,7 @@ namespace LTK
                         Console.Write(
                             "<ERROR_MESSAGE MessageID=\"0\" Version=\"0\">\r\n" +
                             "  <LLRPStatus>\r\n" +
-                            "    <StatusCode>M_Success</StatusCode>\r\n" +
+                            "    <StatusCode>R_DeviceError</StatusCode>\r\n" +
                             "    <ErrorDescription>ToString failure on Packet #" + msg_no + "</ErrorDescription>\r\n" +
                             "  </LLRPStatus>\r\n" +
                             "</ERROR_MESSAGE>\r\n"
@@ -117,7 +116,7 @@ namespace LTK
                     Console.Write(
                         "<ERROR_MESSAGE MessageID=\"0\" Version=\"0\">\r\n" +
                         "  <LLRPStatus>\r\n" +
-                        "    <StatusCode>M_Success</StatusCode>\r\n" +
+                        "    <StatusCode>R_DeviceError</StatusCode>\r\n" +
                         "    <ErrorDescription>Decode failure on Packet #" + msg_no + "</ErrorDescription>\r\n" +
                         "  </LLRPStatus>\r\n" +
                         "</ERROR_MESSAGE>\r\n"

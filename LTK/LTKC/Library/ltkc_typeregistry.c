@@ -215,8 +215,28 @@ LLRP_TypeRegistry_lookupByName (
         }
     }
 
-    /* TODO: custom messages */
-    /* TODO: custom parameters */
+    /*  custom messages */
+   for(i = 0; i < pTypeRegistry->nCustMessageTypeDescriptors; i++)
+    {
+        pTypeDescriptor = pTypeRegistry->apCustMessageTypeDescriptors[i];
+	if(0 == strcmp(pTypeDescriptor->pName, pElementName))
+	{
+            return pTypeDescriptor;
+	}
+     
+    }
+    
+
+    /* custom parameters */
+    for(i = 0; i < pTypeRegistry->nCustParameterTypeDescriptors; i++)
+    {
+        pTypeDescriptor = pTypeRegistry->apCustParameterTypeDescriptors[i];
+	if(0 == strcmp(pTypeDescriptor->pName, pElementName))
+	{
+            return pTypeDescriptor;
+	}
+    }
+    
 
     return NULL;
 }

@@ -1,0 +1,2201 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ps:packetSequence
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+  xmlns:ps='http://www.llrp.org/ltk/schema/testing/encoding/xml/0.6'>
+  <!-- no schema locations since I don't wan to validate (its obviously not valid)-->
+
+<!-- unknown message -->
+<UNKNOWN_MESSAGE MessageID='300'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <UnknownField>3</UnknownField>
+</UNKNOWN_MESSAGE>
+
+<!-- unknown parameter -->
+<SET_READER_CONFIG_RESPONSE MessageID='301'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <UnknownField>3</UnknownField>
+  <UnknownParameter>
+    <StatusCode>M_Scess</StatusCode>
+    <ErrorDescription></ErrorDescription>
+  </UnknownParameter>
+</SET_READER_CONFIG_RESPONSE>
+
+<!-- missing mandatory element-->
+<SET_READER_CONFIG_RESPONSE MessageID='302'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+</SET_READER_CONFIG_RESPONSE>
+
+<!-- extra mandatory element-->
+<SET_READER_CONFIG_RESPONSE MessageID='303'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <LLRPStatus>
+    <StatusCode>M_Success</StatusCode>
+    <ErrorDescription></ErrorDescription>
+  </LLRPStatus>
+    <LLRPStatus>
+    <StatusCode>M_Success</StatusCode>
+    <ErrorDescription></ErrorDescription>
+  </LLRPStatus>  
+</SET_READER_CONFIG_RESPONSE>
+
+<!-- too many optional elements -->
+<GET_READER_CONFIG_RESPONSE MessageID='304'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <LLRPStatus>
+    <StatusCode>M_Success</StatusCode>
+    <ErrorDescription></ErrorDescription>
+  </LLRPStatus>
+  <Identification>
+    <IDType>MAC_Address</IDType>
+    <ReaderID>aabbccddeeff0011</ReaderID>
+  </Identification>
+  <Identification>
+    <IDType>MAC_Address</IDType>
+    <ReaderID>aabbccddeeff0011</ReaderID>
+  </Identification>  
+</GET_READER_CONFIG_RESPONSE>
+
+<!-- malformed enumeration string -->
+<SET_READER_CONFIG_RESPONSE MessageID='305'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <LLRPStatus>
+    <StatusCode>M_Scess</StatusCode>
+    <ErrorDescription></ErrorDescription>
+  </LLRPStatus>
+</SET_READER_CONFIG_RESPONSE>
+
+<!-- empty integer field -->
+
+<!-- u32 -->
+<ENABLE_ROSPEC MessageID='306'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <ROSpecID></ROSpecID>
+</ENABLE_ROSPEC>
+
+<!--u32v-->
+
+<!-- I beleive that these are allowed to be empty, so this
+   - is commented out 
+
+<GET_READER_CAPABILITIES_RESPONSE MessageID='307'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <LLRPStatus>
+    <StatusCode>M_Success</StatusCode>
+    <ErrorDescription></ErrorDescription>
+  </LLRPStatus>
+ <RegulatoryCapabilities>
+    <CountryCode>840</CountryCode>
+    <CommunicationsStandard>US_FCC_Part_15</CommunicationsStandard>
+    <UHFBandCapabilities>
+      <TransmitPowerLevelTableEntry>
+        <Index>0</Index>
+        <TransmitPowerValue>1500</TransmitPowerValue>
+      </TransmitPowerLevelTableEntry>
+      <FrequencyInformation>
+        <Hopping>true</Hopping>
+        <FrequencyHopTable>
+          <HopTableID>1</HopTableID>
+          <Frequency></Frequency>
+        </FrequencyHopTable>
+      </FrequencyInformation>
+      <C1G2UHFRFModeTable>
+        <C1G2UHFRFModeTableEntry>
+          <ModeIdentifier>0</ModeIdentifier>
+          <DRValue>DRV_64_3</DRValue>
+          <EPCHAGTCConformance>false</EPCHAGTCConformance>
+          <MValue>MV_FM0</MValue>
+          <ForwardLinkModulation>PR_ASK</ForwardLinkModulation>
+          <SpectralMaskIndicator>MI</SpectralMaskIndicator>
+          <BDRValue>640000</BDRValue>
+          <PIEValue>1500</PIEValue>
+          <MinTariValue>7140</MinTariValue>
+          <MaxTariValue>7140</MaxTariValue>
+          <StepTariValue>0</StepTariValue>
+        </C1G2UHFRFModeTableEntry>
+      </C1G2UHFRFModeTable>
+    </UHFBandCapabilities>
+  </RegulatoryCapabilities>
+</GET_READER_CAPABILITIES_RESPONSE>
+ commented out -->
+
+<!--u16-->
+<GET_READER_CONFIG MessageID='308'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <AntennaID>0</AntennaID>
+  <RequestedData>All</RequestedData>
+  <GPIPortNum></GPIPortNum>
+  <GPOPortNum></GPOPortNum>
+</GET_READER_CONFIG>
+
+<!--u16v-->
+<!-- I beleive this is supposed to pass the parser.  Comment out 
+  
+<ADD_ROSPEC MessageID='309'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <ROSpec>
+    <ROSpecID>1</ROSpecID>
+    <Priority>0</Priority>
+    <CurrentState>Disabled</CurrentState>
+    <ROBoundarySpec>
+      <ROSpecStartTrigger>
+        <ROSpecStartTriggerType>GPI</ROSpecStartTriggerType>
+        <GPITriggerValue>
+          <GPIPortNum>1</GPIPortNum>
+          <GPIEvent>true</GPIEvent>
+          <Timeout>0</Timeout>
+        </GPITriggerValue>
+      </ROSpecStartTrigger>
+      <ROSpecStopTrigger>
+        <ROSpecStopTriggerType>Null</ROSpecStopTriggerType>
+        <DurationTriggerValue>0</DurationTriggerValue>
+      </ROSpecStopTrigger>
+    </ROBoundarySpec>
+    <AISpec>
+      <AntennaIDs></AntennaIDs>
+      <AISpecStopTrigger>
+        <AISpecStopTriggerType>Duration</AISpecStopTriggerType>
+        <DurationTrigger>60000</DurationTrigger>
+      </AISpecStopTrigger>
+      <InventoryParameterSpec>
+        <InventoryParameterSpecID>1</InventoryParameterSpecID>
+        <ProtocolID>EPCGlobalClass1Gen2</ProtocolID>
+        <AntennaConfiguration>
+          <AntennaID>0</AntennaID>
+          <C1G2InventoryCommand>
+            <TagInventoryStateAware>false</TagInventoryStateAware>
+            <C1G2RFControl>
+              <ModeIndex>0</ModeIndex>
+              <Tari>0</Tari>
+            </C1G2RFControl>
+          </C1G2InventoryCommand>
+        </AntennaConfiguration>
+      </InventoryParameterSpec>
+    </AISpec>
+  </ROSpec>
+</ADD_ROSPEC>
+comment out -->
+
+<!--s16-->
+<GET_READER_CAPABILITIES_RESPONSE MessageID='310'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <LLRPStatus>
+    <StatusCode>M_Success</StatusCode>
+    <ErrorDescription></ErrorDescription>
+  </LLRPStatus>
+  <GeneralDeviceCapabilities>
+    <MaxNumberOfAntennaSupported>4</MaxNumberOfAntennaSupported>
+    <CanSetAntennaProperties>false</CanSetAntennaProperties>
+    <HasUTCClockCapability>true</HasUTCClockCapability>
+    <!-- reserved 14 bits -->
+    <DeviceManufacturerName>25882</DeviceManufacturerName>
+    <ModelName>1000</ModelName>
+    <ReaderFirmwareVersion>2.5.34.240</ReaderFirmwareVersion>
+    <ReceiveSensitivityTableEntry>
+      <Index>0</Index>
+      <ReceiveSensitivityValue></ReceiveSensitivityValue>
+    </ReceiveSensitivityTableEntry>
+    <GPIOCapabilities>
+      <NumGPIs>4</NumGPIs>
+      <NumGPOs>8</NumGPOs>
+    </GPIOCapabilities>
+    <PerAntennaAirProtocol>
+      <AntennaID>1</AntennaID>
+      <ProtocolID>EPCGlobalClass1Gen2</ProtocolID>
+    </PerAntennaAirProtocol>
+    <PerAntennaAirProtocol>
+      <AntennaID>2</AntennaID>
+      <ProtocolID>EPCGlobalClass1Gen2</ProtocolID>
+    </PerAntennaAirProtocol>
+    <PerAntennaAirProtocol>
+      <AntennaID>3</AntennaID>
+      <ProtocolID>EPCGlobalClass1Gen2</ProtocolID>
+    </PerAntennaAirProtocol>
+    <PerAntennaAirProtocol>
+      <AntennaID>4</AntennaID>
+      <ProtocolID>EPCGlobalClass1Gen2</ProtocolID>
+    </PerAntennaAirProtocol>
+  </GeneralDeviceCapabilities>
+</GET_READER_CAPABILITIES_RESPONSE>
+
+<!--u8-->
+<GET_READER_CAPABILITIES_RESPONSE MessageID='311'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <LLRPStatus>
+    <StatusCode>M_Success</StatusCode>
+    <ErrorDescription></ErrorDescription>
+  </LLRPStatus>
+  <LLRPCapabilities>
+    <CanDoRFSurvey>false</CanDoRFSurvey>
+    <CanReportBufferFillWarning>true</CanReportBufferFillWarning>
+    <SupportsClientRequestOpSpec>false</SupportsClientRequestOpSpec>
+    <CanDoTagInventoryStateAwareSingulation>false</CanDoTagInventoryStateAwareSingulation>
+    <SupportsEventAndReportHolding>true</SupportsEventAndReportHolding>
+    <!-- reserved 3 bits -->
+    <MaxNumPriorityLevelsSupported></MaxNumPriorityLevelsSupported>
+    <ClientRequestOpSpecTimeout>0</ClientRequestOpSpecTimeout>
+    <MaxNumROSpecs>1</MaxNumROSpecs>
+    <MaxNumSpecsPerROSpec>8</MaxNumSpecsPerROSpec>
+    <MaxNumInventoryParameterSpecsPerAISpec>1</MaxNumInventoryParameterSpecsPerAISpec>
+    <MaxNumAccessSpecs>64</MaxNumAccessSpecs>
+    <MaxNumOpSpecsPerAccessSpec>8</MaxNumOpSpecsPerAccessSpec>
+  </LLRPCapabilities>
+</GET_READER_CAPABILITIES_RESPONSE>
+
+<!--s8-->
+<RO_ACCESS_REPORT MessageID='312'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <TagReportData>
+    <EPC_96>
+      <EPC>300833B2DDD9CAFEBABE801E</EPC>
+    </EPC_96>
+    <ROSpecID>
+      <ROSpecID>1</ROSpecID>
+    </ROSpecID>
+    <SpecIndex>
+      <SpecIndex>1</SpecIndex>
+    </SpecIndex>
+    <InventoryParameterSpecID>
+      <InventoryParameterSpecID>1</InventoryParameterSpecID>
+    </InventoryParameterSpecID>
+    <AntennaID>
+      <AntennaID>2</AntennaID>
+    </AntennaID>
+    <PeakRSSI>
+      <PeakRSSI></PeakRSSI>
+    </PeakRSSI>
+    <ChannelIndex>
+      <ChannelIndex>39</ChannelIndex>
+    </ChannelIndex>
+    <FirstSeenTimestampUTC>
+      <Microseconds>2007-03-07T17:02:44.310403</Microseconds>
+    </FirstSeenTimestampUTC>
+    <LastSeenTimestampUTC>
+      <Microseconds>2007-03-07T17:03:44.216755</Microseconds>
+    </LastSeenTimestampUTC>
+    <TagSeenCount>
+      <TagCount>740</TagCount>
+    </TagSeenCount>
+    <C1G2_PC>
+      <PC_Bits>12288</PC_Bits>
+    </C1G2_PC>
+    <C1G2_CRC>
+      <CRC>12636</CRC>
+    </C1G2_CRC>
+    <AccessSpecID>
+      <AccessSpecID>1234</AccessSpecID>
+    </AccessSpecID>
+  </TagReportData>
+ </RO_ACCESS_REPORT>
+
+<!--u2-->
+<GET_READER_CONFIG_RESPONSE MessageID='313'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <LLRPStatus>
+    <StatusCode>M_Success</StatusCode>
+    <ErrorDescription></ErrorDescription>
+  </LLRPStatus>
+  <AntennaConfiguration>
+    <AntennaID>1</AntennaID>
+    <RFReceiver>
+      <ReceiverSensitivity>0</ReceiverSensitivity>
+    </RFReceiver>
+    <RFTransmitter>
+      <HopTableID>1</HopTableID>
+      <ChannelIndex>0</ChannelIndex>
+      <TransmitPower>60</TransmitPower>
+    </RFTransmitter>
+    <C1G2InventoryCommand>
+      <TagInventoryStateAware>false</TagInventoryStateAware>
+      <!-- reserved 7 bits -->
+      <C1G2RFControl>
+        <ModeIndex>2</ModeIndex>
+        <Tari>0</Tari>
+      </C1G2RFControl>
+      <C1G2SingulationControl>
+        <Session></Session>
+        <!-- reserved 6 bits -->
+        <TagPopulation>0</TagPopulation>
+        <TagTransitTime>0</TagTransitTime>
+      </C1G2SingulationControl>
+    </C1G2InventoryCommand>
+  </AntennaConfiguration>
+</GET_READER_CONFIG_RESPONSE>
+
+<!--u1-->
+<SET_READER_CONFIG MessageID='314'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <ResetToFactoryDefault></ResetToFactoryDefault>
+  <!-- reserved 7 bits -->
+</SET_READER_CONFIG>
+
+<!-- maximum value in integer field -->
+
+<!--u32-->
+<ENABLE_ROSPEC MessageID='315'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <ROSpecID>4294967296</ROSpecID>
+</ENABLE_ROSPEC>
+
+<!--u32v-->
+<GET_READER_CAPABILITIES_RESPONSE MessageID='316'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <LLRPStatus>
+    <StatusCode>M_Success</StatusCode>
+    <ErrorDescription></ErrorDescription>
+  </LLRPStatus>
+ <RegulatoryCapabilities>
+    <CountryCode>840</CountryCode>
+    <CommunicationsStandard>US_FCC_Part_15</CommunicationsStandard>
+    <UHFBandCapabilities>
+      <TransmitPowerLevelTableEntry>
+        <Index>0</Index>
+        <TransmitPowerValue>1500</TransmitPowerValue>
+      </TransmitPowerLevelTableEntry>
+      <FrequencyInformation>
+        <Hopping>true</Hopping>
+        <!-- reserved 7 bits -->
+        <FrequencyHopTable>
+          <HopTableID>1</HopTableID>
+          <!-- reserved 8 bits -->
+          <Frequency>4294967296 4294967296 4294967296</Frequency>
+        </FrequencyHopTable>
+      </FrequencyInformation>
+      <C1G2UHFRFModeTable>
+        <C1G2UHFRFModeTableEntry>
+          <ModeIdentifier>0</ModeIdentifier>
+          <DRValue>DRV_64_3</DRValue>
+          <EPCHAGTCConformance>false</EPCHAGTCConformance>
+          <!-- reserved 6 bits -->
+          <MValue>MV_FM0</MValue>
+          <ForwardLinkModulation>PR_ASK</ForwardLinkModulation>
+          <SpectralMaskIndicator>MI</SpectralMaskIndicator>
+          <BDRValue>640000</BDRValue>
+          <PIEValue>1500</PIEValue>
+          <MinTariValue>7140</MinTariValue>
+          <MaxTariValue>7140</MaxTariValue>
+          <StepTariValue>0</StepTariValue>
+        </C1G2UHFRFModeTableEntry>
+      </C1G2UHFRFModeTable>
+    </UHFBandCapabilities>
+  </RegulatoryCapabilities>
+</GET_READER_CAPABILITIES_RESPONSE>
+
+<!--u16-->
+<GET_READER_CONFIG MessageID='317'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <AntennaID>0</AntennaID>
+  <RequestedData>All</RequestedData>
+  <GPIPortNum>65536</GPIPortNum>
+  <GPOPortNum>65536</GPOPortNum>
+</GET_READER_CONFIG>
+
+<!--u16v-->
+<ADD_ROSPEC MessageID='318'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <ROSpec>
+    <ROSpecID>1</ROSpecID>
+    <Priority>0</Priority>
+    <CurrentState>Disabled</CurrentState>
+    <ROBoundarySpec>
+      <ROSpecStartTrigger>
+        <ROSpecStartTriggerType>GPI</ROSpecStartTriggerType>
+        <GPITriggerValue>
+          <GPIPortNum>1</GPIPortNum>
+          <GPIEvent>true</GPIEvent>
+          <!-- reserved 7 bits -->
+          <Timeout>0</Timeout>
+        </GPITriggerValue>
+      </ROSpecStartTrigger>
+      <ROSpecStopTrigger>
+        <ROSpecStopTriggerType>Null</ROSpecStopTriggerType>
+        <DurationTriggerValue>0</DurationTriggerValue>
+      </ROSpecStopTrigger>
+    </ROBoundarySpec>
+    <AISpec>
+      <AntennaIDs>0 65536</AntennaIDs>
+      <AISpecStopTrigger>
+        <AISpecStopTriggerType>Duration</AISpecStopTriggerType>
+        <DurationTrigger>60000</DurationTrigger>
+      </AISpecStopTrigger>
+      <InventoryParameterSpec>
+        <InventoryParameterSpecID>1</InventoryParameterSpecID>
+        <ProtocolID>EPCGlobalClass1Gen2</ProtocolID>
+        <AntennaConfiguration>
+          <AntennaID>0</AntennaID>
+          <C1G2InventoryCommand>
+            <TagInventoryStateAware>false</TagInventoryStateAware>
+            <!-- reserved 7 bits -->
+            <C1G2RFControl>
+              <ModeIndex>0</ModeIndex>
+              <Tari>0</Tari>
+            </C1G2RFControl>
+          </C1G2InventoryCommand>
+        </AntennaConfiguration>
+      </InventoryParameterSpec>
+    </AISpec>
+  </ROSpec>
+</ADD_ROSPEC>
+
+<!--s16-->
+<GET_READER_CAPABILITIES_RESPONSE MessageID='319'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <LLRPStatus>
+    <StatusCode>M_Success</StatusCode>
+    <ErrorDescription></ErrorDescription>
+  </LLRPStatus>
+  <GeneralDeviceCapabilities>
+    <MaxNumberOfAntennaSupported>4</MaxNumberOfAntennaSupported>
+    <CanSetAntennaProperties>false</CanSetAntennaProperties>
+    <HasUTCClockCapability>true</HasUTCClockCapability>
+    <!-- reserved 14 bits -->
+    <DeviceManufacturerName>25882</DeviceManufacturerName>
+    <ModelName>1000</ModelName>
+    <ReaderFirmwareVersion>2.5.34.240</ReaderFirmwareVersion>
+    <ReceiveSensitivityTableEntry>
+      <Index>0</Index>
+      <ReceiveSensitivityValue>32768</ReceiveSensitivityValue>
+    </ReceiveSensitivityTableEntry>
+    <GPIOCapabilities>
+      <NumGPIs>4</NumGPIs>
+      <NumGPOs>8</NumGPOs>
+    </GPIOCapabilities>
+    <PerAntennaAirProtocol>
+      <AntennaID>1</AntennaID>
+      <ProtocolID>EPCGlobalClass1Gen2</ProtocolID>
+    </PerAntennaAirProtocol>
+    <PerAntennaAirProtocol>
+      <AntennaID>2</AntennaID>
+      <ProtocolID>EPCGlobalClass1Gen2</ProtocolID>
+    </PerAntennaAirProtocol>
+    <PerAntennaAirProtocol>
+      <AntennaID>3</AntennaID>
+      <ProtocolID>EPCGlobalClass1Gen2</ProtocolID>
+    </PerAntennaAirProtocol>
+    <PerAntennaAirProtocol>
+      <AntennaID>4</AntennaID>
+      <ProtocolID>EPCGlobalClass1Gen2</ProtocolID>
+    </PerAntennaAirProtocol>
+  </GeneralDeviceCapabilities>
+</GET_READER_CAPABILITIES_RESPONSE>
+
+<!--u8-->
+<GET_READER_CAPABILITIES_RESPONSE MessageID='320'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <LLRPStatus>
+    <StatusCode>M_Success</StatusCode>
+    <ErrorDescription></ErrorDescription>
+  </LLRPStatus>
+  <LLRPCapabilities>
+    <CanDoRFSurvey>false</CanDoRFSurvey>
+    <CanReportBufferFillWarning>true</CanReportBufferFillWarning>
+    <SupportsClientRequestOpSpec>false</SupportsClientRequestOpSpec>
+    <CanDoTagInventoryStateAwareSingulation>false</CanDoTagInventoryStateAwareSingulation>
+    <SupportsEventAndReportHolding>true</SupportsEventAndReportHolding>
+    <!-- reserved 3 bits -->
+    <MaxNumPriorityLevelsSupported>256</MaxNumPriorityLevelsSupported>
+    <ClientRequestOpSpecTimeout>0</ClientRequestOpSpecTimeout>
+    <MaxNumROSpecs>1</MaxNumROSpecs>
+    <MaxNumSpecsPerROSpec>8</MaxNumSpecsPerROSpec>
+    <MaxNumInventoryParameterSpecsPerAISpec>1</MaxNumInventoryParameterSpecsPerAISpec>
+    <MaxNumAccessSpecs>64</MaxNumAccessSpecs>
+    <MaxNumOpSpecsPerAccessSpec>8</MaxNumOpSpecsPerAccessSpec>
+  </LLRPCapabilities>
+</GET_READER_CAPABILITIES_RESPONSE>
+
+<!--s8-->
+<RO_ACCESS_REPORT MessageID='321'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <TagReportData>
+    <EPC_96>
+      <EPC>300833B2DDD9CAFEBABE801E</EPC>
+    </EPC_96>
+    <ROSpecID>
+      <ROSpecID>1</ROSpecID>
+    </ROSpecID>
+    <SpecIndex>
+      <SpecIndex>1</SpecIndex>
+    </SpecIndex>
+    <InventoryParameterSpecID>
+      <InventoryParameterSpecID>1</InventoryParameterSpecID>
+    </InventoryParameterSpecID>
+    <AntennaID>
+      <AntennaID>2</AntennaID>
+    </AntennaID>
+    <PeakRSSI>
+      <PeakRSSI>128</PeakRSSI>
+    </PeakRSSI>
+    <ChannelIndex>
+      <ChannelIndex>39</ChannelIndex>
+    </ChannelIndex>
+    <FirstSeenTimestampUTC>
+      <Microseconds>2007-03-07T17:02:44.310403</Microseconds>
+    </FirstSeenTimestampUTC>
+    <LastSeenTimestampUTC>
+      <Microseconds>2007-03-07T17:03:44.216755</Microseconds>
+    </LastSeenTimestampUTC>
+    <TagSeenCount>
+      <TagCount>740</TagCount>
+    </TagSeenCount>
+    <C1G2_PC>
+      <PC_Bits>12288</PC_Bits>
+    </C1G2_PC>
+    <C1G2_CRC>
+      <CRC>12636</CRC>
+    </C1G2_CRC>
+    <AccessSpecID>
+      <AccessSpecID>1234</AccessSpecID>
+    </AccessSpecID>
+  </TagReportData>
+ </RO_ACCESS_REPORT>
+
+<!--u2-->
+<GET_READER_CONFIG_RESPONSE MessageID='322'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <LLRPStatus>
+    <StatusCode>M_Success</StatusCode>
+    <ErrorDescription></ErrorDescription>
+  </LLRPStatus>
+  <AntennaConfiguration>
+    <AntennaID>1</AntennaID>
+    <RFReceiver>
+      <ReceiverSensitivity>0</ReceiverSensitivity>
+    </RFReceiver>
+    <RFTransmitter>
+      <HopTableID>1</HopTableID>
+      <ChannelIndex>0</ChannelIndex>
+      <TransmitPower>60</TransmitPower>
+    </RFTransmitter>
+    <C1G2InventoryCommand>
+      <TagInventoryStateAware>false</TagInventoryStateAware>
+      <!-- reserved 7 bits -->
+      <C1G2RFControl>
+        <ModeIndex>2</ModeIndex>
+        <Tari>0</Tari>
+      </C1G2RFControl>
+      <C1G2SingulationControl>
+        <Session>4</Session>
+        <!-- reserved 6 bits -->
+        <TagPopulation>0</TagPopulation>
+        <TagTransitTime>0</TagTransitTime>
+      </C1G2SingulationControl>
+    </C1G2InventoryCommand>
+  </AntennaConfiguration>
+</GET_READER_CONFIG_RESPONSE>
+
+<!--u1-->
+<SET_READER_CONFIG MessageID='323'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <ResetToFactoryDefault>2</ResetToFactoryDefault>
+  <!-- reserved 7 bits -->
+</SET_READER_CONFIG>
+
+<!--minimum value in integer field -->
+
+<!-- u32 -->
+<ENABLE_ROSPEC MessageID='324'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <ROSpecID>-1</ROSpecID>
+</ENABLE_ROSPEC>
+
+<!--u32v-->
+<GET_READER_CAPABILITIES_RESPONSE MessageID='325'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <LLRPStatus>
+    <StatusCode>M_Success</StatusCode>
+    <ErrorDescription></ErrorDescription>
+  </LLRPStatus>
+ <RegulatoryCapabilities>
+    <CountryCode>840</CountryCode>
+    <CommunicationsStandard>US_FCC_Part_15</CommunicationsStandard>
+    <UHFBandCapabilities>
+      <TransmitPowerLevelTableEntry>
+        <Index>0</Index>
+        <TransmitPowerValue>1500</TransmitPowerValue>
+      </TransmitPowerLevelTableEntry>
+      <FrequencyInformation>
+        <Hopping>true</Hopping>
+        <!-- reserved 7 bits -->
+        <FrequencyHopTable>
+          <HopTableID>1</HopTableID>
+          <!-- reserved 8 bits -->
+          <Frequency>-1 -1 -1</Frequency>
+        </FrequencyHopTable>
+      </FrequencyInformation>
+      <C1G2UHFRFModeTable>
+        <C1G2UHFRFModeTableEntry>
+          <ModeIdentifier>0</ModeIdentifier>
+          <DRValue>DRV_64_3</DRValue>
+          <EPCHAGTCConformance>false</EPCHAGTCConformance>
+          <!-- reserved 6 bits -->
+          <MValue>MV_FM0</MValue>
+          <ForwardLinkModulation>PR_ASK</ForwardLinkModulation>
+          <SpectralMaskIndicator>MI</SpectralMaskIndicator>
+          <BDRValue>640000</BDRValue>
+          <PIEValue>1500</PIEValue>
+          <MinTariValue>7140</MinTariValue>
+          <MaxTariValue>7140</MaxTariValue>
+          <StepTariValue>0</StepTariValue>
+        </C1G2UHFRFModeTableEntry>
+      </C1G2UHFRFModeTable>
+    </UHFBandCapabilities>
+  </RegulatoryCapabilities>
+</GET_READER_CAPABILITIES_RESPONSE>
+
+<!--u16-->
+<GET_READER_CONFIG MessageID='326'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <AntennaID>0</AntennaID>
+  <RequestedData>All</RequestedData>
+  <GPIPortNum>-1</GPIPortNum>
+  <GPOPortNum>-1</GPOPortNum>
+</GET_READER_CONFIG>
+
+<!--u16v-->
+<ADD_ROSPEC MessageID='327'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <ROSpec>
+    <ROSpecID>1</ROSpecID>
+    <Priority>0</Priority>
+    <CurrentState>Disabled</CurrentState>
+    <ROBoundarySpec>
+      <ROSpecStartTrigger>
+        <ROSpecStartTriggerType>GPI</ROSpecStartTriggerType>
+        <GPITriggerValue>
+          <GPIPortNum>1</GPIPortNum>
+          <GPIEvent>true</GPIEvent>
+          <!-- reserved 7 bits -->
+          <Timeout>0</Timeout>
+        </GPITriggerValue>
+      </ROSpecStartTrigger>
+      <ROSpecStopTrigger>
+        <ROSpecStopTriggerType>Null</ROSpecStopTriggerType>
+        <DurationTriggerValue>0</DurationTriggerValue>
+      </ROSpecStopTrigger>
+    </ROBoundarySpec>
+    <AISpec>
+      <AntennaIDs>-1 -2 -3</AntennaIDs>
+      <AISpecStopTrigger>
+        <AISpecStopTriggerType>Duration</AISpecStopTriggerType>
+        <DurationTrigger>60000</DurationTrigger>
+      </AISpecStopTrigger>
+      <InventoryParameterSpec>
+        <InventoryParameterSpecID>1</InventoryParameterSpecID>
+        <ProtocolID>EPCGlobalClass1Gen2</ProtocolID>
+        <AntennaConfiguration>
+          <AntennaID>0</AntennaID>
+          <C1G2InventoryCommand>
+            <TagInventoryStateAware>false</TagInventoryStateAware>
+            <!-- reserved 7 bits -->
+            <C1G2RFControl>
+              <ModeIndex>0</ModeIndex>
+              <Tari>0</Tari>
+            </C1G2RFControl>
+          </C1G2InventoryCommand>
+        </AntennaConfiguration>
+      </InventoryParameterSpec>
+    </AISpec>
+  </ROSpec>
+</ADD_ROSPEC>
+
+<!--s16-->
+<GET_READER_CAPABILITIES_RESPONSE MessageID='328'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <LLRPStatus>
+    <StatusCode>M_Success</StatusCode>
+    <ErrorDescription></ErrorDescription>
+  </LLRPStatus>
+  <GeneralDeviceCapabilities>
+    <MaxNumberOfAntennaSupported>4</MaxNumberOfAntennaSupported>
+    <CanSetAntennaProperties>false</CanSetAntennaProperties>
+    <HasUTCClockCapability>true</HasUTCClockCapability>
+    <!-- reserved 14 bits -->
+    <DeviceManufacturerName>25882</DeviceManufacturerName>
+    <ModelName>1000</ModelName>
+    <ReaderFirmwareVersion>2.5.34.240</ReaderFirmwareVersion>
+    <ReceiveSensitivityTableEntry>
+      <Index>0</Index>
+      <ReceiveSensitivityValue>-32769</ReceiveSensitivityValue>
+    </ReceiveSensitivityTableEntry>
+    <GPIOCapabilities>
+      <NumGPIs>4</NumGPIs>
+      <NumGPOs>8</NumGPOs>
+    </GPIOCapabilities>
+    <PerAntennaAirProtocol>
+      <AntennaID>1</AntennaID>
+      <ProtocolID>EPCGlobalClass1Gen2</ProtocolID>
+    </PerAntennaAirProtocol>
+    <PerAntennaAirProtocol>
+      <AntennaID>2</AntennaID>
+      <ProtocolID>EPCGlobalClass1Gen2</ProtocolID>
+    </PerAntennaAirProtocol>
+    <PerAntennaAirProtocol>
+      <AntennaID>3</AntennaID>
+      <ProtocolID>EPCGlobalClass1Gen2</ProtocolID>
+    </PerAntennaAirProtocol>
+    <PerAntennaAirProtocol>
+      <AntennaID>4</AntennaID>
+      <ProtocolID>EPCGlobalClass1Gen2</ProtocolID>
+    </PerAntennaAirProtocol>
+  </GeneralDeviceCapabilities>
+</GET_READER_CAPABILITIES_RESPONSE>
+
+<!--u8-->
+<GET_READER_CAPABILITIES_RESPONSE MessageID='329'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <LLRPStatus>
+    <StatusCode>M_Success</StatusCode>
+    <ErrorDescription></ErrorDescription>
+  </LLRPStatus>
+  <LLRPCapabilities>
+    <CanDoRFSurvey>false</CanDoRFSurvey>
+    <CanReportBufferFillWarning>true</CanReportBufferFillWarning>
+    <SupportsClientRequestOpSpec>false</SupportsClientRequestOpSpec>
+    <CanDoTagInventoryStateAwareSingulation>false</CanDoTagInventoryStateAwareSingulation>
+    <SupportsEventAndReportHolding>true</SupportsEventAndReportHolding>
+    <!-- reserved 3 bits -->
+    <MaxNumPriorityLevelsSupported>-1</MaxNumPriorityLevelsSupported>
+    <ClientRequestOpSpecTimeout>0</ClientRequestOpSpecTimeout>
+    <MaxNumROSpecs>1</MaxNumROSpecs>
+    <MaxNumSpecsPerROSpec>8</MaxNumSpecsPerROSpec>
+    <MaxNumInventoryParameterSpecsPerAISpec>1</MaxNumInventoryParameterSpecsPerAISpec>
+    <MaxNumAccessSpecs>64</MaxNumAccessSpecs>
+    <MaxNumOpSpecsPerAccessSpec>8</MaxNumOpSpecsPerAccessSpec>
+  </LLRPCapabilities>
+</GET_READER_CAPABILITIES_RESPONSE>
+
+<!--s8-->
+<RO_ACCESS_REPORT MessageID='330'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <TagReportData>
+    <EPC_96>
+      <EPC>300833B2DDD9CAFEBABE801E</EPC>
+    </EPC_96>
+    <ROSpecID>
+      <ROSpecID>1</ROSpecID>
+    </ROSpecID>
+    <SpecIndex>
+      <SpecIndex>1</SpecIndex>
+    </SpecIndex>
+    <InventoryParameterSpecID>
+      <InventoryParameterSpecID>1</InventoryParameterSpecID>
+    </InventoryParameterSpecID>
+    <AntennaID>
+      <AntennaID>2</AntennaID>
+    </AntennaID>
+    <PeakRSSI>
+      <PeakRSSI>-129</PeakRSSI>
+    </PeakRSSI>
+    <ChannelIndex>
+      <ChannelIndex>39</ChannelIndex>
+    </ChannelIndex>
+    <FirstSeenTimestampUTC>
+      <Microseconds>2007-03-07T17:02:44.310403</Microseconds>
+    </FirstSeenTimestampUTC>
+    <LastSeenTimestampUTC>
+      <Microseconds>2007-03-07T17:03:44.216755</Microseconds>
+    </LastSeenTimestampUTC>
+    <TagSeenCount>
+      <TagCount>740</TagCount>
+    </TagSeenCount>
+    <C1G2_PC>
+      <PC_Bits>12288</PC_Bits>
+    </C1G2_PC>
+    <C1G2_CRC>
+      <CRC>12636</CRC>
+    </C1G2_CRC>
+    <AccessSpecID>
+      <AccessSpecID>1234</AccessSpecID>
+    </AccessSpecID>
+  </TagReportData>
+ </RO_ACCESS_REPORT>
+
+<!--u2-->
+<GET_READER_CONFIG_RESPONSE MessageID='331'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <LLRPStatus>
+    <StatusCode>M_Success</StatusCode>
+    <ErrorDescription></ErrorDescription>
+  </LLRPStatus>
+  <AntennaConfiguration>
+    <AntennaID>1</AntennaID>
+    <RFReceiver>
+      <ReceiverSensitivity>0</ReceiverSensitivity>
+    </RFReceiver>
+    <RFTransmitter>
+      <HopTableID>1</HopTableID>
+      <ChannelIndex>0</ChannelIndex>
+      <TransmitPower>60</TransmitPower>
+    </RFTransmitter>
+    <C1G2InventoryCommand>
+      <TagInventoryStateAware>false</TagInventoryStateAware>
+      <!-- reserved 7 bits -->
+      <C1G2RFControl>
+        <ModeIndex>2</ModeIndex>
+        <Tari>0</Tari>
+      </C1G2RFControl>
+      <C1G2SingulationControl>
+        <Session>-1</Session>
+        <!-- reserved 6 bits -->
+        <TagPopulation>0</TagPopulation>
+        <TagTransitTime>0</TagTransitTime>
+      </C1G2SingulationControl>
+    </C1G2InventoryCommand>
+  </AntennaConfiguration>
+</GET_READER_CONFIG_RESPONSE>
+
+<!--u1-->
+<SET_READER_CONFIG MessageID='332'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <ResetToFactoryDefault>-1</ResetToFactoryDefault>
+  <!-- reserved 7 bits -->
+</SET_READER_CONFIG>
+
+<!-- hex values in integer field -->
+
+<!-- u32 -->
+<ENABLE_ROSPEC MessageID='333'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <ROSpecID>abcdef</ROSpecID>
+</ENABLE_ROSPEC>
+
+<!--u32v-->
+<GET_READER_CAPABILITIES_RESPONSE MessageID='334'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <LLRPStatus>
+    <StatusCode>M_Success</StatusCode>
+    <ErrorDescription></ErrorDescription>
+  </LLRPStatus>
+ <RegulatoryCapabilities>
+    <CountryCode>840</CountryCode>
+    <CommunicationsStandard>US_FCC_Part_15</CommunicationsStandard>
+    <UHFBandCapabilities>
+      <TransmitPowerLevelTableEntry>
+        <Index>0</Index>
+        <TransmitPowerValue>1500</TransmitPowerValue>
+      </TransmitPowerLevelTableEntry>
+      <FrequencyInformation>
+        <Hopping>true</Hopping>
+        <!-- reserved 7 bits -->
+        <FrequencyHopTable>
+          <HopTableID>1</HopTableID>
+          <!-- reserved 8 bits -->
+          <Frequency>abcdef aaa 234 abcde</Frequency>
+        </FrequencyHopTable>
+      </FrequencyInformation>
+      <C1G2UHFRFModeTable>
+        <C1G2UHFRFModeTableEntry>
+          <ModeIdentifier>0</ModeIdentifier>
+          <DRValue>DRV_64_3</DRValue>
+          <EPCHAGTCConformance>false</EPCHAGTCConformance>
+          <!-- reserved 6 bits -->
+          <MValue>MV_FM0</MValue>
+          <ForwardLinkModulation>PR_ASK</ForwardLinkModulation>
+          <SpectralMaskIndicator>MI</SpectralMaskIndicator>
+          <BDRValue>640000</BDRValue>
+          <PIEValue>1500</PIEValue>
+          <MinTariValue>7140</MinTariValue>
+          <MaxTariValue>7140</MaxTariValue>
+          <StepTariValue>0</StepTariValue>
+        </C1G2UHFRFModeTableEntry>
+      </C1G2UHFRFModeTable>
+    </UHFBandCapabilities>
+  </RegulatoryCapabilities>
+</GET_READER_CAPABILITIES_RESPONSE>
+
+<!--u16-->
+<GET_READER_CONFIG MessageID='335'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <AntennaID>0</AntennaID>
+  <RequestedData>All</RequestedData>
+  <GPIPortNum>abc</GPIPortNum>
+  <GPOPortNum>def</GPOPortNum>
+</GET_READER_CONFIG>
+
+<!--u16v-->
+<ADD_ROSPEC MessageID='336'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <ROSpec>
+    <ROSpecID>1</ROSpecID>
+    <Priority>0</Priority>
+    <CurrentState>Disabled</CurrentState>
+    <ROBoundarySpec>
+      <ROSpecStartTrigger>
+        <ROSpecStartTriggerType>GPI</ROSpecStartTriggerType>
+        <GPITriggerValue>
+          <GPIPortNum>1</GPIPortNum>
+          <GPIEvent>true</GPIEvent>
+          <!-- reserved 7 bits -->
+          <Timeout>0</Timeout>
+        </GPITriggerValue>
+      </ROSpecStartTrigger>
+      <ROSpecStopTrigger>
+        <ROSpecStopTriggerType>Null</ROSpecStopTriggerType>
+        <DurationTriggerValue>0</DurationTriggerValue>
+      </ROSpecStopTrigger>
+    </ROBoundarySpec>
+    <AISpec>
+      <AntennaIDs>a b c d e f</AntennaIDs>
+      <AISpecStopTrigger>
+        <AISpecStopTriggerType>Duration</AISpecStopTriggerType>
+        <DurationTrigger>60000</DurationTrigger>
+      </AISpecStopTrigger>
+      <InventoryParameterSpec>
+        <InventoryParameterSpecID>1</InventoryParameterSpecID>
+        <ProtocolID>EPCGlobalClass1Gen2</ProtocolID>
+        <AntennaConfiguration>
+          <AntennaID>0</AntennaID>
+          <C1G2InventoryCommand>
+            <TagInventoryStateAware>false</TagInventoryStateAware>
+            <!-- reserved 7 bits -->
+            <C1G2RFControl>
+              <ModeIndex>0</ModeIndex>
+              <Tari>0</Tari>
+            </C1G2RFControl>
+          </C1G2InventoryCommand>
+        </AntennaConfiguration>
+      </InventoryParameterSpec>
+    </AISpec>
+  </ROSpec>
+</ADD_ROSPEC>
+
+<!--s16-->
+<GET_READER_CAPABILITIES_RESPONSE MessageID='337'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <LLRPStatus>
+    <StatusCode>M_Success</StatusCode>
+    <ErrorDescription></ErrorDescription>
+  </LLRPStatus>
+  <GeneralDeviceCapabilities>
+    <MaxNumberOfAntennaSupported>4</MaxNumberOfAntennaSupported>
+    <CanSetAntennaProperties>false</CanSetAntennaProperties>
+    <HasUTCClockCapability>true</HasUTCClockCapability>
+    <!-- reserved 14 bits -->
+    <DeviceManufacturerName>25882</DeviceManufacturerName>
+    <ModelName>1000</ModelName>
+    <ReaderFirmwareVersion>2.5.34.240</ReaderFirmwareVersion>
+    <ReceiveSensitivityTableEntry>
+      <Index>0</Index>
+      <ReceiveSensitivityValue>abc</ReceiveSensitivityValue>
+    </ReceiveSensitivityTableEntry>
+    <GPIOCapabilities>
+      <NumGPIs>4</NumGPIs>
+      <NumGPOs>8</NumGPOs>
+    </GPIOCapabilities>
+    <PerAntennaAirProtocol>
+      <AntennaID>1</AntennaID>
+      <ProtocolID>EPCGlobalClass1Gen2</ProtocolID>
+    </PerAntennaAirProtocol>
+    <PerAntennaAirProtocol>
+      <AntennaID>2</AntennaID>
+      <ProtocolID>EPCGlobalClass1Gen2</ProtocolID>
+    </PerAntennaAirProtocol>
+    <PerAntennaAirProtocol>
+      <AntennaID>3</AntennaID>
+      <ProtocolID>EPCGlobalClass1Gen2</ProtocolID>
+    </PerAntennaAirProtocol>
+    <PerAntennaAirProtocol>
+      <AntennaID>4</AntennaID>
+      <ProtocolID>EPCGlobalClass1Gen2</ProtocolID>
+    </PerAntennaAirProtocol>
+  </GeneralDeviceCapabilities>
+</GET_READER_CAPABILITIES_RESPONSE>
+
+<!--u8-->
+<GET_READER_CAPABILITIES_RESPONSE MessageID='338'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <LLRPStatus>
+    <StatusCode>M_Success</StatusCode>
+    <ErrorDescription></ErrorDescription>
+  </LLRPStatus>
+  <LLRPCapabilities>
+    <CanDoRFSurvey>false</CanDoRFSurvey>
+    <CanReportBufferFillWarning>true</CanReportBufferFillWarning>
+    <SupportsClientRequestOpSpec>false</SupportsClientRequestOpSpec>
+    <CanDoTagInventoryStateAwareSingulation>false</CanDoTagInventoryStateAwareSingulation>
+    <SupportsEventAndReportHolding>true</SupportsEventAndReportHolding>
+    <!-- reserved 3 bits -->
+    <MaxNumPriorityLevelsSupported>ab</MaxNumPriorityLevelsSupported>
+    <ClientRequestOpSpecTimeout>0</ClientRequestOpSpecTimeout>
+    <MaxNumROSpecs>1</MaxNumROSpecs>
+    <MaxNumSpecsPerROSpec>8</MaxNumSpecsPerROSpec>
+    <MaxNumInventoryParameterSpecsPerAISpec>1</MaxNumInventoryParameterSpecsPerAISpec>
+    <MaxNumAccessSpecs>64</MaxNumAccessSpecs>
+    <MaxNumOpSpecsPerAccessSpec>8</MaxNumOpSpecsPerAccessSpec>
+  </LLRPCapabilities>
+</GET_READER_CAPABILITIES_RESPONSE>
+
+<!--s8-->
+<RO_ACCESS_REPORT MessageID='339'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <TagReportData>
+    <EPC_96>
+      <EPC>300833B2DDD9CAFEBABE801E</EPC>
+    </EPC_96>
+    <ROSpecID>
+      <ROSpecID>1</ROSpecID>
+    </ROSpecID>
+    <SpecIndex>
+      <SpecIndex>1</SpecIndex>
+    </SpecIndex>
+    <InventoryParameterSpecID>
+      <InventoryParameterSpecID>1</InventoryParameterSpecID>
+    </InventoryParameterSpecID>
+    <AntennaID>
+      <AntennaID>2</AntennaID>
+    </AntennaID>
+    <PeakRSSI>
+      <PeakRSSI>a</PeakRSSI>
+    </PeakRSSI>
+    <ChannelIndex>
+      <ChannelIndex>39</ChannelIndex>
+    </ChannelIndex>
+    <FirstSeenTimestampUTC>
+      <Microseconds>2007-03-07T17:02:44.310403</Microseconds>
+    </FirstSeenTimestampUTC>
+    <LastSeenTimestampUTC>
+      <Microseconds>2007-03-07T17:03:44.216755</Microseconds>
+    </LastSeenTimestampUTC>
+    <TagSeenCount>
+      <TagCount>740</TagCount>
+    </TagSeenCount>
+    <C1G2_PC>
+      <PC_Bits>12288</PC_Bits>
+    </C1G2_PC>
+    <C1G2_CRC>
+      <CRC>12636</CRC>
+    </C1G2_CRC>
+    <AccessSpecID>
+      <AccessSpecID>1234</AccessSpecID>
+    </AccessSpecID>
+  </TagReportData>
+ </RO_ACCESS_REPORT>
+
+<!--u2-->
+<GET_READER_CONFIG_RESPONSE MessageID='340'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <LLRPStatus>
+    <StatusCode>M_Success</StatusCode>
+    <ErrorDescription></ErrorDescription>
+  </LLRPStatus>
+  <AntennaConfiguration>
+    <AntennaID>1</AntennaID>
+    <RFReceiver>
+      <ReceiverSensitivity>0</ReceiverSensitivity>
+    </RFReceiver>
+    <RFTransmitter>
+      <HopTableID>1</HopTableID>
+      <ChannelIndex>0</ChannelIndex>
+      <TransmitPower>60</TransmitPower>
+    </RFTransmitter>
+    <C1G2InventoryCommand>
+      <TagInventoryStateAware>false</TagInventoryStateAware>
+      <!-- reserved 7 bits -->
+      <C1G2RFControl>
+        <ModeIndex>2</ModeIndex>
+        <Tari>0</Tari>
+      </C1G2RFControl>
+      <C1G2SingulationControl>
+        <Session>a</Session>
+        <!-- reserved 6 bits -->
+        <TagPopulation>0</TagPopulation>
+        <TagTransitTime>0</TagTransitTime>
+      </C1G2SingulationControl>
+    </C1G2InventoryCommand>
+  </AntennaConfiguration>
+</GET_READER_CONFIG_RESPONSE>
+
+<!--u1-->
+<SET_READER_CONFIG MessageID='341'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <ResetToFactoryDefault>a</ResetToFactoryDefault>
+  <!-- reserved 7 bits -->
+</SET_READER_CONFIG>
+
+
+<!-- ascii (non hex) in integer field -->
+
+<!-- u32 -->
+<ENABLE_ROSPEC MessageID='342'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <ROSpecID>rtu</ROSpecID>
+</ENABLE_ROSPEC>
+
+<!--u32v-->
+<GET_READER_CAPABILITIES_RESPONSE MessageID='343'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <LLRPStatus>
+    <StatusCode>M_Success</StatusCode>
+    <ErrorDescription></ErrorDescription>
+  </LLRPStatus>
+ <RegulatoryCapabilities>
+    <CountryCode>840</CountryCode>
+    <CommunicationsStandard>US_FCC_Part_15</CommunicationsStandard>
+    <UHFBandCapabilities>
+      <TransmitPowerLevelTableEntry>
+        <Index>0</Index>
+        <TransmitPowerValue>1500</TransmitPowerValue>
+      </TransmitPowerLevelTableEntry>
+      <FrequencyInformation>
+        <Hopping>true</Hopping>
+        <!-- reserved 7 bits -->
+        <FrequencyHopTable>
+          <HopTableID>1</HopTableID>
+          <!-- reserved 8 bits -->
+          <Frequency>rtu mnvb</Frequency>
+        </FrequencyHopTable>
+      </FrequencyInformation>
+      <C1G2UHFRFModeTable>
+        <C1G2UHFRFModeTableEntry>
+          <ModeIdentifier>0</ModeIdentifier>
+          <DRValue>DRV_64_3</DRValue>
+          <EPCHAGTCConformance>false</EPCHAGTCConformance>
+          <!-- reserved 6 bits -->
+          <MValue>MV_FM0</MValue>
+          <ForwardLinkModulation>PR_ASK</ForwardLinkModulation>
+          <SpectralMaskIndicator>MI</SpectralMaskIndicator>
+          <BDRValue>640000</BDRValue>
+          <PIEValue>1500</PIEValue>
+          <MinTariValue>7140</MinTariValue>
+          <MaxTariValue>7140</MaxTariValue>
+          <StepTariValue>0</StepTariValue>
+        </C1G2UHFRFModeTableEntry>
+      </C1G2UHFRFModeTable>
+    </UHFBandCapabilities>
+  </RegulatoryCapabilities>
+</GET_READER_CAPABILITIES_RESPONSE>
+
+<!--u16-->
+<GET_READER_CONFIG MessageID='344'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <AntennaID>0</AntennaID>
+  <RequestedData>All</RequestedData>
+  <GPIPortNum>oiu</GPIPortNum>
+  <GPOPortNum>lkj</GPOPortNum>
+</GET_READER_CONFIG>
+
+<!--u16v-->
+<ADD_ROSPEC MessageID='345'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <ROSpec>
+    <ROSpecID>1</ROSpecID>
+    <Priority>0</Priority>
+    <CurrentState>Disabled</CurrentState>
+    <ROBoundarySpec>
+      <ROSpecStartTrigger>
+        <ROSpecStartTriggerType>GPI</ROSpecStartTriggerType>
+        <GPITriggerValue>
+          <GPIPortNum>1</GPIPortNum>
+          <GPIEvent>true</GPIEvent>
+          <!-- reserved 7 bits -->
+          <Timeout>0</Timeout>
+        </GPITriggerValue>
+      </ROSpecStartTrigger>
+      <ROSpecStopTrigger>
+        <ROSpecStopTriggerType>Null</ROSpecStopTriggerType>
+        <DurationTriggerValue>0</DurationTriggerValue>
+      </ROSpecStopTrigger>
+    </ROBoundarySpec>
+    <AISpec>
+      <AntennaIDs>lk khjk hj</AntennaIDs>
+      <AISpecStopTrigger>
+        <AISpecStopTriggerType>Duration</AISpecStopTriggerType>
+        <DurationTrigger>60000</DurationTrigger>
+      </AISpecStopTrigger>
+      <InventoryParameterSpec>
+        <InventoryParameterSpecID>1</InventoryParameterSpecID>
+        <ProtocolID>EPCGlobalClass1Gen2</ProtocolID>
+        <AntennaConfiguration>
+          <AntennaID>0</AntennaID>
+          <C1G2InventoryCommand>
+            <TagInventoryStateAware>false</TagInventoryStateAware>
+            <!-- reserved 7 bits -->
+            <C1G2RFControl>
+              <ModeIndex>0</ModeIndex>
+              <Tari>0</Tari>
+            </C1G2RFControl>
+          </C1G2InventoryCommand>
+        </AntennaConfiguration>
+      </InventoryParameterSpec>
+    </AISpec>
+  </ROSpec>
+</ADD_ROSPEC>
+
+<!--s16-->
+<GET_READER_CAPABILITIES_RESPONSE MessageID='346'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <LLRPStatus>
+    <StatusCode>M_Success</StatusCode>
+    <ErrorDescription></ErrorDescription>
+  </LLRPStatus>
+  <GeneralDeviceCapabilities>
+    <MaxNumberOfAntennaSupported>4</MaxNumberOfAntennaSupported>
+    <CanSetAntennaProperties>false</CanSetAntennaProperties>
+    <HasUTCClockCapability>true</HasUTCClockCapability>
+    <!-- reserved 14 bits -->
+    <DeviceManufacturerName>25882</DeviceManufacturerName>
+    <ModelName>1000</ModelName>
+    <ReaderFirmwareVersion>2.5.34.240</ReaderFirmwareVersion>
+    <ReceiveSensitivityTableEntry>
+      <Index>0</Index>
+      <ReceiveSensitivityValue>mnb</ReceiveSensitivityValue>
+    </ReceiveSensitivityTableEntry>
+    <GPIOCapabilities>
+      <NumGPIs>4</NumGPIs>
+      <NumGPOs>8</NumGPOs>
+    </GPIOCapabilities>
+    <PerAntennaAirProtocol>
+      <AntennaID>1</AntennaID>
+      <ProtocolID>EPCGlobalClass1Gen2</ProtocolID>
+    </PerAntennaAirProtocol>
+    <PerAntennaAirProtocol>
+      <AntennaID>2</AntennaID>
+      <ProtocolID>EPCGlobalClass1Gen2</ProtocolID>
+    </PerAntennaAirProtocol>
+    <PerAntennaAirProtocol>
+      <AntennaID>3</AntennaID>
+      <ProtocolID>EPCGlobalClass1Gen2</ProtocolID>
+    </PerAntennaAirProtocol>
+    <PerAntennaAirProtocol>
+      <AntennaID>4</AntennaID>
+      <ProtocolID>EPCGlobalClass1Gen2</ProtocolID>
+    </PerAntennaAirProtocol>
+  </GeneralDeviceCapabilities>
+</GET_READER_CAPABILITIES_RESPONSE>
+
+<!--u8-->
+<GET_READER_CAPABILITIES_RESPONSE MessageID='347'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <LLRPStatus>
+    <StatusCode>M_Success</StatusCode>
+    <ErrorDescription></ErrorDescription>
+  </LLRPStatus>
+  <LLRPCapabilities>
+    <CanDoRFSurvey>false</CanDoRFSurvey>
+    <CanReportBufferFillWarning>true</CanReportBufferFillWarning>
+    <SupportsClientRequestOpSpec>false</SupportsClientRequestOpSpec>
+    <CanDoTagInventoryStateAwareSingulation>false</CanDoTagInventoryStateAwareSingulation>
+    <SupportsEventAndReportHolding>true</SupportsEventAndReportHolding>
+    <!-- reserved 3 bits -->
+    <MaxNumPriorityLevelsSupported>vv</MaxNumPriorityLevelsSupported>
+    <ClientRequestOpSpecTimeout>0</ClientRequestOpSpecTimeout>
+    <MaxNumROSpecs>1</MaxNumROSpecs>
+    <MaxNumSpecsPerROSpec>8</MaxNumSpecsPerROSpec>
+    <MaxNumInventoryParameterSpecsPerAISpec>1</MaxNumInventoryParameterSpecsPerAISpec>
+    <MaxNumAccessSpecs>64</MaxNumAccessSpecs>
+    <MaxNumOpSpecsPerAccessSpec>8</MaxNumOpSpecsPerAccessSpec>
+  </LLRPCapabilities>
+</GET_READER_CAPABILITIES_RESPONSE>
+
+<!--s8-->
+<RO_ACCESS_REPORT MessageID='348'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <TagReportData>
+    <EPC_96>
+      <EPC>300833B2DDD9CAFEBABE801E</EPC>
+    </EPC_96>
+    <ROSpecID>
+      <ROSpecID>1</ROSpecID>
+    </ROSpecID>
+    <SpecIndex>
+      <SpecIndex>1</SpecIndex>
+    </SpecIndex>
+    <InventoryParameterSpecID>
+      <InventoryParameterSpecID>1</InventoryParameterSpecID>
+    </InventoryParameterSpecID>
+    <AntennaID>
+      <AntennaID>2</AntennaID>
+    </AntennaID>
+    <PeakRSSI>
+      <PeakRSSI>zz</PeakRSSI>
+    </PeakRSSI>
+    <ChannelIndex>
+      <ChannelIndex>39</ChannelIndex>
+    </ChannelIndex>
+    <FirstSeenTimestampUTC>
+      <Microseconds>2007-03-07T17:02:44.310403</Microseconds>
+    </FirstSeenTimestampUTC>
+    <LastSeenTimestampUTC>
+      <Microseconds>2007-03-07T17:03:44.216755</Microseconds>
+    </LastSeenTimestampUTC>
+    <TagSeenCount>
+      <TagCount>740</TagCount>
+    </TagSeenCount>
+    <C1G2_PC>
+      <PC_Bits>12288</PC_Bits>
+    </C1G2_PC>
+    <C1G2_CRC>
+      <CRC>12636</CRC>
+    </C1G2_CRC>
+    <AccessSpecID>
+      <AccessSpecID>1234</AccessSpecID>
+    </AccessSpecID>
+  </TagReportData>
+ </RO_ACCESS_REPORT>
+
+<!--u2-->
+<GET_READER_CONFIG_RESPONSE MessageID='349'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <LLRPStatus>
+    <StatusCode>M_Success</StatusCode>
+    <ErrorDescription></ErrorDescription>
+  </LLRPStatus>
+  <AntennaConfiguration>
+    <AntennaID>1</AntennaID>
+    <RFReceiver>
+      <ReceiverSensitivity>0</ReceiverSensitivity>
+    </RFReceiver>
+    <RFTransmitter>
+      <HopTableID>1</HopTableID>
+      <ChannelIndex>0</ChannelIndex>
+      <TransmitPower>60</TransmitPower>
+    </RFTransmitter>
+    <C1G2InventoryCommand>
+      <TagInventoryStateAware>false</TagInventoryStateAware>
+      <!-- reserved 7 bits -->
+      <C1G2RFControl>
+        <ModeIndex>2</ModeIndex>
+        <Tari>0</Tari>
+      </C1G2RFControl>
+      <C1G2SingulationControl>
+        <Session>s</Session>
+        <!-- reserved 6 bits -->
+        <TagPopulation>0</TagPopulation>
+        <TagTransitTime>0</TagTransitTime>
+      </C1G2SingulationControl>
+    </C1G2InventoryCommand>
+  </AntennaConfiguration>
+</GET_READER_CONFIG_RESPONSE>
+
+<!--u1-->
+<SET_READER_CONFIG MessageID='350'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <ResetToFactoryDefault>t</ResetToFactoryDefault>
+  <!-- reserved 7 bits -->
+</SET_READER_CONFIG>
+
+<!--symbols in integer field -->
+
+<!-- u32 -->
+<ENABLE_ROSPEC MessageID='351'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <ROSpecID>^*(</ROSpecID>
+</ENABLE_ROSPEC>
+
+<!--u32v-->
+<GET_READER_CAPABILITIES_RESPONSE MessageID='352'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <LLRPStatus>
+    <StatusCode>M_Success</StatusCode>
+    <ErrorDescription></ErrorDescription>
+  </LLRPStatus>
+ <RegulatoryCapabilities>
+    <CountryCode>840</CountryCode>
+    <CommunicationsStandard>US_FCC_Part_15</CommunicationsStandard>
+    <UHFBandCapabilities>
+      <TransmitPowerLevelTableEntry>
+        <Index>0</Index>
+        <TransmitPowerValue>1500</TransmitPowerValue>
+      </TransmitPowerLevelTableEntry>
+      <FrequencyInformation>
+        <Hopping>true</Hopping>
+        <!-- reserved 7 bits -->
+        <FrequencyHopTable>
+          <HopTableID>1</HopTableID>
+          <!-- reserved 8 bits -->
+          <Frequency>()%$ @#%$</Frequency>
+        </FrequencyHopTable>
+      </FrequencyInformation>
+      <C1G2UHFRFModeTable>
+        <C1G2UHFRFModeTableEntry>
+          <ModeIdentifier>0</ModeIdentifier>
+          <DRValue>DRV_64_3</DRValue>
+          <EPCHAGTCConformance>false</EPCHAGTCConformance>
+          <!-- reserved 6 bits -->
+          <MValue>MV_FM0</MValue>
+          <ForwardLinkModulation>PR_ASK</ForwardLinkModulation>
+          <SpectralMaskIndicator>MI</SpectralMaskIndicator>
+          <BDRValue>640000</BDRValue>
+          <PIEValue>1500</PIEValue>
+          <MinTariValue>7140</MinTariValue>
+          <MaxTariValue>7140</MaxTariValue>
+          <StepTariValue>0</StepTariValue>
+        </C1G2UHFRFModeTableEntry>
+      </C1G2UHFRFModeTable>
+    </UHFBandCapabilities>
+  </RegulatoryCapabilities>
+</GET_READER_CAPABILITIES_RESPONSE>
+
+<!--u16-->
+<GET_READER_CONFIG MessageID='353'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <AntennaID>0</AntennaID>
+  <RequestedData>All</RequestedData>
+  <GPIPortNum>i)(^$</GPIPortNum>
+  <GPOPortNum>#$^^#</GPOPortNum>
+</GET_READER_CONFIG>
+
+<!--u16v-->
+<ADD_ROSPEC MessageID='354'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <ROSpec>
+    <ROSpecID>1</ROSpecID>
+    <Priority>0</Priority>
+    <CurrentState>Disabled</CurrentState>
+    <ROBoundarySpec>
+      <ROSpecStartTrigger>
+        <ROSpecStartTriggerType>GPI</ROSpecStartTriggerType>
+        <GPITriggerValue>
+          <GPIPortNum>1</GPIPortNum>
+          <GPIEvent>true</GPIEvent>
+          <!-- reserved 7 bits -->
+          <Timeout>0</Timeout>
+        </GPITriggerValue>
+      </ROSpecStartTrigger>
+      <ROSpecStopTrigger>
+        <ROSpecStopTriggerType>Null</ROSpecStopTriggerType>
+        <DurationTriggerValue>0</DurationTriggerValue>
+      </ROSpecStopTrigger>
+    </ROBoundarySpec>
+    <AISpec>
+      <AntennaIDs>i()$^% $%^$</AntennaIDs>
+      <AISpecStopTrigger>
+        <AISpecStopTriggerType>Duration</AISpecStopTriggerType>
+        <DurationTrigger>60000</DurationTrigger>
+      </AISpecStopTrigger>
+      <InventoryParameterSpec>
+        <InventoryParameterSpecID>1</InventoryParameterSpecID>
+        <ProtocolID>EPCGlobalClass1Gen2</ProtocolID>
+        <AntennaConfiguration>
+          <AntennaID>0</AntennaID>
+          <C1G2InventoryCommand>
+            <TagInventoryStateAware>false</TagInventoryStateAware>
+            <!-- reserved 7 bits -->
+            <C1G2RFControl>
+              <ModeIndex>0</ModeIndex>
+              <Tari>0</Tari>
+            </C1G2RFControl>
+          </C1G2InventoryCommand>
+        </AntennaConfiguration>
+      </InventoryParameterSpec>
+    </AISpec>
+  </ROSpec>
+</ADD_ROSPEC>
+
+<!--s16-->
+<GET_READER_CAPABILITIES_RESPONSE MessageID='355'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <LLRPStatus>
+    <StatusCode>M_Success</StatusCode>
+    <ErrorDescription></ErrorDescription>
+  </LLRPStatus>
+  <GeneralDeviceCapabilities>
+    <MaxNumberOfAntennaSupported>4</MaxNumberOfAntennaSupported>
+    <CanSetAntennaProperties>false</CanSetAntennaProperties>
+    <HasUTCClockCapability>true</HasUTCClockCapability>
+    <!-- reserved 14 bits -->
+    <DeviceManufacturerName>25882</DeviceManufacturerName>
+    <ModelName>1000</ModelName>
+    <ReaderFirmwareVersion>2.5.34.240</ReaderFirmwareVersion>
+    <ReceiveSensitivityTableEntry>
+      <Index>0</Index>
+      <ReceiveSensitivityValue>i~!!~`</ReceiveSensitivityValue>
+    </ReceiveSensitivityTableEntry>
+    <GPIOCapabilities>
+      <NumGPIs>4</NumGPIs>
+      <NumGPOs>8</NumGPOs>
+    </GPIOCapabilities>
+    <PerAntennaAirProtocol>
+      <AntennaID>1</AntennaID>
+      <ProtocolID>EPCGlobalClass1Gen2</ProtocolID>
+    </PerAntennaAirProtocol>
+    <PerAntennaAirProtocol>
+      <AntennaID>2</AntennaID>
+      <ProtocolID>EPCGlobalClass1Gen2</ProtocolID>
+    </PerAntennaAirProtocol>
+    <PerAntennaAirProtocol>
+      <AntennaID>3</AntennaID>
+      <ProtocolID>EPCGlobalClass1Gen2</ProtocolID>
+    </PerAntennaAirProtocol>
+    <PerAntennaAirProtocol>
+      <AntennaID>4</AntennaID>
+      <ProtocolID>EPCGlobalClass1Gen2</ProtocolID>
+    </PerAntennaAirProtocol>
+  </GeneralDeviceCapabilities>
+</GET_READER_CAPABILITIES_RESPONSE>
+
+<!--u8-->
+<GET_READER_CAPABILITIES_RESPONSE MessageID='356'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <LLRPStatus>
+    <StatusCode>M_Success</StatusCode>
+    <ErrorDescription></ErrorDescription>
+  </LLRPStatus>
+  <LLRPCapabilities>
+    <CanDoRFSurvey>false</CanDoRFSurvey>
+    <CanReportBufferFillWarning>true</CanReportBufferFillWarning>
+    <SupportsClientRequestOpSpec>false</SupportsClientRequestOpSpec>
+    <CanDoTagInventoryStateAwareSingulation>false</CanDoTagInventoryStateAwareSingulation>
+    <SupportsEventAndReportHolding>true</SupportsEventAndReportHolding>
+    <!-- reserved 3 bits -->
+    <MaxNumPriorityLevelsSupported>,./</MaxNumPriorityLevelsSupported>
+    <ClientRequestOpSpecTimeout>0</ClientRequestOpSpecTimeout>
+    <MaxNumROSpecs>1</MaxNumROSpecs>
+    <MaxNumSpecsPerROSpec>8</MaxNumSpecsPerROSpec>
+    <MaxNumInventoryParameterSpecsPerAISpec>1</MaxNumInventoryParameterSpecsPerAISpec>
+    <MaxNumAccessSpecs>64</MaxNumAccessSpecs>
+    <MaxNumOpSpecsPerAccessSpec>8</MaxNumOpSpecsPerAccessSpec>
+  </LLRPCapabilities>
+</GET_READER_CAPABILITIES_RESPONSE>
+
+<!--s8-->
+<RO_ACCESS_REPORT MessageID='357'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <TagReportData>
+    <EPC_96>
+      <EPC>300833B2DDD9CAFEBABE801E</EPC>
+    </EPC_96>
+    <ROSpecID>
+      <ROSpecID>1</ROSpecID>
+    </ROSpecID>
+    <SpecIndex>
+      <SpecIndex>1</SpecIndex>
+    </SpecIndex>
+    <InventoryParameterSpecID>
+      <InventoryParameterSpecID>1</InventoryParameterSpecID>
+    </InventoryParameterSpecID>
+    <AntennaID>
+      <AntennaID>2</AntennaID>
+    </AntennaID>
+    <PeakRSSI>
+      <PeakRSSI>?'[</PeakRSSI>
+    </PeakRSSI>
+    <ChannelIndex>
+      <ChannelIndex>39</ChannelIndex>
+    </ChannelIndex>
+    <FirstSeenTimestampUTC>
+      <Microseconds>2007-03-07T17:02:44.310403</Microseconds>
+    </FirstSeenTimestampUTC>
+    <LastSeenTimestampUTC>
+      <Microseconds>2007-03-07T17:03:44.216755</Microseconds>
+    </LastSeenTimestampUTC>
+    <TagSeenCount>
+      <TagCount>740</TagCount>
+    </TagSeenCount>
+    <C1G2_PC>
+      <PC_Bits>12288</PC_Bits>
+    </C1G2_PC>
+    <C1G2_CRC>
+      <CRC>12636</CRC>
+    </C1G2_CRC>
+    <AccessSpecID>
+      <AccessSpecID>1234</AccessSpecID>
+    </AccessSpecID>
+  </TagReportData>
+ </RO_ACCESS_REPORT>
+
+<!--u2-->
+<GET_READER_CONFIG_RESPONSE MessageID='358'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <LLRPStatus>
+    <StatusCode>M_Success</StatusCode>
+    <ErrorDescription></ErrorDescription>
+  </LLRPStatus>
+  <AntennaConfiguration>
+    <AntennaID>1</AntennaID>
+    <RFReceiver>
+      <ReceiverSensitivity>0</ReceiverSensitivity>
+    </RFReceiver>
+    <RFTransmitter>
+      <HopTableID>1</HopTableID>
+      <ChannelIndex>0</ChannelIndex>
+      <TransmitPower>60</TransmitPower>
+    </RFTransmitter>
+    <C1G2InventoryCommand>
+      <TagInventoryStateAware>false</TagInventoryStateAware>
+      <!-- reserved 7 bits -->
+      <C1G2RFControl>
+        <ModeIndex>2</ModeIndex>
+        <Tari>0</Tari>
+      </C1G2RFControl>
+      <C1G2SingulationControl>
+        <Session>||</Session>
+        <!-- reserved 6 bits -->
+        <TagPopulation>0</TagPopulation>
+        <TagTransitTime>0</TagTransitTime>
+      </C1G2SingulationControl>
+    </C1G2InventoryCommand>
+  </AntennaConfiguration>
+</GET_READER_CONFIG_RESPONSE>
+
+<!--u1-->
+<SET_READER_CONFIG MessageID='359'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <ResetToFactoryDefault>{}+</ResetToFactoryDefault>
+  <!-- reserved 7 bits -->
+</SET_READER_CONFIG>
+
+<!-- malformed timestamps field -->
+
+<!-- extra stuff at end -->
+<READER_EVENT_NOTIFICATION MessageID='360'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <ReaderEventNotificationData>
+    <UTCTimestamp>
+      <Microseconds>2007-03-07T17:01:18.714842foobar</Microseconds>
+    </UTCTimestamp>
+    <ConnectionAttemptEvent>
+      <Status>Success</Status>
+    </ConnectionAttemptEvent>
+  </ReaderEventNotificationData>
+</READER_EVENT_NOTIFICATION>
+
+<!-- missing . -->
+<READER_EVENT_NOTIFICATION MessageID='361'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <ReaderEventNotificationData>
+    <UTCTimestamp>
+      <Microseconds>2007-03-07T17:01:18714842</Microseconds>
+    </UTCTimestamp>
+    <ConnectionAttemptEvent>
+      <Status>Success</Status>
+    </ConnectionAttemptEvent>
+  </ReaderEventNotificationData>
+</READER_EVENT_NOTIFICATION>
+
+<!-- missing : -->
+<READER_EVENT_NOTIFICATION MessageID='362'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <ReaderEventNotificationData>
+    <UTCTimestamp>
+      <Microseconds>2007-03-07T17:0118.714842</Microseconds>
+    </UTCTimestamp>
+    <ConnectionAttemptEvent>
+      <Status>Success</Status>
+    </ConnectionAttemptEvent>
+  </ReaderEventNotificationData>
+</READER_EVENT_NOTIFICATION>
+
+<!-- missing : -->
+<READER_EVENT_NOTIFICATION MessageID='363'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <ReaderEventNotificationData>
+    <UTCTimestamp>
+      <Microseconds>2007-03-07T1701:18.714842</Microseconds>
+    </UTCTimestamp>
+    <ConnectionAttemptEvent>
+      <Status>Success</Status>
+    </ConnectionAttemptEvent>
+  </ReaderEventNotificationData>
+</READER_EVENT_NOTIFICATION>
+
+<!-- missing T  -->
+<READER_EVENT_NOTIFICATION MessageID='364'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <ReaderEventNotificationData>
+    <UTCTimestamp>
+      <Microseconds>2007-03-0717:01:18.714842</Microseconds>
+    </UTCTimestamp>
+    <ConnectionAttemptEvent>
+      <Status>Success</Status>
+    </ConnectionAttemptEvent>
+  </ReaderEventNotificationData>
+</READER_EVENT_NOTIFICATION>
+
+<!-- missing '-' -->
+<READER_EVENT_NOTIFICATION MessageID='365'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <ReaderEventNotificationData>
+    <UTCTimestamp>
+      <Microseconds>2007-0307T17:01:18.714842</Microseconds>
+    </UTCTimestamp>
+    <ConnectionAttemptEvent>
+      <Status>Success</Status>
+    </ConnectionAttemptEvent>
+  </ReaderEventNotificationData>
+</READER_EVENT_NOTIFICATION>
+
+<!-- missing '-' -->
+<READER_EVENT_NOTIFICATION MessageID='366'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <ReaderEventNotificationData>
+    <UTCTimestamp>
+      <Microseconds>200703-07T17:01:18.714842</Microseconds>
+    </UTCTimestamp>
+    <ConnectionAttemptEvent>
+      <Status>Success</Status>
+    </ConnectionAttemptEvent>
+  </ReaderEventNotificationData>
+</READER_EVENT_NOTIFICATION>
+
+<!-- Invalid u8v hex -->
+
+<!-- empty -->
+
+<!-- I beleive this is supposed to pass the parser.  Comment out 
+<GET_READER_CONFIG_RESPONSE MessageID='367'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <LLRPStatus>
+    <StatusCode>M_Success</StatusCode>
+    <ErrorDescription></ErrorDescription>
+  </LLRPStatus>
+  <Identification>
+    <IDType>MAC_Address</IDType>
+    <ReaderID></ReaderID>
+  </Identification>
+</GET_READER_CONFIG_RESPONSE>
+ comment out -->
+
+<!-- not multiple of 2 chars -->
+<GET_READER_CONFIG_RESPONSE MessageID='368'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <LLRPStatus>
+    <StatusCode>M_Success</StatusCode>
+    <ErrorDescription></ErrorDescription>
+  </LLRPStatus>
+  <Identification>
+    <IDType>MAC_Address</IDType>
+    <ReaderID>001625FFFF00012</ReaderID>
+  </Identification>
+</GET_READER_CONFIG_RESPONSE>
+
+<!-- no hex chars in field -->
+<GET_READER_CONFIG_RESPONSE MessageID='369'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <LLRPStatus>
+    <StatusCode>M_Success</StatusCode>
+    <ErrorDescription></ErrorDescription>
+  </LLRPStatus>
+  <Identification>
+    <IDType>MAC_Address</IDType>
+    <ReaderID>1234GKzxcv</ReaderID>
+  </Identification>
+</GET_READER_CONFIG_RESPONSE>
+
+<!-- Invalid u16v hex -->
+
+<!-- empty -->
+<!-- I believe this is supposed to pass the parser.  Comment out 
+<ADD_ACCESSSPEC MessageID='370'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <AccessSpec>
+    <AccessSpecID>1049456651</AccessSpecID>
+    <AntennaID>53478</AntennaID>
+    <ProtocolID>Unspecified</ProtocolID>
+    <CurrentState>Active</CurrentState>
+    <ROSpecID>1777407795</ROSpecID>
+    <AccessSpecStopTrigger>
+      <AccessSpecStopTrigger>Operation_Count</AccessSpecStopTrigger>
+      <OperationCountValue>13597</OperationCountValue>
+    </AccessSpecStopTrigger>
+    <AccessCommand>
+      <C1G2TagSpec>
+        <C1G2TargetTag>
+          <MB>2</MB>
+          <Match>false</Match>
+          <Pointer>27630</Pointer>
+          <TagMask Count='8'>E0</TagMask>
+          <TagData Count='8'>D0</TagData>
+        </C1G2TargetTag>
+      </C1G2TagSpec>
+      <C1G2Write>
+        <OpSpecID>56254</OpSpecID>
+        <AccessPassword>1857236657</AccessPassword>
+        <MB>0</MB>
+        <WordPointer>86</WordPointer>
+        <WriteData></WriteData>
+      </C1G2Write>
+    </AccessCommand>
+    <AccessReportSpec>
+      <AccessReportTrigger>Whenever_ROReport_Is_Generated</AccessReportTrigger>
+    </AccessReportSpec>
+  </AccessSpec>
+</ADD_ACCESSSPEC>      
+comment out -->
+
+<!-- entry out of range -->
+<ADD_ACCESSSPEC MessageID='371'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <AccessSpec>
+    <AccessSpecID>1049456651</AccessSpecID>
+    <AntennaID>53478</AntennaID>
+    <ProtocolID>Unspecified</ProtocolID>
+    <CurrentState>Active</CurrentState>
+    <!-- reserved 7 bits -->
+    <ROSpecID>1777407795</ROSpecID>
+    <AccessSpecStopTrigger>
+      <AccessSpecStopTrigger>Operation_Count</AccessSpecStopTrigger>
+      <OperationCountValue>13597</OperationCountValue>
+    </AccessSpecStopTrigger>
+    <AccessCommand>
+      <C1G2TagSpec>
+        <C1G2TargetTag>
+          <MB>2</MB>
+          <Match>false</Match>
+          <!-- reserved 5 bits -->
+          <Pointer>27630</Pointer>
+          <TagMask Count='8'>E0</TagMask>
+          <TagData Count='8'>D0</TagData>
+        </C1G2TargetTag>
+      </C1G2TagSpec>
+      <C1G2Write>
+        <OpSpecID>56254</OpSpecID>
+        <AccessPassword>1857236657</AccessPassword>
+        <MB>0</MB>
+        <!-- reserved 6 bits -->
+        <WordPointer>0</WordPointer>
+        <WriteData>fffff eeeee ddddd ccccc ddddd</WriteData>
+      </C1G2Write>
+    </AccessCommand>
+    <AccessReportSpec>
+      <AccessReportTrigger>Whenever_ROReport_Is_Generated</AccessReportTrigger>
+    </AccessReportSpec>
+  </AccessSpec>
+</ADD_ACCESSSPEC>      
+
+<!-- non hex characters -->
+<ADD_ACCESSSPEC MessageID='372'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <AccessSpec>
+    <AccessSpecID>1049456651</AccessSpecID>
+    <AntennaID>53478</AntennaID>
+    <ProtocolID>Unspecified</ProtocolID>
+    <CurrentState>Active</CurrentState>
+    <!-- reserved 7 bits -->
+    <ROSpecID>1777407795</ROSpecID>
+    <AccessSpecStopTrigger>
+      <AccessSpecStopTrigger>Operation_Count</AccessSpecStopTrigger>
+      <OperationCountValue>13597</OperationCountValue>
+    </AccessSpecStopTrigger>
+    <AccessCommand>
+      <C1G2TagSpec>
+        <C1G2TargetTag>
+          <MB>2</MB>
+          <Match>false</Match>
+          <!-- reserved 5 bits -->
+          <Pointer>27630</Pointer>
+          <TagMask Count='8'>E0</TagMask>
+          <TagData Count='8'>D0</TagData>
+        </C1G2TargetTag>
+      </C1G2TagSpec>
+      <C1G2Write>
+        <OpSpecID>56254</OpSpecID>
+        <AccessPassword>1857236657</AccessPassword>
+        <MB>0</MB>
+        <!-- reserved 6 bits -->
+        <WordPointer>0</WordPointer>
+        <WriteData>asdf xcvb wer ghh</WriteData>
+      </C1G2Write>
+    </AccessCommand>
+    <AccessReportSpec>
+      <AccessReportTrigger>Whenever_ROReport_Is_Generated</AccessReportTrigger>
+    </AccessReportSpec>
+  </AccessSpec>
+</ADD_ACCESSSPEC>      
+
+<!-- invalid u1v values -->
+
+<!-- empty -->
+<!-- I beleive this is supposed to pass the parser.  Comment out
+<ADD_ACCESSSPEC MessageID='373'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <AccessSpec>
+    <AccessSpecID>1049456651</AccessSpecID>
+    <AntennaID>53478</AntennaID>
+    <ProtocolID>Unspecified</ProtocolID>
+    <CurrentState>Active</CurrentState>
+    <ROSpecID>1777407795</ROSpecID>
+    <AccessSpecStopTrigger>
+      <AccessSpecStopTrigger>Operation_Count</AccessSpecStopTrigger>
+      <OperationCountValue>13597</OperationCountValue>
+    </AccessSpecStopTrigger>
+    <AccessCommand>
+      <C1G2TagSpec>
+        <C1G2TargetTag>
+          <MB>2</MB>
+          <Match>false</Match>
+          <Pointer>27630</Pointer>
+          <TagMask Count='0'></TagMask>
+          <TagData Count='0'></TagData>
+        </C1G2TargetTag>
+      </C1G2TagSpec>
+      <C1G2Write>
+        <OpSpecID>56254</OpSpecID>
+        <AccessPassword>1857236657</AccessPassword>
+        <MB>0</MB>
+        <WordPointer>0</WordPointer>
+        <WriteData>abcd ef01</WriteData>
+      </C1G2Write>
+    </AccessCommand>
+    <AccessReportSpec>
+      <AccessReportTrigger>Whenever_ROReport_Is_Generated</AccessReportTrigger>
+    </AccessReportSpec>
+  </AccessSpec>
+</ADD_ACCESSSPEC>    
+  comment out -->
+
+<!-- non multiple of 2 -->
+<ADD_ACCESSSPEC MessageID='374'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <AccessSpec>
+    <AccessSpecID>1049456651</AccessSpecID>
+    <AntennaID>53478</AntennaID>
+    <ProtocolID>Unspecified</ProtocolID>
+    <CurrentState>Active</CurrentState>
+    <!-- reserved 7 bits -->
+    <ROSpecID>1777407795</ROSpecID>
+    <AccessSpecStopTrigger>
+      <AccessSpecStopTrigger>Operation_Count</AccessSpecStopTrigger>
+      <OperationCountValue>13597</OperationCountValue>
+    </AccessSpecStopTrigger>
+    <AccessCommand>
+      <C1G2TagSpec>
+        <C1G2TargetTag>
+          <MB>2</MB>
+          <Match>false</Match>
+          <!-- reserved 5 bits -->
+          <Pointer>27630</Pointer>
+          <TagMask Count='12'>E0E</TagMask>
+          <TagData Count='12'>D0E</TagData>
+        </C1G2TargetTag>
+      </C1G2TagSpec>
+      <C1G2Write>
+        <OpSpecID>56254</OpSpecID>
+        <AccessPassword>1857236657</AccessPassword>
+        <MB>0</MB>
+        <!-- reserved 6 bits -->
+        <WordPointer>0</WordPointer>
+        <WriteData>abcd ef01</WriteData>
+      </C1G2Write>
+    </AccessCommand>
+    <AccessReportSpec>
+      <AccessReportTrigger>Whenever_ROReport_Is_Generated</AccessReportTrigger>
+    </AccessReportSpec>
+  </AccessSpec>
+</ADD_ACCESSSPEC>    
+
+<!-- illegal hex chars -->
+<ADD_ACCESSSPEC MessageID='375'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <AccessSpec>
+    <AccessSpecID>1049456651</AccessSpecID>
+    <AntennaID>53478</AntennaID>
+    <ProtocolID>Unspecified</ProtocolID>
+    <CurrentState>Active</CurrentState>
+    <!-- reserved 7 bits -->
+    <ROSpecID>1777407795</ROSpecID>
+    <AccessSpecStopTrigger>
+      <AccessSpecStopTrigger>Operation_Count</AccessSpecStopTrigger>
+      <OperationCountValue>13597</OperationCountValue>
+    </AccessSpecStopTrigger>
+    <AccessCommand>
+      <C1G2TagSpec>
+        <C1G2TargetTag>
+          <MB>2</MB>
+          <Match>false</Match>
+          <!-- reserved 5 bits -->
+          <Pointer>27630</Pointer>
+          <TagMask Count='8'>ss</TagMask>
+          <TagData Count='8'>zz</TagData>
+        </C1G2TargetTag>
+      </C1G2TagSpec>
+      <C1G2Write>
+        <OpSpecID>56254</OpSpecID>
+        <AccessPassword>1857236657</AccessPassword>
+        <MB>0</MB>
+        <!-- reserved 6 bits -->
+        <WordPointer>0</WordPointer>
+        <WriteData>abcd ef01</WriteData>
+      </C1G2Write>
+    </AccessCommand>
+    <AccessReportSpec>
+      <AccessReportTrigger>Whenever_ROReport_Is_Generated</AccessReportTrigger>
+    </AccessReportSpec>
+  </AccessSpec>
+</ADD_ACCESSSPEC>    
+
+<!-- count too long -->
+<ADD_ACCESSSPEC MessageID='376'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <AccessSpec>
+    <AccessSpecID>1049456651</AccessSpecID>
+    <AntennaID>53478</AntennaID>
+    <ProtocolID>Unspecified</ProtocolID>
+    <CurrentState>Active</CurrentState>
+    <!-- reserved 7 bits -->
+    <ROSpecID>1777407795</ROSpecID>
+    <AccessSpecStopTrigger>
+      <AccessSpecStopTrigger>Operation_Count</AccessSpecStopTrigger>
+      <OperationCountValue>13597</OperationCountValue>
+    </AccessSpecStopTrigger>
+    <AccessCommand>
+      <C1G2TagSpec>
+        <C1G2TargetTag>
+          <MB>2</MB>
+          <Match>false</Match>
+          <!-- reserved 5 bits -->
+          <Pointer>27630</Pointer>
+          <TagMask Count='16'>E0</TagMask>
+          <TagData Count='16'>D0</TagData>
+        </C1G2TargetTag>
+      </C1G2TagSpec>
+      <C1G2Write>
+        <OpSpecID>56254</OpSpecID>
+        <AccessPassword>1857236657</AccessPassword>
+        <MB>0</MB>
+        <!-- reserved 6 bits -->
+        <WordPointer>0</WordPointer>
+        <WriteData>abcd ef01</WriteData>
+      </C1G2Write>
+    </AccessCommand>
+    <AccessReportSpec>
+      <AccessReportTrigger>Whenever_ROReport_Is_Generated</AccessReportTrigger>
+    </AccessReportSpec>
+  </AccessSpec>
+</ADD_ACCESSSPEC>    
+
+<!-- illegal u96 value -->
+
+<!-- non hex chars -->
+<RO_ACCESS_REPORT MessageID='377'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <TagReportData>
+    <EPC_96>
+      <EPC>30ss33B2DDD9CAFEBABE801E</EPC>
+    </EPC_96>
+  </TagReportData>
+</RO_ACCESS_REPORT>
+
+<!-- too short -->
+<RO_ACCESS_REPORT MessageID='378'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <TagReportData>
+    <EPC_96>
+      <EPC>300833B2DDD9CAFEBBE801E</EPC>
+    </EPC_96>
+  </TagReportData>
+</RO_ACCESS_REPORT>
+
+<!-- too long -->
+<RO_ACCESS_REPORT MessageID='379'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <TagReportData>
+    <EPC_96>
+      <EPC>300833B2DDD9CAFEBABE801E0</EPC>
+    </EPC_96>
+  </TagReportData>
+</RO_ACCESS_REPORT>
+
+<!-- empty enumeration string -->
+<SET_READER_CONFIG_RESPONSE MessageID='380'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <LLRPStatus>
+    <StatusCode></StatusCode>
+    <ErrorDescription></ErrorDescription>
+  </LLRPStatus>
+</SET_READER_CONFIG_RESPONSE>
+
+<!-- Enumeration String maximum value -->
+<SET_READER_CONFIG_RESPONSE MessageID='381'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <LLRPStatus>
+    <StatusCode>345143284124</StatusCode>
+    <ErrorDescription></ErrorDescription>
+  </LLRPStatus>
+</SET_READER_CONFIG_RESPONSE>
+
+<!-- Enumeration String minimum value -->
+<SET_READER_CONFIG_RESPONSE MessageID='382'
+  xmlns:llrp='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'
+  xmlns='http://www.llrp.org/ltk/schema/core/encoding/xml/1.0'>
+  <LLRPStatus>
+    <StatusCode>-1</StatusCode>
+    <ErrorDescription></ErrorDescription>
+  </LLRPStatus>
+</SET_READER_CONFIG_RESPONSE>
+
+</ps:packetSequence>
+

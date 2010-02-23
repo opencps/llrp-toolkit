@@ -230,6 +230,12 @@ enum LLRP_ResultCode
     LLRP_RC_InvalidChoiceMember,
     LLRP_RC_EnrollBadTypeNumber,
     LLRP_RC_NotAllowedAtExtensionPoint,
+    LLRP_RC_XMLInvalidNodeType,
+    LLRP_RC_XMLMissingField,
+    LLRP_RC_XMLExtraNode,
+    LLRP_RC_XMLInvalidFieldCharacters,
+    LLRP_RC_XMLOutOfRange,
+
 };
 
 struct LLRP_SErrorDetails
@@ -435,7 +441,7 @@ struct LLRP_SFieldDescriptor
     /* A code for the field type */
     LLRP_tEFieldType            eFieldType;
     /* A code for how the field should be formatted */
-    LLRP_tEFieldType            eFieldFormat;
+    LLRP_tEFieldFormat          eFieldFormat;
     /* String name of field (e.g. "ROSpecID") */
     char *                      pName;
     /* NULL or ptr to table base for enumerated fields */
@@ -475,8 +481,8 @@ struct LLRP_SEnumTableEntry
  * During decode operations types can be looked up
  * by code (vendor and typenum) or by name.
  */
-#define LTKC_MAX_CUSTOM_MESSAGE     10u
-#define LTKC_MAX_CUSTOM_PARAMETER   30u
+#define LTKC_MAX_CUSTOM_MESSAGE     1024u
+#define LTKC_MAX_CUSTOM_PARAMETER   1024u
 struct LLRP_STypeRegistry
 {
     /* Standard messages subscripted by type number */
@@ -535,6 +541,11 @@ LLRP_TypeRegistry_lookupCustomParameter (
   unsigned int                  VendorID,
   unsigned int                  ParameterSubTypeNum);
 
+/* Lookup a typedesciptor (custom or regular) by name. NULL->not found */
+const LLRP_tSTypeDescriptor *
+LLRP_TypeRegistry_lookupByName (
+  const LLRP_tSTypeRegistry *   pTypeRegistry,
+  const char *                  pElementName);
 
 /*
  * SElement
@@ -644,6 +655,11 @@ LLRP_Element_attachToSubParameterList (
 
 extern void
 LLRP_Element_clearSubParameterList (
+  LLRP_tSElement *              pElement,
+  LLRP_tSParameter **           ppListHead);
+
+extern int
+LLRP_Element_countSubParameterList (
   LLRP_tSElement *              pElement,
   LLRP_tSParameter **           ppListHead);
 

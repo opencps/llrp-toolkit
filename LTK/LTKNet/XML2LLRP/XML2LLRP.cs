@@ -50,19 +50,27 @@ namespace LTK
 
         static void Main(string[] args)
         {
-            Stream s;
+            Stream outp;
+            Stream inp;
             TextWriter errorWriter = Console.Error;
 
-            if (args.Length == 1)
+            if (args.Length == 2)
             {
-                s = new FileStream(args[0], FileMode.Open, FileAccess.Read);
+                inp = new FileStream(args[0], FileMode.Open, FileAccess.Read);
+                outp = new FileStream(args[1], FileMode.OpenOrCreate, FileAccess.Write);
+            }
+            else if (args.Length == 1)
+            {
+                inp = new FileStream(args[0], FileMode.Open, FileAccess.Read);
+                outp = Console.OpenStandardOutput();
             }
             else
             {
-                s = Console.OpenStandardInput();
+                inp = Console.OpenStandardInput();
+                outp = Console.OpenStandardOutput();
             }
 
-            System.Xml.XmlTextReader xr = new System.Xml.XmlTextReader(s);
+            System.Xml.XmlTextReader xr = new System.Xml.XmlTextReader(inp);
             xr.MoveToContent();
             if (!xr.LocalName.Equals("packetSequence"))
             {
@@ -71,7 +79,6 @@ namespace LTK
             int result = nextElement(ref xr);
 
             UInt32 msg_no = 0;
-            Stream outp = Console.OpenStandardOutput();
             //StreamWriter sw = new StreamWriter(outp);
             while (result == 1)
             {
@@ -103,7 +110,7 @@ namespace LTK
                     String err_msg =
                         "<ERROR_MESSAGE MessageID=\"0\" Version=\"0\">\r\n" +
                         "  <LLRPStatus>\r\n" +
-                        "    <StatusCode>M_Success</StatusCode>\r\n" +
+                        "    <StatusCode>R_DeviceError</StatusCode>\r\n" +
                         "    <ErrorDescription>" + desc + "</ErrorDescription>\r\n" +
                         "  </LLRPStatus>\r\n" +
                         "</ERROR_MESSAGE>\r\n";
@@ -112,15 +119,7 @@ namespace LTK
                 }
 
                 byte[] packet = LTKD.Util.ConvertBitArrayToByteArray(msg.ToBitArray());
-
-                try
-                {
-                    outp.Write(packet, 0, packet.Length);
-                }
-                catch (Exception e)
-                {
-                    String desc = "ParseXMLToLLRPMessage failure on Packet #" + msg_no + ", " + e.Message;
-                }
+                outp.Write(packet, 0, packet.Length);
 
                 /* next XML subdocument */
                 result = nextElement(ref xr);
@@ -128,6 +127,5 @@ namespace LTK
             }
 
         }
-        
     }
 }

@@ -71,12 +71,12 @@ namespace Org.LLRP.LTK.LLRPV1
     abstract class CommunicationInterface : IDisposable
     {
         protected AsynReadState state;
-        public event delegateMessageReceived OnMessageReceived;
+        public event delegateMessageReceived OnFrameReceived;
         public event delegateClientConnected OnClientConnected;
 
         protected void TriggerMessageEvent(Int16 ver, Int16 msg_type, int msg_id, byte[] data)
         {
-            try { if (OnMessageReceived != null) OnMessageReceived(ver, msg_type, msg_id, data); }
+            try { if (OnFrameReceived != null) OnFrameReceived(ver, msg_type, msg_id, data); }
             catch { }
         }
 

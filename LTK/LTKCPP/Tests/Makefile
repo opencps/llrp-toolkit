@@ -16,7 +16,8 @@
 ############################################################################
 
 LIBDIR=../Library
-INCL = -I$(LIBDIR)
+XML2DIR=../../opensource/include/libxml2
+INCL = -I$(LIBDIR) -I$(XML2DIR)
 
 #CPPFLAGS = -O -Wall $(INCL)
 AR              = ar
@@ -24,6 +25,7 @@ CXX             = g++
 CPPFLAGS        = -g -Wall $(INCL)
 
 LTKCPP_LIB = $(LIBDIR)/libltkcpp.a
+XML2_LIB = ../../opensource/lib/libxml2.a
 LTKCPP_HDRS = \
 	$(LIBDIR)/ltkcpp.h		\
 	$(LIBDIR)/ltkcpp_base.h		\
@@ -33,16 +35,22 @@ LTKCPP_HDRS = \
 	$(LIBDIR)/ltkcpp_xmltext.h	\
 	$(LIBDIR)/out_ltkcpp.h
 
-all: dx101 dx201
+all: xml2llrp llrp2xml dx201
 
 everything:
 	make all
 
-dx101 : dx101.o $(LTKCPP_LIB)
-	$(CXX) $(CPPFLAGS) -o dx101 dx101.o $(LTKCPP_LIB)
+xml2llrp : xml2llrp.o $(LTKCPP_LIB) $(XML2_LIB)
+	$(CXX) $(CPPFLAGS) -o xml2llrp xml2llrp.o $(LTKCPP_LIB) $(XML2_LIB) 
 
-dx101.o : dx101.cpp $(LTKCPP_HDRS)
-	$(CXX) -c $(CPPFLAGS) dx101.cpp -o dx101.o
+xml2llrp.o : xml2llrp.cpp $(LTKCPP_HDRS)
+	$(CXX) -c $(CPPFLAGS) xml2llrp.cpp -o xml2llrp.o
+
+llrp2xml : llrp2xml.o $(LTKCPP_LIB)
+	$(CXX) $(CPPFLAGS) -o llrp2xml llrp2xml.o $(LTKCPP_LIB)
+
+llrp2xml.o : llrp2xml.cpp $(LTKCPP_HDRS)
+	$(CXX) -c $(CPPFLAGS) llrp2xml.cpp -o llrp2xml.o
 
 dx201 : dx201.o $(LTKCPP_LIB)
 	$(CXX) $(CPPFLAGS) -o dx201 dx201.o $(LTKCPP_LIB)
@@ -53,5 +61,6 @@ dx201.o : dx201.cpp $(LTKCPP_HDRS)
 clean:
 	rm -f *.o *.core core.[0-9]*
 	rm -f *.tmp
-	rm -f dx101
+	rm -f xml2llrp
+	rm -f llrp2xml
 	rm -f dx201

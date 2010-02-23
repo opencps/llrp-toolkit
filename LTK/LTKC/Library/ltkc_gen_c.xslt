@@ -220,7 +220,7 @@ LLRP_est<xsl:value-of select='$enumBaseName'/>[] =
 ** Message <xsl:value-of select='@name'/>
 **
 *****************************************************************
-*/ 
+*/
   <xsl:call-template name='StructDefinitionCommon'>
     <xsl:with-param name='BaseType'>tSMessage</xsl:with-param>
     <xsl:with-param name='LLRPName'><xsl:value-of select='@name'/></xsl:with-param>
@@ -247,7 +247,7 @@ LLRP_est<xsl:value-of select='$enumBaseName'/>[] =
 ** Custom message <xsl:value-of select='@name'/>
 **
 *****************************************************************
-*/ 
+*/
   <xsl:call-template name='StructDefinitionCommon'>
     <xsl:with-param name='BaseType'>tSParameter</xsl:with-param>
     <xsl:with-param name='LLRPName'><xsl:value-of select='@name'/></xsl:with-param>
@@ -302,7 +302,7 @@ LLRP_est<xsl:value-of select='$enumBaseName'/>[] =
 ** Parameter <xsl:value-of select='@name'/>
 **
 *****************************************************************
-*/ 
+*/
   <xsl:call-template name='StructDefinitionCommon'>
     <xsl:with-param name='BaseType'>tSParameter</xsl:with-param>
     <xsl:with-param name='LLRPName'><xsl:value-of select='@name'/></xsl:with-param>
@@ -324,7 +324,7 @@ LLRP_est<xsl:value-of select='$enumBaseName'/>[] =
 ** Custom parameter <xsl:value-of select='@name'/>
 **
 *****************************************************************
-*/ 
+*/
   <xsl:call-template name='StructDefinitionCommon'>
     <xsl:with-param name='BaseType'>tSParameter</xsl:with-param>
     <xsl:with-param name='LLRPName'><xsl:value-of select='@name'/></xsl:with-param>
@@ -474,7 +474,7 @@ LLRP_<xsl:value-of select='@name'/>_isAllowedIn (
 ** Choice <xsl:value-of select='@name'/>
 **
 *****************************************************************
-*/ 
+*/
   <xsl:call-template name='StructDefinitionOneChoice'>
     <xsl:with-param name='LLRPName'><xsl:value-of select='@name'/></xsl:with-param>
     <xsl:with-param name='pVendorDescriptor'>NULL</xsl:with-param>
@@ -536,7 +536,7 @@ LLRP_<xsl:value-of select='$LLRPName'/>_isMember (
   <xsl:for-each select='LL:parameter'>
     <xsl:choose>
       <xsl:when test='@type = "Custom"'>
-    if(LLRP_Parameter_isAllowedIn(pParameter, &amp;LLRP_td<xsl:value-of select='$LLRPName'/>))
+    if(LLRP_Parameter_isAllowedExtension(pParameter, &amp;LLRP_td<xsl:value-of select='$LLRPName'/>))
     {
         return TRUE;
     }
@@ -1982,6 +1982,13 @@ LLRP_<xsl:value-of select='$LLRPName'/>_clear<xsl:value-of select='$MemberBaseNa
   LLRP_tS<xsl:value-of select='$LLRPName'/> *pThis)
 {
     SUBPARAM_CLEAR(list<xsl:value-of select='$MemberBaseName'/>);
+}
+
+int
+LLRP_<xsl:value-of select='$LLRPName'/>_count<xsl:value-of select='$MemberBaseName'/> (
+  LLRP_tS<xsl:value-of select='$LLRPName'/> *pThis)
+{
+    return SUBPARAM_COUNT(list<xsl:value-of select='$MemberBaseName'/>);
 }
 
 </xsl:template>
