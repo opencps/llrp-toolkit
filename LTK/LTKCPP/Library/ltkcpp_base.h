@@ -37,8 +37,8 @@
 /** @def LTKCPP_VERSION_STR
  ** @brief The current version of the LTKCPP build in string format
  **/
-#define LTKCPP_VERSION      0x01000006
-#define LTKCPP_VERSION_STR  "1.0.0.6"
+#define LTKCPP_VERSION      0x01000008
+#define LTKCPP_VERSION_STR  "1.0.0.8"
 
 /**
  ** @defgroup LTKCoreElement Core LTK Library classes and functions
