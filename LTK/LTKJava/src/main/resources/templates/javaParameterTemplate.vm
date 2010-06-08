@@ -103,7 +103,7 @@ import org.llrp.ltk.generated.LLRPConstants;
 	
 	
 	##custom parameters
-	#foreach ($custom in $utility.Custom($parameter.getName()))
+	#foreach ($custom in $utility.allowedCustom($parameter.getName()))
 	import org.llrp.ltk.generated.custom.parameters.$custom;
 	$utility.addImport($custom)
 	#end
@@ -608,7 +608,7 @@ $utility.clearNumberOfReserved()
 							if(type != null && type.equals(Custom$typeNum)){
 								Custom cus = new Custom(binary.subList(position,tempLength)); 
 								// custom parameters for this parameter	
-								#foreach ($custom in $utility.Custom($parameter.getName()))
+								#foreach ($custom in $utility.allowedCustom($parameter.getName()))
 									if (cus.getParameterSubtype().equals(new $custom ().$subtypeNr)){ 
 										$curName$list$add (new $custom (cus));
 										LOGGER.debug("adding $custom to $curName$list ");	
@@ -645,7 +645,8 @@ $utility.clearNumberOfReserved()
 						if(type != null && type.equals(Custom$typeNum)){
 							Custom cus = new Custom(binary.subList(position,tempLength)); 
 							// custom parameters for this parameter	
-							#foreach ($custom in $utility.Custom($parameter.getName()))
+							// $parameter.getName()
+							#foreach ($custom in $utility.allowedCustom($parameter.getName()))
 								if (cus.getParameterSubtype().equals(new $custom ().$subtypeNr)){ 
 									$curName$list$add (new $custom (cus));
 									atLeastOnce = true;
