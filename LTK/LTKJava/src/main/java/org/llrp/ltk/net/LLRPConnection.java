@@ -135,7 +135,7 @@ public abstract class LLRPConnection {
 			endpoint.errorOccured("session is not yet established");
 			return null;
 		}
-		session.setAttribute(SYNC_MESSAGE_ANSWER, returnMessageType);
+		
 		LLRPMessage returnMessage = null;
 		if (!session.isConnected()){
 			if(!reconnect()){//reconnect failed
@@ -145,10 +145,14 @@ public abstract class LLRPConnection {
 			}
 		}
 
+		// move setAttribute here from above block to avoid the risk of overwriting session where SYNC_MESSAGE_ANSWER is already set
+		session.setAttribute(SYNC_MESSAGE_ANSWER, returnMessageType);
+		
 		WriteFuture writeFuture = session.write(message);
 		log.info(message.getName() + " transact ....");
 		writeFuture.join();
-
+		
+		
 		// Wait until a message is received.
 		try {
 			BlockingQueue<LLRPMessage> synMessageQueue = handler.getSynMessageQueue();

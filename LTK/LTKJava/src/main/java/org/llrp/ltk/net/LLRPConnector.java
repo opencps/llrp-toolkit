@@ -134,7 +134,13 @@ public class LLRPConnector extends LLRPConnection{
 		remoteAddress = new InetSocketAddress(host, port);
 		ConnectFuture future = connector.connect(remoteAddress,handler);
 		future.join();// Wait until the connection attempt is finished.
-		session = future.getSession();
+		
+		if(future.isConnected()){
+			session = future.getSession();
+		}else{
+			String msg = "failed to connect";
+			throw new LLRPConnectionAttemptFailedException(msg);
+		}
 		// MINA 2.0
 		//future.awaitUninterruptibly();
 		
@@ -173,8 +179,13 @@ public class LLRPConnector extends LLRPConnection{
 		// MINA 2.0
 		// future = connector.connect();
 		// future.awaitUninterruptibly();
-		session = future.getSession();
-		log.info("new session created:" + session);
+		
+		if(future.isConnected()){
+			session = future.getSession();
+			log.info("new session created:" + session);
+		} else {
+			return false;
+		}
 		
 		//check if llrp reader reply with a status report to indicate connection success.
 		//the client shall not send any information to the reader until this status report message is received
