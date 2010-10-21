@@ -644,13 +644,17 @@ $utility.clearNumberOfReserved()
 				#elseif ($utility.isCustom($field.getType()))
 					## custom parameter need separate treatment
 					// custom
-					custom = new $field.getType() (binary.subList(position,tempLength)); 	
+					custom = new $field.getType() (binary.subList(position,tempLength)); 
+
 					// replace custom with actual type
 					#foreach ($custom in $utility.allowedCustom($custom.getName()))
 						if (custom.getParameterSubtype().intValue() == $custom$subtypeNr){ 
 							custom = new $custom (custom);
 						}
 					#end
+
+					position += tempLength; // modified here to correctly increment the position of processed bits
+
 				#elseif ($utility.hasType($field,$parameterReference))
 					//paramRef
 					$curName$list$add (new $field.getType() (binary.subList(position,tempLength)));
@@ -725,6 +729,9 @@ $utility.clearNumberOfReserved()
 								custom = new $custom (custom);
 							}
 						#end
+
+						position += tempLength; // modified here to correctly increment the position of processed bits
+
 					#elseif ($utility.hasType($field,$parameterReference))
 						if(type.equals($field.getType()$typeNum)){
 							if (binary.get(position)){
