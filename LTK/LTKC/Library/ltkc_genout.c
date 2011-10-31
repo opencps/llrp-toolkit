@@ -24,10 +24,9 @@
 
 #include "out_ltkc.inc"
 
-
 static char     ident[] = {
     "$" "Id: libltkc "
-    LTKC_VERSION_STR
+    STRINGIFY(LTKC_VERSION_STR)
     "  Built: "
     __DATE__
     " "

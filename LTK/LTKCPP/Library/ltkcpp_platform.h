@@ -51,7 +51,7 @@ namespace LLRP
  * good to go.
  */
 
-#ifdef linux
+#if defined(linux) || defined(__APPLE__)
 #include <stdint.h>
 /** Basic type for LLRP 8-bit unsigned data values*/
 typedef uint8_t                 llrp_u8_t;

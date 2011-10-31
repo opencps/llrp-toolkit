@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
- -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
- -  Copyright 2007,2008 Impinj, Inc.
+<!--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  -
  -  Licensed under the Apache License, Version 2.0 (the "License");
  -  you may not use this file except in compliance with the License.
@@ -101,7 +99,7 @@
 
   <xsl:for-each select='LL:vendorDefinition'>
 const CVendorDescriptor
-g_vdesc<xsl:value-of select='@name'/> =
+g_vdesc<xsl:value-of select='$RegistryName'/> =
 {
   "<xsl:value-of select='@name'/>",	// m_pName
   <xsl:value-of select='@vendorID'/>,	// m_VendorID
@@ -253,7 +251,7 @@ g_est<xsl:value-of select='$enumBaseName'/>[] =
     <xsl:with-param name='LLRPName'><xsl:value-of select='@name'/></xsl:with-param>
     <xsl:with-param name='IsMessage'>TRUE</xsl:with-param>
     <xsl:with-param name='TypeNum'><xsl:value-of select='@subtype'/></xsl:with-param>
-    <xsl:with-param name='pVendorDescriptor'>&amp;g_vdesc<xsl:value-of select='@vendor'/></xsl:with-param>
+    <xsl:with-param name='pVendorDescriptor'>&amp;g_vdesc<xsl:value-of select='$RegistryName'/></xsl:with-param>
     <xsl:with-param name='pNamespaceDescriptor'>&amp;g_nsdesc<xsl:value-of select='@namespace'/></xsl:with-param>
     <xsl:with-param name='pResponseType'>
       <xsl:choose>
@@ -328,7 +326,7 @@ g_est<xsl:value-of select='$enumBaseName'/>[] =
     <xsl:with-param name='LLRPName'><xsl:value-of select='@name'/></xsl:with-param>
     <xsl:with-param name='IsMessage'>FALSE</xsl:with-param>
     <xsl:with-param name='TypeNum'><xsl:value-of select='@subtype'/></xsl:with-param>
-    <xsl:with-param name='pVendorDescriptor'>&amp;g_vdesc<xsl:value-of select='@vendor'/></xsl:with-param>
+    <xsl:with-param name='pVendorDescriptor'>&amp;g_vdesc<xsl:value-of select='$RegistryName'/></xsl:with-param>
     <xsl:with-param name='pNamespaceDescriptor'>&amp;g_nsdesc<xsl:value-of select='@namespace'/></xsl:with-param>
     <xsl:with-param name='pResponseType'>NULL</xsl:with-param>
     <xsl:with-param name='IsCustomParameter'>true</xsl:with-param>

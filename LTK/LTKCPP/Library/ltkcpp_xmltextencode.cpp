@@ -512,7 +512,7 @@ CXMLTextEncoderStream::put_u64 (
 
             pGMTime = gmtime(&CurSec);
             strftime(aBuf, sizeof aBuf, "%Y-%m-%dT%H:%M:%S", pGMTime);
-            appendFormat("%s.%06d", aBuf, CurUSec);
+            appendFormat("%s.%06dZ", aBuf, CurUSec);
         }
         break;
     }
@@ -1030,7 +1030,7 @@ CXMLTextEncoderStream::appendPrefixedTagName (
 
 void
 CXMLTextEncoderStream::appendFormat (
-  char *                        pFmtStr,
+  const char *                        pFmtStr,
                                 ...)
 {
     char                        aHoldBuf[256u];

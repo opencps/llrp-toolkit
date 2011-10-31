@@ -250,7 +250,7 @@ class C<xsl:value-of select='@name'/>;</xsl:for-each>
  */
 <xsl:for-each select='LL:vendorDefinition'>
 extern const CVendorDescriptor
-g_vdesc<xsl:value-of select='@name'/>;
+g_vdesc<xsl:value-of select='$RegistryName'/>;
 </xsl:for-each>
 
 </xsl:template>

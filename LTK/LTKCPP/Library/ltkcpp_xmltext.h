@@ -337,7 +337,7 @@ class CXMLTextEncoderStream : public CEncoderStream
 
     void
     appendFormat (
-      char *                    pFmtStr,
+      const char *                    pFmtStr,
                                 ...);
 
 };

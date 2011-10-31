@@ -102,7 +102,7 @@
 
   <xsl:for-each select='LL:vendorDefinition'>
 const LLRP_tSVendorDescriptor
-LLRP_vdesc<xsl:value-of select='@name'/> =
+LLRP_vdesc<xsl:value-of select='$RegistryName'/> =
 {
   .pName            = "<xsl:value-of select='@name'/>",
   .VendorID         = <xsl:value-of select='@vendorID'/>,
@@ -253,7 +253,7 @@ LLRP_est<xsl:value-of select='$enumBaseName'/>[] =
     <xsl:with-param name='LLRPName'><xsl:value-of select='@name'/></xsl:with-param>
     <xsl:with-param name='IsMessage'>TRUE</xsl:with-param>
     <xsl:with-param name='TypeNum'><xsl:value-of select='@subtype'/></xsl:with-param>
-    <xsl:with-param name='pVendorDescriptor'>&amp;LLRP_vdesc<xsl:value-of select='@vendor'/></xsl:with-param>
+    <xsl:with-param name='pVendorDescriptor'>&amp;LLRP_vdesc<xsl:value-of select='$RegistryName'/></xsl:with-param>
     <xsl:with-param name='pNamespaceDescriptor'>&amp;LLRP_nsdesc<xsl:value-of select='@namespace'/></xsl:with-param>
     <xsl:with-param name='pResponseType'>
       <xsl:choose>
@@ -330,7 +330,7 @@ LLRP_est<xsl:value-of select='$enumBaseName'/>[] =
     <xsl:with-param name='LLRPName'><xsl:value-of select='@name'/></xsl:with-param>
     <xsl:with-param name='IsMessage'>FALSE</xsl:with-param>
     <xsl:with-param name='TypeNum'><xsl:value-of select='@subtype'/></xsl:with-param>
-    <xsl:with-param name='pVendorDescriptor'>&amp;LLRP_vdesc<xsl:value-of select='@vendor'/></xsl:with-param>
+    <xsl:with-param name='pVendorDescriptor'>&amp;LLRP_vdesc<xsl:value-of select='$RegistryName'/></xsl:with-param>
     <xsl:with-param name='pNamespaceDescriptor'>&amp;LLRP_nsdesc<xsl:value-of select='@namespace'/></xsl:with-param>
     <xsl:with-param name='pResponseType'>NULL</xsl:with-param>
     <xsl:with-param name='IsCustomParameter'>true</xsl:with-param>
@@ -1211,7 +1211,7 @@ LLRP_<xsl:value-of select='$LLRPName'/>_assimilateSubParameters (
   </xsl:variable>
   <xsl:variable name='ParamType'><xsl:value-of select='@type'/></xsl:variable>
 
-    // <xsl:value-of select='@repeat'/> of <xsl:value-of select='$MemberBaseName'/>
+    /* <xsl:value-of select='@repeat'/> of <xsl:value-of select='$MemberBaseName'/> */
     pType = &amp;LLRP_td<xsl:value-of select='$ParamType'/>;
   <xsl:choose>
     <xsl:when test='@repeat="1"'>
@@ -1277,7 +1277,7 @@ LLRP_<xsl:value-of select='$LLRPName'/>_assimilateSubParameters (
   </xsl:variable>
   <xsl:variable name='isMember'>LLRP_<xsl:value-of select='@type'/>_isMember(pCur)</xsl:variable>
 
-    // <xsl:value-of select='@repeat'/> of choice <xsl:value-of select='$MemberBaseName'/>
+    /* <xsl:value-of select='@repeat'/> of choice <xsl:value-of select='$MemberBaseName'/> */
     pType = NULL;
   <xsl:choose>
     <xsl:when test='@repeat="1"'>
@@ -1344,7 +1344,7 @@ LLRP_<xsl:value-of select='$LLRPName'/>_assimilateSubParameters (
   </xsl:variable>
   <xsl:variable name='isAllowed'>LLRP_Parameter_isAllowedExtension(pCur, &amp;LLRP_td<xsl:value-of select='../@name'/>)</xsl:variable>
 
-    // <xsl:value-of select='@repeat'/> of choice <xsl:value-of select='$MemberBaseName'/>
+    /* <xsl:value-of select='@repeat'/> of choice <xsl:value-of select='$MemberBaseName'/> */
     pType = NULL;
   <xsl:choose>
     <xsl:when test='@repeat="1"'>

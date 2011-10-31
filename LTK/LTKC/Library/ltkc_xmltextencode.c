@@ -891,7 +891,7 @@ put_u64 (
 
             pGMTime = gmtime(&CurSec);
             strftime(aBuf, sizeof aBuf, "%Y-%m-%dT%H:%M:%S", pGMTime);
-            appendFormat(pEncoderStream, "%s.%06d", aBuf, CurUSec);
+            appendFormat(pEncoderStream, "%s.%06dZ", aBuf, CurUSec);
         }
         break;
     }

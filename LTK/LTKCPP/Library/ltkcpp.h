@@ -39,6 +39,12 @@
 #include "ltkcpp_xmltext.h"
 #include "ltkcpp_connection.h"
 
+/* for passing version information as a define */
+#define STRINGIFY(x) XSTRINGIFY(x)
+#define XSTRINGIFY(x) #x
+
+#include "version.inc"
+
 /*
 ** @brief The Namespace for the LLRP LTK Library */
 namespace LLRP

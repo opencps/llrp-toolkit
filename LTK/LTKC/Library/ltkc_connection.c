@@ -247,17 +247,7 @@ LLRP_Conn_openConnectionToReader (
   const char *                  pReaderHostName)
 {
     int                         Sock;
-    static const struct addrinfo AddrInfoMask =
-    {
-        0,
-        AF_INET,
-        SOCK_STREAM,
-        0,
-        0,
-        NULL,
-        NULL,
-        NULL
-    };
+    static const struct addrinfo AddrInfoMask;
     struct addrinfo *           HostAddress;
     int                         Flag;
     struct sockaddr_in          Sin;

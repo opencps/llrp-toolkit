@@ -1735,6 +1735,26 @@ CXMLTextDecoderStream::cleanString(
     return (int) (*ppend - *ppbuf);
 }
 
+/* gets a single char value from a non-NULL terminated buffer buffer.
+ * If it fails to get one, reutrn value should == pbuf, other
+ * wise EndPtr should point to one past amount consumed */
+static const llrp_u8_t *
+getSingleChar(
+  const llrp_u8_t *             pbuf,
+  const llrp_u8_t *             pend,
+  llrp_s64_t *                  pValue)
+{
+    const llrp_u8_t *           endPtr = pbuf;
+    const int                   len = pend - pbuf;
+
+    if(len >= 1) 
+    {
+        *pValue = *pbuf;
+         endPtr = pbuf + 1;
+    }
+
+    return endPtr;
+}
 
 const llrp_u8_t *
 CXMLTextDecoderStream::getSingleTimestamp(
@@ -1743,52 +1763,128 @@ CXMLTextDecoderStream::getSingleTimestamp(
   llrp_s64_t *                  pValue)
 {
     const llrp_u8_t *           endPtr;
+    const llrp_u8_t *           tmpPtr;
     struct tm importTime;
     llrp_s64_t micros = 0;
-    const llrp_u8_t *pMicro;
+    llrp_s64_t temp = 0;
+    time_t tt;
+    int utc = 0;
+    llrp_s64_t offset = 0;
 
     memset(&importTime, 0x00, sizeof(importTime));
 
-    endPtr = (llrp_u8_t*) strptime((char*) pbuf, "%Y-%m-%dT%T", &importTime);
-    /* are there microseconds */
-    if(endPtr != NULL)
-    {
-        /* convert time time_t */
-        time_t tt;
-           
-        /* There may or may not be microseconds. Live with either */
-        if(*endPtr == '.')
-        {
-            int length;
-            pMicro = endPtr + 1;
-            length = (int) (pend - pMicro);
-            endPtr = getSingleDecimal(pMicro, pend, &micros);
+    tmpPtr = pbuf;
+    endPtr = (llrp_u8_t*) strptime((char*) tmpPtr, "%Y-%m-%dT%T", &importTime);
 
-            /* may not contain 6 decimal places */
-            while(length < 6)
-            {
-                    micros *= 10;
+    if(endPtr == NULL) 
+    {
+        goto timeParseError;
+    }
+    
+    /* we have a valid timestamp, but there may be more stuff */
+    tmpPtr = endPtr;
+    if((endPtr = getSingleChar(tmpPtr, pend, &temp)) == tmpPtr) 
+    {
+        goto timeParseDone;
+    }
+
+    if(temp == '.')
+    { 
+        int length;
+
+        /* try to get the microsecond value */
+        tmpPtr = endPtr;
+        if((endPtr = getSingleDecimal(tmpPtr, pend, &micros)) == tmpPtr)
+        {
+            goto timeParseError;
+        }
+
+        length = endPtr - tmpPtr;
+        /* may not contain 6 decimal places */
+        while(length < 6)
+        {
+            micros *= 10;
             length++;
-            }
         }
 
-        /* make this into time since epoch at GMT (UTC) */
-        tt = timegm(&importTime);
-        if(tt != (time_t) -1)
+        if(length > 6) 
         {
-            /* LLRP format is 64-bit microseconds. Conver  */
-            *pValue = 1000000ll * (llrp_s64_t) tt + micros;
+            goto timeParseError;
         }
-        else
+
+        /* look for more stuff that is optional */
+        tmpPtr = endPtr;
+        if((endPtr = getSingleChar(tmpPtr, pend, &temp)) == tmpPtr) 
         {
-            /* catch the error later. We cannot import time */
-            endPtr = pbuf;
+            goto timeParseDone;
         }
     }
-    else
+
+    /* timestamp could either have offset or Z for UTC (Zulu) */
+    if(temp == '-' || temp == '+') 
     {
-        endPtr = pbuf;
+        int scale = 1;
+        /* offset formats are hh or hh:mm from UTC */
+	if(temp == '+')
+        {
+            scale = -1;
+            /* The time is offset positively from UTC, which means we have to 
+            ** subtract to get to UTC time */
+        }
+	utc = 1;
+        tmpPtr = endPtr;
+        if((endPtr = getSingleDecimal(tmpPtr, pend, &temp)) == (tmpPtr+2))
+        {
+            goto timeParseError;
+        }
+   
+        offset = scale*temp*60*60;
+       
+        tmpPtr = endPtr;
+        if((endPtr = getSingleChar(tmpPtr, pend, &temp)) == tmpPtr) 
+        {
+            goto timeParseDone;
+        }
+     
+        if(temp != ':') {
+            goto timeParseError;
+        }
+
+        tmpPtr = endPtr;
+        if((endPtr = getSingleDecimal(tmpPtr, pend, &temp)) == (tmpPtr+2))
+        {
+            goto timeParseError;
+        }
+
+        offset += (scale * temp * 60);
+        
     }
+    else if ((temp == 'z') || (temp == 'Z')) 
+    {
+	utc = 1;
+    }
+    /* fall through */
+
+timeParseDone:
+
+    if(utc) 
+    {
+        tt = timegm(&importTime);
+    } else 
+    {
+        tt = timelocal(&importTime);
+    }
+
+    /* make this into time since epoch at GMT (UTC) */
+    if(tt != (time_t) -1)
+    {
+        /* LLRP format is 64-bit microseconds UTC. Conver  */
+        *pValue = 1000000ll * (llrp_s64_t) (tt + offset) + micros;
+        return endPtr;
+    }
+    /* fall through if time wasn't valid */
+timeParseError:
+    endPtr = pbuf;
     return endPtr;
 }
 

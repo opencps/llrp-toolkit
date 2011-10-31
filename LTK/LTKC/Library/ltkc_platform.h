@@ -39,7 +39,7 @@
  * good to go.
  */
 
-#ifdef _STDINT_H
+#if defined(_STDINT_H) || defined(_STDINT_H_)
 
 typedef uint8_t                 llrp_u8_t;
 typedef int8_t                  llrp_s8_t;

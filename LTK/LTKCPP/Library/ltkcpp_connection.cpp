@@ -39,7 +39,7 @@
 #include <assert.h>
 
 
-#ifdef linux
+#if defined(linux) || defined(__APPLE__)
 #include <poll.h>
 #include <unistd.h>
 #include <errno.h>
@@ -85,7 +85,7 @@ namespace LLRP
  * The content of the CPlatformSocket is only known
  * within the implementation of CConnection.
  */
-#ifdef linux
+#if defined(linux) || defined(__APPLE__)
 class CPlatformSocket
 {
   public:
@@ -261,7 +261,7 @@ int
 CConnection::openConnectionToReader (
   const char *                  pReaderHostName)
 {
-#ifdef linux
+#if defined(linux) || defined(__APPLE__)
     int                         Sock;
 #endif
 #ifdef WIN32
@@ -321,7 +321,7 @@ CConnection::openConnectionToReader (
      * Create the socket.
      */
     Sock = socket(AF_INET, SOCK_STREAM, 0);
-#ifdef linux
+#if defined(linux) || defined(__APPLE__)
     if(0 > Sock)
 #endif /* linux */
 #ifdef WIN32
@@ -340,7 +340,7 @@ CConnection::openConnectionToReader (
     {
         /* Connect failed */
         m_pConnectErrorStr = "connection failed";
-#ifdef linux
+#if defined(linux) || defined(__APPLE__)
         close(Sock);
 #endif
 #ifdef WIN32
@@ -355,7 +355,7 @@ CConnection::openConnectionToReader (
      */
     Flag = 1;
 
-#ifdef linux
+#if defined(linux) || defined(__APPLE__)
     setsockopt(Sock, IPPROTO_TCP, TCP_NODELAY, (void*)&Flag, sizeof Flag);
 #endif
 #ifdef WIN32
@@ -410,7 +410,7 @@ CConnection::closeConnectionToReader (void)
         return -1;
     }
 
-#ifdef linux
+#if defined(linux) || defined(__APPLE__)
     shutdown(m_pPlatformSocket->m_sock, SHUT_RDWR);
     close(m_pPlatformSocket->m_sock);
     m_pPlatformSocket->m_sock = -1;
@@ -995,7 +995,7 @@ CConnection::recvAdvance (
              */
             if(nMaxMS >= 0)
             {
-#ifdef linux
+#if defined(linux) || defined(__APPLE__)
                 struct pollfd   pfd;
 
                 pfd.fd = m_pPlatformSocket->m_sock;

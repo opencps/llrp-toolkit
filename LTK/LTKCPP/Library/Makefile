@@ -26,6 +26,7 @@ CODE_GEN_H_XSLT = ltkcpp_gen_h.xslt
 CODE_GEN_CPP_XSLT = ltkcpp_gen_cpp.xslt
 
 LTKCPP_HDRS = \
+        version.inc		\
 	ltkcpp.h		\
 	ltkcpp_base.h		\
 	ltkcpp_connection.h	\

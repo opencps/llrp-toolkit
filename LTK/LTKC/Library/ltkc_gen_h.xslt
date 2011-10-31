@@ -164,7 +164,7 @@ typedef struct LLRP_S<xsl:value-of select='@name'/>
  */
 <xsl:for-each select='LL:vendorDefinition'>
 extern const LLRP_tSVendorDescriptor
-LLRP_vdesc<xsl:value-of select='@name'/>;
+LLRP_vdesc<xsl:value-of select='$RegistryName'/>;
 </xsl:for-each>
 
 </xsl:template>

@@ -29,17 +29,6 @@
  *****************************************************************************/
 
 
-/** @def LTKCPP_VERSION
- ** @brief The current version of the LTKCPP build
- ** Version is four each 8-bit numbers:
- ** major, minor, maintenance, progress number
- **/
-/** @def LTKCPP_VERSION_STR
- ** @brief The current version of the LTKCPP build in string format
- **/
-#define LTKCPP_VERSION      0x01000008
-#define LTKCPP_VERSION_STR  "1.0.0.8"
-
 /**
  ** @defgroup LTKCoreElement Core LTK Library classes and functions
  **
@@ -777,7 +766,7 @@ class CTypeDescriptor
     llrp_bool_t                 m_bIsMessage;
 
     /** @brief String name of parameter/message type (e.g. "ROSpec") */
-    char *                      m_pName;
+    const char *                      m_pName;
 
     /** @brief NULL=>standard LLRP, !NULL=>Vendor (PEN) of custom
      * message or parameter */
@@ -855,7 +844,7 @@ class CFieldDescriptor
     /** @brief A code for how the field should be formatted */
     FieldFormat                 m_eFieldFormat;
     /** @brief String name of field (e.g. "ROSpecID") */
-    char *                      m_pName;
+    const char *                      m_pName;
     /** @brief NULL or ptr to table base for enumerated fields */
     const SEnumTableEntry *     m_pEnumTable;
 };
@@ -884,7 +873,7 @@ extern CFieldDescriptor     g_fdParameterHeader_Subtype;
 struct SEnumTableEntry
 {
     /* String name, (e.g. "Immediate") */
-    char *                      pName;
+    const char *                      pName;
     int                         Value;
 };
 
@@ -948,6 +937,7 @@ class CTypeRegistry
       char *                    pName) const;
 
 };
+
 
 
 typedef std::list<CParameter *> tListOfParameters;
