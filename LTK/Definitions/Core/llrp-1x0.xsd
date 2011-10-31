@@ -85,7 +85,7 @@
 	</xs:simpleType>
 
 	<xs:simpleType name="listOfSignedInt">
-		<xs:list itemType="xs:Int"/>
+		<xs:list itemType="xs:int"/>
 	</xs:simpleType>
 
 	<xs:simpleType name="listOfUnsignedInt">
