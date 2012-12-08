@@ -151,7 +151,7 @@ main (int ac, char *av[])
         exit(3);
     }
 
-    if(strcmp(pNode->name, "packetSequence") != 0)
+    if(strcmp((char *)pNode->name, "packetSequence") != 0)
     {
         fprintf(stderr, "ERROR: Could not get XML PacketSequence node.  " \
                         "Found %s instead\n", pNode->name);
@@ -174,7 +174,7 @@ main (int ac, char *av[])
             xmlChar *           pMessageIDStr = NULL;
 
             /* It helps to know the message ID for debugging */
-            pMessageIDStr = xmlGetProp(pNode, "MessageID");
+            pMessageIDStr = xmlGetProp(pNode, (const xmlChar *)"MessageID");
 
             /*
              * Construct a frame decoder. It references the

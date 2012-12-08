@@ -16,8 +16,7 @@
 ############################################################################
 
 LIBDIR=../Library
-XML2DIR=../../opensource/include/libxml2
-INCL = -I$(LIBDIR) -I$(XML2DIR)
+INCL = -I$(LIBDIR) `pkg-config libxml-2.0 --cflags`
 
 #CPPFLAGS = -O -Wall $(INCL)
 AR              = ar
@@ -25,7 +24,7 @@ CXX             = g++
 CPPFLAGS        = -g -Wall $(INCL)
 
 LTKCPP_LIB = $(LIBDIR)/libltkcpp.a
-XML2_LIB = ../../opensource/lib/libxml2.a
+XML2_LIB = `pkg-config libxml-2.0 --libs`
 LTKCPP_HDRS = \
 	$(LIBDIR)/ltkcpp.h		\
 	$(LIBDIR)/ltkcpp_base.h		\
@@ -40,7 +39,7 @@ all: xml2llrp llrp2xml dx201
 everything:
 	make all
 
-xml2llrp : xml2llrp.o $(LTKCPP_LIB) $(XML2_LIB)
+xml2llrp : xml2llrp.o $(LTKCPP_LIB)
 	$(CXX) $(CPPFLAGS) -o xml2llrp xml2llrp.o $(LTKCPP_LIB) $(XML2_LIB) 
 
 xml2llrp.o : xml2llrp.cpp $(LTKCPP_HDRS)

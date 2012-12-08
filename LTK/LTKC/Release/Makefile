@@ -16,7 +16,6 @@
 ############################################################################
 
 LIBDIR=../Library
-OPENSOURCEDIR    = ../../opensource/lib
 
 LTKC_HDRS = \
 	$(LIBDIR)/ltkc.h		\
@@ -28,7 +27,7 @@ LTKC_HDRS = \
 	$(LIBDIR)/out_ltkc.h
 
 LTKC_LIB_A          = $(LIBDIR)/libltkc.a
-LIBXML2_A           = $(OPENSOURCEDIR)/libxml2.a
+LIBXML2_A           = `pkg-config libxml-2.0 --libs`
 LTKC_LIBS           = $(LTKC_LIB_A)
 LTKC_FILES          = $(LTKC_HDRS) $(LTKC_LIBS)
 LIBXML2_LIBS     = $(LIBXML2_A)

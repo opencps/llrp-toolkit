@@ -19,7 +19,7 @@
 AR              = ar
 CC              = gcc
 CFLAGS          = -g -Wall
-CINCLUDES	= -I ../../opensource/include/libxml2
+CINCLUDES	= `pkg-config libxml-2.0 --cflags`
 
 LLRPDEF         = ../../Definitions/Core/llrp-1x0-def.xml
 

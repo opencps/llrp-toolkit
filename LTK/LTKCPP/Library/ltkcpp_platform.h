@@ -36,12 +36,10 @@
 
 #include <list>
 #include <string.h>         /* memcpy() */
+#include <time.h>
 
 #define FALSE       0
 #define TRUE        1
-
-namespace LLRP
-{
 
 /*
  * Typedefs of simple types.
@@ -53,6 +51,9 @@ namespace LLRP
 
 #if defined(linux) || defined(__APPLE__)
 #include <stdint.h>
+
+namespace LLRP
+{
 /** Basic type for LLRP 8-bit unsigned data values*/
 typedef uint8_t                 llrp_u8_t;
 /** Basic type for LLRP 8-bit signed data values*/

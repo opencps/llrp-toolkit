@@ -16,8 +16,7 @@
 ############################################################################
 
 LIBDIR=../Library
-XML2DIR=../../opensource/include/libxml2
-INCL = -I$(LIBDIR) -I$(XML2DIR)
+INCL = -I$(LIBDIR) `pkg-config libxml-2.0 --cflags`
 
 #CFLAGS = -O -Wall $(INCL)
 AR          = ar
@@ -25,7 +24,7 @@ CC          = gcc
 CFLAGS      = -g -Wall $(INCL)
 
 LTKC_LIB = $(LIBDIR)/libltkc.a
-XML2_LIB = ../../opensource/lib/libxml2.a
+XML2_LIB = `pkg-config libxml-2.0 --libs`
 LTKC_HDRS = \
 	$(LIBDIR)/ltkc.h		\
 	$(LIBDIR)/ltkc_base.h		\

@@ -17,7 +17,6 @@
 
 LIBDIR=../Library
 MSVSDIR=../VS_LTKCPP
-OPENSOURCEDIR    = ../../opensource/lib
 
 LTKCPP_HDRS = \
 	$(LIBDIR)/ltkcpp.h		\
@@ -29,7 +28,7 @@ LTKCPP_HDRS = \
 	$(LIBDIR)/out_ltkcpp.h
 
 LTKCPP_LIB_A        = $(LIBDIR)/libltkcpp.a
-LIBXML2_LIB_A      = $(OPENSOURCEDIR)/libxml2.a
+LIBXML2_LIB_A      = `pkg-config libxml-2.0 --libs`
 LTKCPP_MSVS_DIR     = $(MSVSDIR)/libltkcpp
 LTKCPP_MSVS_R       = $(LTKCPP_MSVS_DIR)/Release/libltkcpp_r.lib
 LTKCPP_LIBS         = $(LTKCPP_LIB_A) $(LTKCPP_MSVS_R)

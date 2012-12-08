@@ -54,6 +54,7 @@
 
 
 #include <stdio.h>
+#include <stdlib.h>
 #ifdef linux
 #include <unistd.h>
 #endif

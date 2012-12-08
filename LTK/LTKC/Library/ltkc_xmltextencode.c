@@ -1498,7 +1498,7 @@ appendFormat (
         return;
     }
 
-    strcpy(&pEncoder->pBuffer[pEncoder->iNext], aHoldBuf);
+    strcpy((char *)&pEncoder->pBuffer[pEncoder->iNext], aHoldBuf);
 
     pEncoder->iNext += nHoldBuf;
 }
@@ -1542,7 +1542,7 @@ LLRP_toXMLString (
     /*
      * Construct an XML encoder
      */
-    pXMLEncoder = LLRP_XMLTextEncoder_construct(pBuffer, nBuffer);
+    pXMLEncoder = LLRP_XMLTextEncoder_construct((unsigned char *)pBuffer, nBuffer);
     if(NULL == pXMLEncoder)
     {
         strcpy(pBuffer, "ERROR: XMLTextEncoder_construct failed\n");
